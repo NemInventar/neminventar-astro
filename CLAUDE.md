@@ -91,6 +91,22 @@ Alt drives af Supabase ved build. Efter en ændring: **kør et build** (push til
 
 ---
 
+## Web-farvevarianter (opskrift)
+
+Arketyper vises i et fast sæt **standardfarver** — Rubio Monocoat hardwax-olie, **IKKE linolie** (det bruges ikke; for besværligt). Paletten lever i `web_colors_2026_06_11` (`slug`, `label`, `swatch_hex`, `prompt_modifier`, `sort_order`). Pr. 2026-06-11: `natur`, `sort`, `roeget-eg`, `roedbrun`, `blaa`. (`roedbrun`/`blaa` ligner Linolie & Pigmenters "Bilbao"/"Blåvand" i kulør — men er et andet produkt; navnene er kun farve-reference.)
+
+Sådan kommer en arketype web-klar med farver — **gør det samme hver gang**:
+
+1. **Render** — kør `render-studio`/`arketype-studio` på arketypen, én render pr. aktiv farve i `web_colors` (brug farvens `prompt_modifier` i prompten). Træ-arketyper bruger hele paletten; akustik/tekstil har egne farver (Kvadrat) og håndteres separat.
+2. **Navngiv + tag** — hvert godkendt billede gemmes i `product_catalog_images_2026_05_03` med `color = <web_colors.slug>` (fx `'sort'`) og `approved_for_web = true`. Slug'en er join-nøglen — derfor navngives varianter ens på tværs af alle produkter.
+3. **Rækkefølge** — sæt `product_web.color_order = ARRAY['natur','sort',...]`.
+4. **Beskrivelse** — den gode beskrivelse hører til ARKETYPEN (`product_web.web_story`), ikke pr. farve. En farve er kun et billede + et navn.
+5. **Vis** — detaljesiden grupperer `images` efter `color` og viser en swatch-knap pr. farve (label + hex fra `web_colors`); klik skifter galleriet.
+
+Tilføj/ret en standardfarve → UPDATE/INSERT i `web_colors_2026_06_11`. Den slår igennem på alle produkter der har en render i den farve. **Ingen separat "upload produkt"-skill** — det er render-pipelinen + denne opskrift.
+
+---
+
 ## Sikkerhed (LÆS DETTE)
 
 - **Følsomme ERP-tabeller er RLS-beskyttede** (verificeret 2026-06-11): `projects_*`, `crm_*`, `economic_*`, `project_quote*`, `companies_*` m.fl. returnerer tomt for anon. Men nogle ikke-følsomme/oversete tabeller mangler RLS og er direkte anon-læsbare: `product_catalog_2026_05_03`, `product_catalog_images_2026_05_03`, `quote_line_images_2026_05_28`, `bank_tag_rules`, `bank_tag_overrides`. Katalog/billeder er ikke følsomt (vi udgiver det alligevel), men `bank_tag_*` bør lukkes. **Åben opgave (afventer Joachims ok):** slå RLS til på de resterende RLS=false-tabeller + verificér at ERP-appen stadig virker. Sitet er uafhængigt: det læser kun de kuraterede views (postgres-owned → bypasser RLS).
