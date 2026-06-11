@@ -117,6 +117,26 @@ const base = import.meta.env.BASE_URL; // slutter med '/'
     </div>
   </div></section>
 
+  <!-- ============ OVERFLADEN ============ -->
+  <section class="sec finish" id="overflade"><div class="wrap">
+    <div class="finish-grid">
+      <div>
+        <span class="label">Overfladen</span>
+        <h2>Ikke lakeret. Olieret — og bygget til at blive <em>vedligeholdt.</em></h2>
+      </div>
+      <div class="finish-body">
+        <p>Lak lægger en film oven på træet. Den ser fin ud et par år, og når den ridser eller skaller, skal hele fladen slibes ned og gøres om.</p>
+        <p>Det gør vi ikke. Vores inventar behandles med <strong>Rubio Monocoat</strong> — en hardwax-olie der binder molekylært til træets øverste fibre i ét lag. Ingen film, ingen topcoat. Træet beholder sit naturlige udtryk og sin følelse, og overfladen tåler slid, vand og varme.</p>
+        <p>Det vigtigste: den kan vedligeholdes lokalt. Et slidt hjørne genoplives på stedet — uden at hele møblet skal slibes om. Med minimal vedligehold holder fladen i årtier, ikke år.</p>
+      </div>
+    </div>
+    <div class="finish-points">
+      <div class="fp"><h3>Ingen film der kan skalle</h3><p>Olien sidder i træet, ikke som et lag ovenpå. Derfor ridser og skaller den ikke som lak.</p></div>
+      <div class="fp"><h3>Plet-reparerbar</h3><p>Slid udbedres lokalt og glider sammen med resten — uden synlige overgange eller afmontering.</p></div>
+      <div class="fp"><h3>0% VOC</h3><p>Ingen opløsningsmidler. Bedre for indeklimaet — og en del af dokumentationen til certificeret byggeri.</p></div>
+    </div>
+  </div></section>
+
   <!-- ============ CERTIFICERINGER ============ -->
   <section class="certs" id="cert"><div class="wrap cert-grid">
     <div>
@@ -178,4 +198,16 @@ const base = import.meta.env.BASE_URL; // slutter med '/'
     <p class="alt-contact">Generelle henvendelser: <a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a></p>
   </div></section>
 
+  <style>
+    .finish-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;align-items:start}
+    .finish-grid h2{font-size:clamp(28px,3.4vw,44px);margin-top:22px}
+    .finish-body p{font-size:17px;color:var(--ink);line-height:1.8;margin-bottom:14px;max-width:60ch}
+    .finish-points{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:56px;padding-top:48px;border-top:1px solid var(--line)}
+    .fp h3{font-size:18px;margin-bottom:10px}
+    .fp p{font-size:14.5px;color:var(--muted);line-height:1.65}
+    @media(max-width:880px){
+      .finish-grid{grid-template-columns:1fr;gap:28px}
+      .finish-points{grid-template-columns:1fr;gap:24px;margin-top:40px;padding-top:32px}
+    }
+  </style>
 </Base>
