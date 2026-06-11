@@ -1,0 +1,52 @@
+---
+import Base from '../layouts/Base.astro';
+const base = import.meta.env.BASE_URL;
+---
+<Base
+  title="Om os — Nem Inventar"
+  description="Nem Inventar er ingeniører, der bygger fast inventar i træ til byggeri. Bygget ordentligt, dokumenteret ordentligt, leveret til tiden.">
+  <section class="about-hero"><div class="wrap">
+    <span class="label">Om os</span>
+    <h1>Vi er ingeniører, der bygger i <em>træ.</em></h1>
+    <p class="lead">Nem Inventar laver fast inventar til byggeri — bænke, garderober, akustik og specialløsninger efter tegning. Vi er et ungt værksted med en enkel overbevisning: inventar skal bygges ordentligt, dokumenteres ordentligt, og leveres når byggepladsen er klar til det.</p>
+  </div></section>
+
+  <section class="about"><div class="wrap about-grid">
+    <article>
+      <h2>Håndværk, grebet an som ingeniørarbejde</h2>
+      <p>Vi kommer fra byggeriet, ikke fra møbelbutikken. Det betyder at vi tænker i mål, tolerancer, materialer og montage fra første tegning. Vi bygger i massiv krydsfiner og træ, med samlinger der holder til hverdagen i en skole eller et omklædningsrum — ikke kun til indflytningsdagen.</p>
+      <p>Og vi gør det digitalt: hvert stykke inventar tegnes og renderes i 3D, før vi skærer den første plade. I godkender det, I faktisk får.</p>
+    </article>
+    <article>
+      <h2>Store nok til projektet, små nok til at bryde os om det</h2>
+      <p>Vi håndterer skalaen i større byggerier — skoler, institutioner, hospitaler og erhverv — med tilbudslister, rumkoder, materialegodkendelser og delleverancer der rammer en tidsplan. Samtidig er vi små nok til at tage den enkelte bænk alvorligt.</p>
+      <p>Vi taler arkitekters og entreprenørers sprog, og vi ser os selv som den del af projektet, der gør de andres arbejde nemmere.</p>
+    </article>
+    <article>
+      <h2>Dokumentationen følger med</h2>
+      <p>Bygger I efter DGNB, Svanemærket eller andre ordninger, leverer vi inventaret med papirerne i orden — fra certificeret træ (FSC®/PEFC™) til EPD'er, produktdatablade, indeklima og sporbarhed. Certificeringen skal ikke være jeres hovedpine.</p>
+    </article>
+  </div></section>
+
+  <section class="about-cta"><div class="wrap">
+    <h2>Vil I vide mere?</h2>
+    <p>Se vores arketyper, kig på projekterne, eller skriv til os om det, I står med.</p>
+    <div class="cta-actions">
+      <a href={`${base}#katalog`} class="btn btn-primary">Se arketyperne <span class="arr">→</span></a>
+      <a href={`${base}kontakt`} class="btn btn-ghost">Kontakt os</a>
+    </div>
+  </div></section>
+</Base>
+
+<style>
+  .about-hero{padding:80px 0 56px;border-bottom:1px solid var(--line)}
+  .about-hero h1{font-size:clamp(40px,5.4vw,72px);margin:24px 0 0;max-width:16ch}
+  .about-hero .lead{font-size:20px;color:var(--muted);max-width:62ch;margin-top:26px;line-height:1.65}
+  .about{padding:88px 0}
+  .about-grid{display:grid;gap:56px;max-width:840px}
+  .about article h2{font-size:clamp(24px,3vw,34px);margin-bottom:18px}
+  .about article p{font-size:17px;color:var(--ink);line-height:1.8;margin-bottom:14px;max-width:64ch}
+  .about-cta{background:var(--dark);color:var(--dark-text);padding:96px 0;text-align:center}
+  .about-cta h2{color:#F4EFE6;font-size:clamp(28px,3.6vw,44px)}
+  .about-cta p{color:#A99D88;font-size:18px;margin:18px auto 34px;max-width:46ch}
+</style>
