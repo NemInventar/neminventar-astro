@@ -93,7 +93,7 @@ Alt drives af Supabase ved build. Efter en ændring: **kør et build** (push til
 
 ## Sikkerhed (LÆS DETTE)
 
-- **ERP-tabellerne er pt. anon-læsbare** (RLS ikke slået til på `guhbrpektblabndqttgp`). Den offentlige anon-nøgle kan derfor i princippet læse hele ERP'et (projekt-økonomi, CRM, risici). **Åben opgave** — bør lukkes med RLS + læse-policies (forsigtigt, så ERP-appen ikke knækker). Dette site er ikke afhængigt af det: vi læser kun de kuraterede views.
+- **Følsomme ERP-tabeller er RLS-beskyttede** (verificeret 2026-06-11): `projects_*`, `crm_*`, `economic_*`, `project_quote*`, `companies_*` m.fl. returnerer tomt for anon. Men nogle ikke-følsomme/oversete tabeller mangler RLS og er direkte anon-læsbare: `product_catalog_2026_05_03`, `product_catalog_images_2026_05_03`, `quote_line_images_2026_05_28`, `bank_tag_rules`, `bank_tag_overrides`. Katalog/billeder er ikke følsomt (vi udgiver det alligevel), men `bank_tag_*` bør lukkes. **Åben opgave (afventer Joachims ok):** slå RLS til på de resterende RLS=false-tabeller + verificér at ERP-appen stadig virker. Sitet er uafhængigt: det læser kun de kuraterede views (postgres-owned → bypasser RLS).
 - **Nøgle-håndtering:** `SUPABASE_ANON_KEY` læses via `astro:env/server` — **kun ved build**, aldrig i browser-bundtet (statisk site → `dist/` har ingen nøgle). Den ligger i `.env` lokalt (gitignored) og som **GitHub Actions secret** i CI. **Hardkod aldrig nøglen i kildekoden.**
 - Det eneste anon-eksponerede er `v_web_products` / `v_web_cases`.
 
