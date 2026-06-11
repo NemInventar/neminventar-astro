@@ -1,0 +1,181 @@
+---
+import Base from '../layouts/Base.astro';
+import { getWebProducts, getWebCases, categoryLabel } from '../lib/supabase';
+
+const products = await getWebProducts();
+const cases = await getWebCases();
+
+const title = 'Nem Inventar — snedkerbygget inventar til byggeri';
+const description =
+  'Vi bygger fast inventar i træ og krydsfiner til skoler, institutioner, hospitaler og erhverv. Arketyper på bestilling og hele projekter — tegnet i 3D, dokumenteret til certificeret byggeri.';
+const pad = (n: number) => String(n + 1).padStart(2, '0');
+const base = import.meta.env.BASE_URL; // slutter med '/'
+---
+<Base title={title} description={description}>
+
+  <!-- ============ HERO ============ -->
+  <header class="hero" id="top"><div class="wrap hero-grid">
+    <div>
+      <span class="label">Snedkeri · København NV</span>
+      <h1>Fra én bænk til en <em>hel skole.</em></h1>
+      <p class="sub">Vi bygger fast inventar i træ og krydsfiner — til skoler, institutioner, hospitaler og erhverv. Hvert stykke tegnes i 3D før produktion, dokumenteres til certificeret byggeri, og leveres når byggepladsen er klar til det.</p>
+      <div class="hero-cta">
+        <a href="#katalog" class="btn btn-primary">Se arketyperne <span class="arr">↓</span></a>
+        <a href="#projekter" class="btn btn-ghost">Start et projekt <span class="arr">→</span></a>
+      </div>
+      <div class="fact-row">
+        <span class="fact">Bygget til mål</span>
+        <span class="fact">3D-render før produktion</span>
+        <span class="fact">Leverer til certificeret byggeri</span>
+        <span class="fact">Delleverancer efter tidsplan</span>
+      </div>
+    </div>
+    <figure class="hero-fig">
+      <div class="frame">
+        <img src="https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1780031096870.png" alt="Garderobeskabe i krydsfiner med perforerede låger — 3D-render" />
+      </div>
+      <figcaption><b>Garderobeskabe, krydsfiner</b>3D-render som kunden ser den — før vi skærer den første plade.</figcaption>
+    </figure>
+  </div></header>
+
+  <!-- ============ KATALOG ============ -->
+  <section class="sec" id="katalog"><div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="label">Kataloget</span>
+        <h2>Arketyper vi kender ud og ind.</h2>
+        <p class="lede">Konstruktioner vi har gennemarbejdet, så de kan bestilles direkte — i jeres mål, jeres materiale, jeres farve. Ingen faste priser, fordi intet bygges i faste mål.</p>
+      </div>
+      <a href="#kontakt" class="ulink">Mangler du noget særligt? →</a>
+    </div>
+    <div class="grid">
+      {products.map((p, i) => (
+        <article class="card">
+          <a class="ph" href={`${base}produkter/${p.slug}`} aria-label={p.name}>
+            <span class="num">{pad(i)}</span>
+            {p.primary_image && <img src={p.primary_image} alt={p.name} loading="lazy" />}
+          </a>
+          <div class="body">
+            <span class="kicker">{categoryLabel[p.category] ?? p.category}</span>
+            <h3><a href={`${base}produkter/${p.slug}`}>{p.name}</a></h3>
+            <p class="desc">{p.intro ?? p.short_description}</p>
+            <div class="foot">
+              <span class="made"><b>Til mål</b> · pris efter opmåling</span>
+              <a href={`${base}produkter/${p.slug}`} class="order">Se mere <span class="arr">→</span></a>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+    <p class="cat-note">Alle billeder er 3D-renders fra vores eget tilbudssystem — det er sådan I ser jeres inventar, før vi bygger det.</p>
+  </div></section>
+
+  <!-- ============ BRIDGE ============ -->
+  <section class="bridge"><div class="wrap">
+    <span class="label">Og så det større</span>
+    <h2>Arketyperne er byggesten. Projekterne er, hvor de bliver til <em>rum.</em></h2>
+    <p class="b-lede">En bænk kan bestilles på en uge. Et helt skolebyggeri kræver tilbudslister, materialegodkendelser, dokumentation og delleverancer der rammer en tidsplan. Vi laver begge dele — med de samme hænder og det samme system.</p>
+  </div></section>
+
+  <!-- ============ CASES ============ -->
+  <section class="cases" id="projekter"><div class="wrap">
+    <div class="case-grid">
+      {cases.map((c) => (
+        <article class="case">
+          <a class="ph" href={`${base}projekter/${c.slug}`} aria-label={c.name}>
+            {c.hero_image_url && <img src={c.hero_image_url} alt={`${c.name} — render`} loading="lazy" />}
+          </a>
+          <div class="body">
+            <span class="status">{c.status_live && <span class="dot"></span>}{c.status_label}</span>
+            <h3><a href={`${base}projekter/${c.slug}`}>{c.name}</a></h3>
+            <p class="desc">{c.web_summary}</p>
+            <div class="meta">
+              <div class="row"><span class="k">Leverance</span><span class="v">{c.delivery_label}</span></div>
+              <div class="row"><span class="k">Entreprenør</span><span class="v">{c.contractor_label}</span></div>
+              <div class="row"><span class="k">Status</span><span class="v">{c.status_label}</span></div>
+            </div>
+            <div style="margin-top:22px"><a href={`${base}projekter/${c.slug}`} class="btn btn-light">Se projektet <span class="arr">→</span></a></div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div></section>
+
+  <!-- ============ HVAD VI STÅR FOR ============ -->
+  <section class="sec values" id="staar-for"><div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="label">Sådan arbejder vi</span>
+        <h2>Fire ting vi ikke går på kompromis med.</h2>
+      </div>
+    </div>
+    <div class="vgrid">
+      <div class="v"><span class="n">I.</span><h3>Håndværket</h3><p>Samlinger, kanter og overflader der tåler hverdagen i en skole eller et omklædningsrum. Vi bygger til mange års brug, ikke til indflytningsdagen.</p></div>
+      <div class="v"><span class="n">II.</span><h3>Det digitale</h3><p>Hvert stykke inventar tegnes og renderes i 3D, før produktionen starter. I godkender det I faktisk får — ikke en skitse og et håndtryk.</p></div>
+      <div class="v"><span class="n">III.</span><h3>Dokumentationen</h3><p>EPD'er, produktdatablade, indeklima og sporbarhed. Vi håndterer hele dokumentationspakken, så certificeringen ikke bliver jeres hovedpine.</p></div>
+      <div class="v"><span class="n">IV.</span><h3>Samarbejdet</h3><p>Vi taler arkitekters og entreprenørers sprog: tegningslæsning, rumkoder, tilsyn og delleverancer der rammer byggepladsens tidsplan.</p></div>
+    </div>
+  </div></section>
+
+  <!-- ============ CERTIFICERINGER ============ -->
+  <section class="certs" id="cert"><div class="wrap cert-grid">
+    <div>
+      <span class="label">Certificeret byggeri</span>
+      <h2>Dokumentationen følger med leverancen.</h2>
+      <p class="txt">Bygger I efter DGNB, Svanemærket eller andre ordninger, leverer vi inventaret med papirerne i orden — fra certificeret træ til færdig dokumentationspakke.</p>
+    </div>
+    <div>
+      <div class="chip-row">
+        <span class="chip">FSC®</span>
+        <span class="chip">PEFC™</span>
+        <span class="chip">DGNB</span>
+        <span class="chip">Svanemærket</span>
+        <span class="chip">EPD</span>
+      </div>
+      <div class="doc-list">
+        <div class="d"><span><b>EPD'er og produktdatablade</b> på de anvendte materialer</span></div>
+        <div class="d"><span><b>Indeklimadokumentation</b> til certificeringsordningens krav</span></div>
+        <div class="d"><span><b>Sporbarhed</b> på træ og plader gennem hele kæden</span></div>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- ============ PROCES ============ -->
+  <section class="process" id="proces"><div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="label">Sådan kommer vi i gang</span>
+        <h2>To veje ind. Samme værksted.</h2>
+      </div>
+    </div>
+    <div class="p-tracks">
+      <div class="track">
+        <span class="t-kick">Spor 1 · Kataloget</span>
+        <h3>Sådan bestiller du en arketype</h3>
+        <div class="step"><span class="sn">1</span><div><b>Vælg og beskriv</b><p>Peg på en arketype og send os jeres mål, antal og ønsker til materiale og farve.</p></div></div>
+        <div class="step"><span class="sn">2</span><div><b>Se den i 3D — med pris</b><p>I får en render af jeres konkrete løsning og en samlet pris. Justér til det sidder rigtigt.</p></div></div>
+        <div class="step"><span class="sn">3</span><div><b>Vi bygger og leverer</b><p>Produktion, dokumentation og levering — montage hvis I vil have det med.</p></div></div>
+      </div>
+      <div class="track alt">
+        <span class="t-kick">Spor 2 · Projekter</span>
+        <h3>Sådan starter et projekt</h3>
+        <div class="step"><span class="sn">1</span><div><b>Send tegninger eller udbud</b><p>Arkitekttegninger, snedkerbeskrivelse eller tilbudsliste — vi læser materialet og stiller de rigtige spørgsmål.</p></div></div>
+        <div class="step"><span class="sn">2</span><div><b>Tilbud med 3D og dokumentation</b><p>Struktureret tilbud, renders af nøgleemner og en plan for materialegodkendelser.</p></div></div>
+        <div class="step"><span class="sn">3</span><div><b>Produktion i delleverancer</b><p>Vi leverer i takt med byggepladsen — ikke som én stor slutlevering, der vælter tidsplanen.</p></div></div>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- ============ CTA ============ -->
+  <section class="cta" id="kontakt"><div class="wrap">
+    <span class="label">Kontakt</span>
+    <h2>Send os målene. Eller hele <em>udbuddet.</em></h2>
+    <p>Begge dele lander samme sted — hos et hold der kender byggeri, svarer i fagsprog og vender hurtigt tilbage med næste skridt.</p>
+    <div class="cta-actions">
+      <a href="mailto:tilbud@neminventar.dk" class="btn btn-light">tilbud@neminventar.dk <span class="arr">→</span></a>
+      <a href="tel:+4540140508" class="btn btn-ghost" style="border-color:#443B2A;color:#CFC4B2">+45 40 14 05 08</a>
+    </div>
+    <p class="alt-contact">Generelle henvendelser: <a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a></p>
+  </div></section>
+
+</Base>

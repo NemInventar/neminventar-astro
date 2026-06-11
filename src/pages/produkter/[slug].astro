@@ -1,0 +1,49 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getWebProducts, categoryLabel, type WebProduct } from '../../lib/supabase';
+
+export async function getStaticPaths() {
+  const products = await getWebProducts();
+  return products.map((p) => ({ params: { slug: p.slug }, props: { product: p } }));
+}
+
+interface Props { product: WebProduct }
+const { product } = Astro.props;
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const paragraphs = (product.story ?? product.short_description ?? '').split('\n\n').filter(Boolean);
+const gallery = product.images ?? (product.primary_image ? [product.primary_image] : []);
+const hero = product.primary_image ?? gallery[0];
+const base = import.meta.env.BASE_URL;
+---
+<Base title={product.seo_title} description={product.seo_description} image={hero}>
+  <section class="detail"><div class="wrap">
+    <a href={`${base}#katalog`} class="crumb">← Tilbage til kataloget</a>
+    <div class="detail-grid">
+      <div class="gallery">
+        {hero && <div class="main"><img src={hero} alt={product.name} /></div>}
+        {gallery.length > 1 && (
+          <div class="thumbs">
+            {gallery.map((src) => <img src={src} alt={product.name} loading="lazy" />)}
+          </div>
+        )}
+      </div>
+      <div class="detail-body">
+        <span class="kicker">{categoryLabel[product.category] ?? product.category}</span>
+        <h1>{product.name}</h1>
+        {product.hero_tagline && <p class="lead">{product.hero_tagline}</p>}
+        <div class="prose">
+          {paragraphs.map((para) => <p>{para}</p>)}
+        </div>
+        <div class="spec">
+          {product.materials?.length ? (<><h4>Materialer</h4><div class="chips">{product.materials.map((m) => <span>{cap(m)}</span>)}</div></>) : null}
+          {product.finishes?.length ? (<><h4>Overflade</h4><div class="chips">{product.finishes.map((f) => <span>{cap(f)}</span>)}</div></>) : null}
+          {product.applications?.length ? (<><h4>Velegnet til</h4><div class="chips">{product.applications.map((a) => <span>{cap(a)}</span>)}</div></>) : null}
+        </div>
+        <div class="detail-cta">
+          <a href={`mailto:tilbud@neminventar.dk?subject=${encodeURIComponent('Forespørgsel: ' + product.name)}`} class="btn btn-primary">Få pris på denne <span class="arr">→</span></a>
+          <a href={`${base}#kontakt`} class="btn btn-ghost">Kontakt os</a>
+        </div>
+      </div>
+    </div>
+  </div></section>
+</Base>

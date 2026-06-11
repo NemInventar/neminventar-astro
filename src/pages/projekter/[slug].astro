@@ -1,0 +1,46 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getWebCases, type WebCase } from '../../lib/supabase';
+
+export async function getStaticPaths() {
+  const cases = await getWebCases();
+  return cases.map((c) => ({ params: { slug: c.slug }, props: { project: c } }));
+}
+
+interface Props { project: WebCase }
+const { project } = Astro.props;
+const paragraphs = (project.web_story ?? '').split('\n\n').filter(Boolean);
+const desc = project.seo_description ?? (project.web_summary ?? '').slice(0, 200);
+const base = import.meta.env.BASE_URL;
+---
+<Base title={project.seo_title} description={desc} image={project.hero_image_url ?? undefined}>
+  <section class="case-detail"><div class="wrap">
+    <a href={`${base}#projekter`} class="crumb">← Tilbage til projekter</a>
+    <span class="status" style="color:var(--warm)">{project.status_live && <span class="dot"></span>}{project.status_label}</span>
+    <h1>{project.name}</h1>
+    {project.web_summary && <p class="lead">{project.web_summary}</p>}
+
+    {project.hero_image_url && (
+      <div class="case-hero"><img src={project.hero_image_url} alt={`${project.name} — render`} /></div>
+    )}
+
+    {paragraphs.length > 0 && (
+      <div class="prose" style="max-width:64ch">
+        {paragraphs.map((para) => <p>{para}</p>)}
+      </div>
+    )}
+
+    <div class="case-meta">
+      <div class="cell"><div class="k">Leverance</div><div class="vv">{project.delivery_label}</div></div>
+      <div class="cell"><div class="k">Entreprenør</div><div class="vv">{project.contractor_label}</div></div>
+      <div class="cell"><div class="k">Status</div><div class="vv">{project.status_label}</div></div>
+    </div>
+
+    <p class="case-note">Billedet er en repræsentativ 3D-render — ikke nødvendigvis foto af selve leverancen. Udskiftes med projektfoto når det findes.</p>
+
+    <div class="detail-cta" style="margin-top:38px">
+      <a href="mailto:tilbud@neminventar.dk" class="btn btn-primary">Har I et lignende projekt? <span class="arr">→</span></a>
+      <a href={`${base}#katalog`} class="btn btn-ghost">Se arketyperne</a>
+    </div>
+  </div></section>
+</Base>
