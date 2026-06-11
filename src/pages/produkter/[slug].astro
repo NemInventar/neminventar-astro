@@ -20,10 +20,14 @@ const base = import.meta.env.BASE_URL;
     <a href={`${base}#katalog`} class="crumb">← Tilbage til kataloget</a>
     <div class="detail-grid">
       <div class="gallery">
-        {hero && <div class="main"><img src={hero} alt={product.name} /></div>}
+        {hero && <div class="main"><img id="main-img" src={hero} alt={product.name} /></div>}
         {gallery.length > 1 && (
           <div class="thumbs">
-            {gallery.map((src) => <img src={src} alt={product.name} loading="lazy" />)}
+            {gallery.map((src, i) => (
+              <button class={`thumb${i === 0 ? ' active' : ''}`} data-src={src} aria-label={`Vis billede ${i + 1}`}>
+                <img src={src} alt={`${product.name} – billede ${i + 1}`} loading="lazy" />
+              </button>
+            ))}
           </div>
         )}
       </div>
@@ -46,4 +50,17 @@ const base = import.meta.env.BASE_URL;
       </div>
     </div>
   </div></section>
+
+  <script>
+    const main = document.getElementById('main-img') as HTMLImageElement | null;
+    const thumbs = document.querySelectorAll<HTMLButtonElement>('.thumb');
+    thumbs.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const src = btn.dataset.src;
+        if (main && src) main.src = src;
+        thumbs.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+  </script>
 </Base>

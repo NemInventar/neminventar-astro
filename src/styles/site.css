@@ -323,10 +323,14 @@ footer a:hover{color:var(--ink)}
 }
 .gallery .main img{width:100%;height:100%;object-fit:cover}
 .thumbs{display:flex;gap:12px;margin-top:14px;flex-wrap:wrap}
-.thumbs img{
-  width:84px;height:64px;object-fit:cover;border-radius:10px;
-  border:1px solid var(--line);background:var(--soft);
+.thumb{
+  padding:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;
+  background:var(--soft);cursor:pointer;line-height:0;
+  transition:border-color .2s,transform .2s,box-shadow .2s;
 }
+.thumb img{width:84px;height:64px;object-fit:cover;display:block}
+.thumb:hover{border-color:var(--warm-soft);transform:translateY(-2px)}
+.thumb.active{border-color:var(--warm);box-shadow:0 0 0 1px var(--warm)}
 .detail-body h1{font-size:clamp(30px,3.6vw,46px);margin:14px 0 0}
 .detail-body .lead{font-size:18px;color:var(--muted);margin-top:18px;line-height:1.7}
 .prose{margin-top:26px}
@@ -379,4 +383,33 @@ footer a:hover{color:var(--ink)}
   footer .right{text-align:left}
   .case-meta{grid-template-columns:1fr}
   .case-meta .cell{border-right:none;border-bottom:1px solid var(--line)}
+  .contact-grid{grid-template-columns:1fr;gap:32px}
 }
+
+/* ============ KONTAKT ============ */
+.contact{padding:64px 0 104px}
+.contact-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;align-items:start}
+.contact-info h1{font-size:clamp(30px,3.6vw,46px);margin:14px 0 0}
+.contact-info .lead{color:var(--muted);font-size:18px;line-height:1.7;margin-top:18px}
+.contact-info .lines{margin-top:28px;display:grid;gap:10px;font-size:16px}
+.contact-info .lines a{color:var(--warm);text-decoration:underline}
+.contact-info .lines .k{color:var(--muted);font-size:13px;letter-spacing:.04em;text-transform:uppercase;font-weight:600;margin-top:8px}
+.form{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:34px}
+.form .row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.field label{font-size:13.5px;font-weight:600;color:var(--ink)}
+.field input,.field textarea{
+  border:1px solid var(--line);border-radius:10px;padding:12px 14px;font:inherit;font-size:15px;
+  background:var(--paper);color:var(--ink);transition:border-color .2s,box-shadow .2s;
+}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--warm);box-shadow:0 0 0 3px rgba(162,101,42,.12)}
+.field textarea{resize:vertical;min-height:120px}
+.form .btn{width:100%;justify-content:center;border:none;cursor:pointer}
+.form .btn[disabled]{opacity:.6;cursor:not-allowed}
+.form-msg{margin-top:14px;font-size:14.5px;padding:12px 14px;border-radius:10px}
+.form-msg.ok{background:#EAF3EE;color:#1F6F5C;border:1px solid #BFE0D0}
+.form-msg.err{background:#FBEAEA;color:#9B2C2C;border:1px solid #F0C7C7}
+.form-done{text-align:center;padding:24px 8px}
+.form-done h3{font-size:24px;margin-bottom:10px}
+.form-done p{color:var(--muted);line-height:1.7}
+@media(max-width:560px){.form .row{grid-template-columns:1fr}.form{padding:24px}}

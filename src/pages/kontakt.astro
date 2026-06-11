@@ -1,0 +1,26 @@
+---
+import Base from '../layouts/Base.astro';
+import ContactForm from '../components/ContactForm.tsx';
+---
+<Base
+  title="Kontakt — Nem Inventar"
+  description="Send os jeres mål eller hele udbuddet. Vi vender hurtigt tilbage med næste skridt.">
+  <section class="contact"><div class="wrap contact-grid">
+    <div class="contact-info">
+      <span class="label">Kontakt</span>
+      <h1>Lad os tale om <em>jeres projekt.</em></h1>
+      <p class="lead">Skriv en arketype, et mål eller hele udbuddet — så vender vi hurtigt tilbage med næste skridt. Et indledende afklaringsmøde er gratis og uforpligtende.</p>
+      <div class="lines">
+        <span class="k">Salg & tilbud</span>
+        <a href="mailto:tilbud@neminventar.dk">tilbud@neminventar.dk</a>
+        <span class="k">Generelt</span>
+        <a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a>
+        <span class="k">Telefon</span>
+        <a href="tel:+4540140508">+45 40 14 05 08</a>
+        <span class="k">Adresse</span>
+        <span>Nem Inventar ApS · Svanevej 22 · 2400 København NV · CVR 45085473</span>
+      </div>
+    </div>
+    <ContactForm client:load />
+  </div></section>
+</Base>

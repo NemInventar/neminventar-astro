@@ -1,10 +1,16 @@
 ---
-// Delt footer.
+// Delt footer. Base-bevidste interne links.
+const base = import.meta.env.BASE_URL; // slutter med '/'
 ---
 <footer><div class="wrap foot">
   <div>
     <div class="brand">NEM<b style="color:var(--warm)">·</b>INVENTAR</div>
     <p>Snedkerbygget inventar til byggeri.<br>Arketyper på bestilling — og hele projekter.</p>
+    <p class="foot-links">
+      <a href={`${base}kontakt`}>Kontakt</a> ·
+      <a href={`${base}privatlivspolitik`}>Privatlivspolitik</a> ·
+      <a href={`${base}cookiepolitik`}>Cookiepolitik</a>
+    </p>
   </div>
   <div class="right">
     <p>Nem Inventar ApS · CVR 45085473</p>
@@ -12,3 +18,9 @@
     <p><a href="tel:+4540140508">+45 40 14 05 08</a> · <a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a></p>
   </div>
 </div></footer>
+
+<style>
+  .foot-links{margin-top:14px;font-size:13.5px}
+  .foot-links a{color:var(--muted);text-decoration:none}
+  .foot-links a:hover{color:var(--ink)}
+</style>
