@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getWebProducts, categoryLabel, type WebProduct } from '../../lib/supabase';
+import { cdn } from '../../lib/img';
 
 export async function getStaticPaths() {
   const products = await getWebProducts();
@@ -20,12 +21,12 @@ const base = import.meta.env.BASE_URL;
     <a href={`${base}#katalog`} class="crumb">← Tilbage til kataloget</a>
     <div class="detail-grid">
       <div class="gallery">
-        {hero && <div class="main"><img id="main-img" src={hero} alt={product.name} /></div>}
+        {hero && <div class="main"><img id="main-img" src={cdn(hero, 1000)} alt={product.name} /></div>}
         {gallery.length > 1 && (
           <div class="thumbs">
             {gallery.map((src, i) => (
-              <button class={`thumb${i === 0 ? ' active' : ''}`} data-src={src} aria-label={`Vis billede ${i + 1}`}>
-                <img src={src} alt={`${product.name} – billede ${i + 1}`} loading="lazy" />
+              <button class={`thumb${i === 0 ? ' active' : ''}`} data-src={cdn(src, 1000)} aria-label={`Vis billede ${i + 1}`}>
+                <img src={cdn(src, 220)} alt={`${product.name} – billede ${i + 1}`} loading="lazy" />
               </button>
             ))}
           </div>

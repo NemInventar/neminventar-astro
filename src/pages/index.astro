@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { getWebProducts, getWebCases, categoryLabel } from '../lib/supabase';
+import { cdn } from '../lib/img';
 
 const products = await getWebProducts();
 const cases = await getWebCases();
@@ -32,7 +33,7 @@ const base = import.meta.env.BASE_URL; // slutter med '/'
     </div>
     <figure class="hero-fig">
       <div class="frame">
-        <img src="https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1780031096870.png" alt="Garderobeskabe i krydsfiner med perforerede låger — 3D-render" />
+        <img src={cdn("https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1780031096870.png", 1100)} alt="Garderobeskabe i krydsfiner med perforerede låger — 3D-render" />
       </div>
       <figcaption><b>Garderobeskabe, krydsfiner</b>3D-render som kunden ser den — før vi skærer den første plade.</figcaption>
     </figure>
@@ -53,7 +54,7 @@ const base = import.meta.env.BASE_URL; // slutter med '/'
         <article class="card">
           <a class="ph" href={`${base}produkter/${p.slug}`} aria-label={p.name}>
             <span class="num">{pad(i)}</span>
-            {p.primary_image && <img src={p.primary_image} alt={p.name} loading="lazy" />}
+            {p.primary_image && <img src={cdn(p.primary_image, 760)} alt={p.name} loading="lazy" />}
           </a>
           <div class="body">
             <span class="kicker">{categoryLabel[p.category] ?? p.category}</span>
@@ -83,7 +84,7 @@ const base = import.meta.env.BASE_URL; // slutter med '/'
       {cases.map((c) => (
         <article class="case">
           <a class="ph" href={`${base}projekter/${c.slug}`} aria-label={c.name}>
-            {c.hero_image_url && <img src={c.hero_image_url} alt={`${c.name} — render`} loading="lazy" />}
+            {c.hero_image_url && <img src={cdn(c.hero_image_url, 840)} alt={`${c.name} — render`} loading="lazy" />}
           </a>
           <div class="body">
             <span class="status">{c.status_live && <span class="dot"></span>}{c.status_label}</span>

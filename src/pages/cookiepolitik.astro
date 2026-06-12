@@ -1,51 +1,31 @@
 ---
 import Base from '../layouts/Base.astro';
+const base = import.meta.env.BASE_URL;
 ---
-<Base title="Cookiepolitik — Nem Inventar" description="Cookiepolitik for Nem Inventar ApS — hvilke cookies vi bruger og hvordan du styrer dem.">
+<Base title="Cookiepolitik — Nem Inventar" description="Cookiepolitik for Nem Inventar ApS. Vi bruger ikke cookies til analyse, markedsføring eller sporing.">
   <article class="legal wrap">
     <h1>Cookiepolitik</h1>
     <p class="upd">Sidst opdateret: juni 2026</p>
 
+    <h2>Kort fortalt</h2>
+    <p>neminventar.dk er en enkel, statisk hjemmeside. Vi bruger <strong>ikke</strong> cookies til analyse, markedsføring eller sporing, og vi deler ikke dine data med annoncenetværk. Derfor er der heller ikke noget cookie-samtykkebanner.</p>
+
     <h2>Hvad er cookies?</h2>
-    <p>Cookies er små tekstfiler, der gemmes på din computer, tablet eller smartphone, når du besøger vores hjemmeside. Cookies hjælper os med at gøre hjemmesiden mere brugervenlig og give dig en bedre oplevelse.</p>
+    <p>Cookies er små tekstfiler, der kan gemmes på din enhed, når du besøger en hjemmeside — typisk for at huske indstillinger eller måle trafik.</p>
 
-    <h2>Hvilke cookies bruger vi?</h2>
-    <h3>Nødvendige cookies</h3>
-    <p>Disse cookies er nødvendige for, at hjemmesiden kan fungere korrekt. De kan ikke slås fra i vores systemer.</p>
+    <h2>Cookies på denne side</h2>
+    <p>Vi sætter ingen cookies til analyse eller markedsføring. Gemmer din browser tekniske data, er det alene for, at siden kan vises korrekt.</p>
+
+    <h2>Eksterne tjenester</h2>
     <ul>
-      <li>Sessionscookies til navigation på hjemmesiden</li>
-      <li>Sikkerhedscookies til beskyttelse mod angreb</li>
-      <li>Cookies til at huske dine præferencer</li>
+      <li><strong>Skrifttyper</strong> hentes fra Google Fonts, hvilket indebærer en forespørgsel til Googles servere, når siden indlæses.</li>
+      <li><strong>Kontaktformularen</strong> sender de oplysninger, du selv udfylder, til os, så vi kan svare. Behandlingen er beskrevet i vores <a href={`${base}privatlivspolitik`}>privatlivspolitik</a>.</li>
     </ul>
-
-    <h3>Funktionelle cookies</h3>
-    <p>Disse cookies gør det muligt for hjemmesiden at huske valg, du træffer, og give forbedrede, mere personlige funktioner.</p>
-    <ul>
-      <li>Sprogindstillinger</li>
-      <li>Regionale indstillinger</li>
-      <li>Tilgængelighedsindstillinger</li>
-    </ul>
-
-    <h3>Analytiske cookies</h3>
-    <p>Disse cookies hjælper os med at forstå, hvordan besøgende interagerer med hjemmesiden ved at indsamle og rapportere information anonymt.</p>
-
-    <h2>Tredjepartscookies</h2>
-    <p>Vi kan bruge tjenester fra tredjeparter, som sætter deres egne cookies, fx til webanalyse eller kort- og lokationstjenester.</p>
 
     <h2>Sådan styrer du cookies</h2>
-    <p>Du kan til enhver tid ændre eller trække dit samtykke tilbage. Du kan også styre cookies gennem din browsers indstillinger:</p>
-    <ul>
-      <li><strong>Chrome:</strong> Indstillinger → Privatliv og sikkerhed → Cookies</li>
-      <li><strong>Firefox:</strong> Indstillinger → Privatliv og sikkerhed → Cookies og webstedsdata</li>
-      <li><strong>Safari:</strong> Præferencer → Privatliv → Cookies og webstedsdata</li>
-      <li><strong>Edge:</strong> Indstillinger → Cookies og webstedstilladelser</li>
-    </ul>
-
-    <h2>Opdateringer af cookiepolitikken</h2>
-    <p>Vi kan opdatere denne cookiepolitik fra tid til anden. Ændringer træder i kraft, når den opdaterede politik offentliggøres på denne side.</p>
+    <p>Du kan altid slette eller blokere cookies i din browsers indstillinger (Chrome, Firefox, Safari, Edge).</p>
 
     <h2>Kontakt</h2>
-    <p>Hvis du har spørgsmål til vores brug af cookies, kan du kontakte os:</p>
     <p>
       <strong>Nem Inventar ApS</strong><br />
       E-mail: <a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a><br />
@@ -60,7 +40,6 @@ import Base from '../layouts/Base.astro';
   .legal h1{font-size:clamp(32px,4vw,46px);margin-bottom:10px}
   .legal .upd{color:var(--muted);font-size:14px;margin-bottom:36px}
   .legal h2{font-size:22px;margin:38px 0 12px}
-  .legal h3{font-size:17px;margin:22px 0 8px}
   .legal p{color:var(--ink);line-height:1.75;margin-bottom:14px}
   .legal ul{margin:0 0 16px 22px;color:var(--ink);line-height:1.75}
   .legal li{margin-bottom:6px}

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://neminventar.dk/sitemap-index.xml
