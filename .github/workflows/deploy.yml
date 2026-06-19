@@ -36,10 +36,9 @@ jobs:
           # Hentes ved build til at læse de kuraterede Supabase-views. Aldrig i klient-bundtet.
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          # Projekt-side serveres under /<repo>/. Ved cutover til custom domain (neminventar.dk)
-          # fjernes BASE_PATH (eller sættes '/'), og SITE_URL sættes til https://neminventar.dk.
-          BASE_PATH: /${{ github.event.repository.name }}/
-          SITE_URL: https://${{ github.repository_owner }}.github.io
+          # Live på custom domain neminventar.dk. base = '/' (BASE_PATH ikke sat),
+          # og public/CNAME sætter domænet på GitHub Pages.
+          SITE_URL: https://neminventar.dk
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

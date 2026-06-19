@@ -1,17 +1,14 @@
 import { useState } from 'react';
 
-// Poster til det EKSISTERENDE send-email edge function på det gamle Supabase-projekt
-// (nlyqbvwryocpzrwicxmf). Funktionen sender mail via Resend + gemmer i contact_submissions,
-// har CORS '*' og kan kaldes fra dette domæne. Anon-nøglen her er det gamle sites OFFENTLIGE
-// nøgle (allerede eksponeret), så den er client-safe.
-const FUNCTION_URL = 'https://nlyqbvwryocpzrwicxmf.supabase.co/functions/v1/send-email';
-const ANON_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5seXFidndyeW9jcHpyd2ljeG1mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg0ODU2NDgsImV4cCI6MjA4NDA2MTY0OH0.ThtWbrjBXKwo-MzwL-eIkU5yH_lnFWgSZ4ptxSbwUq8';
+// Poster til contact-form edge function på ERP-projektet (guhbrpektblabndqttgp).
+// Funktionen sender en notifikation via Microsoft Graph til tilbud@ + kontakt@ med reply-to
+// = afsenderen. verify_jwt=false → ingen nøgle i klient-bundtet (fast modtager + honeypot beskytter).
+const FUNCTION_URL = 'https://guhbrpektblabndqttgp.supabase.co/functions/v1/contact-form';
 
 type Status = 'idle' | 'sending' | 'ok' | 'error';
 
 export default function ContactForm() {
-  const [form, setForm] = useState({ name: '', company: '', phone: '', email: '', message: '' });
+  const [form, setForm] = useState({ name: '', company: '', phone: '', email: '', message: '', website: '' });
   const [status, setStatus] = useState<Status>('idle');
   const [errMsg, setErrMsg] = useState('');
 
@@ -31,11 +28,7 @@ export default function ContactForm() {
     try {
       const res = await fetch(FUNCTION_URL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          apikey: ANON_KEY,
-          Authorization: `Bearer ${ANON_KEY}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
       const data = await res.json().catch(() => ({}));
@@ -64,6 +57,10 @@ export default function ContactForm() {
   const sending = status === 'sending';
   return (
     <form className="form" onSubmit={submit} noValidate>
+      {/* Honeypot — usynligt for mennesker; bots udfylder det og afvises server-side */}
+      <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true"
+        value={form.website} onChange={update}
+        style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', opacity: 0 }} />
       <div className="row">
         <div className="field">
           <label htmlFor="cf-name">Navn *</label>
