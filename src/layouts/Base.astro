@@ -22,7 +22,7 @@ interface Props {
 
 const { title, description, image } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
-const ogImage = image ?? 'https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1780031096870.png';
+const ogImage = image ?? new URL(import.meta.env.BASE_URL + 'og-default.png', Astro.site).href;
 const base = import.meta.env.BASE_URL;
 ---
 <!doctype html>
