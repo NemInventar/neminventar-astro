@@ -103,6 +103,7 @@ nav{
 .fact:hover{border-color:var(--warm);color:var(--ink)}
 .hero-fig{position:relative}
 .hero-fig .frame{
+  display:block;
   border-radius:var(--radius);overflow:hidden;background:var(--soft);
   box-shadow:0 30px 70px -34px rgba(23,20,14,.35);
   aspect-ratio:4/4.6;
