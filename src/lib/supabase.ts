@@ -26,6 +26,14 @@ export interface WebProduct {
   short_description: string | null;
   primary_image: string | null;
   images: string[] | null;
+  images_meta: { url: string; color: string | null }[] | null;
+}
+
+export interface WebColor {
+  slug: string;
+  label: string;
+  swatch_hex: string;
+  sort_order: number;
 }
 
 export interface WebCase {
@@ -61,6 +69,15 @@ export async function getWebProducts(): Promise<WebProduct[]> {
     .select('*')
     .order('web_display_order', { ascending: true, nullsFirst: false });
   if (error) throw new Error(`Supabase v_web_products: ${error.message}`);
+  return data ?? [];
+}
+
+export async function getWebColors(): Promise<WebColor[]> {
+  const { data, error } = await supabase
+    .from('v_web_colors')
+    .select('*')
+    .order('sort_order', { ascending: true });
+  if (error) throw new Error(`Supabase v_web_colors: ${error.message}`);
   return data ?? [];
 }
 

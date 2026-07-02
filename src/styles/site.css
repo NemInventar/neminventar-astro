@@ -333,6 +333,16 @@ footer a:hover{color:var(--ink)}
 .thumb img{width:84px;height:64px;object-fit:cover;display:block}
 .thumb:hover{border-color:var(--warm-soft);transform:translateY(-2px)}
 .thumb.active{border-color:var(--warm);box-shadow:0 0 0 1px var(--warm)}
+.swatches{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.swatch{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 14px 7px 8px;border:1px solid var(--line);border-radius:999px;
+  background:none;cursor:pointer;font:inherit;font-size:13px;font-weight:500;color:var(--muted);
+  transition:border-color .2s,color .2s,box-shadow .2s;
+}
+.swatch .sw-dot{width:18px;height:18px;border-radius:50%;border:1px solid rgba(23,20,14,.18)}
+.swatch:hover{border-color:var(--warm-soft);color:var(--ink)}
+.swatch.active{border-color:var(--warm);color:var(--ink);box-shadow:0 0 0 1px var(--warm)}
 .detail-body h1{font-size:clamp(30px,3.6vw,46px);margin:14px 0 0}
 .detail-body .lead{font-size:18px;color:var(--muted);margin-top:18px;line-height:1.7}
 .prose{margin-top:26px}

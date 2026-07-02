@@ -1,6 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { getWebProducts, categoryLabel, type WebProduct } from '../../lib/supabase';
+import { getWebProducts, getWebColors, categoryLabel, type WebProduct } from '../../lib/supabase';
 import { cdn } from '../../lib/img';
 
 export async function getStaticPaths() {
@@ -15,6 +15,16 @@ const paragraphs = (product.story ?? product.short_description ?? '').split('\n\
 const gallery = product.images ?? (product.primary_image ? [product.primary_image] : []);
 const hero = product.primary_image ?? gallery[0];
 const base = import.meta.env.BASE_URL;
+
+// Farvevarianter: kun aktiv når produktet har color_order OG billeder tagget med palette-slugs.
+const palette = product.color_order?.length ? await getWebColors() : [];
+const colorGroups = (product.color_order ?? [])
+  .map((slug) => {
+    const color = palette.find((c) => c.slug === slug);
+    const imgs = (product.images_meta ?? []).filter((m) => m.color === slug).map((m) => m.url);
+    return color && imgs.length ? { ...color, image: imgs[0] } : null;
+  })
+  .filter((g): g is NonNullable<typeof g> => g !== null);
 ---
 <Base title={product.seo_title} description={product.seo_description} image={hero}>
   <section class="detail"><div class="wrap">
@@ -22,6 +32,15 @@ const base = import.meta.env.BASE_URL;
     <div class="detail-grid">
       <div class="gallery">
         {hero && <div class="main"><img id="main-img" src={cdn(hero, 1000)} alt={product.name} /></div>}
+        {colorGroups.length > 1 && (
+          <div class="swatches" role="group" aria-label="Vælg farve">
+            {colorGroups.map((g) => (
+              <button class="swatch" data-src={cdn(g.image, 1000)} aria-label={`Vis farven ${g.label}`}>
+                <span class="sw-dot" style={`background:${g.swatch_hex}`}></span>{g.label}
+              </button>
+            ))}
+          </div>
+        )}
         {gallery.length > 1 && (
           <div class="thumbs">
             {gallery.map((src, i) => (
@@ -54,13 +73,12 @@ const base = import.meta.env.BASE_URL;
 
   <script>
     const main = document.getElementById('main-img') as HTMLImageElement | null;
-    const thumbs = document.querySelectorAll<HTMLButtonElement>('.thumb');
-    thumbs.forEach((btn) => {
+    const pickers = document.querySelectorAll<HTMLButtonElement>('.thumb, .swatch');
+    pickers.forEach((btn) => {
       btn.addEventListener('click', () => {
         const src = btn.dataset.src;
         if (main && src) main.src = src;
-        thumbs.forEach((b) => b.classList.remove('active'));
-        btn.classList.add('active');
+        pickers.forEach((b) => b.classList.toggle('active', b.dataset.src === src));
       });
     });
   </script>
