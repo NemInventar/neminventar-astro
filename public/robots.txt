@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /korpus-plan-7fd3a9/
 
 Sitemap: https://neminventar.dk/sitemap-index.xml

@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="color-scheme" content="light dark">
+<title>Korpus SH.P.K — Produktionsanlæg Ferizaj</title>
+
+<style>
+:root{
+  --ink:#141a20; --ink-2:#3d4a55; --ink-3:#6a7783;
+  --ground:#e7eae7; --sheet:#f8f9f7; --rule:#c9d0cd; --rule-2:#dde2df;
+  --rack:#2c517e; --mark:#c85a25;
+  --ok:#3f6b4a; --warn:#8a6a1c; --stop:#9c3a30;
+  --ok-bg:#dfe9e0; --warn-bg:#f0e6cc; --stop-bg:#f0dcd9;
+  --z-lager:#dccfb2; --z-maskin:#c2d1e2; --z-overflade:#e4c8b4;
+  --z-montage:#c8d6d3; --z-service:#dfe2de; --z-mezz:#c99f2e;
+  --f-disp:Bahnschrift,"DIN Alternate","DIN Condensed","Franklin Gothic Medium","Arial Narrow",sans-serif;
+  --f-body:"Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  --f-data:"Cascadia Mono",Consolas,"SF Mono",ui-monospace,"Roboto Mono",monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --ink:#dfe4e2; --ink-2:#9fada9; --ink-3:#75837f;
+  --ground:#181c1d; --sheet:#212627; --rule:#39413f; --rule-2:#2c3232;
+  --rack:#7ba4d4; --mark:#e0834c; --ok:#8fc09a; --warn:#d9b45e; --stop:#e08a7e;
+  --ok-bg:#26362a; --warn-bg:#3b3320; --stop-bg:#3d2723;
+  --z-lager:#4c452f; --z-maskin:#2c3f56; --z-overflade:#553b2c;
+  --z-montage:#2e403d; --z-service:#2b3130; --z-mezz:#9c7a1e;}}
+:root[data-theme="dark"]{
+  --ink:#dfe4e2; --ink-2:#9fada9; --ink-3:#75837f;
+  --ground:#181c1d; --sheet:#212627; --rule:#39413f; --rule-2:#2c3232;
+  --rack:#7ba4d4; --mark:#e0834c; --ok:#8fc09a; --warn:#d9b45e; --stop:#e08a7e;
+  --ok-bg:#26362a; --warn-bg:#3b3320; --stop-bg:#3d2723;
+  --z-lager:#4c452f; --z-maskin:#2c3f56; --z-overflade:#553b2c;
+  --z-montage:#2e403d; --z-service:#2b3130; --z-mezz:#9c7a1e;}
+:root[data-theme="light"]{
+  --ink:#141a20; --ink-2:#3d4a55; --ink-3:#6a7783;
+  --ground:#e7eae7; --sheet:#f8f9f7; --rule:#c9d0cd; --rule-2:#dde2df;
+  --rack:#2c517e; --mark:#c85a25; --ok:#3f6b4a; --warn:#8a6a1c; --stop:#9c3a30;
+  --ok-bg:#dfe9e0; --warn-bg:#f0e6cc; --stop-bg:#f0dcd9;
+  --z-lager:#dccfb2; --z-maskin:#c2d1e2; --z-overflade:#e4c8b4;
+  --z-montage:#c8d6d3; --z-service:#dfe2de; --z-mezz:#c99f2e;}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font:400 16px/1.6 var(--f-body);-webkit-font-smoothing:antialiased}
+.sheet{max-width:1280px;margin:0 auto;padding:28px 20px 96px}
+h2{font:600 1.05rem/1.2 var(--f-disp);letter-spacing:.09em;text-transform:uppercase;margin:0}
+h3{font:600 .95rem/1.3 var(--f-disp);letter-spacing:.05em;margin:0}
+p{margin:0;max-width:70ch}
+.mono{font-family:var(--f-data);font-variant-numeric:tabular-nums}
+.dim{color:var(--ink-2)}
+.sm{font-size:.86rem;line-height:1.55}
+
+.titleblock{border:1.5px solid var(--ink);background:var(--sheet);margin-bottom:0}
+.tb-top{display:flex;flex-wrap:wrap;align-items:flex-end;gap:18px;padding:16px 20px;border-bottom:1.5px solid var(--ink)}
+.tb-top h1{font:600 clamp(1.5rem,3.4vw,2.05rem)/1.05 var(--f-disp);margin:0;text-wrap:balance;flex:1 1 320px}
+.tb-top .eyebrow{display:block;font:600 .68rem/1 var(--f-disp);letter-spacing:.2em;text-transform:uppercase;color:var(--mark);margin-bottom:7px}
+.tb-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(146px,1fr))}
+.tb-cell{padding:10px 16px;border-right:1px solid var(--rule)}
+.tb-cell:last-child{border-right:none}
+.tb-cell dt{font:600 .6rem/1 var(--f-disp);letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px}
+.tb-cell dd{margin:0;font-family:var(--f-data);font-size:.9rem;font-variant-numeric:tabular-nums}
+
+section{margin-top:46px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:14px;border-bottom:1.5px solid var(--ink);padding-bottom:8px;flex-wrap:wrap}
+.sec-num{font:600 .72rem/1 var(--f-disp);letter-spacing:.14em;color:var(--mark);font-variant-numeric:tabular-nums}
+.sec-head p{font-size:.84rem;color:var(--ink-3);margin-left:auto;text-align:right}
+
+.seg{display:inline-flex;border:1px solid var(--rule);background:var(--sheet);overflow:hidden;flex:0 0 auto}
+.seg button{appearance:none;border:0;background:transparent;color:var(--ink-2);cursor:pointer;
+  font:600 .72rem/1 var(--f-disp);letter-spacing:.11em;text-transform:uppercase;padding:9px 15px;
+  border-right:1px solid var(--rule);transition:background .15s,color .15s}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--rack);color:#fff}
+.seg button:focus-visible{outline:2px solid var(--mark);outline-offset:-2px}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.hint{font-size:.78rem;color:var(--ink-3)}
+
+.tabs{display:flex;border:1.5px solid var(--ink);border-top:none;background:var(--sheet);overflow-x:auto}
+.tabs button{appearance:none;background:transparent;border:0;border-right:1px solid var(--rule);
+  color:var(--ink-3);cursor:pointer;padding:13px 22px;white-space:nowrap;
+  font:600 .76rem/1 var(--f-disp);letter-spacing:.13em;text-transform:uppercase;
+  border-bottom:3px solid transparent;transition:color .15s,border-color .15s,background .15s}
+.tabs button:last-child{border-right:0}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--mark);background:var(--ground)}
+.tabs button:hover{color:var(--ink)}
+.tabs button:focus-visible{outline:2px solid var(--mark);outline-offset:-3px}
+.tabpanel[hidden]{display:none}
+
+.planwrap,.orgwrap{display:grid;grid-template-columns:minmax(0,1fr) 292px;gap:16px;align-items:start}
+@media(max-width:940px){.planwrap,.orgwrap{grid-template-columns:1fr}}
+.canvas{background:var(--sheet);border:1.5px solid var(--ink);padding:14px;overflow-x:auto}
+svg.plan{display:block;width:100%;min-width:820px;height:auto}
+.deco{pointer-events:none}
+.zone{cursor:pointer;transition:opacity .18s}
+.zone rect{stroke:var(--ink);stroke-width:.055;transition:filter .15s}
+.zone rect.fill,.zone rect.tab{pointer-events:all}
+.zone rect.ghost{pointer-events:none}
+.zone:hover rect.fill,.zone:hover rect.tab{filter:brightness(1.07)}
+.zone.sel rect.fill,.zone.sel rect.tab{stroke-width:.22;stroke:var(--mark)}
+.zone:focus{outline:none}
+.zone:focus-visible rect.fill,.zone:focus-visible rect.tab{stroke:var(--mark);stroke-width:.28}
+text{pointer-events:none;font-family:var(--f-disp);fill:var(--ink)}
+.t-code{font-size:.5px;font-weight:600;fill:var(--ink-3)}
+.t-name{font-size:.72px;font-weight:600;text-anchor:middle}
+.t-area{font-size:.55px;text-anchor:middle;fill:var(--ink-2);font-family:var(--f-data)}
+.t-hall{font-size:1px;font-weight:600;letter-spacing:.09px}
+.t-sub{font-size:.58px;fill:var(--ink-3);font-family:var(--f-body)}
+.t-dim{font-size:.6px;fill:var(--ink-3);text-anchor:middle;font-family:var(--f-data)}
+
+.panel{background:var(--sheet);border:1.5px solid var(--ink);position:sticky;top:14px}
+.panel-hd{padding:12px 15px;border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:9px}
+.panel-hd .code{font:600 .68rem/1 var(--f-disp);letter-spacing:.13em;color:#fff;background:var(--rack);padding:4px 7px}
+.panel-bd{padding:14px 15px;display:flex;flex-direction:column;gap:12px}
+.metrics{display:flex;gap:16px;flex-wrap:wrap;margin:0}
+.metric dt{font:600 .58rem/1 var(--f-disp);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.metric dd{margin:0;font:600 1.15rem/1 var(--f-data);font-variant-numeric:tabular-nums}
+.panel h4{font:600 .6rem/1 var(--f-disp);letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3);margin:0 0 5px}
+.panel ul{margin:0;padding-left:16px;font-size:.85rem;line-height:1.55}
+.panel li{margin:3px 0}
+.flag{border-left:2.5px solid var(--mark);padding:7px 0 7px 11px;font-size:.83rem;line-height:1.5;color:var(--ink-2)}
+
+.legend{display:flex;flex-wrap:wrap;gap:7px 14px;margin-top:12px;padding-top:11px;border-top:1px solid var(--rule-2)}
+.lg{display:inline-flex;align-items:center;gap:6px;font:600 .66rem/1 var(--f-disp);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.lg i{width:14px;height:14px;border:1px solid var(--ink);display:block}
+
+.tablewrap{overflow-x:auto;background:var(--sheet);border:1.5px solid var(--ink)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:.88rem}
+caption{text-align:left;padding:11px 14px;border-bottom:1px solid var(--rule);font:600 .68rem/1.4 var(--f-disp);letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+th{font:600 .62rem/1.3 var(--f-disp);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);text-align:left;padding:9px 14px;border-bottom:1px solid var(--rule);white-space:nowrap;vertical-align:bottom}
+td{padding:8px 14px;border-bottom:1px solid var(--rule-2);vertical-align:top}
+tbody tr:last-child td{border-bottom:none}
+td.n,th.n{text-align:right;font-family:var(--f-data);font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.total td{font-weight:700;border-top:1.5px solid var(--ink);background:var(--ground)}
+tr.sub td{border-top:1px solid var(--rule);background:var(--ground);font-weight:600}
+td .code{font-family:var(--f-data);font-size:.8rem;color:var(--ink-3)}
+
+.chip{display:inline-block;font:600 .6rem/1 var(--f-disp);letter-spacing:.1em;text-transform:uppercase;padding:4px 7px;white-space:nowrap;border:1px solid transparent}
+.chip.ok{background:var(--ok-bg);color:var(--ok);border-color:var(--ok)}
+.chip.warn{background:var(--warn-bg);color:var(--warn);border-color:var(--warn)}
+.chip.stop{background:var(--stop-bg);color:var(--stop);border-color:var(--stop)}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(232px,1fr));gap:12px}
+.card{background:var(--sheet);border:1px solid var(--rule);padding:14px 15px;display:flex;flex-direction:column;gap:7px}
+.card .k{font:600 .6rem/1.3 var(--f-disp);letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3)}
+.card .v{font:600 1.5rem/1 var(--f-data);font-variant-numeric:tabular-nums}
+.card .n{font-size:.8rem;line-height:1.45;color:var(--ink-2)}
+.card.hi{border:1.5px solid var(--mark)}
+.card.hi .v{color:var(--mark)}
+
+.qlist{list-style:none;margin:0;padding:0;background:var(--sheet);border:1.5px solid var(--ink)}
+.qlist li{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:12px;padding:12px 15px;border-bottom:1px solid var(--rule-2);align-items:start}
+.qlist li:last-child{border-bottom:none}
+.qlist .q-n{font:600 .78rem/1.5 var(--f-data);color:var(--mark)}
+.qlist .q-t{font-size:.9rem;line-height:1.5}
+.qlist .q-t span{display:block;color:var(--ink-3);font-size:.8rem;margin-top:2px}
+
+.rev{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:10px 16px;background:var(--sheet);border:1.5px solid var(--ink);padding:14px 16px;font-size:.86rem}
+.rev .r-id{font:600 .72rem/1.6 var(--f-disp);letter-spacing:.12em;color:var(--mark)}
+.rev .r-dt{font-family:var(--f-data);font-size:.8rem;color:var(--ink-3);line-height:1.6}
+
+.org{background:var(--sheet);border:1.5px solid var(--ink);padding:22px 18px 24px}
+.tier{display:flex;flex-direction:column;align-items:center}
+.tier-lbl{font:600 .6rem/1 var(--f-disp);letter-spacing:.17em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px}
+.stem{width:0;border-left:2px solid var(--rule);height:22px}
+.row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;width:100%}
+.spine{display:grid;grid-template-columns:minmax(0,1fr) 0 minmax(0,1fr);align-items:center;width:100%;position:relative}
+.spine::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:2px solid var(--rule);transform:translateX(-1px)}
+.branch{position:relative;padding:14px 0;display:flex;flex-direction:column;gap:8px}
+.branch.left{align-items:flex-end;padding-right:30px}
+.branch.right{align-items:flex-start;padding-left:30px}
+.branch::after{content:"";position:absolute;top:50%;width:30px;border-top:2px solid var(--rule)}
+.branch.left::after{right:0}
+.branch.right::after{left:0}
+.branch .row{justify-content:inherit;width:auto}
+.branch-lbl{font:600 .58rem/1.3 var(--f-disp);letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3)}
+.branch.left .branch-lbl{text-align:right}
+@media(max-width:760px){
+  .spine{grid-template-columns:1fr}.spine::before{display:none}
+  .branch{align-items:center!important;padding:10px 0!important}
+  .branch::after{display:none}
+  .branch.left .branch-lbl{text-align:center}
+  .branch .row{justify-content:center;width:100%}}
+.org-note{font-size:.78rem;line-height:1.5;color:var(--ink-3);text-align:center;max-width:56ch;margin-top:8px}
+.node{appearance:none;text-align:left;cursor:pointer;background:var(--ground);border:1.5px solid var(--rule);
+  padding:10px 12px;min-width:152px;flex:0 1 172px;display:flex;flex-direction:column;gap:5px;
+  color:var(--ink);font-family:var(--f-body);transition:border-color .15s,transform .15s,background .15s}
+.node:hover{border-color:var(--rack);transform:translateY(-1px)}
+.node[aria-pressed="true"]{border-color:var(--mark);border-width:2px;background:var(--sheet)}
+.node:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
+.node.vacant{border-style:dashed}
+.node .n-code{font:600 .58rem/1 var(--f-data);color:var(--ink-3)}
+.node .n-title{font:600 .88rem/1.25 var(--f-disp)}
+.node .n-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.node .n-who{font-size:.74rem;color:var(--ink-3)}
+.node.boss{flex:0 0 auto;min-width:212px;border-color:var(--ink);border-width:2px;background:var(--sheet)}
+.node.boss .n-title{font-size:1.05rem}
+.node.line{flex:0 0 auto;min-width:196px;border-color:var(--rack);border-width:2px;background:var(--sheet)}
+.node.line .n-title{font-size:.96rem}
+.node.hand{min-width:112px;flex:0 1 124px;padding:8px 10px}
+.node.hand .n-title{font-size:.78rem}
+.floor{border:1.5px dashed var(--rule);padding:14px 12px 13px;width:100%;display:flex;flex-direction:column;gap:11px;align-items:center}
+.floor-hd{font:600 .6rem/1.3 var(--f-disp);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);text-align:center}
+
+.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));background:var(--sheet);border:1.5px solid var(--ink)}
+.step{padding:15px 17px;border-right:1px solid var(--rule);display:flex;flex-direction:column;gap:7px}
+.step:last-child{border-right:none}
+@media(max-width:860px){.step{border-right:none;border-bottom:1px solid var(--rule)}.step:last-child{border-bottom:none}}
+.step .s-n{font:600 .68rem/1 var(--f-disp);letter-spacing:.14em;color:var(--mark)}
+.step .s-t{font:600 .92rem/1.3 var(--f-disp)}
+.step .s-d{font-size:.81rem;line-height:1.5;color:var(--ink-2)}
+.step .s-w{font:600 .58rem/1.3 var(--f-disp);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-top:auto;padding-top:6px}
+
+footer{margin-top:52px;padding-top:14px;border-top:1.5px solid var(--ink);color:var(--ink-3);font-size:.78rem;line-height:1.55;display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+
+<div class="sheet">
+
+<div class="titleblock">
+  <div class="tb-top">
+    <h1><span class="eyebrow" id="x-eyebrow"></span><span id="x-h1"></span></h1>
+    <div class="seg" role="group" aria-label="Language">
+      <button type="button" id="lang-da" aria-pressed="true">Dansk</button>
+      <button type="button" id="lang-en" aria-pressed="false">English</button>
+    </div>
+  </div>
+  <dl class="tb-grid" id="tbGrid"></dl>
+</div>
+
+<div class="tabs" role="tablist">
+  <button type="button" role="tab" id="tab-b-plan" aria-controls="tab-plan" aria-selected="true"></button>
+  <button type="button" role="tab" id="tab-b-org" aria-controls="tab-org" aria-selected="false"></button>
+</div>
+
+<!-- ═══════ FANE 1 · INDRETNING ═══════ -->
+<div class="tabpanel" id="tab-plan" role="tabpanel" aria-labelledby="tab-b-plan">
+
+<div class="cards" id="planCards" style="margin-top:34px"></div>
+
+<section>
+  <div class="sec-head"><span class="sec-num">01</span><h2 id="x-s01"></h2><p id="x-s01p"></p></div>
+  <div class="toolbar"><span class="hint" id="planNote"></span></div>
+  <div class="planwrap">
+    <div class="canvas">
+      <svg class="plan" id="plan" viewBox="-1.5 -4.2 75 29.6" role="img" aria-label="Factory floor plan"></svg>
+      <div class="legend" id="legendBox"></div>
+    </div>
+    <aside class="panel" aria-live="polite">
+      <div class="panel-hd"><span class="code" id="pCode">—</span><h3 id="pName"></h3></div>
+      <div class="panel-bd">
+        <dl class="metrics">
+          <div class="metric"><dt id="x-area"></dt><dd id="pArea">—</dd></div>
+          <div class="metric"><dt id="x-dims"></dt><dd id="pDim">—</dd></div>
+        </dl>
+        <div><h4 id="x-contents"></h4><ul id="pItems"></ul></div>
+        <div id="pFlagWrap" hidden><div class="flag" id="pFlag"></div></div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="sec-num">02</span><h2 id="x-s02"></h2></div>
+  <div class="tablewrap"><table>
+    <caption id="x-c02"></caption>
+    <thead><tr><th id="x-h-code"></th><th id="x-h-zone"></th><th class="n">m²</th><th id="x-h-why"></th></tr></thead>
+    <tbody id="areaBody"></tbody>
+  </table></div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="sec-num">03</span><h2 id="x-s03"></h2><p id="x-s03p"></p></div>
+  <div class="tablewrap"><table>
+    <caption id="x-c03"></caption>
+    <thead><tr><th id="x-h-mach"></th><th class="n" id="x-h-m1"></th><th class="n" id="x-h-m2"></th>
+      <th id="x-h-zone2"></th><th id="x-h-status"></th></tr></thead>
+    <tbody id="machBody"></tbody>
+  </table></div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="sec-num">04</span><h2 id="x-s04"></h2><p id="x-s04p"></p></div>
+  <div class="tablewrap"><table>
+    <caption id="x-c04"></caption>
+    <thead><tr><th class="n" id="x-h-phase"></th><th id="x-h-what"></th><th id="x-h-why2"></th></tr></thead>
+    <tbody id="phaseBody"></tbody>
+  </table></div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="sec-num">05</span><h2 id="x-s05"></h2><p id="x-s05p"></p></div>
+  <ol class="qlist" id="qBody"></ol>
+</section>
+</div>
+
+<!-- ═══════ FANE 2 · ORGANISATION ═══════ -->
+<div class="tabpanel" id="tab-org" role="tabpanel" aria-labelledby="tab-b-org" hidden>
+
+<div class="cards" id="orgCards" style="margin-top:34px"></div>
+
+<section>
+  <div class="sec-head"><span class="sec-num">06</span><h2 id="x-s06"></h2><p id="x-s06p"></p></div>
+  <div class="orgwrap">
+    <div class="org"><div class="tier">
+      <span class="tier-lbl" id="x-t-mgmt"></span>
+      <div class="row" id="orgBoss"></div>
+      <div class="stem"></div>
+      <div class="spine">
+        <div class="branch left"><span class="branch-lbl" id="x-t-staff"></span><div class="row" id="orgStaff"></div></div>
+        <div></div>
+        <div class="branch right"><span class="branch-lbl" id="x-t-sys"></span><div class="row" id="orgSys"></div></div>
+      </div>
+      <span class="tier-lbl" style="margin-top:4px" id="x-t-line"></span>
+      <div class="row" id="orgLine"></div>
+      <div class="stem"></div>
+      <div class="floor"><span class="floor-hd" id="x-t-floor"></span><div class="row" id="orgHands"></div></div>
+      <p class="org-note" id="x-orgnote"></p>
+    </div></div>
+    <aside class="panel" aria-live="polite">
+      <div class="panel-hd"><span class="code" id="oCode">—</span><h3 id="oName"></h3></div>
+      <div class="panel-bd">
+        <dl class="metrics">
+          <div class="metric"><dt id="x-count"></dt><dd id="oCount">—</dd></div>
+          <div class="metric"><dt id="x-status"></dt><dd id="oStatus" style="font-size:.9rem">—</dd></div>
+        </dl>
+        <div><h4 id="x-duties"></h4><ul id="oDuties"></ul></div>
+        <div id="oLinkWrap" hidden><h4 id="x-talks"></h4><ul id="oLinks"></ul></div>
+        <div id="oFlagWrap" hidden><div class="flag" id="oFlag"></div></div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="sec-num">07</span><h2 id="x-s07"></h2><p id="x-s07p"></p></div>
+  <div class="flow" id="flowBody"></div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="sec-num">08</span><h2 id="x-s08"></h2><p id="x-s08p"></p></div>
+  <div class="tablewrap"><table>
+    <caption id="x-c08"></caption>
+    <thead><tr><th id="x-h-between"></th><th id="x-h-about"></th><th id="x-h-when"></th><th id="x-h-out"></th></tr></thead>
+    <tbody id="relBody"></tbody>
+  </table></div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="sec-num">09</span><h2 id="x-s09"></h2><p id="x-s09p"></p></div>
+  <div class="tablewrap"><table>
+    <caption id="x-c09"></caption>
+    <thead><tr><th id="x-h-when2"></th><th id="x-h-role"></th><th class="n" id="x-h-num"></th>
+      <th class="n" id="x-h-tot"></th><th id="x-h-why3"></th></tr></thead>
+    <tbody id="hireBody"></tbody>
+  </table></div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="sec-num">10</span><h2 id="x-s10"></h2><p id="x-s10p"></p></div>
+  <p class="sm dim" style="margin-bottom:16px" id="x-hrsintro"></p>
+  <div class="cards" id="hourCards" style="margin-bottom:20px"></div>
+
+  <div class="tablewrap" style="margin-bottom:18px"><table>
+    <caption id="x-c10a"></caption>
+    <thead><tr><th id="x-h-area"></th><th class="n" id="x-h-fte"></th><th class="n" id="x-h-att"></th>
+      <th class="n" id="x-h-d70"></th><th class="n" id="x-h-d80"></th><th id="x-h-zone3"></th></tr></thead>
+    <tbody id="hoursBody"></tbody>
+  </table></div>
+
+  <div class="tablewrap" style="margin-bottom:18px"><table>
+    <caption id="x-c10b"></caption>
+    <thead><tr><th id="x-h-month"></th><th class="n" id="x-h-hands"></th><th class="n" id="x-h-ind"></th>
+      <th class="n" id="x-h-att2"></th><th class="n" id="x-h-util"></th><th class="n" id="x-h-dir"></th>
+      <th id="x-h-driver"></th></tr></thead>
+    <tbody id="rampBody"></tbody>
+  </table></div>
+
+  <div class="tablewrap"><table>
+    <caption id="x-c10c"></caption>
+    <thead><tr><th id="x-h-assume"></th><th class="n" id="x-h-val"></th><th id="x-h-basis"></th></tr></thead>
+    <tbody id="assumeBody"></tbody>
+  </table></div>
+
+  <div class="flag" style="margin-top:18px" id="x-hrsflag"></div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="sec-num">11</span><h2 id="x-s11"></h2><p id="x-s11p"></p></div>
+  <ol class="qlist" id="oqBody"></ol>
+</section>
+</div>
+
+<section>
+  <div class="sec-head"><span class="sec-num">12</span><h2 id="x-s12"></h2></div>
+  <div class="rev" id="revBody"></div>
+</section>
+
+<footer><span id="x-f1"></span><span id="x-f3" style="color:var(--mark)"></span><span id="x-f2"></span></footer>
+</div>
+
+<script>
+/* ═══════════ SPROG ═══════════ */
+let LANG="da";
+const t=v=>Array.isArray(v)?(LANG==="en"?v[1]:v[0]):v;
+
+const UI={
+ eyebrow:["Korpus SH.P.K · Ferizaj, Kosovo","Korpus SH.P.K · Ferizaj, Kosovo"],
+ h1:["Produktionsanlæg — indretning og organisation","Production facility — layout and organisation"],
+ tab1:["Indretning","Layout"], tab2:["Organisation","Organisation"],
+ s01:["Planen","The plan"], s01p:["Klik en zone for detaljer","Click a zone for details"],
+ s02:["Arealskema","Area schedule"], c02:["Zoner, areal og begrundelse","Zones, area and reasoning"],
+ s03:["Maskinskema","Machine schedule"],
+ s03p:["Alle mål er standardmål indtil listen bekræftes","All dimensions are standard until the list is confirmed"],
+ c03:["Fodaftryk — maskinen selv mod hvad den reelt optager","Footprint — the machine itself against what it really occupies"],
+ s04:["Faseplan","Phase plan"], s04p:["Rækkefølgen giver mest kapacitet pr. euro","This order buys the most capacity per euro"],
+ c04:["Anskaffelse — fase 1 og 2 henter ca. 70 % af produktionen hjem","Acquisition — phases 1 and 2 bring roughly 70 % of production in-house"],
+ s05:["Det jeg mangler for at skærpe planen","What I need to sharpen the plan"],
+ s05p:["Svar ét ad gangen — jeg opdaterer siden","Answer one at a time — I update the page"],
+ s06:["Organisationen","The organisation"], s06p:["Klik en rolle for ansvar og snitflader","Click a role for duties and interfaces"],
+ s07:["Snitfladen mod Danmark","The interface with Denmark"],
+ s07p:["Sådan bliver en ordre til en bemandet produktion","How an order becomes a staffed production run"],
+ s08:["Hvem taler med hvem","Who talks to whom"],
+ s08p:["Opdateres efterhånden som vi bliver klogere","Updated as we learn more"],
+ c08:["Faste snitflader — hvad de handler om og hvad de producerer","Standing interfaces — what they cover and what they produce"],
+ s09:["Bemandingsplan","Hiring plan"], s09p:["Læst af tavlen 01-08-2026 — bekræft","Read off the whiteboard 01-08-2026 — please confirm"],
+ c09:["Ansættelsesrækkefølge frem mod 14 mand","Hiring sequence towards 14 people"],
+ s10:["Produktionstimer","Production hours"],
+ s10p:["Hvad organisationen omsætter til timer på emnerne","What the organisation converts into hours on the parts"],
+ hrsintro:["Kun hænderne leverer <b>direkte produktionstimer</b> — timer der lander på et emne. 3D, indkøb, ledelse, sikkerhed og system er <b>indirekte</b>: de skaber forudsætningen, men producerer ikke. Forskellen er hele pointen, for det er kun den direkte kolonne der kan sælges videre.",
+   "Only the hands deliver <b>direct production hours</b> — hours that land on a part. Drawing, purchasing, management, safety and systems are <b>indirect</b>: they create the conditions but do not produce. That distinction is the whole point, because only the direct column can be sold on."],
+ c10a:["Timer pr. område ved fuld bemanding — 8 hænder, 5 indirekte. Dobbeltroller er fordelt på de stationer de reelt arbejder på","Hours per area at full manning — 8 hands, 5 indirect. Dual roles are split across the stations they actually work on"],
+ c10b:["Optrapning — direkte produktionstimer måned for måned","Ramp-up — direct production hours month by month"],
+ c10c:["Forudsætninger — ret dem, så regner jeg om","Assumptions — correct them and I will recalculate"],
+ hrsflag:["Timerne her er regnet ud fra bemandingen — de er IKKE en aflæsning af tavlens 80 / 100 / 140 / 160. Bemærk også: vi registrerer i dag ingen timer på hverken tilbud eller produktion, kun leveringstid i dage. Derfor kan kapaciteten endnu ikke omsættes til antal projekter.",
+   "These hours are derived from manning — they are NOT a reading of the whiteboard's 80 / 100 / 140 / 160. Note also: we currently record no hours on either quotes or production, only lead time in days. So capacity cannot yet be converted into a number of projects."],
+ s11:["Det jeg mangler om organisationen","What I need about the organisation"],
+ s11p:["Svar ét ad gangen — jeg opdaterer siden","Answer one at a time — I update the page"],
+ s12:["Revisioner","Revisions"],
+ planNote:["Begge haller. Hal A er tør og støvet · hal B er ren og våd · emner krydser præcis én gang gennem døren i skillevæggen.",
+   "Both halls. Hall A is dry and dusty · hall B is clean and wet · parts cross over exactly once, through the door in the partition wall."],
+ area:["Areal","Area"], dims:["Mål","Dimensions"], contents:["Indhold","Contents"],
+ count:["Antal","Headcount"], status:["Status","Status"], duties:["Ansvar","Duties"], talks:["Taler med","Talks to"],
+ pickZone:["Vælg en zone","Select a zone"], pickRole:["Vælg en rolle","Select a role"],
+ tMgmt:["Fabriksledelse","Factory management"], tStaff:["Stab","Staff"], tSys:["Egen gren","Own branch"],
+ tLine:["Linjen","The line"],
+ tFloor:["Gulvet — hænderne · bookes ind af produktionslederen (K-04)","The floor — the hands · scheduled by the production manager (K-04)"],
+ orgnote:["Alle fem — stab, egen gren og linjen — refererer direkte til Argjent. Rygraden viser produktionsvejen ned til gulvet, ikke et ekstra ledelseslag.",
+   "All five — staff, own branch and the line — report directly to Argjent. The spine shows the production path down to the floor, not an extra layer of management."],
+ hallA:["HAL A — TØR / STØV","HALL A — DRY / DUSTY"], hallB:["HAL B — REN / VÅD","HALL B — CLEAN / WET"],
+ hallAs:["Råvare → opskæring → kantlim → slibning · 748 m²","Raw stock → cutting → edgebanding → sanding · 748 m²"],
+ hallBs:["Bejdse → lak → tørring → montage → pakning → ud · 748 m²","Stain → lacquer → drying → assembly → packing → out · 748 m²"],
+ doorLbl:["DØR I SKILLEVÆG","DOOR IN PARTITION WALL"], portIn:["PORT IND","GOODS IN"], portOut:["PORT UD → LASTBIL","GOODS OUT → TRUCK"],
+ mezzSub:["180 m² · kontor · pause · omklædning · WC","180 m² · office · break · changing · WC"],
+ lgLager:["Lager","Storage"], lgMask:["Maskinbearbejdning","Machining"], lgOver:["Overflade","Finishing"],
+ lgMont:["Montage & pakning","Assembly & packing"], lgServ:["Gang & teknik","Aisle & services"],
+ lgMezz:["Mezzanin","Mezzanine"], lgFlow:["Flow & porte","Flow & doors"],
+ hCode:["Kode","Code"], hZone:["Zone","Zone"], hWhy:["Hvorfor lige der","Why there"],
+ hMach:["Maskine","Machine"], hM1:["Maskine","Machine"], hM2:["Reelt behov","Real footprint"], hStatus:["Status","Status"],
+ hPhase:["Fase","Phase"], hWhat:["Hvad","What"], hWhy2:["Hvorfor lige der","Why then"],
+ hBetween:["Mellem","Between"], hAbout:["Om hvad","About"], hWhen:["Hvornår","When"], hOut:["Resultat","Output"],
+ hWhen2:["Hvornår","When"], hRole:["Rolle","Role"], hNum:["Antal","No."], hTot:["I alt","Total"], hWhy3:["Hvorfor lige da","Why then"],
+ hArea:["Område","Area"], hFte:["Årsværk","FTE"], hAtt:["Tilstede t/md","Attended h/mo"],
+ hD70:["Direkte t/md ved 70 %","Direct h/mo at 70 %"], hD80:["Loft t/md ved 80 %","Ceiling h/mo at 80 %"],
+ hMonth:["Måned","Month"], hHands:["Hænder","Hands"], hInd:["Indirekte","Indirect"],
+ hUtil:["Udnyttelse","Utilisation"], hDir:["Direkte t/md","Direct h/mo"], hDriver:["Hvad flytter tallet","What moves the number"],
+ hAssume:["Forudsætning","Assumption"], hVal:["Værdi","Value"], hBasis:["Grundlag","Basis"],
+ f1:["Korpus SH.P.K · Xhafer Deva 17, Ferizaj 70000 · reg. 812434132","Korpus SH.P.K · Xhafer Deva 17, Ferizaj 70000 · reg. 812434132"],
+ f2:["Kan bruges som referenceplan i Blender — 1 tern = 1 m = 1 unit","Usable as a reference plan in Blender — 1 grid square = 1 m = 1 unit"],
+ f3:["Produktionsdokument — indeholder bevidst ingen priser eller beløb","Production document — deliberately contains no prices or monetary figures"],
+ tbLoc:["Lokale","Premises"], tbH:["Fri højde","Clear height"], tbA:["Areal","Area"],
+ tbS:["Målestok","Scale"], tbR:["Revision","Revision"], tbSt:["Status","Status"],
+ tbLocV:["2 × 34,0 × 22,0 m","2 × 34.0 × 22.0 m"], tbHV:["6,0 m","6.0 m"],
+ tbAV:["748 m² pr. hal","748 m² per hall"], tbSV:["1 tern = 1,0 m","1 square = 1.0 m"],
+ tbRV:["H · 02-08-2026","H · 02-08-2026"], tbStV:["Udkast","Draft"]
+};
+const S=k=>t(UI[k]);
+
+/* ═══════════ ZONEDATA ═══════════ */
+const GAP=38;
+const Z=[
+{c:"A1",n:["Massivtræ","Solid timber"],h:0,x:0,y:0,w:34,d:6,t:"maskin",
+ items:[["Konsolreol til 3,9 m fyrplanker","Cantilever rack for 3.9 m pine boards"],["Afretter 400 mm","Surface planer 400 mm"],["Tykkelseshøvl 600 mm","Thicknesser 600 mm"],["Båndsav 600 mm","Bandsaw 600 mm"],["Limpresse til bænkeplader","Glue press for bench tops"]],
+ why:["Langs hele 34 m-væggen — eneste sted 3,9 m planker har frit til- og fraløb","Along the full 34 m wall — the only place 3.9 m boards get clear infeed and outfeed"],
+ flag:["Uden denne zone skal bænkeplader købes færdiglimede udefra, og så er I afhængige af en andens leveringstid og kvalitet på en synlig overflade.","Without this zone, bench tops must be bought pre-glued, which leaves you dependent on someone else's lead time and quality on a visible surface."]},
+{c:"A2",n:["Logistikbane","Logistics lane"],h:0,x:0,y:6,w:34,d:4,t:"service",
+ items:[["4 m truckvej","4 m forklift lane"],["Palleplads ved port","Pallet drop at the door"],["Modtagekontrol","Goods-in inspection"]],
+ why:["Den eneste vej trucken kører i hal A — alt andet flyttes på vogne og el-stabler","The only route the forklift takes in hall A — everything else moves on trolleys and electric stackers"],
+ flag:["Uden en defineret truckbane spiser 3,5–4,2 m arbejdsgange hele hallen. Det er derfor din Blender-model føles fuld.","Without a defined forklift lane, 3.5–4.2 m working aisles eat the whole hall. That is why the Blender model already feels full."]},
+{c:"A3",n:["Råvarelager","Raw material store"],h:0,x:0,y:10,w:8,d:12,t:"lager",
+ items:[["Fladstak til plader 2440 × 1220","Flat stacks for 2440 × 1220 panels"],["A-frame til rejste plader","A-frame for upright panels"],["Konsolreol til lange emner","Cantilever rack for long stock"],["ATK-zone, markeret og adskilt","ATK zone, marked and segregated"]],
+ why:["Ved porten, med direkte adgang til opskæring uden at krydse noget","At the door, feeding straight into cutting without crossing anything"],
+ flag:["ATK-toldfritagne råvarer skal kunne spores og tælles ved kontrol. Bland dem aldrig med lokalt indkøbt materiale.","ATK duty-exempt materials must be traceable and countable at inspection. Never mix them with locally purchased stock."]},
+{c:"A4",n:["Opskæring + CNC","Cutting + CNC"],h:0,x:8,y:10,w:11,d:12,t:"maskin",
+ items:[["CNC-nesting, 11 × 7 m friplads","CNC nesting, 11 × 7 m clear space"],["Vertikal pladesav op ad væg","Vertical panel saw against the wall"],["Vakuumløfter","Vacuum lifter"],["Afskærsreol","Offcut rack"]],
+ why:["CNC frit i rummet med adgang hele vejen rundt — den er hjertet i flowet","CNC free-standing with access all round — it is the heart of the flow"],
+ flag:["Fase 1-investeringen. Erstatter pladesav, boring og fræsning i ét og åbner for CNC-perforering.","The phase 1 investment. Replaces panel saw, drilling and routing in one, and opens up CNC perforation."]},
+{c:"A5",n:["Kantlim + boring","Edgebanding + drilling"],h:0,x:19,y:10,w:8,d:12,t:"maskin",
+ items:[["Kantlimner, 1-sidet, 5,5 m","Edgebander, single-sided, 5.5 m"],["13 m samlet til- og fraløb","13 m total infeed and outfeed"],["Boreopstilling til beslag","Drilling setup for fittings"]],
+ why:["Direkte efter CNC — kanten skal på inden emnet håndteres videre","Straight after the CNC — the edge goes on before the part is handled further"],
+ flag:["Fase 2. Håndpåført kant er både flaskehalsen og den synlige kvalitetsfejl på lockers og skabe.","Phase 2. Hand-applied edging is both the bottleneck and the visible quality defect on lockers and cabinets."]},
+{c:"A6",n:["Slibning","Sanding"],h:0,x:27,y:10,w:7,d:12,t:"maskin",
+ items:[["Bredbåndssliber 1350 mm","Wide-belt sander 1350 mm"],["Nedsugsbord til håndslibning","Downdraft table for hand sanding"],["WIP-buffer før overflade","WIP buffer before finishing"]],
+ why:["Sidste tørre station — ligger op ad døren til hal B","The last dry station — sits right by the door to hall B"],flag:""},
+{c:"B1",n:["Færdigvarelager","Finished goods"],h:1,x:0,y:0,w:12,d:9,t:"lager",
+ items:[["Stabling til 2,8 m under mezzanin","Stacking to 2.8 m under the mezzanine"],["Projektopdelt opmærkning","Marked out by project"],["Port ud mod lastbil","Goods-out door to the truck"]],
+ why:["Sidste led før porten. Et helt projekt skal kunne stå og vente på det samlede læs","The last link before the door. A whole project must be able to wait for the combined load"],
+ flag:["Uden dette lager stables færdige varer i montagen — og så stopper montagen.","Without this store, finished goods stack up in assembly — and assembly stops."]},
+{c:"B2",n:["KS + pakning","QC + packing"],h:1,x:12,y:0,w:8,d:9,t:"montage",
+ items:[["Kvalitetskontrol mod tegning","Quality check against drawing"],["Emballering og hjørnebeskyttere","Packaging and corner protectors"],["Pakliste og mærkning","Packing list and labelling"]],
+ why:["Mellem montage og lager — intet forlader huset uden at passere her","Between assembly and store — nothing leaves the building without passing here"],flag:""},
+{c:"B3",n:["Montage","Assembly"],h:1,x:20,y:0,w:14,d:13,t:"montage",
+ items:[["5–6 stationer à 3 × 6 m","5–6 stations of 3 × 6 m"],["WIP-buffer for tørre emner","WIP buffer for dry parts"],["Beslagsstation","Fittings station"]],
+ why:["Det største søjlefri felt — montage har mest gulv og mindst maskine","The largest column-free bay — assembly needs the most floor and the least machinery"],flag:""},
+{c:"B4",n:["Logistikbane","Logistics lane"],h:1,x:0,y:9,w:20,d:4,t:"service",
+ items:[["Transportbane mellem overflade og montage","Transport lane between finishing and assembly"],["WIP-buffer for tørrede emner","WIP buffer for dried parts"]],
+ why:["Deler den våde sydside fra den rene nordside uden at flowet krydser sig selv","Separates the wet south side from the clean north side without the flow crossing itself"],flag:""},
+{c:"B5",n:["Bejdse","Staining"],h:1,x:0,y:13,w:7,d:9,t:"overflade",
+ items:[["Bejdsebord med udsug","Staining bench with extraction"],["Kulørprøver og blandeplads","Colour samples and mixing area"],["Reoler til våde emner","Racks for wet parts"]],
+ why:["Første station efter døren fra hal A","First station after the door from hall A"],flag:""},
+{c:"B6",n:["Lakrum","Lacquer room"],h:1,x:7,y:13,w:8,d:9,t:"overflade",
+ items:[["Sprøjtekabine til 3 m emner","Spray booth for 3 m parts"],["Isoleret skillevæg, eget luftskifte","Insulated partition, own air change"],["18–20 °C hele året","18–20 °C year round"],["Brandskab til opløsningsmidler","Fire cabinet for solvents"]],
+ why:["Her bruges skillevægstilladelsen. Lak hærder ikke koldt, og 72 m² kan holdes på 18–20 °C året rundt — det kan 750 m² ikke","This is where the partition permission is spent. Lacquer will not cure cold, and 72 m² can be held at 18–20 °C year round — 750 m² cannot"],
+ flag:["Løber overfladen tør for maling midt i en batch, skal hele partiet gøres om — og så er både tid og kvalitet tabt. Et fast, opvarmet lakrum med eget lager er det strukturelle svar på netop det.","If finishing runs out of paint mid-batch, the whole lot has to be redone — and both time and quality are lost. A permanent, heated lacquer room with its own stock is the structural answer to exactly that."]},
+{c:"B7",n:["Tørrezone","Drying area"],h:1,x:15,y:13,w:10,d:9,t:"overflade",
+ items:[["20–25 MOBILE tørrestativer","20–25 MOBILE drying racks"],["Fri luftcirkulation","Free air circulation"],["Buffer mod montagen","Buffer towards assembly"]],
+ why:["Direkte efter kabinen. Våde emner må håndteres én gang, ikke to","Directly after the booth. Wet parts may be handled once, not twice"],
+ flag:["Stativerne skal være på hjul. Statiske stativer betyder dobbelt håndtering af våde emner — den farligste håndtering i huset.","The racks must be on wheels. Static racks mean double handling of wet parts — the riskiest handling in the building."]},
+{c:"B8",n:["Teknik","Services"],h:1,x:25,y:13,w:6,d:9,t:"service",
+ items:[["Kompressor i lydisoleret rum","Compressor in a sound-insulated room"],["Eltavle","Distribution board"],["Varmecentral","Heating plant"],["Ringledning trykluft, udtag hver 6–8 m","Compressed air ring main, outlets every 6–8 m"]],
+ why:["Samlet i ét hjørne væk fra produktionen","Grouped in one corner away from production"],
+ flag:["Udsugningsfilter og spånsilo står UDENFOR bygningen — sparer gulv og er brandmæssigt rigtigt.","The extraction filter and chip silo stand OUTSIDE the building — saves floor and is the right fire strategy."]},
+{c:"B9",n:["Vækst","Growth"],h:1,x:31,y:13,w:3,d:9,t:"service",
+ items:[["Reserveret areal","Reserved area"]],
+ why:["Bevidst tomt. Der kommer altid noget","Deliberately empty. Something always turns up"],flag:""},
+{c:"M1",n:["Mezzanin i 3,0 m","Mezzanine at 3.0 m"],h:1,x:0,y:0,w:20,d:9,t:"mezz",
+ items:[["Kontor og mødelokale","Office and meeting room"],["Pauserum","Break room"],["Omklædning, bad og WC","Changing, shower and WC"],["Beslags- og emballagelager","Fittings and packaging store"],["Polstring af hynder","Cushion upholstery"]],
+ why:["6 m fri højde giver en ekstra etage over pakke- og lagerenden — 180 m² uden at tage gulv","6 m clear height gives a second floor over the packing and storage end — 180 m² without taking floor"],
+ flag:["Med begge haller er mezzaninen ikke nødvendig for at få plads — der er 452 m² luft i forvejen. Den er stadig værd at bygge, fordi personalefaciliteter på et dæk frigør gulv til produktion i stedet. Tages efter maskinerne, ikke før.",
+   "With both halls the mezzanine is not needed to make room — there is already 452 m² of slack. It is still worth building, because putting staff facilities on a deck frees floor for production instead. To be done after the machines, not before."]}
+];
+const FILL={lager:"var(--z-lager)",maskin:"var(--z-maskin)",overflade:"var(--z-overflade)",
+            montage:"var(--z-montage)",service:"var(--z-service)",mezz:"var(--z-mezz)"};
+
+/* ═══════════ PLAN ═══════════ */
+const NS="http://www.w3.org/2000/svg";
+const svg=document.getElementById("plan");
+const el=(tag,a)=>{const n=document.createElementNS(NS,tag);for(const k in a)n.setAttribute(k,a[k]);return n;};
+const tx=(c,x,y,s,e)=>{const n=el("text",Object.assign({class:c,x,y},e||{}));n.textContent=s;return n;};
+let selZone="A4";
+
+function buildPlan(){
+  svg.innerHTML="";
+  const defs=el("defs");
+  const g=el("pattern",{id:"grid",width:1,height:1,patternUnits:"userSpaceOnUse"});
+  g.appendChild(el("path",{d:"M1 0 L0 0 0 1",fill:"none",stroke:"currentColor","stroke-width":.022,opacity:.16}));
+  defs.appendChild(g);
+  const hp=el("pattern",{id:"hatch",width:1.1,height:1.1,patternUnits:"userSpaceOnUse",patternTransform:"rotate(45)"});
+  hp.appendChild(el("line",{x1:0,y1:0,x2:0,y2:1.1,stroke:"var(--z-mezz)","stroke-width":.26,opacity:.55}));
+  defs.appendChild(hp);
+  const m=el("marker",{id:"arw",markerWidth:6,markerHeight:6,refX:4.7,refY:2,orient:"auto"});
+  m.appendChild(el("path",{d:"M0,0 L5,2 L0,4 z",fill:"var(--mark)"}));
+  defs.appendChild(m); svg.appendChild(defs);
+
+  svg.appendChild(tx("t-hall",0,-2.5,S("hallA")));
+  svg.appendChild(tx("t-sub",0,-1.2,S("hallAs")));
+  svg.appendChild(tx("t-hall",GAP,-2.5,S("hallB")));
+  svg.appendChild(tx("t-sub",GAP,-1.2,S("hallBs")));
+
+  Z.forEach(z=>{
+    const ox=z.h?GAP:0, isM=z.t==="mezz";
+    const grp=el("g",{class:"zone","data-c":z.c,tabindex:0,role:"button"});
+    grp.setAttribute("aria-label",t(z.n)+", "+(z.w*z.d)+" m2");
+    grp.appendChild(el("rect",{class:isM?"ghost":"fill",x:ox+z.x,y:z.y,width:z.w,height:z.d,
+      fill:isM?"url(#hatch)":FILL[z.t],stroke:isM?"var(--z-mezz)":"var(--ink)",
+      "stroke-width":isM?.2:.055,"stroke-dasharray":isM?"0.8 0.4":"none"}));
+    const cx=ox+z.x+z.w/2, cy=z.y+z.d/2;
+    if(isM){
+      grp.appendChild(el("rect",{class:"tab",x:ox+z.x+2,y:z.y+.55,width:16,height:2.75,
+        fill:"var(--sheet)",stroke:"var(--z-mezz)","stroke-width":.14}));
+      grp.appendChild(tx("t-name",ox+z.x+10,z.y+1.75,"▲ "+t(z.n).toUpperCase(),{style:"fill:var(--z-mezz)"}));
+      grp.appendChild(tx("t-area",ox+z.x+10,z.y+2.8,S("mezzSub")));
+    }else{
+      grp.appendChild(tx("t-code",ox+z.x+.42,z.y+.95,z.c));
+      grp.appendChild(tx("t-name",cx,cy+(z.d>10?1.2:.15),t(z.n).toUpperCase()));
+      grp.appendChild(tx("t-area",cx,cy+(z.d>10?2.3:1.25),(z.w*z.d)+" m²  ·  "+z.w+"×"+z.d));
+    }
+    svg.appendChild(grp);
+  });
+
+  const deco=el("g",{class:"deco","pointer-events":"none"});
+  [0,GAP].forEach(ox=>{
+    deco.appendChild(el("rect",{x:ox,y:0,width:34,height:22,fill:"url(#grid)",stroke:"var(--ink)","stroke-width":.17,color:"var(--ink)"}));
+    deco.appendChild(tx("t-dim",ox+17,24.6,"34,0 m"));
+    deco.appendChild(el("path",{d:`M${ox} 23.4 H${ox+34}`,stroke:"var(--ink-3)","stroke-width":.05}));
+  });
+  deco.appendChild(tx("t-dim",GAP+35.8,11,"22,0 m",{transform:`rotate(90 ${GAP+35.8} 11)`}));
+  deco.appendChild(el("path",{d:`M${GAP+34.8} 0 V22`,stroke:"var(--ink-3)","stroke-width":.05}));
+  deco.appendChild(el("path",{d:"M36 0 V22",stroke:"var(--ink)","stroke-width":.3,"stroke-dasharray":"0.7 0.4",opacity:.55}));
+  deco.appendChild(el("path",{d:"M35.2 13 H36.8",stroke:"var(--mark)","stroke-width":.55,"stroke-linecap":"round"}));
+  deco.appendChild(el("path",{d:"M35.2 21 H36.8",stroke:"var(--mark)","stroke-width":.55,"stroke-linecap":"round"}));
+  deco.appendChild(tx("t-dim",36,-1.2,S("doorLbl")));
+  deco.appendChild(el("path",{d:"M-.17 11 V17",stroke:"var(--mark)","stroke-width":.5,"stroke-linecap":"round"}));
+  deco.appendChild(tx("t-dim",-.95,14,S("portIn"),{transform:"rotate(-90 -0.95 14)"}));
+  deco.appendChild(el("path",{d:`M${GAP+2} -.17 H${GAP+10}`,stroke:"var(--mark)","stroke-width":.5,"stroke-linecap":"round"}));
+  deco.appendChild(tx("t-dim",GAP+6,-.75,S("portOut")));
+  [[6.6,16,7.7,16],[17.6,16,18.7,16],[25.6,16,26.7,16],[33,17,37.4,17.4],
+   [GAP+5.6,17.5,GAP+6.7,17.5],[GAP+13.6,17.5,GAP+14.7,17.5],
+   [GAP+26,15.5,GAP+27.5,13.6],[GAP+22,5,GAP+20.6,5],[GAP+13.6,4.5,GAP+12.4,4.5]]
+   .forEach(([x1,y1,x2,y2])=>deco.appendChild(el("path",{d:`M${x1} ${y1} L${x2} ${y2}`,
+     stroke:"var(--mark)","stroke-width":.14,"marker-end":"url(#arw)"})));
+  svg.appendChild(deco);
+
+  svg.querySelectorAll(".zone").forEach(n=>{
+    n.addEventListener("click",()=>pickZone(n.dataset.c));
+    n.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();pickZone(n.dataset.c);}});
+  });
+  markZone();
+}
+function markZone(){svg.querySelectorAll(".zone").forEach(n=>n.classList.toggle("sel",n.dataset.c===selZone));}
+function pickZone(c){
+  const z=Z.find(v=>v.c===c); if(!z)return; selZone=c; markZone();
+  document.getElementById("pCode").textContent=z.c;
+  document.getElementById("pName").textContent=t(z.n);
+  document.getElementById("pArea").textContent=(z.w*z.d)+" m²";
+  document.getElementById("pDim").textContent=z.w+" × "+z.d+" m";
+  const ul=document.getElementById("pItems");
+  ul.innerHTML=z.items.map(i=>`<li>${t(i)}</li>`).join("")
+    +`<li style="color:var(--ink-3);margin-top:7px"><em>${t(z.why)}</em></li>`;
+  const fw=document.getElementById("pFlagWrap");
+  if(z.flag){fw.hidden=false;document.getElementById("pFlag").textContent=t(z.flag);}else fw.hidden=true;
+}
+
+/* ═══════════ ORGANISATION ═══════════ */
+const ORG=[
+{c:"K-00",t:["Fabriksdirektør","Factory Director"],who:["Argjent Sadriu","Argjent Sadriu"],n:1,
+ st:["Besat","Filled"],stc:"ok",tier:"boss",
+ duties:[["Fabrikkens samlede drift — leverance til tiden, kvalitet, sikkerhed","Overall running of the factory — on-time delivery, quality, safety"],
+   ["Godkender produktionsrækkefølge og bemanding","Approves production sequence and manning"],
+   ["Giver kapacitetstilsagn til NI DK: kan vi holde leveringstiden","Gives the capacity commitment to NI Denmark: can we hold the delivery date"],
+   ["Ejer relationen til udlejer, lokale leverandører og myndigheder","Owns the relationship with landlord, local suppliers and authorities"],
+   ["Eskalerer til Milot når noget ikke kan løses lokalt","Escalates to Milot when something cannot be solved locally"]],
+ links:[["Milot (NI) — drift, budget, eskalering, ugentligt","Milot (NI) — operations, budget, escalation, weekly"],
+   ["Alle fem direkte referencer","All five direct reports"],
+   ["#daily-standup — dagligt, engelsk","#daily-standup — daily, in English"]],
+ flag:["Argjent læser ikke med i vores interne opgavesystem. Skrives en opgave til ham dér, skal han ALTID også nås direkte på Slack — ellers ligger opgaven i en kø ingen åbner.",
+   "Argjent does not follow our internal task system. If a task is written to him there, he must ALWAYS also be reached directly on Slack — otherwise it sits in a queue nobody opens."]},
+{c:"K-01",t:["Sikkerhedsansvarlig","Safety Officer"],who:["Ubesat","Vacant"],n:1,
+ st:["Uafklaret","Undecided"],stc:"stop",tier:"staff",
+ duties:[["Maskinsikkerhed, værnemidler, nødprocedurer, brand og førstehjælp","Machine safety, PPE, emergency procedures, fire and first aid"],
+   ["Sikkerhedstræning af nye + genopfriskning","Safety training for new starters plus refreshers"],
+   ["Register over hvem der må betjene hvilke maskiner","Register of who is cleared to operate which machines"],
+   ["Registrerer ulykker og nærved-hændelser","Records accidents and near misses"],
+   ["Godkender en maskine før den tages i brug","Signs off a machine before it goes into use"]],
+ links:[["Produktionsleder (K-04) — hvem må hvad","Production manager (K-04) — who is cleared for what"],
+   ["Systemansvarlig (K-05) — kompetenceregisteret","Systems lead (K-05) — the competence register"],
+   ["Alle hænder — oplæring og godkendelse","All hands — training and sign-off"]],
+ flag:["Tavlens optælling til 14 rummer IKKE denne rolle. På 14 mand er sikkerhed normalt en hat en anden bærer — typisk produktionslederen — ikke en fuldtidsstilling. Afklar: egen ansættelse eller hat?",
+   "The whiteboard count of 14 does NOT include this role. At 14 people, safety is normally a hat worn by someone else — typically the production manager — not a full-time post. To decide: own hire or hat?"]},
+{c:"K-02",t:["3D-tegner","3D Draughtsman"],who:["Ansættes nu","Hiring now"],n:1,
+ st:["Ansættes nu","Hiring now"],stc:"warn",tier:"staff",
+ duties:[["Producerer produktionstegninger ud fra NI's tilbudsmateriale og arkitekttegninger","Produces production drawings from NI's quote material and architect drawings"],
+   ["Laver CNC- og nestingfiler","Creates CNC and nesting files"],
+   ["Bekræfter at tegningen kan produceres på fabrikkens maskiner","Confirms the drawing can be made on the factory's machines"],
+   ["Aftaler med NI DK hvem der tegner hvad på hvert projekt","Agrees with NI Denmark who draws what on each project"],
+   ["Melder tilbage hvornår tegningerne er klar","Reports back when drawings will be ready"]],
+ links:[["NI DK (Christian) — tegningsansvar pr. projekt","NI Denmark (Christian) — drawing responsibility per project"],
+   ["Produktionsleder (K-04) — hvornår tegninger er klar","Production manager (K-04) — when drawings are ready"],
+   ["CNC-operatør (H-01) — filer og opspænding","CNC operator (H-01) — files and set-up"]],
+ flag:["Åbent: hvilket CAD/CAM-program, og hvilket filformat udveksles med NI DK? Uden en aftalt standard bliver hver overlevering et oversættelsesarbejde.",
+   "Open: which CAD/CAM package, and what file format is exchanged with NI Denmark? Without an agreed standard, every handover becomes a translation job."]},
+{c:"K-03",t:["Materiale & logistik","Materials & Logistics"],who:["Ansættes nu","Hiring now"],n:1,
+ st:["Ansættes nu","Hiring now"],stc:"warn",tier:"staff",
+ duties:[["Indkøb af materialer — lokalt i Kosovo og fra DK","Purchasing materials — locally in Kosovo and from Denmark"],
+   ["Lagerstyring og minimumsbeholdning","Stock control and minimum stock levels"],
+   ["Told og forsendelse DK↔Kosovo, ATK-dokumentation","Customs and shipping DK↔Kosovo, ATK documentation"],
+   ["Modtagekontrol mod følgeseddel","Goods-in check against delivery note"],
+   ["Aftaler med NI DK hvem der køber hvad","Agrees with NI Denmark who buys what"]],
+ links:[["NI DK, indkøb — indkøbsdeling pr. projekt","NI Denmark, purchasing — purchase split per project"],
+   ["Produktionsleder (K-04) — hvornår materialer er hjemme","Production manager (K-04) — when materials land"],
+   ["Vores transport- og sourcingpartner i Kosovo","Our transport and sourcing partner in Kosovo"],
+   ["Speditør/toldagent i Ferizaj","Freight forwarder / customs agent in Ferizaj"]],
+ flag:["Minimumsbeholdning på forbrugsvarer — lak, bejdse, lim, beslag — er denne rolles vigtigste enkeltopgave. Løber en batch tør undervejs, skal hele partiet gøres om, og det koster altid mere end lageret ville have gjort.",
+   "Minimum stock levels on consumables — lacquer, stain, glue, fittings — is this role's single most important task. If a batch runs dry midway the whole lot has to be redone, and that always costs more than holding the stock would have."]},
+{c:"K-04",t:["Produktionsleder","Production Manager"],who:["Ansættes september","Hiring September"],n:1,
+ st:["September","September"],stc:"warn",tier:"line",
+ duties:[["Booker hænderne ind på jobs — daglig planlægning","Schedules the hands onto jobs — daily planning"],
+   ["Omsætter tegnings- og materialestatus til en startdato pr. job","Turns drawing and material status into a start date per job"],
+   ["Kvalitetskontrol før pakning","Quality check before packing"],
+   ["Oplæring på gulvet","Training on the floor"],
+   ["Melder blokeringer videre i standup","Raises blockers in standup"]],
+ links:[["3D (K-02) og Materiale (K-03) — er forudsætningerne på plads","Drawing (K-02) and Materials (K-03) — are the prerequisites in place"],
+   ["Alle ni hænder — dagsplan","All nine hands — the day plan"],
+   ["Argjent (K-00) — kapacitet og afvigelser","Argjent (K-00) — capacity and deviations"]],
+ flag:["Den eneste rolle på linjen mellem Argjent og gulvet — alt der skal produceres, går igennem her. Indtil den er besat i september, ligger den på Argjent, og det er efterårets mest sandsynlige flaskehals.",
+   "The only role on the line between Argjent and the floor — everything to be produced passes through here. Until it is filled in September it sits with Argjent, and that is the most likely bottleneck this autumn."]},
+{c:"K-05",t:["Systemansvarlig","Systems Lead"],who:["Ansættes oktober","Hiring October"],n:1,
+ st:["Oktober","October"],stc:"warn",tier:"sys",
+ duties:[["Bygger fabrikkens systemer: jobtracking, lager, vedligehold, kompetence, SOP","Builds the factory's systems: job tracking, stock, maintenance, competence, SOPs"],
+   ["Sørger for at fabrikken genererer data — ikke kun producerer","Makes sure the factory generates data, not just product"],
+   ["Kører iterationer så fabrikken forbedres hurtigt","Runs the iterations so the factory improves fast"],
+   ["Gør fabrikkens tal synlige for både Ferizaj og København","Makes the factory's numbers visible in both Ferizaj and Copenhagen"]],
+ links:[["Alle roller — data ind og systemer ud","Every role — data in and systems out"],
+   ["NI's systemer i Danmark","NI's systems in Denmark"],
+   ["Sikkerhedsansvarlig (K-01) — kompetenceregisteret","Safety officer (K-01) — the competence register"]],
+ flag:["Syv moduler er allerede skitseret: jobtracking · lager · logistik · vedligehold · HR · kompetence · SOP. Beslut om de bygges oven på NI's eksisterende systemer eller som et selvstændigt system i Kosovo — inden personen starter.",
+   "Seven modules are already outlined: job tracking · stock · logistics · maintenance · HR · competence · SOP. Decide whether they are built on top of NI's existing systems or as a separate system in Kosovo — before this person starts."]},
+{c:"H-01",t:["CNC","CNC"],who:"",n:1,st:["Oktober","October"],stc:"warn",tier:"hand",
+ duties:[["Kører CNC-nesting og pladeopskæring","Runs CNC nesting and panel cutting"],["Opspænding, værktøjsskift, nulpunkt","Set-up, tool changes, datum"],["Kontrollerer første emne mod tegning før serien køres","Checks the first part against the drawing before running the batch"]],
+ links:[["3D-tegner (K-02) — filer og nesting","3D draughtsman (K-02) — files and nesting"],["Produktionsleder (K-04) — dagsplan","Production manager (K-04) — day plan"]],
+ flag:["Egen rolle, ikke delt med montage. Ansættes først i oktober når CNC'en ankommer — indtil da er der INGEN på maskinbearbejdning, og alt skæring købes ude eller laves på lånte maskiner.",
+   "Its own role, not shared with assembly. Hired only in October when the CNC arrives — until then there is NOBODY on machining, and all cutting is bought outside or done on borrowed machines."]},
+{c:"H-02",t:["Sav","Saw"],who:"",n:1,st:["Oktober","October"],stc:"warn",tier:"hand",
+ duties:[["Formatsav og pladeopskæring","Panel saw and sheet breakdown"],["Massivtræ: afretter, tykkelseshøvl og båndsav i A1","Solid timber: surface planer, thicknesser and bandsaw in A1"],["Limpresse til bænkeplader","Glue press for bench tops"]],
+ links:[["Produktionsleder (K-04) — dagsplan","Production manager (K-04) — day plan"],["CNC (H-01) — hvad skæres hvor","CNC (H-01) — what is cut where"]],
+ flag:["Egen rolle, adskilt fra CNC. Ansættes i oktober sammen med maskinerne.",
+   "Its own role, separate from CNC. Hired in October along with the machines."]},
+{c:"H-03",t:["Bejdse / lak","Stain / lacquer"],who:"",n:2,st:["Nu","Now"],stc:"warn",tier:"hand",
+ duties:[["Bejdse, lakering og tørrestyring i B5–B7","Staining, lacquering and drying control in B5–B7"],["Blander kulør og fører prøvelog","Mixes colour and keeps the sample log"],["Holder øje med beholdning af lak og bejdse","Watches the lacquer and stain stock"]],
+ links:[["Materiale (K-03) — genbestilling FØR en batch sættes i gang","Materials (K-03) — reorder BEFORE a batch starts"],["Produktionsleder (K-04) — hvad skal tørre hvornår","Production manager (K-04) — what dries when"]],
+ flag:["To personer er bevidst — overfladen afgør om kunden ser kvalitet, og den må aldrig stå stille fordi én er syg. MEN: de ansættes nu, og sprøjtekabinen er først fase 4. Afklar hvad de arbejder med indtil da.",
+   "Two people is deliberate — finishing decides whether the customer sees quality, and it must never stop because one is off sick. BUT: they start now and the spray booth is only phase 4. Clarify what they work with until then."]},
+{c:"H-04",t:["Montage","Assembly"],who:"",n:2,st:["Nu","Now"],stc:"warn",tier:"hand",
+ duties:[["Samler lockers, bænke, skabe og paneler","Assembles lockers, benches, cabinets and panels"],["Monterer beslag, hængsler og låse","Fits fittings, hinges and locks"],["Én af de to kører ALLE emner gennem bredbåndssliberen fra oktober","One of the two runs ALL parts through the wide-belt sander from October"],["Retter små afvigelser inden KS","Corrects minor deviations before QC"]],
+ links:[["Produktionsleder (K-04) — dagsplan","Production manager (K-04) — day plan"],["Pakning (H-05) — overlevering","Packing (H-05) — handover"]],
+ flag:["Slibningen er en opgave oveni, ikke en ekstra person: ca. et halvt årsværk af de to går til sliberen når den kommer i oktober. Det er regnet med i timeskemaet.",
+   "Sanding is an added task, not an extra person: roughly half an FTE of the two goes to the sander once it arrives in October. That is accounted for in the hours schedule."]},
+{c:"H-05",t:["Pakning + montage","Packing + assembly"],who:["Dobbeltrolle","Dual role"],n:2,st:["Nu","Now"],stc:"warn",tier:"hand",
+ duties:[["Emballering, hjørnebeskyttelse og mærkning","Packaging, corner protection and labelling"],["Pakliste pr. forsendelse","Packing list per shipment"],["Klargør læs til lastbil","Prepares the load for the truck"],["Arbejder i montagen når der ikke pakkes","Works in assembly when there is nothing to pack"]],
+ links:[["Materiale & logistik (K-03) — forsendelsesdokumenter","Materials & logistics (K-03) — shipping documents"],["Montage (H-04) — samme hold i praksis","Assembly (H-04) — the same team in practice"]],
+ flag:["De to er regnet som halvt pakning, halvt montage. Pakning kommer i bølger omkring afsendelse — derfor giver dobbeltrollen mening, men den kræver at produktionslederen kan flytte dem uden varsel.",
+   "The two are counted as half packing, half assembly. Packing comes in waves around dispatch — that is why the dual role makes sense, but it requires the production manager to move them without notice."]}
+];
+let selRole="K-00";
+function nodeHTML(r){
+  const vac=t(r.st)===t(["Uafklaret","Undecided"])||(r.who&&t(r.who)===t(["Ubesat","Vacant"]));
+  const cls=r.tier==="boss"?"boss":r.tier==="hand"?"hand":r.tier==="line"?"line":"";
+  return `<button type="button" class="node ${cls}${vac?" vacant":""}" data-c="${r.c}" aria-pressed="${r.c===selRole}">
+    <span class="n-code">${r.c}${r.n>1?" ×"+r.n:""}</span>
+    <span class="n-title">${t(r.t)}</span>
+    <span class="n-meta"><span class="chip ${r.stc}">${t(r.st)}</span>${r.who?`<span class="n-who">${t(r.who)}</span>`:""}</span></button>`;
+}
+function buildOrg(){
+  [["orgBoss","boss"],["orgStaff","staff"],["orgSys","sys"],["orgLine","line"],["orgHands","hand"]]
+    .forEach(([id,tier])=>document.getElementById(id).innerHTML=ORG.filter(r=>r.tier===tier).map(nodeHTML).join(""));
+  document.querySelectorAll(".node").forEach(n=>n.addEventListener("click",()=>pickRole(n.dataset.c)));
+  pickRole(selRole);
+}
+function pickRole(c){
+  const r=ORG.find(v=>v.c===c); if(!r)return; selRole=c;
+  document.querySelectorAll(".node").forEach(n=>n.setAttribute("aria-pressed",String(n.dataset.c===c)));
+  document.getElementById("oCode").textContent=r.c;
+  document.getElementById("oName").textContent=t(r.t);
+  document.getElementById("oCount").textContent=r.n===0?"—":r.n;
+  document.getElementById("oStatus").textContent=t(r.st);
+  document.getElementById("oDuties").innerHTML=r.duties.map(d=>`<li>${t(d)}</li>`).join("");
+  const lw=document.getElementById("oLinkWrap");
+  if(r.links&&r.links.length){lw.hidden=false;document.getElementById("oLinks").innerHTML=r.links.map(l=>`<li>${t(l)}</li>`).join("");}
+  else lw.hidden=true;
+  const fw=document.getElementById("oFlagWrap");
+  if(r.flag){fw.hidden=false;document.getElementById("oFlag").textContent=t(r.flag);}else fw.hidden=true;
+}
+
+/* ═══════════ TABELDATA ═══════════ */
+const MACH=[
+ [["CNC-nesting 3050 × 1550","CNC nesting 3050 × 1550"],"7,0 × 3,5","11 × 7","A4","warn",["Antaget","Assumed"]],
+ [["Kantlimner, 1-sidet","Edgebander, single-sided"],"5,5 × 1,2","13 × 4,5","A5","warn",["Antaget","Assumed"]],
+ [["Vertikal pladesav","Vertical panel saw"],"5,0 × 1,0","6 × 4","A4","warn",["Antaget","Assumed"]],
+ [["Formatsav, 3,2 m vogn","Panel saw, 3.2 m carriage"],"3,6 × 3,6","8 × 7","A4","stop",["Købes nu","Buying now"]],
+ [["Afretter 400 mm","Surface planer 400 mm"],"2,6 × 1,0","10 × 3","A1","warn",["Antaget","Assumed"]],
+ [["Tykkelseshøvl 600 mm","Thicknesser 600 mm"],"1,6 × 1,4","10 × 3","A1","warn",["Antaget","Assumed"]],
+ [["Båndsav 600 mm","Bandsaw 600 mm"],"1,2 × 1,0","4 × 4","A1","warn",["Antaget","Assumed"]],
+ [["Limpresse, bænkeplader","Glue press, bench tops"],"4,0 × 1,4","6 × 4","A1","warn",["Antaget","Assumed"]],
+ [["Bredbåndssliber 1350 mm","Wide-belt sander 1350 mm"],"2,6 × 2,0","9 × 4","A6","warn",["Antaget","Assumed"]],
+ [["Sprøjtekabine, 3 m emner","Spray booth, 3 m parts"],"6,0 × 4,0","8 × 7","B6","warn",["Antaget","Assumed"]],
+ [["Kompressor + tank","Compressor + tank"],"2,0 × 1,2",["eget rum 3 × 4","own room 3 × 4"],"B8","stop",["Købes nu","Buying now"]],
+ [["Udsugningsfilter + spånsilo","Extraction filter + chip silo"],"4,0 × 3,0",["udenfor","outside"],"—","warn",["Antaget","Assumed"]],
+ [["Mobilt tørrestativ ×20–25","Mobile drying rack ×20–25"],"1,3 × 0,8",["90 m² samlet","90 m² total"],"B7","warn",["Antaget","Assumed"]],
+ [["Monteringsbord ×5–6","Assembly bench ×5–6"],"3,0 × 1,5",["5 × 4 pr. stk.","5 × 4 each"],"B3","warn",["Antaget","Assumed"]],
+ [["Gaffeltruck","Forklift"],"—",["4,0 m arbejdsgang","4.0 m working aisle"],"A2","stop",["Uafklaret","Undecided"]]
+];
+const PH=[
+ ["0",["Bordsav · kompressor · mobil udsugning · arbejdsborde · reoler · håndværktøj","Table saw · compressor · mobile extraction · benches · racking · hand tools"],
+  ["Gør Argjent selvkørende. Bruger ca. 150 m² i hal A. Det I køber lige nu.","Makes Argjent self-sufficient. Uses about 150 m² in hall A. What you are buying right now."]],
+ ["1",["CNC-nesting · vakuumløfter · fast udsugningsanlæg","CNC nesting · vacuum lifter · fixed extraction plant"],
+  ["Største enkeltgevinst. Erstatter pladesav, boring og fræsning i ét.","The single biggest gain. Replaces panel saw, drilling and routing in one."]],
+ ["2",["Kantlimner","Edgebander"],
+  ["Håndpåført kant er både flaskehalsen og den synlige kvalitetsfejl på lockers og skabe.","Hand-applied edging is both the bottleneck and the visible quality defect on lockers and cabinets."]],
+ ["3",["Afretter · tykkelseshøvl · båndsav · limpresse","Surface planer · thicknesser · bandsaw · glue press"],
+  ["Henter fyr-bænkene hjem fra lånte værksteder.","Brings the pine benches home from borrowed workshops."]],
+ ["4",["Bredbåndssliber · sprøjtekabine · tørrestativer","Wide-belt sander · spray booth · drying racks"],
+  ["Overfladen kommer hjem, og dermed kontrollen over den station kunden bedømmer os på.","Finishing comes in-house, and with it control over the station the customer judges us on."]],
+ ["5",["CNC nr. 2 · andet skift · pakkelinje","Second CNC · second shift · packing line"],["Når hal A er mættet.","When hall A is saturated."]]
+];
+const Q=[
+ [["Maskinlisten","The machine list"],["Er der købt eller bestilt noget? Alle mål i skema 03 er standardmål indtil da.","Has anything been bought or ordered? All dimensions in schedule 03 are standard until then."],"Milot"],
+ [["Gaffeltrucken","The forklift"],["Bliver den el eller diesel? Diesel indendørs i et træværksted går ikke. Og er 3 tons ikke for meget — en mindre el-truck kræver smallere arbejdsgang og frigør gulv.","Will it be electric or diesel? Diesel indoors in a woodworking shop will not do. And is 3 tonnes not too much — a smaller electric truck needs a narrower aisle and frees up floor."],"Milot"],
+ [["Søjlenettet","The column grid"],["Hvor står søjlerne i hver hal? De bestemmer hvor montage og CNC kan ligge.","Where do the columns stand in each hall? They decide where assembly and the CNC can go."],"Milot"],
+ [["Port og rampe","Door and ramp"],["Porthøjde, rampehøjde og vendeplads udenfor. En 40-fods trailer skal bruge ca. 25 m.","Door height, dock height and turning space outside. A 40-foot trailer needs about 25 m."],"Milot"],
+ [["Strømmen på skrift","Power in writing"],["Få kW og hovedsikring skrevet ind i lejekontrakten. Behovet er 100–150 kW installeret.","Get kW and main fuse written into the lease. The requirement is 100–150 kW installed."],"Milot"],
+ [["Mezzanin","Mezzanine"],["Må der bygges et dæk i 3,0 m, og hvad er bæreevnen på gulvet under søjlerne?","May a deck be built at 3.0 m, and what is the floor's load capacity under the columns?"],["Udlejer","Landlord"]],
+ [["Døren i skillevæggen","The door in the partition"],["Må den brydes, og hvem betaler? Uden den er det to bygninger, ikke én fabrik.","May it be cut, and who pays? Without it these are two buildings, not one factory."],["Udlejer","Landlord"]],
+ [["Bemanding","Manning"],["Hvor mange i produktionen om 6, 12 og 24 måneder?","How many in production in 6, 12 and 24 months?"],"Joachim"]
+];
+const FLOW=[
+ ["01",["Planlægning med DK","Planning with Denmark"],
+  ["NI DK, Korpus 3D og Korpus materiale sætter sig sammen på hvert nyt projekt: hvem tegner hvad, og hvem køber hvad.","NI Denmark, Korpus drawing and Korpus materials sit down on every new project: who draws what, and who buys what."],"NI DK · K-02 · K-03"],
+ ["02",["Kapacitetstilsagn","Capacity commitment"],
+  ["Korpus svarer på om leveringstiden kan holdes. Det er et svar, ikke en forhandling — kan den ikke holdes, siges det her.","Korpus answers whether the delivery date can be held. It is an answer, not a negotiation — if it cannot be held, it is said here."],"K-00 → NI DK"],
+ ["03",["Korpus styrer selv timingen","Korpus controls the timing"],
+  ["Når tilsagnet er givet, bestemmer Korpus selv hvornår tegninger laves og materialer købes hjem. DK blander sig ikke i rækkefølgen.","Once the commitment is given, Korpus decides itself when drawings are made and materials bought. Denmark does not interfere with the sequence."],"K-02 · K-03"],
+ ["04",["Forudsætninger til lederen","Prerequisites to the manager"],
+  ["Tegninger klar + materialer hjemme meldes videre som en startdato pr. job.","Drawings ready plus materials landed are passed on as a start date per job."],"K-02 · K-03 → K-04"],
+ ["05",["Bemanding og produktion","Manning and production"],
+  ["Produktionslederen booker hænderne ind på jobbet og sætter produktionen i gang.","The production manager schedules the hands onto the job and starts production."],"K-04 → floor"]
+];
+const REL=[
+ [["Korpus 3D (K-02) ↔ NI DK","Korpus drawing (K-02) ↔ NI Denmark"],["Hvem tegner hvad · tegningsstandard · filformat","Who draws what · drawing standard · file format"],["Ved projektopstart","At project start"],["Tegningsansvar fordelt","Drawing responsibility allocated"]],
+ [["Korpus materiale (K-03) ↔ NI DK","Korpus materials (K-03) ↔ NI Denmark"],["Hvem køber hvad · DK-indkøb mod lokalt","Who buys what · Danish versus local purchase"],["Ved projektopstart","At project start"],["Indkøbsplan pr. materiale","Purchase plan per material"]],
+ [["Argjent (K-00) → NI DK","Argjent (K-00) → NI Denmark"],["Kan vi holde leveringstiden","Can we hold the delivery date"],["Efter planlægning","After planning"],["Kapacitetstilsagn — bindende","Capacity commitment — binding"]],
+ [["K-02 + K-03 → Produktionsleder (K-04)","K-02 + K-03 → Production manager (K-04)"],["Tegninger klar · materialer hjemme","Drawings ready · materials landed"],["Løbende","Ongoing"],["Startdato pr. job","Start date per job"]],
+ [["Produktionsleder (K-04) → gulvet","Production manager (K-04) → the floor"],["Hvem står hvor i dag","Who stands where today"],["Dagligt","Daily"],["Dagsplan","Day plan"]],
+ [["Gulvet → Produktionsleder (K-04)","The floor → Production manager (K-04)"],["Færdigt arbejde · blokeringer · mangler","Work done · blockers · shortages"],["Dagligt, i standup","Daily, in standup"],["Blokeringer bliver til opgaver","Blockers become tasks"]],
+ [["Systemansvarlig (K-05) ↔ alle","Systems lead (K-05) ↔ everyone"],["Data ud af fabrikken · systemer ind","Data out of the factory · systems in"],["Løbende","Ongoing"],["Dashboards · SOP'er · kompetenceregister","Dashboards · SOPs · competence register"]],
+ [["Sikkerhed (K-01) ↔ K-04 + gulvet","Safety (K-01) ↔ K-04 + the floor"],["Maskingodkendelse · træning · værnemidler","Machine sign-off · training · PPE"],["Ved ny maskine eller ny mand","On a new machine or a new starter"],["Kompetenceregister opdateret","Competence register updated"]],
+ [["Argjent (K-00) ↔ Milot (NI)","Argjent (K-00) ↔ Milot (NI)"],["Drift · budget · eskalering","Operations · budget · escalation"],["Ugentligt","Weekly"],["Beslutninger","Decisions"]],
+ [["Hele fabrikken → daglig standup","The whole factory → daily standup"],["Hvad blev færdigt · hvad blokerer · hvad mangler","What finished · what blocks · what is missing"],["Hverdage 08:30, på engelsk","Weekdays 08:30, in English"],["Engelsk fordi Ferizaj og København er med i samme tråd","In English because Ferizaj and Copenhagen share the same thread"]]
+];
+const HIRE=[
+ [["Nu","Now"],["Montage (H-04)","Assembly (H-04)"],"2","3",
+  ["Kernen i produktionen. Én af dem overtager sliberen i oktober.","The core of production. One of them takes over the sander in October."]],
+ [["Nu","Now"],["Bejdse / lak (H-03)","Stain / lacquer (H-03)"],"2","5",
+  ["Overfladen må aldrig stå stille fordi én er syg.","Finishing must never stop because one person is off sick."]],
+ [["Nu","Now"],["Pakning + montage (H-05)","Packing + assembly (H-05)"],"2","7",
+  ["Pakker omkring afsendelse, står i montagen resten af tiden.","Packs around dispatch, stands in assembly the rest of the time."]],
+ [["Nu","Now"],["3D-tegner (K-02)","3D draughtsman (K-02)"],"1","8",
+  ["Uden tegninger og CNC-filer kan intet sættes i gang.","Without drawings and CNC files nothing can start."]],
+ [["Nu","Now"],["Materiale & logistik (K-03)","Materials & logistics (K-03)"],"1","9",
+  ["Told, transport og lager er allerede en flaskehals i dag.","Customs, transport and stock are already a bottleneck today."]],
+ [["September","September"],["Produktionsleder (K-04)","Production manager (K-04)"],"1","10",
+  ["Når hænderne bliver flere end Argjent kan booke selv.","When there are more hands than Argjent can schedule himself."]],
+ [["Oktober","October"],["CNC (H-01)","CNC (H-01)"],"1","11",
+  ["Følger maskinen. Før oktober er der ingen på maskinbearbejdning.","Follows the machine. Before October there is nobody on machining."]],
+ [["Oktober","October"],["Sav (H-02)","Saw (H-02)"],"1","12",
+  ["Egen rolle, ankommer med maskinerne.","Its own role, arrives with the machines."]],
+ [["Oktober","October"],["Systemansvarlig (K-05)","Systems lead (K-05)"],"1","13",
+  ["Når der er nok drift til at der er data værd at fange.","When there is enough operation for the data to be worth capturing."]]
+];
+const HOURS=[
+ ["area",["CNC (H-01)","CNC (H-01)"],"1,0","149","104","119","A4"],
+ ["area",["Sav (H-02)","Saw (H-02)"],"1,0","149","104","119","A1 · A4"],
+ ["area",["Bejdse / lak (H-03)","Stain / lacquer (H-03)"],"2,0","298","209","238","B5–B7"],
+ ["area",["Slibning — fra H-04","Sanding — from H-04"],"0,5","75","52","60","A6"],
+ ["area",["Montage — H-04 + halvdelen af H-05","Assembly — H-04 + half of H-05"],"2,5","372","261","298","B3"],
+ ["area",["Pakning — halvdelen af H-05","Packing — half of H-05"],"1,0","149","104","119","B2"],
+ ["sub",["Hænderne i alt — 8 personer","Hands, total — 8 people"],"8,0","1.192","834","954",""],
+ ["area",["Fabriksdirektør (K-00)","Factory director (K-00)"],"1,0","149","—","—","—"],
+ ["area",["3D-tegner (K-02)","3D draughtsman (K-02)"],"1,0","149","—","—","—"],
+ ["area",["Materiale & logistik (K-03)","Materials & logistics (K-03)"],"1,0","149","—","—","—"],
+ ["area",["Produktionsleder (K-04)","Production manager (K-04)"],"1,0","149","—","—","—"],
+ ["area",["Systemansvarlig (K-05)","Systems lead (K-05)"],"1,0","149","—","—","—"],
+ ["sub",["Indirekte i alt — 5 personer","Indirect, total — 5 people"],"5,0","745","—","—",""],
+ ["total",["Hele fabrikken — 13 personer","Whole factory — 13 people"],"13,0","1.937","834","954",""]
+];
+const RAMP=[
+ [["Aug 2026","Aug 2026"],"6","3","894","60 %","536",["Ingen på CNC eller sav endnu — al skæring købes ude","Nobody on CNC or saw yet — all cutting bought outside"]],
+ [["Sep 2026","Sep 2026"],"6","4","894","60 %","536",["Produktionsleder starter","Production manager starts"]],
+ [["Okt 2026","Oct 2026"],"8","5","1.192","70 %","834",["CNC, sav og sliber ankommer — maskinbearbejdning kommer hjem","CNC, saw and sander arrive — machining comes in-house"]],
+ [["Nov 2026","Nov 2026"],"8","5","1.192","70 %","834",["Indkøring af maskinerne","Bedding in the machines"]],
+ [["Dec 2026","Dec 2026"],"8","5","1.192","75 %","894",["Systemansvarlig begynder at bide","Systems lead starts to bite"]],
+ [["Fuld 2027","Full 2027"],"8","5","1.192","80 %","954",["Moden drift","Mature operation"]]
+];
+const ASSUME=[
+ [["Arbejdsuge","Working week"],["40 t","40 h"],["Kosovo-standard, 5 × 8 t","Kosovo standard, 5 × 8 h"]],
+ [["Ferie","Annual leave"],["20 arbejdsdage","20 working days"],["Lovpligtigt minimum i Kosovo","Statutory minimum in Kosovo"]],
+ [["Helligdage","Public holidays"],["~10 hverdage","~10 weekdays"],["Nogle falder i weekender","Some fall at weekends"]],
+ [["Sygefravær","Sickness absence"],["3 %","3 %"],["Erfaringstal — vi har ingen egne data endnu","Rule of thumb — we have no data of our own yet"]],
+ [["Tilstedeværelse pr. person","Attendance per person"],["1.784 t/år = 149 t/md","1,784 h/yr = 149 h/mo"],["Efter ferie, helligdage og sygdom","After leave, holidays and sickness"]],
+ [["Udnyttelsesgrad","Utilisation"],["60 → 80 %","60 → 80 %"],["Resten går til opstilling, ventetid, flytning, oprydning og oplæring","The rest goes to set-up, waiting, moving material, cleaning and training"]],
+ [["Dobbeltroller","Dual roles"],["Halvt pr. station","Half per station"],["CNC/AS og SAV/AS fra tavlen","CNC/AS and SAW/AS from the whiteboard"]],
+ [["Pakning","Packing"],["Ikke medregnet","Not counted"],["Uafklaret om det er egen rolle","Undecided whether it is its own role"]]
+];
+const OQ=[
+ [["Sikkerhedsansvarlig — stilling eller hat?","Safety officer — post or hat?"],["Tavlens 14 rummer ikke rollen. Skal den ansættes, er I 15.","The whiteboard's 14 does not include the role. If it is hired, you are 15."],"Argjent"],
+ [["Hvem skærer indtil oktober?","Who cuts until October?"],["CNC og sav ansættes først når maskinerne kommer. Fra nu til oktober er der ingen på maskinbearbejdning — købes det ude, laves det på lånte maskiner, eller gør Argjent det selv?","CNC and saw are only hired when the machines arrive. From now until October there is nobody on machining — is it bought outside, done on borrowed machines, or does Argjent do it himself?"],"Milot"],
+ [["Bejdse/lak starter før kabinen","Finishing starts before the booth"],["De to overfladefolk ansættes nu, men sprøjtekabinen er fase 4. Hvad arbejder de med indtil da — pensel og rulle, lånt kabine, eller skal kabinen rykkes frem?","The two finishing people start now, but the spray booth is phase 4. What do they work with until then — brush and roller, a borrowed booth, or should the booth be pulled forward?"],"Milot"],
+ [["Tavlens ekstra CNC-mand","The whiteboard's extra CNC operator"],["Tavlen viste både “CNC/Sav 2” og “CNC mand 1”. Med CNC og sav som én hver er den ekstra ikke med. Er det et andet skift senere?","The whiteboard showed both “CNC/Saw 2” and “CNC operator 1”. With CNC and saw as one each, the extra is not included. Is that a second shift later on?"],"Milot"],
+ [["Argjents beslutningsgrænse","Argjent's decision limit"],["Hvor stort et indkøb må han sige ja til uden Joachim? Uden et tal bliver alt en eskalering.","How large a purchase may he approve without Joachim? Without a figure, everything becomes an escalation."],"Joachim"],
+ [["CAD/CAM og filformat","CAD/CAM and file format"],["Hvilket program tegner Kosovo i, og hvad udveksles med Christian i DK?","Which package does Kosovo draw in, and what is exchanged with Christian in Denmark?"],"Milot"],
+ [["Systemansvarlig — hvilket system?","Systems lead — which system?"],["Bygges de syv moduler oven på vores eksisterende systemer, eller selvstændigt i Kosovo?","Are the seven modules built on our existing systems, or standalone in Kosovo?"],"Joachim"],
+ [["Tavlens tal 80/100/140/160","The whiteboard's 80/100/140/160"],["Hvad måler de kolonner? Jeg har bevidst ikke gættet, og de indgår derfor ikke i timeregnskabet.","What do those columns measure? I have deliberately not guessed, so they are not part of the hours model."],"Milot"],
+ [["Ingen timer registreres i dag","No hours are recorded today"],["Vi registrerer ingen timetal på hverken tilbud eller produktion — kun leveringstid i dage. Derfor kan kapaciteten endnu ikke omsættes til antal projekter. Skal systemansvarlig lukke det hul først?","We record no hour figures on either quotes or production — only lead time in days. So capacity cannot yet be converted into a number of projects. Should the systems lead close that gap first?"],"Joachim"],
+ [["Arbejdstid og ferie","Working time and leave"],["Bekræft 40 t/uge, 20 feriedage og helligdage — hele timeregnskabet hviler på det.","Confirm 40 h/week, 20 leave days and public holidays — the entire hours model rests on it."],"Argjent"]
+];
+const REV=[
+ ["Rev H","02-08-2026",["Alle priser og beløb fjernet fra siden. Den er produktionens dokument: mål, flow, roller, timer og kapacitet — ikke økonomi. Husleje, maskinpriser og anlægsudgifter hører i den danske del af sagen og står ikke her. Bemanding i antal personer bliver stående, fordi det er produktionens eget planlægningsgrundlag.",
+  "All prices and monetary figures have been removed from this page. It is production's document: dimensions, flow, roles, hours and capacity — not finance. Rent, machine prices and capital costs belong to the Danish side of the business and are not shown here. Manning in numbers of people stays, because that is production's own planning basis."]],
+ ["Rev G","02-08-2026",["Én-hal-scenariet fjernet — begge lokaler tages, så det er ikke længere et valg der skal vises. Nøgletallene på indretningsfanen viser nu 1.496 m² til rådighed mod 1.044 m² behov, altså 452 m² luft. Mezzaninen er nedgraderet fra nødvendighed til noget der kan tages efter maskinerne.",
+  "The one-hall scenario has been removed — both units are being taken, so it is no longer a choice worth showing. The layout tab's key figures now read 1,496 m² available against 1,044 m² needed, i.e. 452 m² of slack. The mezzanine is downgraded from a necessity to something that can follow the machines."]],
+ ["Rev F","02-08-2026",["Hænderne rettet efter Milots præcisering: montage og bejdse/lak er egne roller à 2, CNC og sav er to adskilte roller à 1 og ansættes først i oktober med maskinerne, og 2 pakkere der også står i montagen. Ingen CNC/montage-dobbeltroller. Én montagemedarbejder kører desuden alle emner gennem sliberen fra oktober. Fuld bemanding falder fra 14 til 13, og direkte produktionstimer fra 938 til 834 t/md.",
+  "Hands corrected per Milot: assembly and stain/lacquer are their own roles with 2 each, CNC and saw are two separate roles with 1 each and are only hired in October with the machines, plus 2 packers who also work in assembly. No CNC/assembly dual roles. One assembly worker additionally runs all parts through the sander from October. Full manning drops from 14 to 13, and direct production hours from 938 to 834 h/mo."]],
+ ["Rev E","02-08-2026",["Sprogskifte dansk/engelsk på hele platformen, så Argjent kan følge med. Ny sektion 10: produktionstimer — 2.086 betalte timer/md ved fuld bemanding, heraf 938 direkte produktionstimer, fordelt pr. område og pr. måned, med forudsætninger. Fund: der findes ingen timetal i tilbuds- eller produktionsdata, kun leveringstid i dage.",
+  "Danish/English toggle across the whole platform so Argjent can follow along. New section 10: production hours — 2,086 paid hours/month at full manning, of which 938 are direct production hours, broken down by area and by month, with assumptions. Finding: there are no hour figures anywhere in quote or production data, only lead time in days."]],
+ ["Rev D","02-08-2026",["Organisationstræet lagt om til stab og linje: produktionslederen står alene på rygraden lige over gulvet, systemansvarlig flyttet ud som egen gren til højre.",
+  "Org chart reworked into staff and line: the production manager stands alone on the spine directly above the floor, systems lead moved out as its own branch to the right."]],
+ ["Rev C","02-08-2026",["Ny fane: Organisation. Organisationstræ, snitfladen mod NI DK i fem trin, relationstabel og bemandingsplan.",
+  "New tab: Organisation. Org chart, the five-step interface with NI Denmark, relationship table and hiring plan."]],
+ ["Rev B","01-08-2026",["Rettet: zonerne kunne ikke klikkes — gitterfladen lå oven på planen og opfangede alle klik.",
+  "Fixed: zones could not be clicked — the grid overlay sat on top of the plan and swallowed every click."]],
+ ["Rev A","01-08-2026",["Første udkast. Pladsprogram 1.044 m² fordelt på 13 zoner, U-flow i hal B, mezzanin 180 m² som option.",
+  "First draft. Space programme of 1,044 m² across 13 zones, U-flow in hall B, 180 m² mezzanine as an option."]]
+];
+const PLANCARDS=[
+ [["Til rådighed","Available"],"1.496 m²",["To haller à 748 m². Plus 180 m² mezzanin i hal B.","Two halls of 748 m² each. Plus a 180 m² mezzanine in hall B."],""],
+ [["Gulvbehov, fuldt flow","Floor needed, full flow"],"1.044 m²",["13 zoner + 16 % gange. Personale ligger ikke i tallet — det hører på mezzanin.","13 zones + 16 % aisles. Staff facilities are not in the figure — they belong on the mezzanine."],""],
+ [["Luft til vækst","Room to grow"],"+452 m²",["Plads til andet skift, flere maskiner og et større færdigvarelager.","Space for a second shift, more machines and a larger finished-goods store."],"hi"],
+ [["Fri højde","Clear height"],"6,0 m",["Nok til mezzanin i 3,0 m og reoler i 4–5 niveauer. Højden er den vigtigste enkeltressource i planen.","Enough for a mezzanine at 3.0 m and racking in 4–5 levels. Height is the single most valuable resource in the plan."],""]
+];
+const ORGCARDS=[
+ [["Fuld bemanding","Full manning"],"13",["8 hænder + 5 indirekte inkl. Argjent. 14 hvis sikkerhed ansættes frem for at være en hat.","8 hands + 5 indirect incl. Argjent. 14 if safety is hired rather than a hat."],""],
+ [["På plads i dag","In place today"],"1",["Argjent. Hænderne er lånt kapacitet indtil lokalet overtages.","Argjent. The hands are borrowed capacity until the premises are taken over."],""],
+ [["Skal ansættes nu","To hire now"],"8",["2 montage · 2 bejdse/lak · 2 pakning · 3D-tegner · materiale &amp; logistik.","2 assembly · 2 stain/lacquer · 2 packing · 3D draughtsman · materials &amp; logistics."],"hi"],
+ [["Refererer til Argjent","Reporting to Argjent"],"5",["Sikkerhed · 3D · materiale &amp; logistik · produktionsleder · systemansvarlig.","Safety · drawing · materials &amp; logistics · production manager · systems lead."],""]
+];
+const HOURCARDS=[
+ [["Betalte timer, fuld bemanding","Paid hours, full manning"],"1.937",["Pr. måned, 13 personer. 23.000 t/år.","Per month, 13 people. 23,000 h/yr."],""],
+ [["Heraf direkte produktion","Of which direct production"],"834",["T/md ved 70 % udnyttelse. Loft ved 80 %: 954 t/md.","H/mo at 70 % utilisation. Ceiling at 80 %: 954 h/mo."],"hi"],
+ [["Andel der bliver produktion","Share that becomes production"],"43 %",["Under halvdelen af de betalte timer. Ved 80 %: 49 %.","Less than half the paid hours. At 80 %: 49 %."],""],
+ [["I dag (august)","Today (August)"],"536",["T/md. 6 hænder ved 60 % — ingen på CNC eller sav før oktober.","H/mo. 6 hands at 60 % — nobody on CNC or saw before October."],""]
+];
+
+/* ═══════════ RENDER ═══════════ */
+const $=id=>document.getElementById(id);
+const cardHTML=([k,v,n,c])=>`<div class="card ${c}"><span class="k">${t(k)}</span><span class="v">${v}</span><span class="n">${t(n)}</span></div>`;
+
+function render(){
+  ["eyebrow","h1"].forEach(k=>$("x-"+k).textContent=S(k));
+  $("tab-b-plan").textContent=S("tab1"); $("tab-b-org").textContent=S("tab2");
+  $("tbGrid").innerHTML=[["tbLoc","tbLocV"],["tbH","tbHV"],["tbA","tbAV"],["tbS","tbSV"],["tbR","tbRV"],["tbSt","tbStV"]]
+    .map(([a,b])=>`<div class="tb-cell"><dt>${S(a)}</dt><dd>${S(b)}</dd></div>`).join("");
+
+  ["s01","s01p","s02","s03","s03p","s04","s04p","s05","s05p","s06","s06p","s07","s07p",
+   "s08","s08p","s09","s09p","s10","s10p","s11","s11p","s12","c02","c03","c04","c08","c09",
+   "c10a","c10b","c10c","f1","f2","f3"].forEach(k=>{const n=$("x-"+k);if(n)n.textContent=S(k);});
+  $("x-hrsintro").innerHTML=S("hrsintro");
+  $("x-hrsflag").textContent=S("hrsflag");
+  ["area","dims","contents","count","status","duties","talks"].forEach(k=>$("x-"+k).textContent=S(k));
+  $("x-t-mgmt").textContent=S("tMgmt"); $("x-t-staff").textContent=S("tStaff");
+  $("x-t-sys").textContent=S("tSys"); $("x-t-line").textContent=S("tLine");
+  $("x-t-floor").textContent=S("tFloor"); $("x-orgnote").textContent=S("orgnote");
+  $("planNote").textContent=S("planNote");
+  [["x-h-code","hCode"],["x-h-zone","hZone"],["x-h-why","hWhy"],["x-h-mach","hMach"],["x-h-m1","hM1"],
+   ["x-h-m2","hM2"],["x-h-zone2","hZone"],["x-h-status","hStatus"],["x-h-phase","hPhase"],["x-h-what","hWhat"],
+   ["x-h-why2","hWhy2"],["x-h-between","hBetween"],["x-h-about","hAbout"],["x-h-when","hWhen"],["x-h-out","hOut"],
+   ["x-h-when2","hWhen2"],["x-h-role","hRole"],["x-h-num","hNum"],["x-h-tot","hTot"],["x-h-why3","hWhy3"],
+   ["x-h-area","hArea"],["x-h-fte","hFte"],["x-h-att","hAtt"],["x-h-d70","hD70"],["x-h-d80","hD80"],
+   ["x-h-zone3","hZone"],["x-h-month","hMonth"],["x-h-hands","hHands"],["x-h-ind","hInd"],["x-h-att2","hAtt"],
+   ["x-h-util","hUtil"],["x-h-dir","hDir"],["x-h-driver","hDriver"],["x-h-assume","hAssume"],["x-h-val","hVal"],
+   ["x-h-basis","hBasis"]].forEach(([id,k])=>{const n=$(id);if(n)n.textContent=S(k);});
+
+  $("legendBox").innerHTML=[["lgLager","--z-lager"],["lgMask","--z-maskin"],["lgOver","--z-overflade"],
+    ["lgMont","--z-montage"],["lgServ","--z-service"],["lgMezz","--z-mezz"],["lgFlow","--mark"]]
+    .map(([k,v])=>`<span class="lg"><i style="background:var(${v})"></i>${S(k)}</span>`).join("");
+
+  $("planCards").innerHTML=PLANCARDS.map(cardHTML).join("");
+  $("orgCards").innerHTML=ORGCARDS.map(cardHTML).join("");
+  $("hourCards").innerHTML=HOURCARDS.map(cardHTML).join("");
+
+  let sA=0,sB=0,rows="";
+  ["A","B"].forEach(h=>{
+    Z.filter(z=>z.c[0]===h&&z.t!=="mezz").forEach(z=>{const a=z.w*z.d; h==="A"?sA+=a:sB+=a;
+      rows+=`<tr><td><span class="code">${z.c}</span></td><td>${t(z.n)}</td><td class="n">${a}</td><td class="sm dim">${t(z.why)}</td></tr>`;});
+    rows+=`<tr class="sub"><td></td><td>${LANG==="en"?"Hall":"Hal"} ${h}</td><td class="n">${h==="A"?sA:sB}</td><td></td></tr>`;
+  });
+  const mz=Z.find(z=>z.c==="M1");
+  rows+=`<tr><td><span class="code">M1</span></td><td>${t(mz.n)}</td><td class="n">+180</td><td class="sm dim">${t(mz.why)}</td></tr>`;
+  rows+=`<tr class="total"><td></td><td>${LANG==="en"?"Usable total":"Brugbart i alt"}</td><td class="n">${sA+sB+180}</td><td class="sm">${LANG==="en"?"Against 1,044 m² needed":"Mod 1.044 m² gulvbehov"}</td></tr>`;
+  $("areaBody").innerHTML=rows;
+
+  $("machBody").innerHTML=MACH.map(([n,a,b,z,s,l])=>
+    `<tr><td>${t(n)}</td><td class="n">${t(a)} m</td><td class="n">${t(b)}</td><td><span class="code">${z}</span></td><td><span class="chip ${s}">${t(l)}</span></td></tr>`).join("");
+  $("phaseBody").innerHTML=PH.map(([f,w,y])=>`<tr><td class="n"><b>${f}</b></td><td>${t(w)}</td><td class="sm dim">${t(y)}</td></tr>`).join("");
+  $("qBody").innerHTML=Q.map(([a,b,o],i)=>`<li><span class="q-n">${String(i+1).padStart(2,"0")}</span><span class="q-t"><b>${t(a)}</b><span>${t(b)}</span></span><span class="chip ${t(o)==="Joachim"||t(o)==="Udlejer"||t(o)==="Landlord"?"warn":"ok"}">${t(o)}</span></li>`).join("");
+  $("flowBody").innerHTML=FLOW.map(([n,a,b,w])=>`<div class="step"><span class="s-n">${n}</span><span class="s-t">${t(a)}</span><span class="s-d">${t(b)}</span><span class="s-w">${w}</span></div>`).join("");
+  $("relBody").innerHTML=REL.map(([a,b,c,d])=>`<tr><td><b>${t(a)}</b></td><td class="sm">${t(b)}</td><td class="sm dim">${t(c)}</td><td class="sm">${t(d)}</td></tr>`).join("");
+  $("hireBody").innerHTML=HIRE.map(([w,r,n,tt,y])=>`<tr><td><b>${t(w)}</b></td><td>${t(r)}</td><td class="n">${n}</td><td class="n">${tt}</td><td class="sm dim">${t(y)}</td></tr>`).join("")
+    +`<tr class="total"><td></td><td>${LANG==="en"?"Full manning incl. Argjent":"Fuld bemanding inkl. Argjent"}</td><td class="n"></td><td class="n">13</td><td class="sm">${LANG==="en"?"14 if the safety officer is hired rather than a hat":"14 hvis sikkerhedsansvarlig ansættes frem for at være en hat"}</td></tr>`;
+  $("hoursBody").innerHTML=HOURS.map(([k,n,f,a,d7,d8,z])=>
+    `<tr class="${k==="sub"?"sub":k==="total"?"total":""}"><td>${t(n)}</td><td class="n">${f}</td><td class="n">${a}</td><td class="n">${d7}</td><td class="n">${d8}</td><td><span class="code">${z}</span></td></tr>`).join("");
+  $("rampBody").innerHTML=RAMP.map(([m,h,i,a,u,d,w])=>
+    `<tr><td><b>${t(m)}</b></td><td class="n">${h}</td><td class="n">${i}</td><td class="n">${a}</td><td class="n">${u}</td><td class="n"><b>${d}</b></td><td class="sm dim">${t(w)}</td></tr>`).join("");
+  $("assumeBody").innerHTML=ASSUME.map(([a,v,b])=>`<tr><td>${t(a)}</td><td class="n">${t(v)}</td><td class="sm dim">${t(b)}</td></tr>`).join("");
+  $("oqBody").innerHTML=OQ.map(([a,b,o],i)=>`<li><span class="q-n">${String(i+1).padStart(2,"0")}</span><span class="q-t"><b>${t(a)}</b><span>${t(b)}</span></span><span class="chip ${t(o)==="Joachim"?"warn":"ok"}">${t(o)}</span></li>`).join("");
+  $("revBody").innerHTML=REV.map(([i,d,x])=>`<span class="r-id">${i}</span><span class="r-dt">${d}</span><span>${t(x)}</span>`).join("");
+
+  buildPlan(); pickZone(selZone); buildOrg();
+}
+
+$("lang-da").onclick=()=>{if(LANG==="da")return;LANG="da";$("lang-da").setAttribute("aria-pressed","true");$("lang-en").setAttribute("aria-pressed","false");render();};
+$("lang-en").onclick=()=>{if(LANG==="en")return;LANG="en";$("lang-en").setAttribute("aria-pressed","true");$("lang-da").setAttribute("aria-pressed","false");render();};
+
+[["tab-b-plan","tab-plan"],["tab-b-org","tab-org"]].forEach(([b,p],_,all)=>{
+  $(b).addEventListener("click",()=>{
+    all.forEach(([bb,pp])=>{const on=bb===b;$(bb).setAttribute("aria-selected",String(on));$(pp).hidden=!on;});
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+});
+
+render();
+</script>
+
+</body>
+</html>
