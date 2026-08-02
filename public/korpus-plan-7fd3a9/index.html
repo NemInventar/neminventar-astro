@@ -476,7 +476,7 @@ const UI={
  tbS:["Målestok","Scale"], tbR:["Revision","Revision"], tbSt:["Status","Status"],
  tbLocV:["2 × 34,0 × 22,0 m","2 × 34.0 × 22.0 m"], tbHV:["6,0 m","6.0 m"],
  tbAV:["748 m² pr. hal","748 m² per hall"], tbSV:["1 tern = 1,0 m","1 square = 1.0 m"],
- tbRV:["I · 02-08-2026","I · 02-08-2026"], tbStV:["Udkast","Draft"]
+ tbRV:["J · 02-08-2026","J · 02-08-2026"], tbStV:["Udkast","Draft"]
 };
 const S=k=>t(UI[k]);
 
@@ -724,11 +724,11 @@ const ORG=[
  links:[["Materiale (K-03) — genbestilling FØR en batch sættes i gang","Materials (K-03) — reorder BEFORE a batch starts"],["Produktionsleder (K-04) — hvad skal tørre hvornår","Production manager (K-04) — what dries when"]],
  flag:["To personer er bevidst — overfladen afgør om kunden ser kvalitet, og den må aldrig stå stille fordi én er syg. MEN: de ansættes nu, og sprøjtekabinen er først fase 4. Afklar hvad de arbejder med indtil da.",
    "Two people is deliberate — finishing decides whether the customer sees quality, and it must never stop because one is off sick. BUT: they start now and the spray booth is only phase 4. Clarify what they work with until then."]},
-{c:"H-04",t:["Montage","Assembly"],who:"",n:2,st:["Nu","Now"],stc:"warn",tier:"hand",
+{c:"H-04",t:["Montage","Assembly"],who:["1 ansat · 1 mangler","1 hired · 1 to go"],n:2,st:["1 af 2 besat","1 of 2 filled"],stc:"warn",tier:"hand",
  duties:[["Samler lockers, bænke, skabe og paneler","Assembles lockers, benches, cabinets and panels"],["Monterer beslag, hængsler og låse","Fits fittings, hinges and locks"],["Én af de to kører ALLE emner gennem bredbåndssliberen fra oktober","One of the two runs ALL parts through the wide-belt sander from October"],["Retter små afvigelser inden KS","Corrects minor deviations before QC"]],
  links:[["Produktionsleder (K-04) — dagsplan","Production manager (K-04) — day plan"],["Pakning (H-05) — overlevering","Packing (H-05) — handover"]],
- flag:["Slibningen er en opgave oveni, ikke en ekstra person: ca. et halvt årsværk af de to går til sliberen når den kommer i oktober. Det er regnet med i timeskemaet.",
-   "Sanding is an added task, not an extra person: roughly half an FTE of the two goes to the sander once it arrives in October. That is accounted for in the hours schedule."]},
+ flag:["Den ene af de to er allerede ansat på fuld tid — den første på gulvet efter Argjent. Slibningen er en opgave oveni, ikke en ekstra person: ca. et halvt årsværk af de to går til sliberen når den kommer i oktober. Det er regnet med i timeskemaet.",
+   "One of the two is already employed full time — the first on the floor after Argjent. Sanding is an added task, not an extra person: roughly half an FTE of the two goes to the sander once it arrives in October. That is accounted for in the hours schedule."]},
 {c:"H-05",t:["Pakning + montage","Packing + assembly"],who:["Dobbeltrolle","Dual role"],n:2,st:["Nu","Now"],stc:"warn",tier:"hand",
  duties:[["Emballering, hjørnebeskyttelse og mærkning","Packaging, corner protection and labelling"],["Pakliste pr. forsendelse","Packing list per shipment"],["Klargør læs til lastbil","Prepares the load for the truck"],["Arbejder i montagen når der ikke pakkes","Works in assembly when there is nothing to pack"]],
  links:[["Materiale & logistik (K-03) — forsendelsesdokumenter","Materials & logistics (K-03) — shipping documents"],["Montage (H-04) — samme hold i praksis","Assembly (H-04) — the same team in practice"]],
@@ -831,8 +831,8 @@ const REL=[
  [["Hele fabrikken → daglig standup","The whole factory → daily standup"],["Hvad blev færdigt · hvad blokerer · hvad mangler","What finished · what blocks · what is missing"],["Hverdage 08:30, på engelsk","Weekdays 08:30, in English"],["Engelsk fordi Ferizaj og København er med i samme tråd","In English because Ferizaj and Copenhagen share the same thread"]]
 ];
 const HIRE=[
- [["Nu","Now"],["Montage (H-04)","Assembly (H-04)"],"2","3",
-  ["Kernen i produktionen. Én af dem overtager sliberen i oktober.","The core of production. One of them takes over the sander in October."]],
+ [["Nu","Now"],["Montage (H-04) — 1 af 2 er allerede ansat","Assembly (H-04) — 1 of 2 already hired"],"1","3",
+  ["Kernen i produktionen. Én af de to overtager sliberen i oktober.","The core of production. One of the two takes over the sander in October."]],
  [["Nu","Now"],["Bejdse / lak (H-03)","Stain / lacquer (H-03)"],"2","5",
   ["Overfladen må aldrig stå stille fordi én er syg.","Finishing must never stop because one person is off sick."]],
  [["Nu","Now"],["Pakning + montage (H-05)","Packing + assembly (H-05)"],"2","7",
@@ -897,6 +897,8 @@ const OQ=[
  [["Arbejdstid og ferie","Working time and leave"],["Bekræft 40 t/uge, 20 feriedage og helligdage — hele timeregnskabet hviler på det.","Confirm 40 h/week, 20 leave days and public holidays — the entire hours model rests on it."],"Argjent"]
 ];
 const REV=[
+ ["Rev J","02-08-2026",["Den første montagemedarbejder er ansat på fuld tid. H-04 står nu som 1 af 2 besat, “på plads i dag” går fra 1 til 2, og der mangler 7 ansættelser i stedet for 8. Timeregnskabet er uændret — de to montagepladser var allerede regnet med.",
+  "The first assembly worker has been hired full time. H-04 now reads 1 of 2 filled, “in place today” goes from 1 to 2, and 7 hires remain instead of 8. The hours model is unchanged — both assembly positions were already counted."]],
  ["Rev I","02-08-2026",["Siden er nu hostet på vores eget domæne, så den kan åbnes fra en telefon uden login. I den forbindelse er alt internt taget ud: navngivne kundeprojekter, leverandørnavne, interne systemnavne og Slack-id'er. Pointerne står stadig — fx hvorfor minimumsbeholdning på lak er den vigtigste enkeltopgave — bare uden at hænge en bestemt sag ud. Siden er sat til noindex og ligger på en ikke-gættelig adresse.",
   "The page is now hosted on our own domain so it can be opened from a phone without a login. In connection with that, everything internal has been taken out: named customer projects, supplier names, internal system names and Slack IDs. The points still stand — for instance why minimum stock of lacquer is the single most important task — just without naming a specific job. The page is set to noindex and sits at an unguessable address."]],
  ["Rev H","02-08-2026",["Alle priser og beløb fjernet fra siden. Den er produktionens dokument: mål, flow, roller, timer og kapacitet — ikke økonomi. Husleje, maskinpriser og anlægsudgifter hører i den danske del af sagen og står ikke her. Bemanding i antal personer bliver stående, fordi det er produktionens eget planlægningsgrundlag.",
@@ -924,8 +926,8 @@ const PLANCARDS=[
 ];
 const ORGCARDS=[
  [["Fuld bemanding","Full manning"],"13",["8 hænder + 5 indirekte inkl. Argjent. 14 hvis sikkerhed ansættes frem for at være en hat.","8 hands + 5 indirect incl. Argjent. 14 if safety is hired rather than a hat."],""],
- [["På plads i dag","In place today"],"1",["Argjent. Hænderne er lånt kapacitet indtil lokalet overtages.","Argjent. The hands are borrowed capacity until the premises are taken over."],""],
- [["Skal ansættes nu","To hire now"],"8",["2 montage · 2 bejdse/lak · 2 pakning · 3D-tegner · materiale &amp; logistik.","2 assembly · 2 stain/lacquer · 2 packing · 3D draughtsman · materials &amp; logistics."],"hi"],
+ [["På plads i dag","In place today"],"2",["Argjent + én montagemedarbejder på fuld tid. Resten af gulvet er lånt kapacitet indtil lokalet overtages.","Argjent plus one full-time assembly worker. The rest of the floor is borrowed capacity until the premises are taken over."],""],
+ [["Skal ansættes nu","To hire now"],"7",["1 montage · 2 bejdse/lak · 2 pakning · 3D-tegner · materiale &amp; logistik.","1 assembly · 2 stain/lacquer · 2 packing · 3D draughtsman · materials &amp; logistics."],"hi"],
  [["Refererer til Argjent","Reporting to Argjent"],"5",["Sikkerhed · 3D · materiale &amp; logistik · produktionsleder · systemansvarlig.","Safety · drawing · materials &amp; logistics · production manager · systems lead."],""]
 ];
 const HOURCARDS=[
