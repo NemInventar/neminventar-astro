@@ -448,7 +448,7 @@ const UI={
  pickZone:["Vælg en zone","Select a zone"], pickRole:["Vælg en rolle","Select a role"],
  tMgmt:["Fabriksledelse","Factory management"], tStaff:["Stab","Staff"], tSys:["Egen gren","Own branch"],
  tLine:["Linjen","The line"],
- tFloor:["Gulvet — hænderne · bookes ind af produktionslederen (K-04)","The floor — the hands · scheduled by the production manager (K-04)"],
+ tFloor:["Gulvet — 8 hænder · bookes ind af produktionslederen (K-04) · hatte tæller ikke som ekstra hoveder","The floor — 8 hands · scheduled by the production manager (K-04) · hats are not extra headcount"],
  orgnote:["Alle fem — stab, egen gren og linjen — refererer direkte til Argjent. Rygraden viser produktionsvejen ned til gulvet, ikke et ekstra ledelseslag.",
    "All five — staff, own branch and the line — report directly to Argjent. The spine shows the production path down to the floor, not an extra layer of management."],
  hallA:["HAL A — TØR / STØV","HALL A — DRY / DUSTY"], hallB:["HAL B — REN / VÅD","HALL B — CLEAN / WET"],
@@ -476,7 +476,7 @@ const UI={
  tbS:["Målestok","Scale"], tbR:["Revision","Revision"], tbSt:["Status","Status"],
  tbLocV:["2 × 34,0 × 22,0 m","2 × 34.0 × 22.0 m"], tbHV:["6,0 m","6.0 m"],
  tbAV:["748 m² pr. hal","748 m² per hall"], tbSV:["1 tern = 1,0 m","1 square = 1.0 m"],
- tbRV:["K · 02-08-2026","K · 02-08-2026"], tbStV:["Udkast","Draft"]
+ tbRV:["L · 02-08-2026","L · 02-08-2026"], tbStV:["Udkast","Draft"]
 };
 const S=k=>t(UI[k]);
 
@@ -736,7 +736,18 @@ const ORG=[
  duties:[["Emballering, hjørnebeskyttelse og mærkning","Packaging, corner protection and labelling"],["Pakliste pr. forsendelse","Packing list per shipment"],["Klargør læs til lastbil","Prepares the load for the truck"],["Arbejder i montagen når der ikke pakkes","Works in assembly when there is nothing to pack"]],
  links:[["Materiale & logistik (K-03) — forsendelsesdokumenter","Materials & logistics (K-03) — shipping documents"],["Montage (H-04) — samme hold i praksis","Assembly (H-04) — the same team in practice"]],
  flag:["De to er regnet som halvt pakning, halvt montage. Pakning kommer i bølger omkring afsendelse — derfor giver dobbeltrollen mening, men den kræver at produktionslederen kan flytte dem uden varsel.",
-   "The two are counted as half packing, half assembly. Packing comes in waves around dispatch — that is why the dual role makes sense, but it requires the production manager to move them without notice."]}
+   "The two are counted as half packing, half assembly. Packing comes in waves around dispatch — that is why the dual role makes sense, but it requires the production manager to move them without notice."]},
+{c:"H-06",t:["Truck & intern transport","Forklift & internal transport"],who:["Hat på en af hænderne","Hat worn by one of the hands"],n:0,
+ st:["Hat","Hat"],stc:"ok",tier:"hand",
+ duties:[["Kører trucken — henter råvarer i A3 og sætter dem ud hvor de skal bruges","Drives the forklift — takes raw stock from A3 and places it where it is needed"],
+   ["Læsser færdigvarer på lastbilen ved afsendelse","Loads finished goods onto the truck at dispatch"],
+   ["Holder logistikbanen fri, så gods ikke parkeres i arbejdszonerne","Keeps the logistics lane clear so goods are not parked in the working zones"],
+   ["Arbejder som almindelig hånd resten af tiden — bejdse/lak, montage, det der er behov for","Works as an ordinary hand the rest of the time — stain/lacquer, assembly, whatever is needed"]],
+ links:[["Materiale & logistik (K-03) — modtagelse og placering på lager","Materials & logistics (K-03) — goods-in and where stock is placed"],
+   ["Produktionsleder (K-04) — hvad skal ud hvornår","Production manager (K-04) — what goes out when"],
+   ["Sikkerhedsansvarlig (K-01) — truckcertifikat og oplæring","Safety officer (K-01) — forklift licence and training"]],
+ flag:["Det er en HAT, ikke et ekstra hoved — bemandingen er stadig 13. Truckkørsel er ikke regnet som egen post i timeskemaet, fordi flytning af materiale allerede ligger i de 20-30 % af tiden der ikke bliver til produktion. Læg den derfor ikke oveni. Til gengæld skal han have truckcertifikat og stå i kompetenceregisteret, før han sætter sig op i den.",
+   "This is a HAT, not an extra head — manning is still 13. Forklift work is not a separate line in the hours schedule, because moving material already sits inside the 20-30 % of time that does not become production. So do not add it on top. He does, however, need a forklift licence and an entry in the competence register before he gets in the seat."]}
 ];
 let selRole="K-00";
 function nodeHTML(r){
@@ -758,7 +769,7 @@ function pickRole(c){
   document.querySelectorAll(".node").forEach(n=>n.setAttribute("aria-pressed",String(n.dataset.c===c)));
   document.getElementById("oCode").textContent=r.c;
   document.getElementById("oName").textContent=t(r.t);
-  document.getElementById("oCount").textContent=r.n===0?"—":r.n;
+  document.getElementById("oCount").textContent=r.n===0?(LANG==="en"?"Hat":"Hat"):r.n;
   document.getElementById("oStatus").textContent=t(r.st);
   document.getElementById("oDuties").innerHTML=r.duties.map(d=>`<li>${t(d)}</li>`).join("");
   const lw=document.getElementById("oLinkWrap");
@@ -801,7 +812,7 @@ const PH=[
 ];
 const Q=[
  [["Maskinlisten","The machine list"],["Er der købt eller bestilt noget? Alle mål i skema 03 er standardmål indtil da.","Has anything been bought or ordered? All dimensions in schedule 03 are standard until then."],"Milot"],
- [["Gaffeltrucken","The forklift"],["Bliver den el eller diesel? Diesel indendørs i et træværksted går ikke. Og er 3 tons ikke for meget — en mindre el-truck kræver smallere arbejdsgang og frigør gulv.","Will it be electric or diesel? Diesel indoors in a woodworking shop will not do. And is 3 tonnes not too much — a smaller electric truck needs a narrower aisle and frees up floor."],"Milot"],
+ [["Gaffeltrucken","The forklift"],["Bliver den el eller diesel? Diesel indendørs i et træværksted går ikke. Og er 3 tons ikke for meget — en mindre el-truck kræver smallere arbejdsgang og frigør gulv. Truckføreren er nu udpeget (H-06), så han skal også have certifikat.","Will it be electric or diesel? Diesel indoors in a woodworking shop will not do. And is 3 tonnes not too much — a smaller electric truck needs a narrower aisle and frees up floor. The driver is now identified (H-06), so he also needs a licence."],"Milot"],
  [["Søjlenettet","The column grid"],["Hvor står søjlerne i hver hal? De bestemmer hvor montage og CNC kan ligge.","Where do the columns stand in each hall? They decide where assembly and the CNC can go."],"Milot"],
  [["Port og rampe","Door and ramp"],["Porthøjde, rampehøjde og vendeplads udenfor. En 40-fods trailer skal bruge ca. 25 m.","Door height, dock height and turning space outside. A 40-foot trailer needs about 25 m."],"Milot"],
  [["Strømmen på skrift","Power in writing"],["Få kW og hovedsikring skrevet ind i lejekontrakten. Behovet er 100–150 kW installeret.","Get kW and main fuse written into the lease. The requirement is 100–150 kW installed."],"Milot"],
@@ -902,6 +913,8 @@ const OQ=[
  [["Arbejdstid og ferie","Working time and leave"],["Bekræft 40 t/uge, 20 feriedage og helligdage — hele timeregnskabet hviler på det.","Confirm 40 h/week, 20 leave days and public holidays — the entire hours model rests on it."],"Argjent"]
 ];
 const REV=[
+ ["Rev L","02-08-2026",["Truckansvaret er lagt ind som H-06 — en HAT på en af hænderne, ikke et ekstra hoved. Han henter råvarer ud til forbrug og læsser færdigvarer, og arbejder som almindelig hånd i bejdse/lak og montage resten af tiden. Bemandingen er stadig 13, og truckkørsel er bevidst ikke lagt oveni timeskemaet, fordi materialeflytning allerede ligger i de 20-30 % der ikke bliver til produktion.",
+  "Forklift duty is added as H-06 — a HAT worn by one of the hands, not an extra head. He takes raw stock out to the point of use and loads finished goods, and works as an ordinary hand in finishing and assembly the rest of the time. Manning is still 13, and forklift work is deliberately not added on top of the hours schedule, because moving material already sits inside the 20-30 % that does not become production."]],
  ["Rev K","02-08-2026",["Produktionslederen (K-04) er nu ultimativt kvalitetsansvarlig: intet forlader fabrikken uden hans godkendelse. Han vejleder desuden medarbejderne i arbejdsmetoder og logger materialeforbrug pr. job, så forbruget kan holdes op mod de ATK-godkendte normativer ved kontrol. Ny åben post: hvem fører materialeloggen indtil han starter i september.",
   "The production manager (K-04) is now the ultimate owner of quality: nothing leaves the factory without his approval. He also coaches the team on working methods and logs material consumption per job, so consumption can be held against the ATK-approved production norms at inspection. New open item: who keeps the material log until he starts in September."]],
  ["Rev J","02-08-2026",["Den første montagemedarbejder er ansat på fuld tid. H-04 står nu som 1 af 2 besat, “på plads i dag” går fra 1 til 2, og der mangler 7 ansættelser i stedet for 8. Timeregnskabet er uændret — de to montagepladser var allerede regnet med.",
