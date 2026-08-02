@@ -476,7 +476,7 @@ const UI={
  tbS:["Målestok","Scale"], tbR:["Revision","Revision"], tbSt:["Status","Status"],
  tbLocV:["2 × 34,0 × 22,0 m","2 × 34.0 × 22.0 m"], tbHV:["6,0 m","6.0 m"],
  tbAV:["748 m² pr. hal","748 m² per hall"], tbSV:["1 tern = 1,0 m","1 square = 1.0 m"],
- tbRV:["J · 02-08-2026","J · 02-08-2026"], tbStV:["Udkast","Draft"]
+ tbRV:["K · 02-08-2026","K · 02-08-2026"], tbStV:["Udkast","Draft"]
 };
 const S=k=>t(UI[k]);
 
@@ -688,16 +688,19 @@ const ORG=[
    "Minimum stock levels on consumables — lacquer, stain, glue, fittings — is this role's single most important task. If a batch runs dry midway the whole lot has to be redone, and that always costs more than holding the stock would have."]},
 {c:"K-04",t:["Produktionsleder","Production Manager"],who:["Ansættes september","Hiring September"],n:1,
  st:["September","September"],stc:"warn",tier:"line",
- duties:[["Booker hænderne ind på jobs — daglig planlægning","Schedules the hands onto jobs — daily planning"],
+ duties:[["ULTIMATIVT KVALITETSANSVARLIG — intet forlader fabrikken uden hans godkendelse","ULTIMATE OWNER OF QUALITY — nothing leaves the factory without his approval"],
+   ["Vejleder medarbejderne i arbejdsmetoder og lærer dem op på gulvet","Coaches the team on working methods and trains them on the floor"],
+   ["Logger materialeforbrug pr. job, så forbruget kan holdes op mod de ATK-godkendte normativer ved kontrol","Logs material consumption per job so it can be held against the ATK-approved production norms at inspection"],
+   ["Booker hænderne ind på jobs — daglig planlægning","Schedules the hands onto jobs — daily planning"],
    ["Omsætter tegnings- og materialestatus til en startdato pr. job","Turns drawing and material status into a start date per job"],
-   ["Kvalitetskontrol før pakning","Quality check before packing"],
-   ["Oplæring på gulvet","Training on the floor"],
    ["Melder blokeringer videre i standup","Raises blockers in standup"]],
  links:[["3D (K-02) og Materiale (K-03) — er forudsætningerne på plads","Drawing (K-02) and Materials (K-03) — are the prerequisites in place"],
-   ["Alle ni hænder — dagsplan","All nine hands — the day plan"],
+   ["Alle otte hænder — dagsplan, oplæring og kvalitet","All eight hands — day plan, training and quality"],
+   ["Materiale & logistik (K-03) — forbrug holdt op mod indkøb og ATK-normativer","Materials & logistics (K-03) — consumption against purchases and ATK norms"],
+   ["Systemansvarlig (K-05) — forbrugsloggen skal blive et system, ikke en notesbog","Systems lead (K-05) — the consumption log must become a system, not a notebook"],
    ["Argjent (K-00) — kapacitet og afvigelser","Argjent (K-00) — capacity and deviations"]],
- flag:["Den eneste rolle på linjen mellem Argjent og gulvet — alt der skal produceres, går igennem her. Indtil den er besat i september, ligger den på Argjent, og det er efterårets mest sandsynlige flaskehals.",
-   "The only role on the line between Argjent and the floor — everything to be produced passes through here. Until it is filled in September it sits with Argjent, and that is the most likely bottleneck this autumn."]},
+ flag:["Materialeloggen er ikke bogholderi — den er dokumentationen der skal kunne fremvises når ATK kontrollerer at de toldfritagne råvarer faktisk er gået til produktion. Rollen bærer nu fire ting på én gang: kvalitet, oplæring, materialelog og planlægning. Det er meget for én person, og den findes ikke før september — indtil da ligger det hele på Argjent.",
+   "The material log is not bookkeeping — it is the documentation to be produced when ATK checks that the duty-exempt raw materials actually went into production. The role now carries four things at once: quality, training, the material log and planning. That is a lot for one person, and it does not exist until September — until then it all sits with Argjent."]},
 {c:"K-05",t:["Systemansvarlig","Systems Lead"],who:["Ansættes oktober","Hiring October"],n:1,
  st:["Oktober","October"],stc:"warn",tier:"sys",
  duties:[["Bygger fabrikkens systemer: jobtracking, lager, vedligehold, kompetence, SOP","Builds the factory's systems: job tracking, stock, maintenance, competence, SOPs"],
@@ -823,7 +826,8 @@ const REL=[
  [["Korpus materiale (K-03) ↔ NI DK","Korpus materials (K-03) ↔ NI Denmark"],["Hvem køber hvad · DK-indkøb mod lokalt","Who buys what · Danish versus local purchase"],["Ved projektopstart","At project start"],["Indkøbsplan pr. materiale","Purchase plan per material"]],
  [["Argjent (K-00) → NI DK","Argjent (K-00) → NI Denmark"],["Kan vi holde leveringstiden","Can we hold the delivery date"],["Efter planlægning","After planning"],["Kapacitetstilsagn — bindende","Capacity commitment — binding"]],
  [["K-02 + K-03 → Produktionsleder (K-04)","K-02 + K-03 → Production manager (K-04)"],["Tegninger klar · materialer hjemme","Drawings ready · materials landed"],["Løbende","Ongoing"],["Startdato pr. job","Start date per job"]],
- [["Produktionsleder (K-04) → gulvet","Production manager (K-04) → the floor"],["Hvem står hvor i dag","Who stands where today"],["Dagligt","Daily"],["Dagsplan","Day plan"]],
+ [["Produktionsleder (K-04) → gulvet","Production manager (K-04) → the floor"],["Hvem står hvor i dag · arbejdsmetode · kvalitetskrav","Who stands where today · working method · quality standard"],["Dagligt","Daily"],["Dagsplan og godkendt arbejdsmetode","Day plan and approved working method"]],
+ [["Produktionsleder (K-04) → materialelog","Production manager (K-04) → material log"],["Forbrug pr. job holdt op mod de ATK-godkendte normativer","Consumption per job against the ATK-approved production norms"],["Pr. job, løbende","Per job, ongoing"],["Dokumentation klar til ATK-kontrol","Documentation ready for an ATK inspection"]],
  [["Gulvet → Produktionsleder (K-04)","The floor → Production manager (K-04)"],["Færdigt arbejde · blokeringer · mangler","Work done · blockers · shortages"],["Dagligt, i standup","Daily, in standup"],["Blokeringer bliver til opgaver","Blockers become tasks"]],
  [["Systemansvarlig (K-05) ↔ alle","Systems lead (K-05) ↔ everyone"],["Data ud af fabrikken · systemer ind","Data out of the factory · systems in"],["Løbende","Ongoing"],["Dashboards · SOP'er · kompetenceregister","Dashboards · SOPs · competence register"]],
  [["Sikkerhed (K-01) ↔ K-04 + gulvet","Safety (K-01) ↔ K-04 + the floor"],["Maskingodkendelse · træning · værnemidler","Machine sign-off · training · PPE"],["Ved ny maskine eller ny mand","On a new machine or a new starter"],["Kompetenceregister opdateret","Competence register updated"]],
@@ -886,6 +890,7 @@ const ASSUME=[
 ];
 const OQ=[
  [["Sikkerhedsansvarlig — stilling eller hat?","Safety officer — post or hat?"],["Tavlens 14 rummer ikke rollen. Skal den ansættes, er I 15.","The whiteboard's 14 does not include the role. If it is hired, you are 15."],"Argjent"],
+ [["Materialelog inden ATK banker på","Material log before ATK knocks"],["Produktionslederen skal logge forbrug mod normativerne, men han starter først i september, og systemansvarlig i oktober. Hvad logger vi i mellemtiden — og hvem gør det? En ATK-kontrol venter ikke på vores ansættelsesplan.","The production manager is to log consumption against the norms, but he does not start until September and the systems lead until October. What do we log in the meantime — and who does it? An ATK inspection will not wait for our hiring plan."],"Argjent"],
  [["Hvem skærer indtil oktober?","Who cuts until October?"],["CNC og sav ansættes først når maskinerne kommer. Fra nu til oktober er der ingen på maskinbearbejdning — købes det ude, laves det på lånte maskiner, eller gør Argjent det selv?","CNC and saw are only hired when the machines arrive. From now until October there is nobody on machining — is it bought outside, done on borrowed machines, or does Argjent do it himself?"],"Milot"],
  [["Bejdse/lak starter før kabinen","Finishing starts before the booth"],["De to overfladefolk ansættes nu, men sprøjtekabinen er fase 4. Hvad arbejder de med indtil da — pensel og rulle, lånt kabine, eller skal kabinen rykkes frem?","The two finishing people start now, but the spray booth is phase 4. What do they work with until then — brush and roller, a borrowed booth, or should the booth be pulled forward?"],"Milot"],
  [["Tavlens ekstra CNC-mand","The whiteboard's extra CNC operator"],["Tavlen viste både “CNC/Sav 2” og “CNC mand 1”. Med CNC og sav som én hver er den ekstra ikke med. Er det et andet skift senere?","The whiteboard showed both “CNC/Saw 2” and “CNC operator 1”. With CNC and saw as one each, the extra is not included. Is that a second shift later on?"],"Milot"],
@@ -897,6 +902,8 @@ const OQ=[
  [["Arbejdstid og ferie","Working time and leave"],["Bekræft 40 t/uge, 20 feriedage og helligdage — hele timeregnskabet hviler på det.","Confirm 40 h/week, 20 leave days and public holidays — the entire hours model rests on it."],"Argjent"]
 ];
 const REV=[
+ ["Rev K","02-08-2026",["Produktionslederen (K-04) er nu ultimativt kvalitetsansvarlig: intet forlader fabrikken uden hans godkendelse. Han vejleder desuden medarbejderne i arbejdsmetoder og logger materialeforbrug pr. job, så forbruget kan holdes op mod de ATK-godkendte normativer ved kontrol. Ny åben post: hvem fører materialeloggen indtil han starter i september.",
+  "The production manager (K-04) is now the ultimate owner of quality: nothing leaves the factory without his approval. He also coaches the team on working methods and logs material consumption per job, so consumption can be held against the ATK-approved production norms at inspection. New open item: who keeps the material log until he starts in September."]],
  ["Rev J","02-08-2026",["Den første montagemedarbejder er ansat på fuld tid. H-04 står nu som 1 af 2 besat, “på plads i dag” går fra 1 til 2, og der mangler 7 ansættelser i stedet for 8. Timeregnskabet er uændret — de to montagepladser var allerede regnet med.",
   "The first assembly worker has been hired full time. H-04 now reads 1 of 2 filled, “in place today” goes from 1 to 2, and 7 hires remain instead of 8. The hours model is unchanged — both assembly positions were already counted."]],
  ["Rev I","02-08-2026",["Siden er nu hostet på vores eget domæne, så den kan åbnes fra en telefon uden login. I den forbindelse er alt internt taget ud: navngivne kundeprojekter, leverandørnavne, interne systemnavne og Slack-id'er. Pointerne står stadig — fx hvorfor minimumsbeholdning på lak er den vigtigste enkeltopgave — bare uden at hænge en bestemt sag ud. Siden er sat til noindex og ligger på en ikke-gættelig adresse.",
