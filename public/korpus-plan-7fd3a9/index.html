@@ -451,9 +451,15 @@ const UI={
    "Both halls. Hall 1 is dry and dusty · hall 2 is clean and wet · parts cross over exactly once, through the door in the partition wall."],
  area:["Areal","Area"], dims:["Mål","Dimensions"], contents:["Indhold","Contents"],
  truckLbl:["Trucken","Forklift"], truckYes:["Adgang","Access"], truckNo:["Kørefri","No driving"],
- lgNoDrive:["Kørefri zone","No-driving zone"],
- planNote2:["Skraveringen er kørefri zoner. Trucken kører kun i råvarelageret og de to åbne kørezoner 1.2 og 2.1 — ikke i smalle baner, men i store frie felter, som på håndtegningerne.",
-   "Hatching marks no-driving zones. The forklift only moves in raw stock and the two open driving zones, 1.2 and 2.1 — not narrow lanes, but large clear areas, as on the hand sketches."],
+ lgNoDrive:["Blank, kørefri plads","Blank, no-driving space"],
+ doorLbl:["SKYDEDØR","SLIDING DOOR"],
+ lgDoor:["Skillevæg m. skydedør","Partition with sliding door"],
+ lgDrive:["Truckens grænse — her må den køre","Forklift boundary — where it may drive"],
+ polyDim:["Ikke rektangulær","Not rectangular"],
+ restLbl:["Gang, ikke zoneopdelt","Aisle, not zoned"],
+ restWhy:["Resten af hallen: passager mellem zonerne. Den er reel, men har ingen funktion tildelt","The rest of the hall: passages between the zones. It is real floor, but has no function assigned"],
+ planNote2:["Den orange kontur er truckens grænse, tegnet af efter dine røde streger — den følger ikke zonegrænserne, og den er ikke firkantet. Skraveringen er blanke, kørefri pladser: foran toilettet i hal 1, og den 1,5 m brede gang langs væggen i hal 2 fra UDGANG ned til skillevæggen. Bejdse, maling og tørring er skærmet af med en 3,5 m høj skillevæg — én skydedør tæt på UDGANG-væggen og én ude ved montagen. Der er ingen søjler midt i hallerne, kun langs væggene, og gulvet er i jordhøjde uden ramper.",
+   "The orange outline is the forklift boundary, traced from your red lines — it does not follow the zone borders, and it is not rectangular. Hatching marks blank, no-driving spaces: in front of the WC in hall 1, and the 1.5 m walkway along the wall in hall 2 from the EXIT down to the partition. Staining, painting and drying are screened off by a 3.5 m partition wall — one sliding door close to the EXIT wall and one out by assembly. There are no columns in the middle of the halls, only along the walls, and the floor is at ground level with no ramps."],
  count:["Antal","Headcount"], status:["Status","Status"], duties:["Ansvar","Duties"], talks:["Taler med","Talks to"],
  pickZone:["Vælg en zone","Select a zone"], pickRole:["Vælg en rolle","Select a role"],
  tMgmt:["Fabriksledelse","Factory management"], tStaff:["Stab","Staff"], tSys:["Egen gren","Own branch"],
@@ -463,11 +469,11 @@ const UI={
    "All five — staff, own branch and the line — report directly to Argjent. The spine shows the production path down to the floor, not an extra layer of management."],
  hallA:["HAL 1 — TØR / STØV","HALL 1 — DRY / DUSTY"], hallB:["HAL 2 — REN / VÅD","HALL 2 — CLEAN / WET"],
  hallAs:["Råvare → opskæring/CNC → slibning & håndarbejde · 748 m²","Raw stock → cutting/CNC → sanding & handwork · 748 m²"],
- hallBs:["Bejdse → lak → tørring → montage → pakning → ud · 748 m²","Stain → lacquer → drying → assembly → packing → out · 748 m²"],
+ hallBs:["Montage → bejdse/maling → tørring → prøvesamling & KS → pakning → ud · 748 m²","Assembly → stain/paint → drying → trial assembly & QC → packing → out · 748 m²"],
  exitLbl:["UDGANG — SAMME STED PÅ BEGGE HALLER","EXIT — SAME POSITION IN BOTH HALLS"],
  transferLbl:["Emner krydser her","Parts cross here"],
  lgLager:["Lager","Storage"], lgMask:["Maskinbearbejdning","Machining"], lgOver:["Overflade","Finishing"],
- lgMont:["Montage & pakning","Assembly & packing"], lgServ:["Gang & teknik","Aisle & services"],
+ lgMont:["Montage & pakning","Assembly & packing"], lgServ:["Gang & kørezone","Aisle & driving zone"],
  lgMezz:["Kontor & personale","Office & welfare"], lgFlow:["Flow, udgang & krydsning","Flow, exit & crossing"],
  hCode:["Kode","Code"], hZone:["Zone","Zone"], hWhy:["Hvorfor lige der","Why there"],
  hMach:["Maskine","Machine"], hM1:["Maskine","Machine"], hM2:["Reelt behov","Real footprint"], hStatus:["Status","Status"],
@@ -486,62 +492,100 @@ const UI={
  tbS:["Målestok","Scale"], tbR:["Revision","Revision"], tbSt:["Status","Status"],
  tbLocV:["2 × 22,0 × 34,0 m","2 × 22.0 × 34.0 m"], tbHV:["6,0 m","6.0 m"],
  tbAV:["748 m² pr. hal","748 m² per hall"], tbSV:["1 tern = 1,0 m","1 square = 1.0 m"],
- tbRV:["N · 02-08-2026","N · 02-08-2026"], tbStV:["Udkast","Draft"]
+ tbRV:["R · 02-08-2026","R · 02-08-2026"], tbStV:["Udkast","Draft"]
 };
 const S=k=>t(UI[k]);
 
 /* ═══════════ ZONEDATA ═══════════ */
 const GAP=30;
 const Z=[
-{c:"1.2",n:["Kørezone & buffer","Driving zone & buffer"],h:0,x:11,y:6,w:11,d:28,t:"service",truck:true,
- items:[["4 m truckvej","4 m forklift lane"],["Palleplads ved port","Pallet drop at the door"],["Modtagekontrol","Goods-in inspection"]],
- why:["Ét stort frit felt i højre side, ikke en smal bane. Trucken har hele arealet, og maskinerne står samlet til venstre uden for det","One large clear area on the right, not a narrow lane. The forklift has the whole field, and the machines sit together on the left, outside it"],
- flag:["Uden en defineret truckbane spiser 3,5–4,2 m arbejdsgange hele hallen. Det er derfor din Blender-model føles fuld.","Without a defined forklift lane, 3.5–4.2 m working aisles eat the whole hall. That is why the Blender model already feels full."]},
-{c:"1.3",n:["Råvarelager","Raw material store"],h:0,x:0,y:0,w:22,d:6,t:"lager",truck:true,
- items:[["Pallereol langs væggen","Pallet racking along the wall"],["Fladstak til plader 2440 × 1220","Flat stacks for 2440 × 1220 panels"],["Konsolreol til lange emner","Cantilever rack for long stock"],["ATK-zone, markeret og adskilt","ATK zone, marked and segregated"]],
- why:["Pallereol langs hele topvæggen, som i 3D-modellen. Trucken sætter plader af her, og de går ned i venstre side til opskæring","Pallet racking along the whole top wall, as in the 3D model. The forklift drops panels here and they move down the left side to cutting"],
- flag:["ATK-toldfritagne råvarer skal kunne spores og tælles ved kontrol. Bland dem aldrig med lokalt indkøbt materiale.","ATK duty-exempt materials must be traceable and countable at inspection. Never mix them with locally purchased stock."]},
-{c:"1.4",n:["Opskæring, CNC & boring","Cutting, CNC & drilling"],h:0,x:0,y:6,w:11,d:14,t:"maskin",truck:false,
- items:[["3-akset CNC med nesting","3-axis CNC with nesting"],["Industrisav","Industrial saw"],["Bordsav","Table saw"],["Vakuumløfter og afskærsreol","Vacuum lifter and offcut rack"]],
- why:["Samlet i venstre side som aftalt, uden for kørezonen. Industrisav, CNC og bordsav står på række, så pladen kun håndteres én gang","Grouped on the left as agreed, outside the driving zone. Industrial saw, CNC and table saw in a row, so a panel is handled only once"],
+/* ═══ HAL 1 ═══ */
+{c:"1.1",n:["Toilet","WC"],h:0,x:18,y:0,w:4,d:4,t:"mezz",truck:false,
+ items:[["Toilet og håndvask","WC and washbasin"]],
+ why:["Øverste højre hjørne af hal 1, som på håndtegningen","Top right corner of hall 1, as on the hand sketch"],
+ flag:["Der er ikke afsat omklædning eller bad nogen steder. Kun kontor (2.4), personalerum (2.9) og dette toilet — bekræft at det er nok til 13-14 personer.","No changing room or shower is allocated anywhere. Only the office (2.4), the staff room (2.9) and this WC — confirm that is enough for 13-14 people."]},
+{c:"1.8",n:["Fri plads","Clear space"],h:0,x:18,y:4,w:4,d:6.5,t:"blank",truck:false,
+ items:[["Ingen funktion — holdes fri","No function — kept clear"],["Ingen trucktrafik","No forklift traffic"]],
+ why:["Pladsen foran toilettet holdes blank, som du har markeret den — adgangen må ikke spærres af paller, og trucken kommer ikke herind","The space in front of the WC is kept blank, as you marked it — the access must not be blocked by pallets, and the forklift does not come in here"],flag:""},
+{c:"1.6",n:["Industrisav","Industrial saw"],h:0,x:0,y:0,w:6,d:6,t:"maskin",truck:false,
+ items:[["Industrisav med til- og fraløb","Industrial saw with in- and outfeed"],["Afkortning af plader og lange emner","Cross-cutting panels and long stock"]],
+ why:["Eget hjørne øverst til venstre, som på håndtegningen — pladen kommer direkte fra reolen og videre ned i opskæringen","Its own corner at the top left, as on the hand sketch — the panel comes straight from the racking and on down into cutting"],flag:""},
+{c:"1.3",n:["Råvarelager","Raw material store"],h:0,x:6,y:0,w:11,d:2,t:"lager",truck:true,
+ items:[["Pallereol langs topvæggen","Pallet racking along the top wall"],["Fladstak til plader 2440 × 1220","Flat stacks for 2440 × 1220 panels"],["ATK-zone, markeret og adskilt","ATK zone, marked and segregated"]],
+ why:["Reolerne står langs væggen som på håndtegningen, og trucken arbejder i det åbne felt foran dem — ikke inde i reolen","The racking stands along the wall as on the hand sketch, and the forklift works in the open field in front of it — not inside the rack"],
+ flag:["Reolens fodaftryk er nu 22 m² mod 108 m² i den gamle plan, fordi lageret er en reol langs væggen og ikke et felt. Det holder kun hvis reolen er høj og trucken kan nå øverste niveau — ellers skal feltet dybere.","The rack footprint is now 22 m² against 108 m² in the old plan, because the store is racking along a wall and not a field. That only works if the rack is tall and the forklift can reach the top level — otherwise the bay must be deeper."]},
+{c:"1.4",n:["Opskæring & CNC","Cutting & CNC"],h:0,pts:[[0,6],[6,6],[8.4,11.6],[8.4,23.5],[0,23.5]],lx:4.1,ly:17,t:"maskin",truck:false,
+ items:[["3-akset CNC med nesting","3-axis CNC with nesting"],["Bordsav","Table saw"],["Vakuumløfter og afskærsreol","Vacuum lifter and offcut rack"]],
+ why:["Hele venstre side under industrisaven, som på håndtegningen. Den skrå kant øverst er truckens grænse — kørezonen skærer hjørnet af, så pladen kan sættes af tæt ved saven","The whole left side below the industrial saw, as on the hand sketch. The angled edge at the top is the forklift boundary — the driving zone cuts the corner so panels can be dropped close to the saw"],
  flag:["Fase 1-investeringen. Erstatter pladesav, boring og fræsning i ét og åbner for CNC-perforering.","The phase 1 investment. Replaces panel saw, drilling and routing in one, and opens up CNC perforation."]},
-{c:"1.5",n:["Slibning & håndarbejde","Sanding & handwork"],h:0,x:0,y:20,w:11,d:14,t:"maskin",truck:false,
- items:[["Bredbåndssliber","Wide-belt sander"],["Båndsliber","Belt sander"],["Debur-station","Debur station"],["Håndarbejdsstationer","Handwork stations"]],
- why:["Ligger i forlængelse af opskæringen i venstre side, så emnet går direkte fra CNC til finish uden at krydse kørezonen","Sits directly below cutting on the left side, so a part goes straight from the CNC to finishing without crossing the driving zone"],
- flag:["Der er bevidst INGEN kantlimmaskine i planen — I arbejder ikke med kantlimning, så den er ude af både layoutet og maskinskemaet. Zonen er i stedet finish-enden af hal 1: sliberne, debur og håndarbejdet.","There is deliberately NO edgebander in the plan — you do not do edgebanding, so it is out of both the layout and the machine schedule. Instead this zone is the finishing end of hall 1: the sanders, debur and handwork."]},
-{c:"2.1",n:["Kørezone & færdigvarelager","Driving zone & finished goods"],h:1,x:0,y:0,w:22,d:10,t:"lager",truck:true,
- items:[["Stabling til 2,8 m under mezzanin","Stacking to 2.8 m under the mezzanine"],["Projektopdelt opmærkning","Marked out by project"],["Port ud mod lastbil","Goods-out door to the truck"]],
- why:["Det røde felt i modellen: truckens område med pallereol og færdigvarer, samlet i toppen så resten af hallen kan være kørefri","The red field in the model: the forklift's area with pallet racking and finished goods, gathered at the top so the rest of the hall can stay drive-free"],
+{c:"1.5",n:["Slibning & afgradning","Sanding & deburring"],h:0,x:0,y:23.5,w:11,d:10.5,t:"maskin",truck:false,
+ items:[["Slibemaskine","Sanding machine"],["Kantsliber","Edge sander"],["Afgrad-station","Debur station"],["Bredbåndssliber","Wide-belt sander"]],
+ why:["Nederste venstre felt, i forlængelse af opskæringen — emnet går direkte fra CNC til slibning uden at krydse kørezonen","Bottom left bay, directly below cutting — a part goes straight from the CNC to sanding without crossing the driving zone"],
+ flag:["Der er bevidst INGEN kantlimmaskine i planen — I arbejder ikke med kantlimning, så den er ude af både layoutet og maskinskemaet.","There is deliberately NO edgebander in the plan — you do not do edgebanding, so it is out of both the layout and the machine schedule."]},
+{c:"1.7",n:["Håndarbejde & bufferplads","Handwork & buffer"],h:0,pts:[[13,15],[22,15],[22,34],[11,34],[11,23.5],[13,23.5]],lx:17.2,ly:27.5,t:"montage",truck:false,
+ items:[["Standard arbejdsstationer","Standard workstations"],["Diverse manuelle maskiner","Assorted manual machines"],["Bufferplads mellem processerne","Buffer between processes"],["Reserveplads til fremtidige maskiner","Reserve space for future machines"]],
+ why:["Hele højre side ned mod bunden, som på håndtegningen. Her står de manuelle maskiner og de almindelige arbejdsstationer — og her er luften: kommer der flere maskiner, tages pladsen herfra","The whole right side down towards the bottom, as on the hand sketch. This is where the manual machines and ordinary workstations live — and this is the slack: when more machines arrive, the space is taken from here"],
+ flag:["Det er bevidst husets løseste område. Skriv ikke maskiner ind her før de er købt — værdien ligger i at der er plads tilbage.","This is deliberately the loosest area in the building. Do not write machines in here before they are bought — the value is that there is space left."]},
+{c:"1.2",n:["Kørezone & buffer","Driving zone & buffer"],h:0,pts:[[6,2],[17,2],[17,10.5],[22,10.5],[22,15],[13,15],[13,23.5],[8.4,23.5],[8.4,11.6],[6,6]],lx:11.6,ly:5.5,t:"service",truck:true,
+ items:[["Truckens område i ét frit felt","The forklift's area as one clear field"],["Palleplads ved reolen","Pallet drop at the racking"],["Modtagekontrol","Goods-in inspection"],["Korridor ud mod hal 2","Corridor out towards hall 2"]],
+ why:["Formen er tegnet af efter din røde grænse: ind langs reolen, skråt ned forbi saven, ned i venstre side og ud gennem korridoren mod hal 2. Det er ikke en firkant, fordi trucken ikke kører i firkanter","The shape is traced from your red boundary: in along the racking, diagonally past the saw, down the left side and out through the corridor towards hall 2. It is not a rectangle, because the forklift does not drive in rectangles"],
+ flag:["Grænsen er tegnet, ikke beregnet. Vil du prøve en smallere el-truck, er det HER pladsen frigøres — og det er den billigste måde at få mere gulv.","The boundary is drawn, not calculated. If you want to try a narrower electric forklift, THIS is where the space is freed up — and it is the cheapest way to gain floor."]},
+/* ═══ HAL 2 ═══ */
+{c:"2.1",n:["Kørezone & færdigvarelager","Driving zone & finished goods"],h:1,pts:[[0,0],[22,0],[22,11],[17,11],[17,15],[0,15]],lx:9,ly:6,t:"lager",truck:true,
+ items:[["Pallereol langs top- og sidevæg","Pallet racking along the top and side wall"],["Projektopdelt opmærkning","Marked out by project"],["Port ud mod lastbil","Goods-out door to the truck"]],
+ why:["Truckens område og færdigvarelageret i ét, samlet i toppen som på håndtegningen. Feltet trækker sig ind om pakningen, så pakket gods står lige ved kørezonen","The forklift's area and the finished goods store in one, gathered at the top as on the hand sketch. The field steps in around packing, so packed goods sit right at the driving zone"],
  flag:["Uden dette lager stables færdige varer i montagen — og så stopper montagen.","Without this store, finished goods stack up in assembly — and assembly stops."]},
-{c:"2.2",n:["KS + pakning","QC + packing"],h:1,x:0,y:10,w:8,d:6,t:"montage",truck:false,
- items:[["Kvalitetskontrol mod tegning","Quality check against drawing"],["Emballering og hjørnebeskyttere","Packaging and corner protectors"],["Pakliste og mærkning","Packing list and labelling"]],
- why:["Ligger ved UDGANG, så færdige varer går den korteste vej ud til kørezonen og videre på lastbilen","Sits by the EXIT, so finished goods take the shortest route out to the driving zone and onto the truck"],flag:""},
-{c:"2.3",n:["Montage","Assembly"],h:1,x:0,y:16,w:22,d:7,t:"montage",truck:false,
+{c:"2.2",n:["Pakning","Packing"],h:1,x:17,y:11,w:5,d:4,t:"montage",truck:false,
+ items:[["Emballering og hjørnebeskyttere","Packaging and corner protectors"],["Pakliste og mærkning","Packing list and labelling"]],
+ why:["I højre kant lige over personalerummet og lige under færdigvarelageret, som på håndtegningen — pakket gods går den korteste vej op i kørezonen og videre på lastbilen","In the right-hand edge directly above the staff room and directly below the finished goods store, as on the hand sketch — packed goods take the shortest route up into the driving zone and onto the truck"],
+ flag:["Sidste kontrol sker her, lige inden emballagen lukkes. Den egentlige prøvesamling ligger i 2.3.","The last check happens here, just before the packaging closes. The actual trial assembly sits in 2.3."]},
+{c:"2.7",n:["Fri gang","Clear walkway"],h:1,x:0,y:13.5,w:1.5,d:9.5,t:"blank",truck:false,
+ items:[["1,5 m fri bredde","1.5 m clear width"],["Ingen trucktrafik","No forklift traffic"],["Fra UDGANG til skillevæggen","From the EXIT to the partition"]],
+ why:["Blank bane langs væggen fra lige under UDGANG hele vejen ned til skillevæggen, som du har markeret den — man skal kunne gå gennem hallen uden at gå i truckens område","A blank lane along the wall from just below the EXIT all the way down to the partition, as you marked it — you must be able to walk through the hall without entering the forklift's area"],flag:""},
+{c:"2.3",n:["KS & prøvesamling","QC & trial assembly"],h:1,x:4.5,y:15,w:4,d:8,t:"montage",truck:false,
+ items:[["Prøvesamling af flere produkter ad gangen","Trial assembly of several products at a time"],["Kontrol af at delene sidder rigtigt sammen","Check that the parts fit together correctly"],["Adskillelse igen før transport","Taken apart again before transport"],["Plads til at stille et helt sæt op","Room to set up a whole set"]],
+ why:["4 m bredt felt i venstre ende af montagen, tættest på UDGANG. KS-opmærksomhed hører alle steder, men prøvesamlingen har brug for et fast sted: her rejses flere produkter sammen, tjekkes, og skilles ad igen inden de pakkes","A 4 m bay at the left end of assembly, closest to the EXIT. QC attention belongs everywhere, but trial assembly needs a fixed place: here several products are stood up together, checked, and taken apart again before packing"],
+ flag:["Det er billigere at opdage en fejlpasning her end på pladsen i Danmark. Feltet skal derfor holdes tomt nok til at et helt sæt kan rejses — bliver det et mellemlager, mister vi kontrollen.","It is cheaper to catch a misfit here than on site in Denmark. The bay must therefore be kept clear enough to stand a whole set up — if it becomes a buffer store, we lose the check."]},
+{c:"2.8",n:["Montage","Assembly"],h:1,x:8.5,y:15,w:9.5,d:8,t:"montage",truck:false,
  items:[["Håndarbejdsstationer og monteringsborde","Handwork stations and assembly benches"],["WIP-buffer for tørre emner","WIP buffer for dry parts"],["Beslagsstation","Fittings station"]],
- why:["Det største søjlefri felt — montage har mest gulv og mindst maskine","The largest column-free bay — assembly needs the most floor and the least machinery"],flag:""},
-{c:"2.5",n:["Bejdse","Staining"],h:1,x:0,y:28,w:11,d:6,t:"overflade",truck:false,
- items:[["Bejdsebord med udsug","Staining bench with extraction"],["Kulørprøver og blandeplads","Colour samples and mixing area"],["Reoler til våde emner","Racks for wet parts"]],
- why:["Bunden af hallen, som du har placeret den. Bejdse og lak ligger side om side, så kulør og lak kan køres i én arbejdsgang","At the bottom of the hall, where you placed it. Staining and lacquering sit side by side so colour and lacquer run in one pass"],flag:""},
-{c:"2.6",n:["Lakrum","Lacquer room"],h:1,x:11,y:28,w:11,d:6,t:"overflade",truck:false,
- items:[["Sprøjtekabine til 3 m emner","Spray booth for 3 m parts"],["Isoleret skillevæg, eget luftskifte","Insulated partition, own air change"],["18–20 °C hele året","18–20 °C year round"],["Brandskab til opløsningsmidler","Fire cabinet for solvents"]],
- why:["Her bruges skillevægstilladelsen. Lak hærder ikke koldt, og 66 m² kan holdes på 18–20 °C året rundt — det kan 748 m² ikke","This is where the partition permission is spent. Lacquer will not cure cold, and 66 m² can be held at 18–20 °C year round — 748 m² cannot"],
- flag:["Løber overfladen tør for maling midt i en batch, skal hele partiet gøres om — og så er både tid og kvalitet tabt. Et fast, opvarmet lakrum med eget lager er det strukturelle svar på netop det.","If finishing runs out of paint mid-batch, the whole lot has to be redone — and both time and quality are lost. A permanent, heated lacquer room with its own stock is the structural answer to exactly that."]},
-{c:"2.7",n:["Tørrezone","Drying area"],h:1,x:0,y:23,w:22,d:5,t:"overflade",truck:false,
- items:[["20–25 MOBILE tørrestativer","20–25 MOBILE drying racks"],["Fri luftcirkulation","Free air circulation"],["Buffer mod montagen","Buffer towards assembly"]],
- why:["Fuld bredde lige over bejdse og lak, så våde emner kun skal en halv hal-bredde på stativerne","Full width directly above staining and lacquering, so wet parts only travel half a hall-width on the racks"],
- flag:["Stativerne skal være på hjul. Statiske stativer betyder dobbelt håndtering af våde emner — den farligste håndtering i huset.","The racks must be on wheels. Static racks mean double handling of wet parts — the riskiest handling in the building."]},
-{c:"2.8",n:["Teknik","Services"],h:1,x:8,y:10,w:6,d:6,t:"service",truck:false,
- items:[["Kompressor i lydisoleret rum","Compressor in a sound-insulated room"],["Eltavle","Distribution board"],["Varmecentral","Heating plant"],["Ringledning trykluft, udtag hver 6–8 m","Compressed air ring main, outlets every 6–8 m"]],
- why:["Midt i den rene stribe med kontoret ved siden af, så el, varme og trykluft har ét samlet punkt","In the middle of the clean band with the office beside it, so power, heat and compressed air have one common point"],
- flag:["Udsugningsfilter og spånsilo står UDENFOR bygningen — sparer gulv og er brandmæssigt rigtigt.","The extraction filter and chip silo stand OUTSIDE the building — saves floor and is the right fire strategy."]},
-{c:"2.M",n:["Kontor & personale","Office & welfare"],h:1,x:14,y:10,w:8,d:6,t:"mezz",truck:false,
- items:[["Kontor og mødelokale","Office and meeting room"],["Pauserum","Break room"],["Omklædning, bad og WC","Changing, shower and WC"],["Beslags- og emballagelager","Fittings and packaging store"],["Polstring af hynder","Cushion upholstery"]],
- why:["Ligger op ad teknikrummet, som i 3D-modellen — samlet med installationerne og væk fra både støv og trucktrafik","Sits next to the plant room, as in the 3D model — grouped with the services and away from both dust and forklift traffic"],
- flag:["Renderingen viser kontor, mødelokale og pauserum på GULVET, ikke på mezzanin. Det er valgt her. 60 m² er stramt til 13 personer — med 6 m fri højde kan et dæk ovenpå senere give plads til beslags- og emballagelager, så gulvet under bliver ved med at være produktion.",
-   "The rendering shows office, meeting room and break room on the FLOOR, not on a mezzanine. That is what is drawn here. 60 m² is tight for 13 people — with 6 m clear height, a deck above could later hold fittings and packaging so the floor below stays production."]}
+ why:["Højre del af montagebåndet, mellem prøvesamlingen og pakning/personale/kontor. Ingen søjler i midten","The right part of the assembly band, between trial assembly and packing/welfare/office. No columns in the middle"],flag:""},
+{c:"2.9",n:["Personalerum","Staff room"],h:1,x:18,y:15,w:4,d:4,t:"mezz",truck:false,
+ items:[["Pauserum for holdet","Break room for the team"],["Køkkenniche og bord","Kitchenette and table"]],
+ why:["4 × 4 m i højre kant, direkte over kontoret, som i 3D-modellen","4 × 4 m in the right-hand edge, directly above the office, as in the 3D model"],flag:""},
+{c:"2.4",n:["Kontor","Office"],h:1,x:18,y:19,w:4,d:4,t:"mezz",truck:false,
+ items:[["Arbejdsplads til produktionsleder og 3D-tegner","Desk space for the production manager and the 3D draughtsman"],["Tegninger, nesting-filer og dagsplan","Drawings, nesting files and the day plan"]],
+ why:["4 × 4 m i højre kant lige over tørrezonen, som i 3D-modellen — tæt på både montage og overflade uden at ligge i arbejdsgangen","4 × 4 m in the right-hand edge directly above the drying area, as in the 3D model — close to both assembly and finishing without sitting in the working aisle"],
+ flag:["Kontoret ligger op ad det afskærmede overfladeområde. Væggen mod 2.6 skal derfor også holde lugt og dampe ude af kontoret, ikke kun støv ude af lakken.","The office sits against the screened finishing area. The wall towards 2.6 must therefore also keep fumes out of the office, not just dust out of the lacquer."]},
+{c:"2.5",n:["Bejdse & maling","Staining & painting"],h:1,x:0,y:23,w:11,d:11,t:"overflade",truck:false,
+ items:[["Bejdse- og malebord med udsug","Staining and painting bench with extraction"],["Kulørprøver og blandeplads","Colour samples and mixing area"],["Lager til bejdse, maling og lak — brandskab til opløsningsmidler","Store for stain, paint and lacquer — fire cabinet for solvents"],["Reoler til våde emner","Racks for wet parts"]],
+ why:["Bunden af hallen til venstre, bag den 3,5 m høje skillevæg. Hele bejdse-, male- og lakarbejdet ligger her — der er ingen sprøjtekabine på nuværende tidspunkt, afskærmningen er løsningen","Bottom left of the hall, behind the 3.5 m partition. All staining, painting and lacquering happens here — there is no spray booth at this stage; the screened-off area is the solution"],
+ flag:["Løber overfladen tør for maling midt i en batch, skal hele partiet gøres om — og så er både tid og kvalitet tabt. Minimumsbeholdning af bejdse, maling og lak er derfor den vigtigste enkeltopgave i zonen. Lak hærder heller ikke koldt: det afskærmede område skal kunne holdes på 18–20 °C året rundt — det kan 748 m² ikke.","If finishing runs out of paint mid-batch, the whole lot has to be redone — and both time and quality are lost. A minimum stock of stain, paint and lacquer is therefore the single most important task in this zone. Lacquer will not cure cold either: the screened-off area must be holdable at 18–20 °C year round — 748 m² cannot."]},
+{c:"2.6",n:["Tørrezone","Drying area"],h:1,x:11,y:23,w:11,d:11,t:"overflade",truck:false,
+ items:[["20–25 MOBILE tørrestativer","20–25 MOBILE drying racks"],["Fri luftcirkulation","Free air circulation"],["18–20 °C — lak hærder ikke koldt","18–20 °C — lacquer will not cure cold"],["Buffer mod montagen","Buffer towards assembly"]],
+ why:["Bunden af hallen til højre, ved siden af bejdse og maling og inden for samme afskærmning. Våde emner skal kun på tværs én gang og kommer aldrig ud gennem montagen","Bottom right of the hall, beside staining and painting and inside the same screened area. Wet parts cross over only once and never travel out through assembly"],
+ flag:["Stativerne skal være på hjul. Statiske stativer betyder dobbelt håndtering af våde emner — den farligste håndtering i huset.","The racks must be on wheels. Static racks mean double handling of wet parts — the riskiest handling in the building."]}
+];
+/* Truckens graense — tegnet af Christians roede streger, eget lag oven paa zonerne */
+const DRIVE=[
+ {h:0,pts:[[6,2],[17,2],[17,10.5],[22,10.5],[22,15],[13,15],[13,23.5],[8.4,23.5],[8.4,11.6],[6,6]]},
+ {h:1,pts:[[1.5,1],[21,1],[21,15],[4.5,15],[4.5,22.5],[2.5,22.5],[2.5,15],[1.5,15],[1.5,13.5],[0,13.5],[0,10.5],[1.5,10.5]]}
 ];
 const FILL={lager:"var(--z-lager)",maskin:"var(--z-maskin)",overflade:"var(--z-overflade)",
             montage:"var(--z-montage)",service:"var(--z-service)",mezz:"var(--z-mezz)"};
+
+/* ═══════════ GEOMETRI — zoner er polygoner, ikke kun firkanter ═══════════ */
+// En zone kan angives som firkant (x,y,w,d) ELLER som punktliste (pts). Alt regnes af punkterne.
+const ptsOf=z=>z.pts||[[z.x,z.y],[z.x+z.w,z.y],[z.x+z.w,z.y+z.d],[z.x,z.y+z.d]];
+const areaOf=z=>{const p=ptsOf(z);let s=0;
+  for(let i=0;i<p.length;i++){const q=p[i],r=p[(i+1)%p.length];s+=q[0]*r[1]-r[0]*q[1];}
+  return Math.round(Math.abs(s)/2);};
+// Tyngdepunkt af polygonen — kan overstyres med lx/ly paa L-formede zoner hvor midten falder udenfor
+const ctrOf=z=>{if(z.lx!=null)return[z.lx,z.ly];
+  const p=ptsOf(z);let s=0,cx=0,cy=0;
+  for(let i=0;i<p.length;i++){const q=p[i],r=p[(i+1)%p.length],f=q[0]*r[1]-r[0]*q[1];
+    s+=f;cx+=(q[0]+r[0])*f;cy+=(q[1]+r[1])*f;}
+  return s?[cx/(3*s),cy/(3*s)]:[p[0][0],p[0][1]];};
+const labelOf=z=>z.w!=null?z.w+"×"+z.d:(LANG==="en"?"polygon":"polygon");
 
 /* ═══════════ PLAN ═══════════ */
 const NS="http://www.w3.org/2000/svg";
@@ -573,20 +617,37 @@ function buildPlan(){
 
   Z.forEach(z=>{
     const ox=z.h?GAP:0;
+    const p=ptsOf(z), a=areaOf(z), lab=labelOf(z);
     const grp=el("g",{class:"zone","data-c":z.c,tabindex:0,role:"button"});
-    grp.setAttribute("aria-label",t(z.n)+", "+(z.w*z.d)+" m2");
-    grp.appendChild(el("rect",{class:"fill",x:ox+z.x,y:z.y,width:z.w,height:z.d,
-      fill:FILL[z.t],stroke:"var(--ink)","stroke-width":.055}));
-    if(!z.truck) grp.appendChild(el("rect",{class:"ghost",x:ox+z.x,y:z.y,width:z.w,height:z.d,
-      fill:"url(#nodrive)",stroke:"none"}));
-    const cx=ox+z.x+z.w/2, cy=z.y+z.d/2;
-    const rot=z.w<8 && z.d>z.w*1.6;
+    grp.setAttribute("aria-label",t(z.n)+", "+a+" m2");
+    const d=p.map(([x,y],i)=>(i?"L":"M")+(ox+x)+" "+y).join(" ")+" Z";
+    grp.appendChild(el("path",{class:"fill",d,
+      fill:z.t==="blank"?"none":FILL[z.t],stroke:"var(--ink)","stroke-width":.055}));
+    if(z.t==="blank") grp.appendChild(el("path",{class:"ghost",d,fill:"url(#nodrive)",stroke:"none"}));
+    const [cx0,cy]=ctrOf(z), cx=ox+cx0;
+    const rot=z.w!=null && z.w<8 && z.d>z.w*1.6;
     const rt=rot?{transform:`rotate(-90 ${cx} ${cy})`}:{};
-    grp.appendChild(tx("t-code",ox+z.x+.45,z.y+1.05,z.c));
-    grp.appendChild(tx("t-name",cx,cy-.15,t(z.n).toUpperCase(),rt));
-    grp.appendChild(tx("t-area",cx,cy+1.05,(z.w*z.d)+" m²  ·  "+z.w+"×"+z.d,rt));
+    // smaa rum faar mindre skrift, saa navnet bliver inde i feltet
+    const tight=(z.w!=null?Math.min(z.w,z.d):Math.sqrt(a))<=5;
+    const sm=tight?{style:"font-size:.42px"}:{};
+    const sma=tight?{style:"font-size:.34px"}:{};
+    const [tcx,tcy]=p.reduce((m,q)=>[Math.min(m[0],q[0]),Math.min(m[1],q[1])],[99,99]);
+    grp.appendChild(tx("t-code",ox+tcx+.45,tcy+1.05,z.c));
+    grp.appendChild(tx("t-name",cx,cy-.15,t(z.n).toUpperCase(),Object.assign({},rt,sm)));
+    grp.appendChild(tx("t-area",cx,cy+(tight?.7:1.05),a+" m²  ·  "+lab,Object.assign({},rt,sma)));
     svg.appendChild(grp);
   });
+
+  // Truckens graense — eget lag oven paa zonerne, tegnet af haandtegningens roede streger
+  const dg=el("g",{class:"deco","pointer-events":"none"});
+  DRIVE.forEach(D=>{
+    const ox=D.h?GAP:0;
+    const d=D.pts.map(([x,y],i)=>(i?"L":"M")+(ox+x)+" "+y).join(" ")+" Z";
+    dg.appendChild(el("path",{d,fill:"var(--mark)",opacity:.05,stroke:"none"}));
+    dg.appendChild(el("path",{d,fill:"none",stroke:"var(--mark)","stroke-width":.28,
+      "stroke-linejoin":"round",opacity:.8}));
+  });
+  svg.appendChild(dg);
 
   const deco=el("g",{class:"deco","pointer-events":"none"});
   [0,GAP].forEach(ox=>{
@@ -597,17 +658,30 @@ function buildPlan(){
   deco.appendChild(tx("t-dim",GAP+23.9,17,"34,0 m",{transform:`rotate(90 ${GAP+23.9} 17)`}));
   deco.appendChild(el("path",{d:`M${GAP+22.9} 0 V34`,stroke:"var(--ink-3)","stroke-width":.05}));
 
-  // UDGANG — samme sted paa begge haller, paa indervaeggen
-  deco.appendChild(el("path",{d:"M22 13 V16",stroke:"var(--mark)","stroke-width":.6,"stroke-linecap":"round"}));
-  deco.appendChild(el("path",{d:`M${GAP} 13 V16`,stroke:"var(--mark)","stroke-width":.6,"stroke-linecap":"round"}));
-  deco.appendChild(el("path",{d:`M22.7 14.5 H${GAP-0.7}`,stroke:"var(--mark)","stroke-width":.14,"stroke-dasharray":"0.6 0.4"}));
-  deco.appendChild(tx("t-dim",(22+GAP)/2,12.2,S("exitLbl")));
-  deco.appendChild(tx("t-dim",(22+GAP)/2,17.6,S("transferLbl")));
+  // UDGANG — samme sted paa begge haller, paa indervaeggen. Midte 12,0 m fra toppen
+  deco.appendChild(el("path",{d:"M22 10.5 V13.5",stroke:"var(--mark)","stroke-width":.6,"stroke-linecap":"round"}));
+  deco.appendChild(el("path",{d:`M${GAP} 10.5 V13.5`,stroke:"var(--mark)","stroke-width":.6,"stroke-linecap":"round"}));
+  deco.appendChild(el("path",{d:`M22.7 12 H${GAP-0.7}`,stroke:"var(--mark)","stroke-width":.14,"stroke-dasharray":"0.6 0.4"}));
+  deco.appendChild(tx("t-dim",(22+GAP)/2,9.7,S("exitLbl")));
+  deco.appendChild(tx("t-dim",(22+GAP)/2,15.1,S("transferLbl")));
+
+  // Skillevaeg foran overfladeomraadet i hal 2 — to skydedoere
+  const DOORS=[[1.5,4.5],[13.5,16.5]];
+  let wx=0;
+  DOORS.forEach(([a,b])=>{
+    deco.appendChild(el("path",{d:`M${GAP+wx} 23 H${GAP+a}`,stroke:"var(--ink)","stroke-width":.34,"stroke-linecap":"square"}));
+    // skydedoerens blad, parkeret paa montagesiden
+    deco.appendChild(el("path",{d:`M${GAP+a} 22.6 H${GAP+b}`,stroke:"var(--mark)","stroke-width":.3,"stroke-linecap":"round"}));
+    deco.appendChild(el("path",{d:`M${GAP+a} 23 H${GAP+b}`,stroke:"var(--mark)","stroke-width":.1,"stroke-dasharray":"0.5 0.35"}));
+    deco.appendChild(tx("t-dim",GAP+(a+b)/2,22.15,S("doorLbl")));
+    wx=b;
+  });
+  deco.appendChild(el("path",{d:`M${GAP+wx} 23 H${GAP+22}`,stroke:"var(--ink)","stroke-width":.34,"stroke-linecap":"square"}));
 
   // flowpile
-  [[5.5,5.3,5.5,6.7],[5.5,19.3,5.5,20.7],[10.3,27,11.7,27],[16,24,16,17.5],
-   [GAP+1.6,17.5,GAP+1.6,27.5],[GAP+10.3,31,GAP+11.7,31],[GAP+16,27.7,GAP+16,26.3],
-   [GAP+6,22.7,GAP+6,21.3],[GAP+4,15.7,GAP+4,14.3],[GAP+4,9.7,GAP+4,8.3]]
+  [[9,2.6,9,4.4],[3,6.6,3,8.4],[4,22.6,4,24.4],[10.3,29,11.7,29],[16,16.4,16,14.2],
+   [GAP+0.8,12,GAP+2.8,12],[GAP+3.5,21.6,GAP+3.5,24.4],[GAP+10.3,29.5,GAP+11.7,29.5],
+   [GAP+15,24.4,GAP+15,21.6],[GAP+8,19,GAP+9.8,19],[GAP+17.5,16,GAP+17.5,14],[GAP+20,10.9,GAP+20,9.2]]
    .forEach(([x1,y1,x2,y2])=>deco.appendChild(el("path",{d:`M${x1} ${y1} L${x2} ${y2}`,
      stroke:"var(--mark)","stroke-width":.14,"marker-end":"url(#arw)"})));
   svg.appendChild(deco);
@@ -623,8 +697,8 @@ function pickZone(c){
   const z=Z.find(v=>v.c===c); if(!z)return; selZone=c; markZone();
   document.getElementById("pCode").textContent=z.c;
   document.getElementById("pName").textContent=t(z.n);
-  document.getElementById("pArea").textContent=(z.w*z.d)+" m²";
-  document.getElementById("pDim").textContent=z.w+" × "+z.d+" m";
+  document.getElementById("pArea").textContent=areaOf(z)+" m²";
+  document.getElementById("pDim").textContent=z.w!=null?z.w+" × "+z.d+" m":S("polyDim");
   const pt=document.getElementById("pTruck");
   pt.textContent=z.truck?S("truckYes"):S("truckNo");
   pt.style.color=z.truck?"var(--ink)":"var(--mark)";
@@ -723,10 +797,10 @@ const ORG=[
  flag:["Egen rolle, adskilt fra CNC. Ansættes i oktober sammen med maskinerne.",
    "Its own role, separate from CNC. Hired in October along with the machines."]},
 {c:"H-03",t:["Bejdse / lak","Stain / lacquer"],who:"",n:2,st:["Nu","Now"],stc:"warn",tier:"hand",
- duties:[["Bejdse, lakering og tørrestyring i 2.5–2.7","Staining, lacquering and drying control in 2.5–2.7"],["Blander kulør og fører prøvelog","Mixes colour and keeps the sample log"],["Holder øje med beholdning af lak og bejdse","Watches the lacquer and stain stock"]],
+ duties:[["Bejdse, maling, lakering og tørrestyring i 2.5–2.6","Staining, painting, lacquering and drying control in 2.5–2.6"],["Blander kulør og fører prøvelog","Mixes colour and keeps the sample log"],["Holder øje med beholdning af lak, maling og bejdse","Watches the lacquer, paint and stain stock"],["Holder skydedørene lukket under påføring — støv fra montagen ødelægger overfladen","Keeps the sliding doors shut while applying — dust from assembly ruins the finish"]],
  links:[["Materiale (K-03) — genbestilling FØR en batch sættes i gang","Materials (K-03) — reorder BEFORE a batch starts"],["Produktionsleder (K-04) — hvad skal tørre hvornår","Production manager (K-04) — what dries when"]],
- flag:["To personer er bevidst — overfladen afgør om kunden ser kvalitet, og den må aldrig stå stille fordi én er syg. MEN: de ansættes nu, og sprøjtekabinen er først fase 4. Afklar hvad de arbejder med indtil da.",
-   "Two people is deliberate — finishing decides whether the customer sees quality, and it must never stop because one is off sick. BUT: they start now and the spray booth is only phase 4. Clarify what they work with until then."]},
+ flag:["To personer er bevidst — overfladen afgør om kunden ser kvalitet, og den må aldrig stå stille fordi én er syg. MEN: der kommer ingen sprøjtekabine, kun det afskærmede område. Afklar hvad de påfører med, og hvordan udsug og varme løses derinde.",
+   "Two people is deliberate — finishing decides whether the customer sees quality, and it must never stop because one is off sick. BUT: there will be no spray booth, only the screened-off area. Clarify what they apply with, and how extraction and heating are solved in there."]},
 {c:"H-04",t:["Montage","Assembly"],who:["1 ansat · 1 mangler","1 hired · 1 to go"],n:2,st:["1 af 2 besat","1 of 2 filled"],stc:"warn",tier:"hand",
  duties:[["Samler lockers, bænke, skabe og paneler","Assembles lockers, benches, cabinets and panels"],["Monterer beslag, hængsler og låse","Fits fittings, hinges and locks"],["Én af de to kører ALLE emner gennem bredbåndssliberen fra oktober","One of the two runs ALL parts through the wide-belt sander from October"],["Retter små afvigelser inden KS","Corrects minor deviations before QC"]],
  links:[["Produktionsleder (K-04) — dagsplan","Production manager (K-04) — day plan"],["Pakning (H-05) — overlevering","Packing (H-05) — handover"]],
@@ -787,33 +861,34 @@ const MACH=[
  [["Bredbåndssliber","Wide-belt sander"],"2,6 × 2,0","9 × 4","1.5","ok",["I tegningen","In the drawing"]],
  [["Båndsliber","Belt sander"],"—","—","1.5","ok",["I tegningen","In the drawing"]],
  [["Debur-station","Debur station"],"—","—","1.5","ok",["I tegningen","In the drawing"]],
- [["Håndarbejdsstationer","Handwork stations"],"—","—","1.5 · 2.3","ok",["I tegningen","In the drawing"]],
+ [["Håndarbejdsstationer","Handwork stations"],"—","—","1.5 · 1.7 · 2.8","ok",["I tegningen","In the drawing"]],
  [["Pallereol, råvarer","Pallet racking, raw stock"],"—","—","1.3","ok",["I tegningen","In the drawing"]],
- [["Tørrestativer, mobile","Mobile drying racks"],"1,3 × 0,8",["90 m² samlet","90 m² total"],"2.7","ok",["I tegningen","In the drawing"]],
- [["Gaffeltruck","Forklift"],"—",["kører kun i 1.2 og 2.1","drives only in 1.2 and 2.1"],"1.2 · 2.1","warn",["Type uafklaret","Type undecided"]],
- [["Sprøjtekabine","Spray booth"],"6,0 × 4,0","8 × 7","2.6","stop",["Mangler i tegningen","Missing from the drawing"]],
- [["Kompressor + tank","Compressor + tank"],"2,0 × 1,2",["eget rum 3 × 4","own room 3 × 4"],"2.8","stop",["Mangler i tegningen","Missing from the drawing"]],
- [["Udsugning + spånsilo","Extraction + chip silo"],"4,0 × 3,0",["udenfor","outside"],"—","stop",["Mangler i tegningen","Missing from the drawing"]]
+ [["Tørrestativer, mobile","Mobile drying racks"],"1,3 × 0,8",["90 m² samlet","90 m² total"],"2.6","ok",["I tegningen","In the drawing"]],
+ [["Skillevæg m. 2 skydedøre","Partition wall with 2 sliding doors"],"22,0 × 0,15",["højde 3,5 m · afskærmer 242 m² · 2 døråbninger à 3,0 m","3.5 m high · screens off 242 m² · 2 openings of 3.0 m"],"2.5 · 2.6","ok",["I tegningen","In the drawing"]],
+ [["Gaffeltruck, el","Forklift, electric"],"—",["kører kun i 1.2 og 2.1","drives only in 1.2 and 2.1"],"1.2 · 2.1","ok",["El bekræftet — størrelse uafklaret","Electric confirmed — size undecided"]],
+ [["Udsug og luftskifte i overfladeområdet","Extraction and air change in the finishing area"],"—","—","2.5 · 2.6","warn",["Ikke afklaret — ingen sprøjtekabine på nuværende tidspunkt","Undecided — no spray booth at this stage"]],
+ [["Eltavle","Distribution board"],"—",["nær opskæring, CNC og slibning","near cutting, CNC and sanding"],"1.4 · 1.5","warn",["Placering ikke fastlagt","Position not fixed"]],
+ [["Kompressor + tank","Compressor + tank"],"2,0 × 1,2",["nær slibning/afgradning og nær CNC-sliberen","near sanding/deburring and near the CNC sander"],"1.5","warn",["Placering ikke fastlagt — muligvis to enheder","Position not fixed — possibly two units"]],
+ [["Udsugning + spånsilo","Extraction + chip silo"],"4,0 × 3,0",["begge haller · silo udenfor","both halls · silo outside"],"1.4 · 1.5 · 2.5","warn",["Placering ikke fastlagt","Position not fixed"]]
 ];
 const PH=[
- ["0",["Bordsav · kompressor · mobil udsugning · arbejdsborde · reoler · håndværktøj","Table saw · compressor · mobile extraction · benches · racking · hand tools"],
-  ["Gør Argjent selvkørende. Bruger ca. 150 m² i hal 1. Det I køber lige nu.","Makes Argjent self-sufficient. Uses about 150 m² in hall 1. What you are buying right now."]],
+ ["0",["Bordsav · kompressor · mobil udsugning · arbejdsborde · reoler · håndværktøj · KS-rutine","Table saw · compressor · mobile extraction · benches · racking · hand tools · QC routine"],
+  ["Gør Argjent selvkørende. Bruger ca. 150 m² i hal 1. Det I køber lige nu. KS er både en rutine OG et sted: der kontrolleres løbende i alle områder — første emne mod tegning og igen før pakning — men prøvesamlingen, hvor flere produkter rejses sammen og tjekkes, har sit eget felt i 2.3.","Makes Argjent self-sufficient. Uses about 150 m² in hall 1. What you are buying right now. QC is both a routine AND a place: checks happen continuously in every area — first part against the drawing and again before packing — but trial assembly, where several products are stood up together and checked, has its own bay in 2.3."]],
  ["1",["3-akset CNC · industrisav · vakuumløfter · fast udsugningsanlæg","3-axis CNC · industrial saw · vacuum lifter · fixed extraction plant"],
   ["Største enkeltgevinst. Hele opskæringen kommer hjem, og zone 1.4 står færdig.","The single biggest gain. All cutting comes in-house and zone 1.4 is complete."]],
  ["2",["Bredbåndssliber · båndsliber · debur-station","Wide-belt sander · belt sander · debur station"],
   ["Færdiggør zone 1.5. Én montagemedarbejder overtager sliberen.","Completes zone 1.5. One assembly worker takes over the sander."]],
- ["3",["Sprøjtekabine · tørrestativer","Spray booth · drying racks"],
-  ["Overfladen kommer hjem, og dermed kontrollen over den station kunden bedømmer os på.","Finishing comes in-house, and with it control over the station the customer judges us on."]],
+ ["3",["Skillevæg m. 2 skydedøre · tørrestativer · udsug og varme i overfladeområdet","Partition wall with 2 sliding doors · drying racks · extraction and heating in the finishing area"],
+  ["Overfladen kommer hjem, og dermed kontrollen over den station kunden bedømmer os på. Der købes INGEN sprøjtekabine på nuværende tidspunkt — afskærmningen er løsningen.","Finishing comes in-house, and with it control over the station the customer judges us on. NO spray booth is being bought at this stage — the screened-off area is the solution."]],
  ["4",["CNC nr. 2 · andet skift · pakkelinje","Second CNC · second shift · packing line"],["Når hal 1 er mættet.","When hall 1 is saturated."]]
 ];
 const Q=[
- [["Hvor er lakkabinen?","Where is the spray booth?"],["Den er ikke i 3D-modellen, men to bejdse/lak-folk starter nu. Enten mangler den i tegningen, eller også er overfladen tænkt anderledes end her.","It is not in the 3D model, yet two finishing people start now. Either it is missing from the drawing, or finishing is planned differently than shown here."],"Milot"],
+ [["Teknik — hvor lander installationerne?","Services — where do the installations land?"],["Teknik har ikke fået en placering, og det kan næppe klares med ét rum. Arbejdsantagelse: eltavle nær opskæring, CNC og slibning · udsugning i BEGGE haller · kompressor nær slibning/afgradning og nær CNC-sliberen, evt. to enheder. Skal der bygges et lydisoleret rum til kompressoren, eller står den frit med skærm?","Services have no position yet, and one room is unlikely to solve it. Working assumption: distribution board near cutting, CNC and sanding · extraction in BOTH halls · compressor near sanding/deburring and near the CNC sander, possibly two units. Should the compressor get a sound-insulated room, or stand in the open behind a screen?"],"Christian"],
+ [["Skillevæggen — materiale og døråbning","The partition — material and door opening"],["Højden er sat til 3,5 m (Rev P). Tilbage står hvad væggen bygges af, om der skal loft over overfladeområdet for at holde varmen, og om 3,0 m døråbning er nok til at et fyldt tørrestativ kan komme igennem.","The height is set at 3.5 m (Rev P). What remains is what the wall is built from, whether the finishing area needs a ceiling to hold the heat, and whether a 3.0 m opening is enough for a loaded drying rack to pass through."],"Christian"],
  [["Afstanden mellem hallerne","The gap between the halls"],["Renderingen viser et mellemrum, ikke en fælles væg. Hvor mange meter er der mellem dem, og er der overdækning? Emner skal krydse dér i al slags vejr.","The rendering shows a gap, not a shared wall. How many metres between them, and is it covered? Parts have to cross there in all weather."],"Milot"],
- [["De sorte prikker på skitserne","The black dots on the sketches"],["Jeg har læst dem som huller i papiret. Er de i stedet søjler? I så fald skal de tegnes ind, for de bestemmer hvor CNC og montage kan stå.","I have read them as holes punched in the paper. Are they columns instead? If so they must be drawn in, because they decide where the CNC and assembly can go."],"Milot"],
- [["Resten af maskinlisten","The rest of the machine list"],["Skema 03 viser hvad der er tegnet ind. Er de røde poster købt, bestilt eller droppet?","Schedule 03 shows what is drawn in. Are the red items bought, ordered or dropped?"],"Milot"],
- [["Gaffeltrucken","The forklift"],["Bliver den el eller diesel? Diesel indendørs i et træværksted går ikke. Og er 3 tons ikke for meget — en mindre el-truck kræver smallere arbejdsgang og frigør gulv. Truckføreren er nu udpeget (H-06), så han skal også have certifikat.","Will it be electric or diesel? Diesel indoors in a woodworking shop will not do. And is 3 tonnes not too much — a smaller electric truck needs a narrower aisle and frees up floor. The driver is now identified (H-06), so he also needs a licence."],"Milot"],
- [["Søjlenettet","The column grid"],["Hvor står søjlerne i hver hal? De bestemmer hvor montage og CNC kan ligge.","Where do the columns stand in each hall? They decide where assembly and the CNC can go."],"Milot"],
- [["Port og rampe","Door and ramp"],["Porthøjde, rampehøjde og vendeplads udenfor. En 40-fods trailer skal bruge ca. 25 m.","Door height, dock height and turning space outside. A 40-foot trailer needs about 25 m."],"Milot"],
+ [["Resten af maskinlisten","The rest of the machine list"],["Skema 03 viser hvad der er tegnet ind. Er de gule poster købt, bestilt eller droppet?","Schedule 03 shows what is drawn in. Are the amber items bought, ordered or dropped?"],"Milot"],
+ [["Truckens størrelse","The size of the forklift"],["El er bekræftet (Rev P), så indeklimaet er i orden. Tilbage: er 3 tons for meget? En mindre el-truck kræver smallere arbejdsgang og frigør gulv. Truckføreren er udpeget (H-06) og skal have certifikat.","Electric is confirmed (Rev P), so the indoor air is fine. Remaining: are 3 tonnes too much? A smaller electric truck needs a narrower aisle and frees up floor. The driver is identified (H-06) and needs a licence."],"Milot"],
+ [["Port og vendeplads","Door and turning space"],["Hallerne ligger i jordhøjde, så der er INGEN ramper ved udgangene (Rev P) — læsning sker fra gulv. Tilbage: porthøjde og vendeplads udenfor. En 40-fods trailer skal bruge ca. 25 m. Uden rampe skal der desuden tages stilling til hvordan tunge emner kommer op i traileren.","The halls sit at ground level, so there are NO ramps at the exits (Rev P) — loading happens from floor level. Remaining: door height and turning space outside. A 40-foot trailer needs about 25 m. Without a dock, it must also be decided how heavy parts get up into the trailer."],"Milot"],
  [["Strømmen på skrift","Power in writing"],["Få kW og hovedsikring skrevet ind i lejekontrakten. Behovet er 100–150 kW installeret.","Get kW and main fuse written into the lease. The requirement is 100–150 kW installed."],"Milot"],
  [["Mezzanin","Mezzanine"],["Må der bygges et dæk i 3,0 m, og hvad er bæreevnen på gulvet under søjlerne?","May a deck be built at 3.0 m, and what is the floor's load capacity under the columns?"],["Udlejer","Landlord"]],
  [["Døren i skillevæggen","The door in the partition"],["Må den brydes, og hvem betaler? Uden den er det to bygninger, ikke én fabrik.","May it be cut, and who pays? Without it these are two buildings, not one factory."],["Udlejer","Landlord"]],
@@ -869,7 +944,7 @@ const HOURS=[
  ["area",["Sav (H-02)","Saw (H-02)"],"1,0","149","104","119","1.4"],
  ["area",["Bejdse / lak (H-03)","Stain / lacquer (H-03)"],"2,0","298","209","238","2.5 · 2.6"],
  ["area",["Slibning — fra H-04","Sanding — from H-04"],"0,5","75","52","60","1.5"],
- ["area",["Montage — H-04 + halvdelen af H-05","Assembly — H-04 + half of H-05"],"2,5","372","261","298","2.3"],
+ ["area",["Montage — H-04 + halvdelen af H-05","Assembly — H-04 + half of H-05"],"2,5","372","261","298","2.3 · 2.8"],
  ["area",["Pakning — halvdelen af H-05","Packing — half of H-05"],"1,0","149","104","119","2.2"],
  ["sub",["Hænderne i alt — 8 personer","Hands, total — 8 people"],"8,0","1.192","834","954",""],
  ["area",["Fabriksdirektør (K-00)","Factory director (K-00)"],"1,0","149","—","—","—"],
@@ -902,7 +977,7 @@ const OQ=[
  [["Sikkerhedsansvarlig — stilling eller hat?","Safety officer — post or hat?"],["Tavlens 14 rummer ikke rollen. Skal den ansættes, er I 15.","The whiteboard's 14 does not include the role. If it is hired, you are 15."],"Argjent"],
  [["Materialelog inden ATK banker på","Material log before ATK knocks"],["Produktionslederen skal logge forbrug mod normativerne, men han starter først i september, og systemansvarlig i oktober. Hvad logger vi i mellemtiden — og hvem gør det? En ATK-kontrol venter ikke på vores ansættelsesplan.","The production manager is to log consumption against the norms, but he does not start until September and the systems lead until October. What do we log in the meantime — and who does it? An ATK inspection will not wait for our hiring plan."],"Argjent"],
  [["Hvem skærer indtil oktober?","Who cuts until October?"],["CNC og sav ansættes først når maskinerne kommer. Fra nu til oktober er der ingen på maskinbearbejdning — købes det ude, laves det på lånte maskiner, eller gør Argjent det selv?","CNC and saw are only hired when the machines arrive. From now until October there is nobody on machining — is it bought outside, done on borrowed machines, or does Argjent do it himself?"],"Milot"],
- [["Bejdse/lak starter før kabinen","Finishing starts before the booth"],["De to overfladefolk ansættes nu, men sprøjtekabinen er fase 4. Hvad arbejder de med indtil da — pensel og rulle, lånt kabine, eller skal kabinen rykkes frem?","The two finishing people start now, but the spray booth is phase 4. What do they work with until then — brush and roller, a borrowed booth, or should the booth be pulled forward?"],"Milot"],
+ [["Hvad påføres der med i overfladeområdet?","What is the finish applied with?"],["Der kommer ingen sprøjtekabine (Rev O) — overfladen sker bag skillevæggen. De to overfladefolk ansættes nu, så det skal afklares hvad de arbejder med: pensel og rulle, håndsprøjte, eller sprøjtevæg med udsug. Valget bestemmer krav til udsug, luftskifte og brandsikring i 2.5.","There will be no spray booth (Rev O) — finishing happens behind the partition. The two finishing people start now, so it must be settled what they work with: brush and roller, a hand spray gun, or a spray wall with extraction. The choice drives the requirements for extraction, air change and fire safety in 2.5."],"Milot"],
  [["Tavlens ekstra CNC-mand","The whiteboard's extra CNC operator"],["Tavlen viste både “CNC/Sav 2” og “CNC mand 1”. Med CNC og sav som én hver er den ekstra ikke med. Er det et andet skift senere?","The whiteboard showed both “CNC/Saw 2” and “CNC operator 1”. With CNC and saw as one each, the extra is not included. Is that a second shift later on?"],"Milot"],
  [["Argjents beslutningsgrænse","Argjent's decision limit"],["Hvor stort et indkøb må han sige ja til uden Joachim? Uden et tal bliver alt en eskalering.","How large a purchase may he approve without Joachim? Without a figure, everything becomes an escalation."],"Joachim"],
  [["CAD/CAM og filformat","CAD/CAM and file format"],["Hvilket program tegner Kosovo i, og hvad udveksles med Christian i DK?","Which package does Kosovo draw in, and what is exchanged with Christian in Denmark?"],"Milot"],
@@ -912,6 +987,14 @@ const OQ=[
  [["Arbejdstid og ferie","Working time and leave"],["Bekræft 40 t/uge, 20 feriedage og helligdage — hele timeregnskabet hviler på det.","Confirm 40 h/week, 20 leave days and public holidays — the entire hours model rests on it."],"Argjent"]
 ];
 const REV=[
+ ["Rev R","02-08-2026",["KS har fået et sted efter alt. Montagebåndet er delt i to: 2.3 KS & prøvesamling, 4 m bredt i venstre ende tættest på UDGANG, og 2.8 Montage, 9,5 m i højre ende. I prøvesamlingen rejses flere produkter sammen for at tjekke at delene passer, og skilles ad igen inden transport. Det ophæver ikke Rev P — KS-opmærksomhed hører stadig i alle områder, og faseplanen siger nu at KS er både en rutine OG et sted. Sidste kontrol inden emballagen lukkes ligger fortsat i pakningen.",
+  "QC has been given a place after all. The assembly band is split in two: 2.3 QC & trial assembly, 4 m wide at the left end closest to the EXIT, and 2.8 Assembly, 9.5 m at the right end. In trial assembly several products are stood up together to check the parts fit, and taken apart again before transport. This does not overturn Rev P — QC attention still belongs in every area, and the phase plan now says QC is both a routine AND a place. The final check before the packaging closes remains in packing."]],
+ ["Rev Q","02-08-2026",["Plantegningen kan nu tegne andet end firkanter. En zone må angives som en punktliste, og areal, tyngdepunkt og label regnes af polygonen — derfor har opskæringen sin skrå kant mod kørezonen, håndarbejdet er L-formet, og kørezonen har den form den faktisk har. Truckens grænse er samtidig blevet sit EGET lag: den orange kontur er tegnet af efter Christians røde streger og følger ikke zonegrænserne, for det gør trucken heller ikke. Nyt i hal 1: industrisaven har fået sit eget hjørne, håndarbejde og bufferplads er lagt ind som et stort felt i højre side med de manuelle maskiner og reserveplads til fremtidige maskiner, råvarelageret er nu reolen langs topvæggen i stedet for et felt, og pladsen foran toilettet står blank og kørefri. Nyt i hal 2: en 1,5 m bred fri gang langs væggen fra UDGANG ned til skillevæggen, kørefri. Arealskemaet viser nu også hvor meget af hver hal der er gang og ikke zoneopdelt, så tallene stemmer med 748 m².",
+  "The floor plan can now draw more than rectangles. A zone may be given as a list of points, and area, centroid and label are computed from the polygon — which is why cutting has its angled edge against the driving zone, handwork is L-shaped, and the driving zone has the shape it actually has. The forklift boundary has become its OWN layer: the orange outline is traced from Christian's red lines and does not follow the zone borders, because neither does the forklift. New in hall 1: the industrial saw has its own corner, handwork and buffer is laid in as a large bay on the right with the manual machines and reserve space for future machines, the raw material store is now the racking along the top wall rather than a field, and the space in front of the WC is left blank and drive-free. New in hall 2: a 1.5 m clear walkway along the wall from the EXIT down to the partition, drive-free. The area schedule now also shows how much of each hall is aisle and not zoned, so the figures add up to 748 m²."]],
+ ["Rev P","02-08-2026",["Rettet efter Christians anden gennemgang. Møde-/omklædningsboksen er fjernet helt — der er IKKE afsat omklædning eller bad; hal 2 har kun kontor og personalerum. Nyt toilet 4 × 4 m i øverste højre hjørne af hal 1. Pakning er flyttet op i højre kant lige over personalerummet og lige under færdigvarelageret. KS er taget HELT af plantegningen: kvalitetskontrol foregår løbende i alle områder, ikke på en station, og står nu i faseplanen og hos rollerne i stedet. Teknikrummet er også væk, fordi der ikke er fundet en placering — installationerne står i stedet i maskinskemaet som uafklarede: eltavle nær opskæring/CNC/slibning, udsugning i begge haller, kompressor nær slibning/afgradning og nær CNC-sliberen, muligvis to enheder. Montagen fylder nu 18 × 13 m. Fire spørgsmål er besvaret og lukket: skillevæggen er 3,5 m høj · de sorte prikker på skitserne var huller i papiret og betyder ingenting · gaffeltrucken er EL · der er ingen søjler midt i hallerne, kun langs væggene · hallerne ligger i jordhøjde, så der er ingen ramper ved udgangene.",
+  "Corrected after Christian's second review. The meeting/changing box is removed entirely — NO changing room or shower is allocated; hall 2 has only the office and the staff room. A new WC of 4 × 4 m sits in the top right corner of hall 1. Packing has moved up into the right-hand edge, directly above the staff room and directly below the finished goods store. QC is taken OFF the floor plan completely: quality control happens continuously in every area, not at a station, and now appears in the phase plan and with the roles instead. The plant room is gone too, because no position has been found — the installations now sit in the machine schedule as undecided: distribution board near cutting/CNC/sanding, extraction in both halls, compressor near sanding/deburring and near the CNC sander, possibly two units. Assembly now occupies 18 × 13 m. Four questions are answered and closed: the partition is 3.5 m high · the black dots on the sketches were holes punched in the paper and mean nothing · the forklift is electric · there are no columns in the middle of the halls, only along the walls · the halls are at ground level, so there are no ramps at the exits."]],
+ ["Rev O","02-08-2026",["Rettet efter Christians gennemgang af 3D-modellen. Der kommer INGEN sprøjtekabine på nuværende tidspunkt: hele male-, lak- og tørreområdet er i stedet skærmet af fra resten af hal 2 med en skillevæg over hele bredden, med to skydedøre — én tæt på den væg hvor UDGANG sidder, og én ude ved montagen. Bunden af hal 2 er delt i to lige store felter: bejdse og maling til venstre, tørrezone til højre, 121 m² hver. Det gamle separate lakrum er væk. Maskinskemaet har ikke længere sprøjtekabinen som rød mangel — i stedet står skillevæggen som tegnet, og udsug/luftskifte i overfladeområdet som uafklaret. Fase 3 køber væg, skydedøre, tørrestativer og udsug, ikke en kabine. UDGANG er samtidig rykket op i begge haller, så døråbningen har midte 12,0 m fra toppen. Og i højre kant af hal 2 er der lagt to rum ind fra 3D-modellen: kontor 4 × 4 m lige over tørrezonen, og personalerum 4 × 4 m lige over kontoret. Montagen er derfor 18 m bred og 8 m dyb, og rækken med KS, teknik og møde/omklædning er 5 m dyb. Kontor og pauserum er taget UD af 2.M, så de ikke står to steder.",
+  "Corrected after Christian's review of the 3D model. There will be NO spray booth at this stage: instead the whole painting, lacquering and drying area is screened off from the rest of hall 2 by a partition wall across the full width, with two sliding doors — one close to the wall carrying the EXIT, and one out by assembly. The bottom of hall 2 is split into two equal fields: staining and painting on the left, drying on the right, 121 m² each. The old separate lacquer room is gone. The machine schedule no longer lists the spray booth as a red gap — instead the partition is shown as drawn, and extraction/air change in the finishing area as undecided. Phase 3 buys the wall, the sliding doors, drying racks and extraction, not a booth. The EXIT has also been moved up in both halls, so the opening is centred 12.0 m from the top. And two rooms from the 3D model have been added in the right-hand edge of hall 2: an office 4 × 4 m directly above the drying area, and a staff room 4 × 4 m directly above the office. Assembly is therefore 18 m wide and 8 m deep, and the row with QC, services and meeting/changing is 5 m deep. The office and break room have been taken OUT of 2.M so they do not appear twice."]],
  ["Rev N","02-08-2026",["Rettet efter Milots gennemgang. Massivtræ-zonen er fjernet. Kantlimning er taget HELT ud — der er ingen maskine og I arbejder ikke med det. Opskæring, CNC og boring er samlet i venstre side af hal 1, med slibning og håndarbejde lige under: bredbåndssliber, båndsliber, debur-station og håndarbejdsstationer, som i 3D-modellen. Kørezonerne er ikke længere smalle baner men to store frie felter — højre side af hal 1 og hele toppen af hal 2 — som håndtegningerne viser. I hal 2 er bejdse og lakrum flyttet ned i bunden, og kontor og personale ligger nu op ad teknikrummet.",
   "Corrected after Milot's review. The solid timber zone is removed. Edgebanding is taken out ENTIRELY — there is no machine and you do not do it. Cutting, CNC and drilling are grouped on the left of hall 1, with sanding and handwork directly below: wide-belt sander, belt sander, debur station and handwork stations, as in the 3D model. The driving zones are no longer narrow lanes but two large clear fields — the right side of hall 1 and the whole top of hall 2 — as the hand sketches show. In hall 2, staining and the lacquer room have moved to the bottom, and office and welfare now sit next to the plant room. The phase plan is cleaned up too: edgebander and solid timber machines are gone and the phases renumbered."]],
  ["Rev M","02-08-2026",["Planen er lagt om efter håndskitserne og 3D-modellen. Hallerne står nu på højkant — 22 m brede, 34 m dybe — og UDGANG er markeret samme sted på begge, på indervæggen ud mod mellemrummet. Skraveringen viser kørefri zoner. Kontor, møde og pauserum er flyttet fra mezzanin ned på gulvet, som modellen viser. Plantegningen fylder nu hele bredden, og zonebeskrivelsen står under den.",
@@ -943,8 +1026,8 @@ const REV=[
 ];
 const PLANCARDS=[
  [["Til rådighed","Available"],"1.496 m²",["To haller à 748 m². Plus 180 m² mezzanin i hal 2.","Two halls of 748 m² each. Plus a 180 m² mezzanine in hall 2."],""],
- [["Gulvbehov, fuldt flow","Floor needed, full flow"],"1.044 m²",["13 zoner + 16 % gange. Personale ligger ikke i tallet — det hører på mezzanin.","13 zones + 16 % aisles. Staff facilities are not in the figure — they belong on the mezzanine."],""],
- [["Luft til vækst","Room to grow"],"+452 m²",["Plads til andet skift, flere maskiner og et større færdigvarelager.","Space for a second shift, more machines and a larger finished-goods store."],"hi"],
+ [["Zoneopdelt gulv","Zoned floor"],`${String(Z.reduce((s,z)=>s+areaOf(z),0)).replace(/\B(?=(\d{3})+(?!\d))/g,".")} m²`,[`${Z.length} zoner. Resten er gang mellem zonerne — den står som egen linje i arealskemaet, så tallene stemmer med 748 m² pr. hal.`,`${Z.length} zones. The rest is aisle between the zones — it appears as its own line in the area schedule, so the figures add up to 748 m² per hall.`],""],
+ [["Luft til vækst","Room to grow"],`${areaOf(Z.find(z=>z.c==="1.7"))} m²`,["Reserveplads i håndarbejde & bufferplads (1.7). Kommer der flere maskiner, tages gulvet HERFRA — ikke fra montagen eller overfladen.","Reserve space in handwork & buffer (1.7). When more machines arrive, the floor is taken from HERE — not from assembly or finishing."],"hi"],
  [["Fri højde","Clear height"],"6,0 m",["Nok til mezzanin i 3,0 m og reoler i 4–5 niveauer. Højden er den vigtigste enkeltressource i planen.","Enough for a mezzanine at 3.0 m and racking in 4–5 levels. Height is the single most valuable resource in the plan."],""]
 ];
 const ORGCARDS=[
@@ -992,7 +1075,9 @@ function render(){
   $("legendBox").innerHTML=[["lgLager","--z-lager"],["lgMask","--z-maskin"],["lgOver","--z-overflade"],
     ["lgMont","--z-montage"],["lgServ","--z-service"],["lgMezz","--z-mezz"],["lgFlow","--mark"]]
     .map(([k,v])=>`<span class="lg"><i style="background:var(${v})"></i>${S(k)}</span>`).join("")
-    +`<span class="lg"><i style="background:repeating-linear-gradient(45deg,var(--ink) 0 1px,transparent 1px 4px)"></i>${S("lgNoDrive")}</span>`;
+    +`<span class="lg"><i style="background:repeating-linear-gradient(45deg,var(--ink) 0 1px,transparent 1px 4px)"></i>${S("lgNoDrive")}</span>`
+    +`<span class="lg"><i style="background:linear-gradient(to bottom,var(--ink) 0 45%,var(--mark) 55% 100%)"></i>${S("lgDoor")}</span>`
+    +`<span class="lg"><i style="background:var(--mark);opacity:.25;border:1.5px solid var(--mark)"></i>${S("lgDrive")}</span>`;
 
   $("planCards").innerHTML=PLANCARDS.map(cardHTML).join("");
   $("orgCards").innerHTML=ORGCARDS.map(cardHTML).join("");
@@ -1000,11 +1085,13 @@ function render(){
 
   let s1=0,s2=0,rows="";
   ["1","2"].forEach(h=>{
-    Z.filter(z=>z.c[0]===h).forEach(z=>{const a=z.w*z.d; if(h==="1"){s1+=a}else{s2+=a}
+    Z.filter(z=>z.c[0]===h).forEach(z=>{const a=areaOf(z); if(h==="1"){s1+=a}else{s2+=a}
       rows+=`<tr><td><span class="code">${z.c}</span></td><td>${t(z.n)}${z.truck?"":` <span class="chip warn">${S("truckNo")}</span>`}</td><td class="n">${a}</td><td class="sm dim">${t(z.why)}</td></tr>`;});
-    rows+=`<tr class="sub"><td></td><td>${LANG==="en"?"Hall":"Hal"} ${h}</td><td class="n">${h==="1"?s1:s2}</td><td></td></tr>`;
+    const sum=h==="1"?s1:s2, rest=748-sum;
+    rows+=`<tr><td></td><td class="dim">${S("restLbl")}</td><td class="n dim">${rest}</td><td class="sm dim">${S("restWhy")}</td></tr>`;
+    rows+=`<tr class="sub"><td></td><td>${LANG==="en"?"Hall":"Hal"} ${h}</td><td class="n">748</td><td></td></tr>`;
   });
-  rows+=`<tr class="total"><td></td><td>${LANG==="en"?"Total floor":"Gulv i alt"}</td><td class="n">${s1+s2}</td><td class="sm">${LANG==="en"?"Against 1,044 m² needed":"Mod 1.044 m² gulvbehov"}</td></tr>`;
+  rows+=`<tr class="total"><td></td><td>${LANG==="en"?"Total floor":"Gulv i alt"}</td><td class="n">1496</td><td class="sm">${LANG==="en"?`${s1+s2} m² is zoned, ${1496-s1-s2} m² is aisle`:`${s1+s2} m² er zoneopdelt, ${1496-s1-s2} m² er gang`}</td></tr>`;
   $("areaBody").innerHTML=rows;
 
   $("machBody").innerHTML=MACH.map(([n,a,b,z,s,l])=>
