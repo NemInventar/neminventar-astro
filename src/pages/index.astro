@@ -12,7 +12,7 @@ const guides = landing.filter((l) => l.kind === 'guide');
 
 const title = 'Nem Inventar — snedkerbygget inventar til byggeri';
 const description =
-  'Vi bygger fast inventar i træ og krydsfiner til skoler, institutioner, hospitaler og erhverv. Arketyper på bestilling og hele projekter — tegnet i 3D, dokumenteret til certificeret byggeri.';
+  'Vi bygger fast inventar i træ og krydsfiner til skoler, daginstitutioner, idrætshaller og erhverv. Arketyper på bestilling og hele projekter — tegnet i 3D, dokumenteret til certificeret byggeri.';
 const pad = (n: number) => String(n + 1).padStart(2, '0');
 const base = import.meta.env.BASE_URL; // slutter med '/'
 ---
@@ -23,7 +23,7 @@ const base = import.meta.env.BASE_URL; // slutter med '/'
     <div>
       <span class="label">Snedkeri · København NV</span>
       <h1>Fra én bænk til en <em>hel skole.</em></h1>
-      <p class="sub">Vi bygger fast inventar i træ og krydsfiner — til skoler, institutioner, hospitaler og erhverv. Hvert stykke tegnes i 3D før produktion, dokumenteres til certificeret byggeri, og leveres når byggepladsen er klar til det.</p>
+      <p class="sub">Vi bygger fast inventar i træ og krydsfiner — til skoler, daginstitutioner, idrætshaller og erhverv. Hvert stykke tegnes i 3D før produktion, dokumenteres til certificeret byggeri, og leveres når byggepladsen er klar til det.</p>
       <div class="hero-cta">
         <a href="#katalog" class="btn btn-primary">Se arketyperne <span class="arr">↓</span></a>
         <a href="#projekter" class="btn btn-ghost">Start et projekt <span class="arr">→</span></a>
@@ -109,7 +109,7 @@ const base = import.meta.env.BASE_URL; // slutter med '/'
   <section class="bridge"><div class="wrap">
     <span class="label">Og så det større</span>
     <h2>Arketyperne er byggesten. Projekterne er, hvor de bliver til <em>rum.</em></h2>
-    <p class="b-lede">En bænk kan bestilles på en uge. Et helt skolebyggeri kræver tilbudslister, materialegodkendelser, dokumentation og delleverancer der rammer en tidsplan. Vi laver begge dele — med de samme hænder og det samme system.</p>
+    <p class="b-lede">En enkelt bænk kan bestilles direkte fra kataloget. Et helt skolebyggeri kræver tilbudslister, materialegodkendelser, dokumentation og delleverancer der rammer en tidsplan. Vi laver begge dele — med de samme hænder og det samme system.</p>
   </div></section>
 
   <!-- ============ CASES ============ -->
@@ -118,7 +118,7 @@ const base = import.meta.env.BASE_URL; // slutter med '/'
       {cases.map((c) => (
         <article class="case">
           <a class="ph" href={`${base}projekter/${c.slug}`} aria-label={c.name}>
-            {c.hero_image_url && <img src={cdn(c.hero_image_url, 840)} alt={`${c.name} — render`} loading="lazy" />}
+            {c.hero_image_url && <img src={cdn(c.hero_image_url, 840)} alt={c.name} loading="lazy" />}
           </a>
           <div class="body">
             <span class="status">{c.status_live && <span class="dot"></span>}{c.status_label}</span>
@@ -126,7 +126,7 @@ const base = import.meta.env.BASE_URL; // slutter med '/'
             <p class="desc">{c.web_summary}</p>
             <div class="meta">
               <div class="row"><span class="k">Leverance</span><span class="v">{c.delivery_label}</span></div>
-              <div class="row"><span class="k">Entreprenør</span><span class="v">{c.contractor_label}</span></div>
+              {c.contractor_label && c.contractor_label !== 'Hovedentreprenør' && <div class="row"><span class="k">Entreprenør</span><span class="v">{c.contractor_label}</span></div>}
               <div class="row"><span class="k">Status</span><span class="v">{c.status_label}</span></div>
             </div>
             <div style="margin-top:22px"><a href={`${base}projekter/${c.slug}`} class="btn btn-light">Se projektet <span class="arr">→</span></a></div>
@@ -141,14 +141,14 @@ const base = import.meta.env.BASE_URL; // slutter med '/'
     <div class="sec-head">
       <div>
         <span class="label">Sådan arbejder vi</span>
-        <h2>Fire ting vi ikke går på kompromis med.</h2>
+        <h2>Fire ting, vi lægger vægt på.</h2>
       </div>
     </div>
     <div class="vgrid">
-      <div class="v"><span class="n">I.</span><h3>Håndværket</h3><p>Samlinger, kanter og overflader der tåler hverdagen i en skole eller et omklædningsrum. Vi bygger til mange års brug, ikke til indflytningsdagen.</p></div>
-      <div class="v"><span class="n">II.</span><h3>Det digitale</h3><p>Hvert stykke inventar tegnes og renderes i 3D, før produktionen starter. I godkender det I faktisk får — ikke en skitse og et håndtryk.</p></div>
-      <div class="v"><span class="n">III.</span><h3>Dokumentationen</h3><p>EPD'er, produktdatablade, indeklima og sporbarhed. Vi håndterer hele dokumentationspakken, så certificeringen ikke bliver jeres hovedpine.</p></div>
-      <div class="v"><span class="n">IV.</span><h3>Samarbejdet</h3><p>Vi taler arkitekters og entreprenørers sprog: tegningslæsning, rumkoder, tilsyn og delleverancer der rammer byggepladsens tidsplan.</p></div>
+      <div class="v"><span class="n">I.</span><h3>Håndværket</h3><p>Samlinger, kanter og overflader vælges efter, hvor hårdt rummet bliver brugt. Overfladen kan repareres på stedet, så inventaret kan holdes pænt i mange år.</p></div>
+      <div class="v"><span class="n">II.</span><h3>Det digitale</h3><p>Hvert stykke inventar tegnes og renderes i 3D, før produktionen starter. I godkender det, I faktisk får, før vi skærer den første plade.</p></div>
+      <div class="v"><span class="n">III.</span><h3>Dokumentationen</h3><p>Produktdatablade, indeklimadokumentation og EPD'er, hvor producenten har dem, på de materialer vi bruger. Samlet og afleveret sammen med inventaret.</p></div>
+      <div class="v"><span class="n">IV.</span><h3>Samarbejdet</h3><p>Vi taler arkitekters og entreprenørers sprog: tegningslæsning, rumskemaer, tilsyn og delleverancer, der følger byggepladsens tidsplan.</p></div>
     </div>
   </div></section>
 
@@ -161,14 +161,14 @@ const base = import.meta.env.BASE_URL; // slutter med '/'
       </div>
       <div class="finish-body">
         <p>Lak lægger en film oven på træet. Den ser fin ud et par år, og når den ridser eller skaller, skal hele fladen slibes ned og gøres om.</p>
-        <p>Det gør vi ikke. Vores inventar behandles med <strong>Rubio Monocoat</strong> — en hardwax-olie der binder molekylært til træets øverste fibre i ét lag. Ingen film, ingen topcoat. Træet beholder sit naturlige udtryk og sin følelse, og overfladen tåler slid, vand og varme.</p>
-        <p>Det vigtigste: den kan vedligeholdes lokalt. Et slidt hjørne genoplives på stedet — uden at hele møblet skal slibes om. Med minimal vedligehold holder fladen i årtier, ikke år.</p>
+        <p>Vi olierer i stedet. Træinventaret behandles med en hårdvoksolie, der trænger ned i træets øverste fibre og hærder dér i stedet for at ligge som en film ovenpå. Træet beholder sit naturlige udtryk, og overfladen tåler slid, vand og daglig rengøring.</p>
+        <p>Det vigtigste er, at den kan vedligeholdes lokalt. Et slidt hjørne friskes op på stedet med ny olie, uden at hele møblet skal slibes ned. Dele, der håndteres hele dagen, som skydedøre, får en slidstærk topcoat oven på olien.</p>
       </div>
     </div>
     <div class="finish-points">
-      <div class="fp"><h3>Ingen film der kan skalle</h3><p>Olien sidder i træet, ikke som et lag ovenpå. Derfor ridser og skaller den ikke som lak.</p></div>
+      <div class="fp"><h3>Ingen film der kan skalle</h3><p>Olien sidder i træet, ikke som et lag ovenpå, så der er ingen film, der kan skalle af.</p></div>
       <div class="fp"><h3>Plet-reparerbar</h3><p>Slid udbedres lokalt og glider sammen med resten — uden synlige overgange eller afmontering.</p></div>
-      <div class="fp"><h3>0% VOC</h3><p>Ingen opløsningsmidler. Bedre for indeklimaet — og en del af dokumentationen til certificeret byggeri.</p></div>
+      <div class="fp"><h3>Dokumenteret til indeklimaet</h3><p>Overfladebehandlingen vælges, så den kan dokumenteres til indeklimakravene i certificeret byggeri.</p></div>
     </div>
   </div></section>
 
@@ -177,20 +177,18 @@ const base = import.meta.env.BASE_URL; // slutter med '/'
     <div>
       <span class="label">Certificeret byggeri</span>
       <h2>Dokumentationen følger med leverancen.</h2>
-      <p class="txt">Bygger I efter DGNB, Svanemærket eller andre ordninger, leverer vi inventaret med papirerne i orden — fra certificeret træ til færdig dokumentationspakke.</p>
+      <p class="txt">Bygger I efter Svanemærket eller andre ordninger, leverer vi dokumentationen på de materialer, vi bruger, sammen med inventaret. Kræver udbuddet FSC- eller PEFC-træ, skriver vi i tilbuddet, hvilke plader der kan leveres med certificering fra leverandøren.</p>
     </div>
     <div>
       <div class="chip-row">
-        <span class="chip">FSC®</span>
-        <span class="chip">PEFC™</span>
-        <span class="chip">DGNB</span>
-        <span class="chip">Svanemærket</span>
+        <span class="chip">Svanemærket byggeri</span>
         <span class="chip">EPD</span>
+        <span class="chip">Indeklima</span>
       </div>
       <div class="doc-list">
         <div class="d"><span><b>EPD'er og produktdatablade</b> på de anvendte materialer</span></div>
         <div class="d"><span><b>Indeklimadokumentation</b> til certificeringsordningens krav</span></div>
-        <div class="d"><span><b>Sporbarhed</b> på træ og plader gennem hele kæden</span></div>
+        <div class="d"><span><b>Certificeret træ</b> efter udbuddets krav, med leverandørens dokumentation</span></div>
       </div>
     </div>
   </div></section>
