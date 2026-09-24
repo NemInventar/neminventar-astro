@@ -19,9 +19,12 @@ interface Props {
   description: string;
   image?: string;
   jsonLd?: Record<string, unknown>[]; // side-specifik struktureret data (FAQ, brødkrummer …)
+  lang?: 'da' | 'en';
+  // Sprogversioner af samme side (hreflang). Sættes kun på sider, der findes på begge sprog.
+  alternates?: { hreflang: string; href: string }[];
 }
 
-const { title, description, image, jsonLd = [] } = Astro.props;
+const { title, description, image, jsonLd = [], lang = 'da', alternates = [] } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = image ?? new URL(import.meta.env.BASE_URL + 'og-default.png', Astro.site).href;
 const base = import.meta.env.BASE_URL;
@@ -58,13 +61,14 @@ const organization = {
 const ld = [organization, ...jsonLd];
 ---
 <!doctype html>
-<html lang="da">
+<html lang={lang}>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
   <meta name="description" content={description} />
   <link rel="canonical" href={canonical} />
+  {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
   <meta name="generator" content={Astro.generator} />
 
   <!-- Open Graph -->
@@ -74,7 +78,7 @@ const ld = [organization, ...jsonLd];
   <meta property="og:description" content={description} />
   <meta property="og:url" content={canonical} />
   <meta property="og:image" content={ogImage} />
-  <meta property="og:locale" content="da_DK" />
+  <meta property="og:locale" content={lang === 'en' ? 'en_GB' : 'da_DK'} />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />

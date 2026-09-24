@@ -1,0 +1,90 @@
+---
+// Engelsk kortversion (Joachim 24-09-2026: "den lette version"). Én side for udenlandske entreprenører,
+// arkitekter og indkøbere. Samme regler som de danske sider: ingen mm-mål, ingen mærkenavne på dele,
+// levering påstås kun med navngiven sag. Udvides kun, hvis Search Console viser engelske søgninger.
+import Base from '../../layouts/Base.astro';
+const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
+const img = (f: string) => `${base}billeder/morkhoj/${f}`;
+---
+<Base
+  lang="en"
+  title="Built-in joinery for construction in Denmark | Nem Inventar"
+  description="Fixed furniture for Danish schools, daycare centres and sports halls: wardrobes, lockers, toilet cubicles and kitchenettes, produced and installed."
+  image={new URL(img('01_garderobe-lockere-og-baenk-med-skorum-roed.jpg'), site).href}
+  alternates={[
+    { hreflang: 'da', href: new URL(base, site).href },
+    { hreflang: 'en', href: new URL(base + 'en/', site).href },
+    { hreflang: 'x-default', href: new URL(base, site).href },
+  ]}>
+  <section class="en-hero"><div class="wrap">
+    <span class="label">In English</span>
+    <h1>Built-in joinery for schools, daycare centres and <em>sports facilities.</em></h1>
+    <p class="lead">Nem Inventar ApS designs, produces and installs fixed furniture for construction projects in Denmark: wardrobes, lockers, toilet cubicles, changing-room benches, kitchenettes, shelving and acoustic panels. We work as a subcontractor for main contractors and building owners, from our office in Copenhagen and our own production.</p>
+    <div class="detail-cta">
+      <a href="mailto:tilbud@neminventar.dk?subject=Enquiry" class="btn btn-primary">Send drawings or tender documents <span class="arr">→</span></a>
+      <a href="tel:+4540140508" class="btn btn-ghost">+45 40 14 05 08</a>
+    </div>
+  </div></section>
+
+  <section class="en-body"><div class="wrap en-grid">
+    <article>
+      <h2>What we make</h2>
+      <ul>
+        <li><b>Wardrobes and lockers</b> for pupils, children and staff, with benches, shoe racks and seating niches.</li>
+        <li><b>Toilet cubicles, partitions and wash counters</b> in compact laminate for wet areas.</li>
+        <li><b>Changing-room furniture</b> with wall-hung benches, so the floor stays free for cleaning.</li>
+        <li><b>Kitchenettes and mobile kitchen islands</b> with worktops in linoleum, laminate, compact laminate or stainless steel.</li>
+        <li><b>Shelving, tall cabinets, niches and acoustic panels</b>, built to the room.</li>
+      </ul>
+      <p>Most of our joinery is made in pine or birch plywood with an oiled finish, so worn surfaces can be repaired on site instead of being sanded down. Where water is involved, we use compact laminate.</p>
+    </article>
+
+    <article>
+      <h2>How we work</h2>
+      <p>We work from the architect's drawings and the tender documents. You get a price per item following your bill of quantities, and any differences between drawings and quantities are listed as reservations, so our offer can be compared with others.</p>
+      <p>Every element is modelled in 3D and approved before production. Deliveries follow the site schedule, in stages if needed, and we install everything ourselves.</p>
+    </article>
+
+    <article>
+      <h2>Documentation</h2>
+      <p>For buildings seeking the Nordic Swan Ecolabel or similar schemes, we use materials suitable for certified construction and hand over product data sheets, indoor-climate documentation and EPDs where the manufacturer provides them. If the tender requires FSC or PEFC timber, our quote states which boards can be supplied with certification from the supplier.</p>
+    </article>
+
+    <article>
+      <h2>Reference: Mørkhøj School, Copenhagen</h2>
+      <p>Together with the main contractor Ason A/S and Rønnow Arkitekter, we are delivering the fixed furniture for Mørkhøj School in stages: lockers and benches, tall cabinets in the school's colours, upholstered seating niches, kitchenettes, glass boards and acoustic panels.</p>
+      <div class="en-photos">
+        <figure><img src={img('01_garderobe-lockere-og-baenk-med-skorum-roed.jpg')} alt="Red lockers with bench and shoe storage at Mørkhøj School" loading="lazy" /><figcaption>Lockers with bench and shoe storage</figcaption></figure>
+        <figure><img src={img('06_niche-polstret-bordeaux-med-borde.jpg')} alt="Upholstered seating niche with tables at Mørkhøj School" loading="lazy" /><figcaption>Upholstered seating niche</figcaption></figure>
+      </div>
+      <p class="note">Photos from the delivery. More projects (in Danish): <a href={`${base}#projekter`}>projects</a>.</p>
+    </article>
+
+    <article>
+      <h2>Contact</h2>
+      <p>We reply in English. Drawings and tender documents in Danish or English are both fine.</p>
+      <p><a href="mailto:tilbud@neminventar.dk">tilbud@neminventar.dk</a> · <a href="tel:+4540140508">+45 40 14 05 08</a><br />Nem Inventar ApS · Mågevej 73, st. tv. · 2400 Copenhagen NV · Denmark · VAT DK45085473</p>
+      <p class="note">The rest of this website is in Danish. <a href={base} hreflang="da" lang="da">Til den danske side</a></p>
+    </article>
+  </div></section>
+</Base>
+
+<style>
+  .en-hero{padding:80px 0 56px;border-bottom:1px solid var(--line)}
+  .en-hero h1{font-size:clamp(36px,5vw,64px);margin:24px 0 0;max-width:20ch}
+  .en-hero .lead{font-size:19px;color:var(--muted);max-width:64ch;margin-top:24px;line-height:1.65}
+  .en-hero .detail-cta{margin-top:30px}
+  .en-body{padding:72px 0 96px}
+  .en-grid{display:grid;gap:52px;max-width:860px}
+  .en-grid h2{font-size:clamp(24px,3vw,32px);margin-bottom:16px}
+  .en-grid p,.en-grid li{font-size:17px;color:var(--ink);line-height:1.75;max-width:66ch}
+  .en-grid p{margin-bottom:12px}
+  .en-grid ul{padding-left:20px;margin-bottom:14px}
+  .en-grid li{margin-bottom:6px}
+  .en-photos{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:18px 0 10px}
+  .en-photos img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:var(--radius);border:1px solid var(--line)}
+  .en-photos figcaption{font-size:13.5px;color:var(--muted);margin-top:6px}
+  .note{font-size:15px;color:var(--muted)}
+  @media(max-width:700px){.en-photos{grid-template-columns:1fr}}
+</style>

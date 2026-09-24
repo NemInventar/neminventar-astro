@@ -16,7 +16,11 @@ const description =
 const pad = (n: number) => String(n + 1).padStart(2, '0');
 const base = import.meta.env.BASE_URL; // slutter med '/'
 ---
-<Base title={title} description={description}>
+<Base title={title} description={description} alternates={[
+  { hreflang: 'da', href: new URL(base, Astro.site).href },
+  { hreflang: 'en', href: new URL(base + 'en/', Astro.site).href },
+  { hreflang: 'x-default', href: new URL(base, Astro.site).href },
+]}>
 
   <!-- ============ HERO ============ -->
   <header class="hero" id="top"><div class="wrap hero-grid">
