@@ -19,7 +19,8 @@ const heroIsPhoto = gallery.some((g) => g.kind === 'foto' && g.src === project.h
 const hasRenders = !heroIsPhoto || gallery.some((g) => g.kind === 'visualisering');
 const meta = [
   { k: 'Leverance', v: project.delivery_label },
-  { k: 'Entreprenør', v: project.contractor_label },
+  // Uden tilladelse viser view'et "Hovedentreprenør" — det er en pladsholder, ikke en oplysning.
+  ...(project.contractor_label && project.contractor_label !== 'Hovedentreprenør' ? [{ k: 'Entreprenør', v: project.contractor_label }] : []),
   ...(project.architect_label ? [{ k: 'Arkitekt', v: project.architect_label }] : []),
   { k: 'Status', v: project.status_label },
 ];

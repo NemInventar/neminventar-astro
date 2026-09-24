@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import { getWebProducts, getWebColors, categoryLabel, type WebProduct } from '../../lib/supabase';
 import { cdn } from '../../lib/img';
+import { chipLabels } from '../../lib/labels';
 
 export async function getStaticPaths() {
   const products = await getWebProducts();
@@ -10,7 +11,9 @@ export async function getStaticPaths() {
 
 interface Props { product: WebProduct }
 const { product } = Astro.props;
-const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const materials = chipLabels(product.materials);
+const finishes = chipLabels(product.finishes);
+const applications = chipLabels(product.applications);
 const paragraphs = (product.story ?? product.short_description ?? '').split('\n\n').filter(Boolean);
 const gallery = product.images ?? (product.primary_image ? [product.primary_image] : []);
 const hero = product.primary_image ?? gallery[0];
@@ -69,9 +72,9 @@ const jsonLd = [{
           {paragraphs.map((para) => <p>{para}</p>)}
         </div>
         <div class="spec">
-          {product.materials?.length ? (<><h4>Materialer</h4><div class="chips">{product.materials.map((m) => <span>{cap(m)}</span>)}</div></>) : null}
-          {product.finishes?.length ? (<><h4>Overflade</h4><div class="chips">{product.finishes.map((f) => <span>{cap(f)}</span>)}</div></>) : null}
-          {product.applications?.length ? (<><h4>Velegnet til</h4><div class="chips">{product.applications.map((a) => <span>{cap(a)}</span>)}</div></>) : null}
+          {materials.length ? (<><h4>Materialer</h4><div class="chips">{materials.map((m) => <span>{m}</span>)}</div></>) : null}
+          {finishes.length ? (<><h4>Overflade</h4><div class="chips">{finishes.map((f) => <span>{f}</span>)}</div></>) : null}
+          {applications.length ? (<><h4>Velegnet til</h4><div class="chips">{applications.map((a) => <span>{a}</span>)}</div></>) : null}
         </div>
         <div class="detail-cta">
           <a href={`mailto:tilbud@neminventar.dk?subject=${encodeURIComponent('Forespørgsel: ' + product.name)}`} class="btn btn-primary">Få pris på denne <span class="arr">→</span></a>
