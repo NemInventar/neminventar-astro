@@ -1,10 +1,13 @@
 ---
 import Base from '../layouts/Base.astro';
-import { getWebProducts, getWebCases, categoryLabel } from '../lib/supabase';
+import { getWebProducts, getWebCases, getWebLandingPages, categoryLabel } from '../lib/supabase';
 import { cdn } from '../lib/img';
 
 const products = await getWebProducts();
 const cases = await getWebCases();
+const landing = await getWebLandingPages();
+const emner = landing.filter((l) => l.kind === 'emne');
+const segmenter = landing.filter((l) => l.kind === 'segment');
 
 const title = 'Nem Inventar — snedkerbygget inventar til byggeri';
 const description =
@@ -70,6 +73,31 @@ const base = import.meta.env.BASE_URL; // slutter med '/'
     </div>
     <p class="cat-note">Alle billeder er 3D-renders fra vores eget tilbudssystem — det er sådan I ser jeres inventar, før vi bygger det.</p>
   </div></section>
+
+  <!-- ============ DET LAVER VI (landingssider) ============ -->
+  {emner.length > 0 && (
+    <section class="sec ydelser" id="ydelser" style="padding-top:0"><div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="label">Det laver vi</span>
+          <h2>Materialer og inventar vi bygger hver uge.</h2>
+        </div>
+      </div>
+      <div class="yd-grid">
+        {emner.map((l) => (
+          <a href={`${base}${l.slug}`}>
+            <span class="t">{l.nav_label} <span class="arr">→</span></span>
+            <span class="d">{l.lead}</span>
+          </a>
+        ))}
+      </div>
+      {segmenter.length > 0 && (
+        <div class="yd-seg lp-links">
+          {segmenter.map((l) => <a href={`${base}${l.slug}`}>{l.nav_label} <span class="arr">→</span></a>)}
+        </div>
+      )}
+    </div></section>
+  )}
 
   <!-- ============ BRIDGE ============ -->
   <section class="bridge"><div class="wrap">

@@ -1,0 +1,195 @@
+---
+// Landingssider pr. emne (materiale/produkt) og målgruppe — /kompaktlaminat, /inventar-til-skoler …
+// Indhold: v_web_landing_pages (landing_web_2026_09_24). Statiske sider (om-os, kontakt …) vinder over denne rute.
+import Base from '../layouts/Base.astro';
+import { getWebLandingPages, getWebCases, getWebProducts, categoryLabel, type WebLanding, type WebCase, type WebProduct } from '../lib/supabase';
+import { cdn } from '../lib/img';
+
+export async function getStaticPaths() {
+  const [pages, cases, products] = await Promise.all([getWebLandingPages(), getWebCases(), getWebProducts()]);
+  return pages.map((page) => ({ params: { slug: page.slug }, props: { page, pages, cases, products } }));
+}
+
+interface Props { page: WebLanding; pages: WebLanding[]; cases: WebCase[]; products: WebProduct[] }
+const { page, pages, cases, products } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
+
+const paragraphs = (page.body ?? '').split('\n\n').filter(Boolean);
+const images = page.images ?? [];
+const hero = images[0];
+// Bevar rækkefølgen fra tabellen — den er redaktionel.
+const pick = <T extends { slug: string }>(all: T[], slugs: string[]) =>
+  slugs.map((s) => all.find((x) => x.slug === s)).filter((x): x is T => Boolean(x));
+const relCases = pick(cases, page.case_slugs ?? []);
+const relProducts = pick(products, page.product_slugs ?? []);
+const related = pick(pages, page.related_slugs ?? []);
+
+const url = new URL(base + page.slug, site).href;
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Nem Inventar', item: new URL(base, site).href },
+      { '@type': 'ListItem', position: 2, name: page.nav_label, item: url },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: page.h1,
+    serviceType: page.nav_label,
+    description: page.seo_description,
+    provider: { '@id': new URL(base, site).href + '#virksomhed' },
+    areaServed: { '@type': 'Country', name: 'Danmark' },
+    url,
+  },
+  ...(page.faq?.length
+    ? [{
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: page.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      }]
+    : []),
+];
+const imgLabel = (kind: string) => (kind === 'foto' ? 'Foto fra leverancen' : 'Visualisering');
+---
+<Base title={page.seo_title} description={page.seo_description} image={hero ? cdn(hero.src, 1200) : undefined} jsonLd={jsonLd}>
+  <section class="detail"><div class="wrap">
+    <a href={`${base}#ydelser`} class="crumb">← Alt vi laver</a>
+    <div class="detail-grid">
+      <div class="gallery">
+        {hero && (
+          <figure class="main lp-fig">
+            <img id="main-img" src={cdn(hero.src, 1000)} alt={hero.alt} />
+            <figcaption id="main-cap"><b>{imgLabel(hero.kind)}</b>{hero.caption}</figcaption>
+          </figure>
+        )}
+        {images.length > 1 && (
+          <div class="thumbs">
+            {images.map((im, i) => (
+              <button class={`thumb${i === 0 ? ' active' : ''}`} data-src={cdn(im.src, 1000)} data-label={imgLabel(im.kind)} data-cap={im.caption ?? ''} data-alt={im.alt} aria-label={`Vis billede: ${im.alt}`}>
+                <img src={cdn(im.src, 220)} alt="" loading="lazy" />
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      <div class="detail-body">
+        {page.kicker && <span class="kicker">{page.kicker}</span>}
+        <h1>{page.h1}</h1>
+        {page.lead && <p class="lead">{page.lead}</p>}
+        {page.highlights?.length > 0 && (
+          <dl class="lp-facts">
+            {page.highlights.map((h) => (<div><dt>{h.k}</dt><dd>{h.v}</dd></div>))}
+          </dl>
+        )}
+        <div class="detail-cta">
+          <a href={`mailto:tilbud@neminventar.dk?subject=${encodeURIComponent('Forespørgsel: ' + page.nav_label)}`} class="btn btn-primary">Send tegninger eller mål <span class="arr">→</span></a>
+          <a href="tel:+4540140508" class="btn btn-ghost">+45 40 14 05 08</a>
+        </div>
+      </div>
+    </div>
+
+    {paragraphs.length > 0 && (
+      <div class="prose lp-prose">
+        {paragraphs.map((para) => <p>{para}</p>)}
+      </div>
+    )}
+  </div></section>
+
+  {relCases.length > 0 && (
+    <section class="cases lp-cases"><div class="wrap">
+      <span class="label">Fra vores projekter</span>
+      <div class="case-grid" style="margin-top:34px">
+        {relCases.map((c) => (
+          <article class="case">
+            <a class="ph" href={`${base}projekter/${c.slug}`} aria-label={c.name}>
+              {c.hero_image_url && <img src={cdn(c.hero_image_url, 840)} alt={c.name} loading="lazy" />}
+            </a>
+            <div class="body">
+              <span class="status">{c.status_live && <span class="dot"></span>}{c.status_label}</span>
+              <h3><a href={`${base}projekter/${c.slug}`}>{c.name}</a></h3>
+              <p class="desc">{c.web_summary}</p>
+              <div style="margin-top:22px"><a href={`${base}projekter/${c.slug}`} class="btn btn-light">Se projektet <span class="arr">→</span></a></div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div></section>
+  )}
+
+  {relProducts.length > 0 && (
+    <section class="sec" style="padding-bottom:40px"><div class="wrap">
+      <span class="label">Arketyper</span>
+      <div class="grid" style="margin-top:34px">
+        {relProducts.map((p) => (
+          <article class="card">
+            <a class="ph" href={`${base}produkter/${p.slug}`} aria-label={p.name}>
+              {p.primary_image && <img src={cdn(p.primary_image, 760)} alt={p.name} loading="lazy" />}
+            </a>
+            <div class="body">
+              <span class="kicker">{categoryLabel[p.category] ?? p.category}</span>
+              <h3><a href={`${base}produkter/${p.slug}`}>{p.name}</a></h3>
+              <p class="desc">{p.intro ?? p.short_description}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div></section>
+  )}
+
+  {page.faq?.length > 0 && (
+    <section class="sec lp-faq"><div class="wrap">
+      <span class="label">Spørgsmål og svar</span>
+      <h2>Det bliver vi ofte spurgt om.</h2>
+      <div class="faq-list">
+        {page.faq.map((f) => (
+          <details>
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div></section>
+  )}
+
+  {related.length > 0 && (
+    <section class="lp-related"><div class="wrap">
+      <span class="label">Se også</span>
+      <div class="lp-links">
+        {related.map((r) => <a href={`${base}${r.slug}`}>{r.nav_label} <span class="arr">→</span></a>)}
+      </div>
+    </div></section>
+  )}
+
+  <section class="cta"><div class="wrap">
+    <span class="label">Kontakt</span>
+    <h2>Send os tegningerne. Eller hele <em>udbuddet.</em></h2>
+    <p>Vi læser materialet, stiller de spørgsmål der skal stilles, og vender tilbage med pris og tidsplan.</p>
+    <div class="cta-actions">
+      <a href={`mailto:tilbud@neminventar.dk?subject=${encodeURIComponent('Forespørgsel: ' + page.nav_label)}`} class="btn btn-light">tilbud@neminventar.dk <span class="arr">→</span></a>
+      <a href="tel:+4540140508" class="btn btn-ghost" style="border-color:#443B2A;color:#CFC4B2">+45 40 14 05 08</a>
+    </div>
+  </div></section>
+
+  <script>
+    const main = document.getElementById('main-img') as HTMLImageElement | null;
+    const cap = document.getElementById('main-cap');
+    const thumbs = document.querySelectorAll<HTMLButtonElement>('.thumb');
+    thumbs.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const { src, label, cap: text, alt } = btn.dataset;
+        if (main && src) { main.src = src; main.alt = alt ?? ''; }
+        if (cap) {
+          cap.replaceChildren();
+          const b = document.createElement('b');
+          b.textContent = label ?? '';
+          cap.append(b, text ?? '');
+        }
+        thumbs.forEach((b) => b.classList.toggle('active', b === btn));
+      });
+    });
+  </script>
+</Base>

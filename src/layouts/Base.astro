@@ -18,12 +18,44 @@ interface Props {
   title: string;
   description: string;
   image?: string;
+  jsonLd?: Record<string, unknown>[]; // side-specifik struktureret data (FAQ, brødkrummer …)
 }
 
-const { title, description, image } = Astro.props;
+const { title, description, image, jsonLd = [] } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = image ?? new URL(import.meta.env.BASE_URL + 'og-default.png', Astro.site).href;
 const base = import.meta.env.BASE_URL;
+const home = new URL(base, Astro.site).href;
+
+// Hvem vi er — på hver side, så søgemaskiner og AI-assistenter kan læse det maskinelt.
+const organization = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  '@id': home + '#virksomhed',
+  name: 'Nem Inventar ApS',
+  url: home,
+  logo: new URL(base + 'favicon.svg', Astro.site).href,
+  image: new URL(base + 'og-default.png', Astro.site).href,
+  description:
+    'Fast inventar til byggeri — skoler, daginstitutioner, idrætshaller og erhverv. Krydsfiner, kompaktlaminat, linoleum og massivt træ, bygget til mål i egen produktion.',
+  telephone: '+45 40 14 05 08',
+  email: 'kontakt@neminventar.dk',
+  vatID: 'DK45085473',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Mågevej 73, st. tv.',
+    postalCode: '2400',
+    addressLocality: 'København NV',
+    addressCountry: 'DK',
+  },
+  areaServed: { '@type': 'Country', name: 'Danmark' },
+  knowsAbout: [
+    'Krydsfiner-inventar', 'Kompaktlaminat', 'Toiletbåse', 'Garderober', 'Troldegarderober',
+    'Lockers', 'Omklædningsbænke', 'Tekøkkener', 'Køkkenøer', 'Siddenicher', 'Akustikpaneler',
+    'Glastavler', 'Skoleinventar', 'Inventar til daginstitutioner', 'Inventar til idrætshaller',
+  ],
+};
+const ld = [organization, ...jsonLd];
 ---
 <!doctype html>
 <html lang="da">
@@ -53,6 +85,7 @@ const base = import.meta.env.BASE_URL;
   <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
   <link rel="apple-touch-icon" href={`${base}favicon.svg`} />
   <meta name="theme-color" content="#17140E" />
+  {ld.map((obj) => <script type="application/ld+json" set:html={JSON.stringify(obj)} />)}
 </head>
 <body>
   <Nav />

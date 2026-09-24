@@ -1,11 +1,18 @@
 ---
-// Delt footer. Base-bevidste interne links.
+// Delt footer. Base-bevidste interne links. Landingssiderne linkes fra hver side (intern linkstruktur).
+import { getWebLandingPages } from '../lib/supabase';
 const base = import.meta.env.BASE_URL; // slutter med '/'
+const landing = await getWebLandingPages();
 ---
 <footer><div class="wrap foot">
   <div>
     <div class="brand">NEM<b style="color:var(--warm)">·</b>INVENTAR</div>
     <p>Snedkerbygget inventar til byggeri.<br>Arketyper på bestilling — og hele projekter.</p>
+    {landing.length > 0 && (
+      <p class="foot-links foot-topics">
+        {landing.map((l, i) => (<>{i > 0 && ' · '}<a href={`${base}${l.slug}`}>{l.nav_label}</a></>))}
+      </p>
+    )}
     <p class="foot-links">
       <a href={`${base}om-os`}>Om os</a> ·
       <a href={`${base}kontakt`}>Kontakt</a> ·
@@ -24,4 +31,5 @@ const base = import.meta.env.BASE_URL; // slutter med '/'
   .foot-links{margin-top:14px;font-size:13.5px}
   .foot-links a{color:var(--muted);text-decoration:none}
   .foot-links a:hover{color:var(--ink)}
+  .foot-topics{max-width:62ch;line-height:1.9}
 </style>

@@ -51,6 +51,52 @@ export interface WebCase {
   show_customer_name: boolean;
   status_label: string | null;
   status_live: boolean;
+  architect_label: string | null; // NULL medmindre show_architect_name (godkendt)
+  gallery: WebImage[] | null;
+}
+
+// Billede med ærlig mærkning: 'foto' = fra leverancen, 'visualisering' = render/stand-in.
+export interface WebImage {
+  src: string; // Supabase-URL eller sti i public/ (fx '/billeder/morkhoj/01.jpg')
+  alt: string;
+  kind: 'foto' | 'visualisering';
+  caption?: string | null;
+}
+
+// Landingsside pr. emne (materiale/produkt) eller målgruppe — v_web_landing_pages.
+export interface WebLanding {
+  slug: string;
+  kind: 'emne' | 'segment';
+  nav_label: string;
+  kicker: string | null;
+  h1: string;
+  lead: string | null;
+  body: string | null;
+  highlights: { k: string; v: string }[];
+  faq: { q: string; a: string }[];
+  keywords: string[];
+  case_slugs: string[];
+  product_slugs: string[];
+  related_slugs: string[];
+  images: WebImage[];
+  seo_title: string;
+  seo_description: string;
+  web_display_order: number | null;
+  updated_at: string;
+}
+
+// Memoiseret: footeren henter listen på hver side under build.
+let landingCache: Promise<WebLanding[]> | null = null;
+export function getWebLandingPages(): Promise<WebLanding[]> {
+  landingCache ??= (async () => {
+    const { data, error } = await supabase
+      .from('v_web_landing_pages')
+      .select('*')
+      .order('web_display_order', { ascending: true, nullsFirst: false });
+    if (error) throw new Error(`Supabase v_web_landing_pages: ${error.message}`);
+    return data ?? [];
+  })();
+  return landingCache;
 }
 
 // Kort label til produktkort ud fra ERP-kategori.
