@@ -87,6 +87,8 @@ Alt drives af Supabase ved build. Efter en ændring: **kør et build** (push til
 | Vise/skjule en case | Toggle `case_web_2026_06_11.is_web_published` |
 | Tilføje en ny case | INSERT i `case_web` (peg på et rigtigt `projects`-id, sæt `web_slug`, `is_web_published=true`) |
 | Vise kundenavn på en case | `case_web.show_customer_name=true` |
+| Rette/tilføje en landingsside (`/kompaktlaminat`, `/inventar-til-skoler` …) | UPDATE/INSERT i `landing_web_2026_09_24` (`is_web_published=true`). Ruten er `src/pages/[slug].astro`; forsidens "Det laver vi", footer og `/llms.txt` følger med. Billeder i `images` skal have `kind` = `foto`/`visualisering`. Se canon `SELECT canon_detail('landingssider')` |
+| Vise entreprenør/arkitekt på en case | `case_web.show_customer_name` / `show_architect_name` = true — KUN efter skriftligt ok |
 | Farve-varianter på en arketype | Render i farver via arketype-studio-skillen → sæt billeders `approved_for_web=true` + `color` → sæt `product_web.color_order` |
 
 ---
