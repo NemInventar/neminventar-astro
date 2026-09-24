@@ -385,6 +385,13 @@ footer a:hover{color:var(--ink)}
 .lp-facts dd{font-size:14.5px;color:var(--ink);font-weight:500;line-height:1.45}
 .lp-prose{max-width:68ch;margin-top:56px}
 .lp-prose p{font-size:17px}
+/* Tegninger vises hele (ikke beskåret) på hvid baggrund */
+.gallery .main img.contain{object-fit:contain;background:#fff}
+.lp-videos{display:flex;flex-wrap:wrap;gap:24px;margin-top:48px;align-items:flex-start}
+.lp-video{margin:0;flex:1 1 420px;max-width:760px}
+.lp-video video{display:block;width:100%;max-height:72vh;object-fit:contain;border-radius:var(--radius);border:1px solid var(--line);background:#2b2b2b}
+.lp-video figcaption{margin-top:10px;font-size:13.5px;color:var(--muted)}
+.lp-video figcaption b{color:var(--ink);font-weight:600;margin-right:6px}
 .lp-cases{padding:84px 0 96px}
 .lp-faq h2{font-size:clamp(28px,3.2vw,42px);margin:22px 0 32px}
 .faq-list{border-top:1px solid var(--line);max-width:860px}

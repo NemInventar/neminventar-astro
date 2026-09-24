@@ -16,7 +16,8 @@ const base = import.meta.env.BASE_URL;
 const site = Astro.site!;
 
 const paragraphs = (page.body ?? '').split('\n\n').filter(Boolean);
-const images = page.images ?? [];
+const images = (page.images ?? []).filter((im) => im.kind !== 'video');
+const videos = (page.images ?? []).filter((im) => im.kind === 'video');
 const hero = images[0];
 // Bevar rækkefølgen fra tabellen — den er redaktionel.
 const pick = <T extends { slug: string }>(all: T[], slugs: string[]) =>
@@ -67,7 +68,8 @@ const jsonLd = [
       }]
     : []),
 ];
-const imgLabel = (kind: string) => (kind === 'foto' ? 'Foto fra leverancen' : 'Visualisering');
+const imgLabel = (kind: string) =>
+  kind === 'foto' ? 'Foto fra leverancen' : kind === 'tegning' ? 'Tegning' : kind === 'video' ? 'Video' : 'Visualisering';
 ---
 <Base title={page.seo_title} description={page.seo_description} image={hero ? cdn(hero.src, 1200) : undefined} jsonLd={jsonLd}>
   <section class="detail"><div class="wrap">
@@ -76,14 +78,14 @@ const imgLabel = (kind: string) => (kind === 'foto' ? 'Foto fra leverancen' : 'V
       <div class="gallery">
         {hero && (
           <figure class="main lp-fig">
-            <img id="main-img" src={cdn(hero.src, 1000)} alt={hero.alt} fetchpriority="high" />
+            <img id="main-img" class={hero.kind === 'tegning' ? 'contain' : undefined} src={cdn(hero.src, 1000)} alt={hero.alt} fetchpriority="high" />
             <figcaption id="main-cap"><b>{imgLabel(hero.kind)}</b>{hero.caption}</figcaption>
           </figure>
         )}
         {images.length > 1 && (
           <div class="thumbs">
             {images.map((im, i) => (
-              <button class={`thumb${i === 0 ? ' active' : ''}`} data-src={cdn(im.src, 1000)} data-label={imgLabel(im.kind)} data-cap={im.caption ?? ''} data-alt={im.alt} aria-label={`Vis billede: ${im.alt}`}>
+              <button class={`thumb${i === 0 ? ' active' : ''}`} data-src={cdn(im.src, 1000)} data-kind={im.kind} data-label={imgLabel(im.kind)} data-cap={im.caption ?? ''} data-alt={im.alt} aria-label={`Vis billede: ${im.alt}`}>
                 <img src={cdn(im.src, 220)} alt="" loading="lazy" />
               </button>
             ))}
@@ -109,6 +111,17 @@ const imgLabel = (kind: string) => (kind === 'foto' ? 'Foto fra leverancen' : 'V
     {paragraphs.length > 0 && (
       <div class="prose lp-prose">
         {paragraphs.map((para) => <p>{para}</p>)}
+      </div>
+    )}
+
+    {videos.length > 0 && (
+      <div class="lp-videos">
+        {videos.map((v) => (
+          <figure class="lp-video">
+            <video data-src={cdn(v.src)} poster={v.poster ? cdn(v.poster) : undefined} muted loop playsinline preload="none" aria-label={v.alt}></video>
+            {v.caption && <figcaption><b>Video</b>{v.caption}</figcaption>}
+          </figure>
+        ))}
       </div>
     )}
   </div></section>
@@ -193,8 +206,8 @@ const imgLabel = (kind: string) => (kind === 'foto' ? 'Foto fra leverancen' : 'V
     const thumbs = document.querySelectorAll<HTMLButtonElement>('.thumb');
     thumbs.forEach((btn) => {
       btn.addEventListener('click', () => {
-        const { src, label, cap: text, alt } = btn.dataset;
-        if (main && src) { main.src = src; main.alt = alt ?? ''; }
+        const { src, label, cap: text, alt, kind } = btn.dataset;
+        if (main && src) { main.src = src; main.alt = alt ?? ''; main.classList.toggle('contain', kind === 'tegning'); }
         if (cap) {
           cap.replaceChildren();
           const b = document.createElement('b');
@@ -204,5 +217,18 @@ const imgLabel = (kind: string) => (kind === 'foto' ? 'Foto fra leverancen' : 'V
         thumbs.forEach((b) => b.classList.toggle('active', b === btn));
       });
     });
+
+    // Videoerne hentes først, når de kommer i syne, og afspilles uden lyd i løkke.
+    const vids = document.querySelectorAll<HTMLVideoElement>('video[data-src]');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        const v = e.target as HTMLVideoElement;
+        if (e.isIntersecting) {
+          if (!v.src && v.dataset.src) v.src = v.dataset.src;
+          v.play().catch(() => {});
+        } else if (v.src) v.pause();
+      });
+    }, { rootMargin: '200px' });
+    vids.forEach((v) => io.observe(v));
   </script>
 </Base>

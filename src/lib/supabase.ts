@@ -55,12 +55,14 @@ export interface WebCase {
   gallery: WebImage[] | null;
 }
 
-// Billede med ærlig mærkning: 'foto' = fra leverancen, 'visualisering' = render/stand-in.
+// Billede med ærlig mærkning: 'foto' = fra leverancen, 'visualisering' = render/stand-in,
+// 'tegning' = udsnit af vores egne 3D-/værkstedstegninger, 'video' = mp4 i public/video (poster = stillbillede).
 export interface WebImage {
   src: string; // Supabase-URL eller sti i public/ (fx '/billeder/morkhoj/01.jpg')
   alt: string;
-  kind: 'foto' | 'visualisering';
+  kind: 'foto' | 'visualisering' | 'tegning' | 'video';
   caption?: string | null;
+  poster?: string | null;
 }
 
 // Landingsside pr. emne (materiale/produkt), målgruppe eller guide (forklarende artikel) — v_web_landing_pages.
