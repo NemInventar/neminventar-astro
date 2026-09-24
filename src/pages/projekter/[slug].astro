@@ -23,8 +23,18 @@ const meta = [
   ...(project.architect_label ? [{ k: 'Arkitekt', v: project.architect_label }] : []),
   { k: 'Status', v: project.status_label },
 ];
+const site = Astro.site!;
+const jsonLd = [{
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Nem Inventar', item: new URL(base, site).href },
+    { '@type': 'ListItem', position: 2, name: 'Projekter', item: new URL(base + '#projekter', site).href },
+    { '@type': 'ListItem', position: 3, name: project.name, item: new URL(`${base}projekter/${project.slug}`, site).href },
+  ],
+}];
 ---
-<Base title={project.seo_title} description={desc} image={project.hero_image_url ?? undefined}>
+<Base title={project.seo_title} description={desc} image={project.hero_image_url ?? undefined} jsonLd={jsonLd}>
   <section class="case-detail"><div class="wrap">
     <a href={`${base}#projekter`} class="crumb">← Tilbage til projekter</a>
     <span class="status" style="color:var(--warm)">{project.status_live && <span class="dot"></span>}{project.status_label}</span>
@@ -32,7 +42,7 @@ const meta = [
     {project.web_summary && <p class="lead">{project.web_summary}</p>}
 
     {project.hero_image_url && (
-      <div class="case-hero"><img src={cdn(project.hero_image_url, 1200)} alt={`${project.name} — ${heroIsPhoto ? 'foto' : 'visualisering'}`} /></div>
+      <div class="case-hero"><img src={cdn(project.hero_image_url, 1200)} alt={`${project.name} — ${heroIsPhoto ? 'foto' : 'visualisering'}`} fetchpriority="high" /></div>
     )}
 
     {paragraphs.length > 0 && (

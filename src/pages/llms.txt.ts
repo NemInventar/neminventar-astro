@@ -9,6 +9,7 @@ export const GET: APIRoute = async ({ site }) => {
   const [pages, cases, products] = await Promise.all([getWebLandingPages(), getWebCases(), getWebProducts()]);
   const emner = pages.filter((p) => p.kind === 'emne');
   const segmenter = pages.filter((p) => p.kind === 'segment');
+  const guides = pages.filter((p) => p.kind === 'guide');
 
   const lines = [
     '# Nem Inventar ApS',
@@ -21,6 +22,7 @@ export const GET: APIRoute = async ({ site }) => {
     '## Målgrupper',
     ...segmenter.map((p) => `- [${p.nav_label}](${abs(p.slug)}): ${p.lead ?? p.seo_description}`),
     '',
+    ...(guides.length ? ['## Guides', ...guides.map((p) => `- [${p.h1}](${abs(p.slug)}): ${p.lead ?? p.seo_description}`), ''] : []),
     '## Projekter',
     ...cases.map((c) => `- [${c.name}](${abs('projekter/' + c.slug)}): ${c.web_summary ?? ''}`),
     '',

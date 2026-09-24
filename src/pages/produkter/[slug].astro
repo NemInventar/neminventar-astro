@@ -25,13 +25,23 @@ const colorGroups = (product.color_order ?? [])
     return color && imgs.length ? { ...color, image: imgs[0] } : null;
   })
   .filter((g): g is NonNullable<typeof g> => g !== null);
+const site = Astro.site!;
+const jsonLd = [{
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Nem Inventar', item: new URL(base, site).href },
+    { '@type': 'ListItem', position: 2, name: 'Arketyper', item: new URL(base + '#katalog', site).href },
+    { '@type': 'ListItem', position: 3, name: product.name, item: new URL(`${base}produkter/${product.slug}`, site).href },
+  ],
+}];
 ---
-<Base title={product.seo_title} description={product.seo_description} image={hero}>
+<Base title={product.seo_title} description={product.seo_description} image={hero} jsonLd={jsonLd}>
   <section class="detail"><div class="wrap">
     <a href={`${base}#katalog`} class="crumb">← Tilbage til kataloget</a>
     <div class="detail-grid">
       <div class="gallery">
-        {hero && <div class="main"><img id="main-img" src={cdn(hero, 1000)} alt={product.name} /></div>}
+        {hero && <div class="main"><img id="main-img" src={cdn(hero, 1000)} alt={product.name} fetchpriority="high" /></div>}
         {colorGroups.length > 1 && (
           <div class="swatches" role="group" aria-label="Vælg farve">
             {colorGroups.map((g) => (

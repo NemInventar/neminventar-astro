@@ -36,6 +36,7 @@ h1 em,h2 em{font-style:italic;font-weight:400;color:var(--warm)}
   color:var(--warm);
 }
 .label::before{content:"";width:26px;height:1px;background:var(--warm)}
+h2.label{font-family:'Inter',sans-serif;line-height:inherit;margin:0}
 
 /* buttons */
 .btn{

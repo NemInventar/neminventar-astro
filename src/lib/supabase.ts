@@ -63,10 +63,10 @@ export interface WebImage {
   caption?: string | null;
 }
 
-// Landingsside pr. emne (materiale/produkt) eller målgruppe — v_web_landing_pages.
+// Landingsside pr. emne (materiale/produkt), målgruppe eller guide (forklarende artikel) — v_web_landing_pages.
 export interface WebLanding {
   slug: string;
-  kind: 'emne' | 'segment';
+  kind: 'emne' | 'segment' | 'guide';
   nav_label: string;
   kicker: string | null;
   h1: string;
