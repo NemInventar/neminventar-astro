@@ -34,6 +34,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Tekst-lint på alt kundevendt indhold fra Supabase. FEJL (fx Kosovo, interne sagsnumre)
+      # stopper udgivelsen; ADVAR (mål i mm, mærkenavne) vises kun i loggen.
+      - name: Lint kundevendt tekst
+        run: python3 scripts/lint-web-copy.py
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
       - name: Build
         run: npm run build
         env:

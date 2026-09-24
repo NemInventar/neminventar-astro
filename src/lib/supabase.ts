@@ -107,6 +107,8 @@ export const categoryLabel: Record<string, string> = {
   doer: 'Dør',
   akustik: 'Akustik',
   lockers: 'Lockers',
+  omklaedning: 'Omklædning',
+  koekken: 'Køkken',
 };
 
 export async function getWebProducts(): Promise<WebProduct[]> {
