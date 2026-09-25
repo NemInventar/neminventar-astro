@@ -94,6 +94,19 @@ const ld = [organization, ...jsonLd];
   <link rel="apple-touch-icon" href={`${base}favicon.svg`} />
   <meta name="theme-color" content="#17140E" />
   {ld.map((obj) => <script type="application/ld+json" set:html={JSON.stringify(obj)} />)}
+
+  <!-- Besøgsstatistik uden cookies (Plausible, EU). Tæller sider, kilder (Google, Bing, chatgpt.com) og
+       leads: klik på mail- og telefonlinks + download af brochuren. Ingen personoplysninger, intet banner. -->
+  <script defer data-domain="neminventar.dk" src="https://plausible.io/js/script.file-downloads.outbound-links.js"></script>
+  <script is:inline>
+    window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments); };
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[href^="mailto:"], a[href^="tel:"]');
+      if (!a) return;
+      var mail = a.getAttribute('href').indexOf('mailto:') === 0;
+      window.plausible(mail ? 'Mail' : 'Telefon', { props: { side: location.pathname } });
+    });
+  </script>
 </head>
 <body>
   <Nav />
