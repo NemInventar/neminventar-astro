@@ -87,7 +87,7 @@ Alt drives af Supabase ved build. Efter en ændring: **kør et build** (push til
 | Vise/skjule en case | Toggle `case_web_2026_06_11.is_web_published` |
 | Tilføje en ny case | INSERT i `case_web` (peg på et rigtigt `projects`-id, sæt `web_slug`, `is_web_published=true`) |
 | Vise kundenavn på en case | `case_web.show_customer_name=true` |
-| Rette/tilføje en landingsside (`/kompaktlaminat`, `/inventar-til-skoler` …) | UPDATE/INSERT i `landing_web_2026_09_24` (`is_web_published=true`). Ruten er `src/pages/[slug].astro`; forsidens "Det laver vi", footer og `/llms.txt` følger med. Billeder i `images` skal have `kind` = `foto`/`visualisering`. Se canon `SELECT canon_detail('landingssider')` |
+| Rette/tilføje en landingsside (`/kompaktlaminat`, `/inventar-til-skoler` …) | UPDATE/INSERT i `landing_web_2026_09_24` (`is_web_published=true`). Ruten er `src/pages/[slug].astro`; forsidens "Det laver vi", footer og `/llms.txt` følger med. Billeder i `images` har `kind` = `foto`/`visualisering`/`tegning`/`video` (video kræver `poster`). Arbejdsgangen: skill `seo` |
 | Vise entreprenør/arkitekt på en case | `case_web.show_customer_name` / `show_architect_name` = true — KUN efter skriftligt ok |
 | Farve-varianter på en arketype | Render i farver via arketype-studio-skillen → sæt billeders `approved_for_web=true` + `color` → sæt `product_web.color_order` |
 
@@ -125,8 +125,7 @@ GitHub Pages via `.github/workflows/deploy.yml` (push til `main` → build → d
 - `SUPABASE_URL` (= `https://guhbrpektblabndqttgp.supabase.co`)
 - `SUPABASE_ANON_KEY` (ERP anon-nøgle)
 
-**Base-sti:** Workflowet sætter `BASE_PATH=/<repo>/` + `SITE_URL=https://<org>.github.io` til **projekt-side** (prøveside). Alle interne links er base-bevidste via `import.meta.env.BASE_URL`, så de virker på både `/repo/` og `/`.
-**Ved cutover til neminventar.dk:** fjern `BASE_PATH` (base bliver `/`), sæt `SITE_URL=https://neminventar.dk`, tilføj en `public/CNAME` med `neminventar.dk`, og flyt DNS fra det gamle repo.
+Ud over push kører workflowet **hver nat** (cron), så tekster rettet i Supabase/`/tekster` går live uden push. Manuelt nu: `gh workflow run deploy.yml --repo NemInventar/neminventar-astro`. Tekst-tjekket `scripts/lint-web-copy.py` kører før build — et FEJL-fund stopper deployet. Efter deploy kan CDN'et give 404 i et par minutter; test med `?x=<tilfældigt>`. Interne links er base-bevidste via `import.meta.env.BASE_URL`.
 
 ---
 
@@ -161,20 +160,17 @@ src/
 
 ---
 
-## Status (pr. 2026-06-11) — hvad mangler før go-live
+## SEO — hvordan sitet bliver fundet
 
-Færdigt: forside + katalog (4 arketyper) + 2 cases (Mørkhøj, Bølholmen) + detaljesider, crawlbar HTML, web-lag + live fetch, deploy-workflow.
+**Brug skill `seo` (`plugins/seo/`).** Den ejer arbejdsgangen: status og plan, ny landingsside, billeder/tegninger/video, brochure, IndexNow, snapshot og søgeord. Den er skrevet, så indholdsejeren (Marianne, DRI for processen *Hjemmeside-drift & indhold*) kan køre alt selv.
 
-Mangler:
-1. **Repo + Pages + secrets** oprettes (kræver GitHub-login) → prøveside-URL.
-2. **Politik-sider** (privatliv + cookies) — porteres fra det gamle site (lovkrav).
-3. **Logo + favicon** — pt. wordmark-tekst + Astro default-favicon.
-4. **Kontaktformular** — det gamle site har en (Supabase edge function + Resend). Pt. mailto-knapper.
-5. **ERP-RLS** (sikkerhed, se ovenfor).
-6. Nice-to-have: rigtige projektfotos, flere publicerede arketyper, farve-galleri, enrich Bølholmen-scope.
+Filen her bærer ingen status. Den står i kilderne:
+- **Score over tid:** `v_seo_udvikling`
+- **Plan:** huskelisten med tag `seo`
+- **Sider:** `v_web_landing_pages`
+- **Regler for teksterne:** `canon_detail('landingssider')`
 
----
-
-## Forhold til det gamle site
-
-`../NeminventarHomepage` (repo: `NemInventar/NeminventarHomepage`) serverer pt. det live neminventar.dk. Dette nye site er bygget **ved siden af** og rører ikke det live domæne før et bevidst cutover (DNS/CNAME flyttes). Indtil da deployer dette til en projekt-side-URL som prøveside.
+Fælder, der gælder kode-ændringer her:
+- Nye `kind`-værdier på billeder skal med i `WebImage` (`src/lib/supabase.ts`) og `imgLabel` i `src/pages/[slug].astro`.
+- Filer i `public/` kommer først med ved push. Et billede, der kun ligger lokalt, er brudt på sitet.
+- Sitet serverer `neminventar.dk` siden cutover 2026-06-22. `../NeminventarHomepage` er udfaset.

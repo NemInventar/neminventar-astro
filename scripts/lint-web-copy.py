@@ -4,7 +4,8 @@ Læser de samme views som sitet (v_web_landing_pages, v_web_cases, v_web_product
   FEJL  = må aldrig stå udadtil (Kosovo, interne tabel-/tilbudsord, forbudte navne)
   ADVAR = for specifikt / leverandørsprog (mål i mm, mærkenavne på dele, radier, produktkoder)
 Kør: python scripts/lint-web-copy.py        (exit 1 ved FEJL)
-Kræver SUPABASE_URL + SUPABASE_ANON_KEY (eller SUPABASE_SERVICE_ROLE_KEY) i miljøet.
+Nøglen: SUPABASE_ANON_KEY (eller SUPABASE_SERVICE_ROLE_KEY) i miljøet, ellers --anon-key <nøgle>
+(den offentlige anon-nøgle — Claude henter den med Supabase MCP get_publishable_keys).
 
 Reglerne: canon_register "Landingssider pr. søgeord" (Joachim 24-09-2026: ingen underligt
 specifikke tekster, ingen kontekst der ikke hører til på en kundevendt side).
@@ -12,8 +13,11 @@ specifikke tekster, ingen kontekst der ikke hører til på en kundevendt side).
 import json, os, re, sys, urllib.request
 
 sys.stdout.reconfigure(encoding="utf-8")
-URL = os.environ["SUPABASE_URL"].rstrip("/")
-KEY = os.environ.get("SUPABASE_ANON_KEY") or os.environ["SUPABASE_SERVICE_ROLE_KEY"]
+URL = os.environ.get("SUPABASE_URL", "https://guhbrpektblabndqttgp.supabase.co").rstrip("/")
+_arg = sys.argv[sys.argv.index("--anon-key") + 1] if "--anon-key" in sys.argv else None
+KEY = _arg or os.environ.get("SUPABASE_ANON_KEY") or os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
+if not KEY:
+    sys.exit("Mangler nøgle: sæt SUPABASE_ANON_KEY eller kør med --anon-key <offentlig anon-nøgle>")
 
 FEJL = [
     (r"\bKosovo\b|\bFerizaj\b|Korpus\s+SH", "produktionssted nævnes ikke udadtil — skriv 'egen produktion'"),
