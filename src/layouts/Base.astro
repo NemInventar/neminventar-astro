@@ -97,9 +97,11 @@ const ld = [organization, ...jsonLd];
 
   <!-- Besøgsstatistik uden cookies (Plausible, EU). Tæller sider, kilder (Google, Bing, chatgpt.com) og
        leads: klik på mail- og telefonlinks + download af brochuren. Ingen personoplysninger, intet banner. -->
-  <script defer data-domain="neminventar.dk" src="https://plausible.io/js/script.file-downloads.outbound-links.js"></script>
+  <!-- Site-specifikt script fra Plausible-kontoen (js@). Downloads/udgående links slås til i Plausible → Site settings. -->
+  <script async src="https://plausible.io/js/pa-HNaluSTt8ee5v0U7h3J8z.js"></script>
   <script is:inline>
-    window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments); };
+    window.plausible = window.plausible || function () { (plausible.q = plausible.q || []).push(arguments); }, plausible.init = plausible.init || function (i) { plausible.o = i || {}; };
+    plausible.init();
     document.addEventListener('click', function (e) {
       var a = e.target.closest && e.target.closest('a[href^="mailto:"], a[href^="tel:"]');
       if (!a) return;
