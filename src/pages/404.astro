@@ -1,0 +1,20 @@
+---
+// Side for adresser der ikke findes. GitHub Pages serverer dist/404.html.
+// Tæller i Plausible som hændelsen "404" med den adresse, folk prøvede — så vi kan se brudte links.
+import Base from '../layouts/Base.astro';
+const base = import.meta.env.BASE_URL;
+---
+<Base title="Siden findes ikke — Nem Inventar" description="Siden findes ikke. Se alt vi laver, eller skriv til os.">
+  <section class="sec"><div class="wrap" style="max-width:720px;padding:96px 0">
+    <span class="kicker">404</span>
+    <h1 style="margin:14px 0 18px">Siden findes ikke</h1>
+    <p class="lead">Adressen er flyttet eller skrevet forkert. Se alt vi laver, eller send os tegningerne direkte.</p>
+    <div class="detail-cta" style="margin-top:32px">
+      <a href={base} class="btn btn-primary">Til forsiden <span class="arr">→</span></a>
+      <a href="mailto:tilbud@neminventar.dk" class="btn btn-ghost">tilbud@neminventar.dk</a>
+    </div>
+  </div></section>
+  <script is:inline>
+    window.plausible && window.plausible('404', { props: { path: location.pathname } });
+  </script>
+</Base>
