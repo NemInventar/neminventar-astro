@@ -7,6 +7,10 @@ const team = [
   { name: 'Milot Salihu', role: 'Medejer · salg og leverandører', desc: 'Salg, leverandørkoordinering og proces.', email: 'kontakt@neminventar.dk', phone: '+45 40 14 05 08', img: 'milot.png' },
   { name: 'Christian Foss', role: 'Produktansvarlig', desc: 'Produktdesign, innovation og kvalitet.', email: 'cf@neminventar.dk', phone: '+45 24 64 97 43', img: 'christian.png' },
 ];
+
+// Egenproduktionen: fotos lægges i public/billeder/produktion/ og tilføjes her. Tom liste = ingen fotorække.
+// Intet må afsløre hvor produktionen ligger: ingen skilte, tekst, udsigt eller navne (se skill seo, hårde grænser).
+const prodPhotos: { src: string; alt: string }[] = [];
 ---
 <Base
   title="Om os — Nem Inventar"
@@ -55,6 +59,23 @@ const team = [
     </div>
   </div></section>
 
+  <section class="production"><div class="wrap">
+    <div class="sec-head"><div>
+      <span class="label">Produktionen</span>
+      <h2>Vores egenproduktion.</h2>
+    </div></div>
+    <div class="prod-text">
+      <p>Vi producerer inventaret i vores egen produktion. Opskæring, samling, overfladebehandling og pakning foregår hos os selv, så vi styrer kvaliteten og tidsplanen fra plade til færdigt emne.</p>
+      <p>Produktionen arbejder ud fra den samme 3D-model og stykliste, som I har godkendt, og hvert produkt følges gennem produktionen med sin egen tjekliste. Olie og farvet olie påføres i produktionen, så inventaret kommer færdigbehandlet ud på pladsen.</p>
+      <p>Vi følger op på arbejdsmiljøet og registrerer nærved-hændelser og ulykker, så vi kan rette årsagen og ikke kun symptomet.</p>
+    </div>
+    {prodPhotos.length > 0 && (
+      <div class="prod-photos">
+        {prodPhotos.map((ph) => (<img src={`${base}${ph.src.replace(/^\//, '')}`} alt={ph.alt} loading="lazy" />))}
+      </div>
+    )}
+  </div></section>
+
   <section class="about-cta"><div class="wrap">
     <h2>Vil I vide mere?</h2>
     <p>Se vores arketyper, kig på projekterne, eller skriv til os om det, I står med.</p>
@@ -89,5 +110,12 @@ const team = [
   .member .m-contact{font-size:14px;line-height:1.7}
   .member .m-contact a{color:var(--ink)}
   .member .m-contact a:hover{color:var(--warm)}
-  @media(max-width:780px){.team-grid{grid-template-columns:1fr;gap:36px;max-width:420px}}
+  .production{padding:0 0 96px}
+  .production .sec-head{margin-bottom:28px}
+  .production .sec-head h2{font-size:clamp(28px,3.4vw,42px);margin-top:18px}
+  .prod-text{max-width:840px}
+  .prod-text p{font-size:17px;color:var(--ink);line-height:1.8;margin-bottom:14px;max-width:64ch}
+  .prod-photos{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px}
+  .prod-photos img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:var(--radius);border:1px solid var(--line)}
+  @media(max-width:780px){.team-grid{grid-template-columns:1fr;gap:36px;max-width:420px}.prod-photos{grid-template-columns:1fr}}
 </style>
