@@ -2,11 +2,13 @@
 // (resizer + auto-webp via browserens Accept-header). Reducerer payload markant.
 // Lader ikke-Supabase-URLs være urørte.
 // Stier i public/ ('/billeder/...') gøres base-bevidste, så de også virker på en projekt-side.
+// resize=contain er nødvendig: med kun width beholder Supabase originalens højde og skærer
+// en midterstrimmel ud (1024x1024 → 220x1024), så miniaturer blev et zoomet udsnit.
 export function cdn(url: string | null | undefined, width = 1000, quality = 72): string {
   if (!url) return '';
   if (url.startsWith('/')) return import.meta.env.BASE_URL + url.slice(1);
   if (!url.includes('/storage/v1/object/public/')) return url;
   const t = url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/');
   const sep = t.includes('?') ? '&' : '?';
-  return `${t}${sep}width=${width}&quality=${quality}`;
+  return `${t}${sep}width=${width}&resize=contain&quality=${quality}`;
 }
