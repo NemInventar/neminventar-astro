@@ -3,9 +3,15 @@ import Base from '../layouts/Base.astro';
 const base = import.meta.env.BASE_URL;
 
 const team = [
-  { name: 'Joachim Skovbogaard', role: 'Administrerende direktør', desc: 'Kontakt og koordinering med entreprenører, arkitekter m.fl.', email: 'js@neminventar.dk', phone: '+45 20 54 14 88', img: 'joachim.png' },
-  { name: 'Milot Salihu', role: 'Medejer · salg og leverandører', desc: 'Salg, leverandørkoordinering og proces.', email: 'kontakt@neminventar.dk', phone: '+45 40 14 05 08', img: 'milot.png' },
-  { name: 'Christian Foss', role: 'Produktansvarlig', desc: 'Produktdesign, innovation og kvalitet.', email: 'cf@neminventar.dk', phone: '+45 24 64 97 43', img: 'christian.png' },
+  { name: 'Joachim Skovbogaard', role: 'Administrerende direktør', desc: 'Kontakt og koordinering med entreprenører, arkitekter m.fl.', email: 'js@neminventar.dk', phone: '+45 20 54 14 88', img: 'joachim.png',
+    edu: 'Civilingeniør · kandidat i Construction Management · kandidat i datavidenskab',
+    bio: 'Joachim er civilingeniør med speciale i bærende konstruktioner fra Ingeniørhøjskolen i Aarhus. Han har en kandidat i Construction Management fra Aarhus Universitet og en kandidat i datavidenskab fra Syddansk Universitet. Han har arbejdet i byggebranchen siden 2017 med lean, lokationsbaseret planlægning og byggestyring, bl.a. hos Enemærke & Petersen på store renoveringssager. Hos Nem Inventar står han for kontakten til entreprenører og arkitekter, tilbuddene og de digitale værktøjer, der binder tegning, produktion og levering sammen.' },
+  { name: 'Milot Salihu', role: 'Medejer · salg og leverandører', desc: 'Salg, leverandørkoordinering og proces.', email: 'kontakt@neminventar.dk', phone: '+45 40 14 05 08', img: 'milot.png',
+    edu: 'Proces og Innovation, DTU · Management & Technology, TUM',
+    bio: 'Milot er uddannet i Proces og Innovation fra DTU og har læst Management & Technology ved TUM School of Management. Før Nem Inventar var han projektleder og siden partner inden for automation og robotteknologi hos Novo Nordisk, hvor han satte nye produktionslinjer og udstyr i drift. Han underviser også som gæsteforelæser på DTU. Hos Nem Inventar står han for salget, leverandørerne og koordineringen af produktionen.' },
+  { name: 'Christian Foss', role: 'Produktansvarlig', desc: 'Produktdesign, innovation og kvalitet.', email: 'cf@neminventar.dk', phone: '+45 24 64 97 43', img: 'christian.png',
+    edu: 'Professionsbachelor i Proces og Innovation, DTU',
+    bio: 'Christian er uddannet professionsbachelor i Proces og Innovation fra DTU i 2022. Han har arbejdet som teknisk designer og produktudviklingskonsulent i industrien og som business analyst i finanssektoren. Hos Nem Inventar tegner han produkterne i 3D, laver produktionstegningerne og holder øje med, at kundens krav, kvaliteten og prisen hænger sammen.' },
 ];
 
 // Egenproduktionen: fotos lægges i public/billeder/produktion/ og tilføjes her. Tom liste = ingen fotorække.
@@ -50,6 +56,11 @@ const prodPhotos: { src: string; alt: string }[] = [];
           <h3>{m.name}</h3>
           <p class="m-role">{m.role}</p>
           <p class="m-desc">{m.desc}</p>
+          <p class="m-edu">{m.edu}</p>
+          <details class="m-more">
+            <summary>Uddannelse og baggrund</summary>
+            <p>{m.bio}</p>
+          </details>
           <p class="m-contact">
             <a href={`mailto:${m.email}`}>{m.email}</a><br />
             <a href={`tel:${m.phone.replace(/\s/g, '')}`}>{m.phone}</a>
@@ -109,6 +120,13 @@ const prodPhotos: { src: string; alt: string }[] = [];
   .member h3{font-size:21px;margin-bottom:4px}
   .member .m-role{color:var(--warm);font-weight:600;font-size:14px;letter-spacing:.02em;margin-bottom:10px}
   .member .m-desc{color:var(--muted);font-size:15px;line-height:1.6;margin-bottom:12px}
+  .member .m-edu{color:var(--ink);font-size:14px;line-height:1.55;margin-bottom:8px}
+  .member .m-more{margin-bottom:14px;font-size:14.5px}
+  .member .m-more summary{cursor:pointer;color:var(--warm);font-weight:600;list-style:none}
+  .member .m-more summary::-webkit-details-marker{display:none}
+  .member .m-more summary::after{content:' +'}
+  .member .m-more[open] summary::after{content:' −'}
+  .member .m-more p{color:var(--muted);line-height:1.65;margin-top:10px}
   .member .m-contact{font-size:14px;line-height:1.7}
   .member .m-contact a{color:var(--ink)}
   .member .m-contact a:hover{color:var(--warm)}
