@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import ContactForm from '../components/ContactForm.tsx';
+import CallbackForm from '../components/CallbackForm.tsx';
 ---
 <Base
   title="Kontakt — Nem Inventar"
@@ -20,6 +21,7 @@ import ContactForm from '../components/ContactForm.tsx';
         <span class="k">Adresse</span>
         <span>Nem Inventar ApS · Mågevej 73, st. tv. · 2400 København NV · CVR 45085473</span>
       </div>
+      <CallbackForm client:visible label="Hellere tale sammen? Bestil et opkald" />
     </div>
     <ContactForm client:load />
   </div></section>

@@ -2,6 +2,7 @@
 // Landingssider pr. emne (materiale/produkt) og målgruppe — /kompaktlaminat, /inventar-til-skoler …
 // Indhold: v_web_landing_pages (landing_web_2026_09_24). Statiske sider (om-os, kontakt …) vinder over denne rute.
 import Base from '../layouts/Base.astro';
+import CallbackForm from '../components/CallbackForm.tsx';
 import { getWebLandingPages, getWebCases, getWebProducts, categoryLabel, type WebLanding, type WebCase, type WebProduct } from '../lib/supabase';
 import { cdn } from '../lib/img';
 
@@ -104,6 +105,7 @@ const imgLabel = (kind: string) =>
         <div class="detail-cta">
           <a href={`mailto:tilbud@neminventar.dk?subject=${encodeURIComponent('Forespørgsel: ' + page.nav_label)}`} class="btn btn-primary">Send tegninger eller mål <span class="arr">→</span></a>
           <a href="tel:+4540140508" class="btn btn-ghost">+45 40 14 05 08</a>
+          <CallbackForm client:visible />
         </div>
       </div>
     </div>

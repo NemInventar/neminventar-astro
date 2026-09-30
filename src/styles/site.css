@@ -486,4 +486,11 @@ footer a:hover{color:var(--ink)}
 .form-done{text-align:center;padding:24px 8px}
 .form-done h3{font-size:24px;margin-bottom:10px}
 .form-done p{color:var(--muted);line-height:1.7}
+/* Bestil et opkald (CallbackForm): åbnes i CTA-rækken og fylder hele bredden under knapperne */
+.callback-form{flex-basis:100%;width:100%;padding:26px;position:relative}
+.callback-title{font-size:20px;margin:0 0 6px}
+.callback-lead{color:var(--muted);font-size:14.5px;line-height:1.6;margin:0 0 18px}
+.callback-note{color:var(--muted);font-size:12.5px;line-height:1.6;margin:14px 0 0}
+.callback-note a{color:var(--warm);text-decoration:underline}
+.contact-info .btn{margin-top:26px}
 @media(max-width:560px){.form .row{grid-template-columns:1fr}.form{padding:24px}}
