@@ -105,7 +105,7 @@ const imgLabel = (kind: string) =>
         <div class="detail-cta">
           <a href={`mailto:tilbud@neminventar.dk?subject=${encodeURIComponent('Forespørgsel: ' + page.nav_label)}`} class="btn btn-primary">Send tegninger eller mål <span class="arr">→</span></a>
           <a href="tel:+4540140508" class="btn btn-ghost">+45 40 14 05 08</a>
-          <CallbackForm client:visible />
+          <CallbackForm client:load />
         </div>
       </div>
     </div>

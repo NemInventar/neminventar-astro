@@ -80,7 +80,7 @@ const jsonLd = [{
         <div class="detail-cta">
           <a href={`mailto:tilbud@neminventar.dk?subject=${encodeURIComponent('Forespørgsel: ' + product.name)}`} class="btn btn-primary">Få pris på denne <span class="arr">→</span></a>
           <a href={`${base}#kontakt`} class="btn btn-ghost">Kontakt os</a>
-          <CallbackForm client:visible />
+          <CallbackForm client:load />
         </div>
       </div>
     </div>
