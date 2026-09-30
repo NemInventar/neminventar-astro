@@ -52,7 +52,7 @@ export default function CallbackForm({ defaultOpen = false, label = 'Bestil et o
       }
     } catch {
       setStatus('error');
-      setErrMsg('Det lykkedes ikke at sende. Ring til os på +45 40 14 05 08.');
+      setErrMsg('Det lykkedes ikke at sende. Ring til os på +45 42 42 26 84.');
     }
   }
 
@@ -69,7 +69,7 @@ export default function CallbackForm({ defaultOpen = false, label = 'Bestil et o
       <div className="form callback-form">
         <div className="form-done">
           <h3>Tak, vi ringer dig op.</h3>
-          <p>Du hører fra os inden for en arbejdsdag. Haster det, så ring på +45 40 14 05 08.</p>
+          <p>Du hører fra os inden for en arbejdsdag. Haster det, så ring på +45 42 42 26 84.</p>
         </div>
       </div>
     );

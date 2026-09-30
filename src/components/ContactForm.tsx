@@ -39,7 +39,7 @@ export default function ContactForm() {
       }
     } catch (err) {
       setStatus('error');
-      setErrMsg('Der opstod en fejl ved afsendelse. Prøv igen, eller ring til os på +45 40 14 05 08.');
+      setErrMsg('Der opstod en fejl ved afsendelse. Prøv igen, eller ring til os på +45 42 42 26 84.');
     }
   }
 
@@ -48,7 +48,7 @@ export default function ContactForm() {
       <div className="form">
         <div className="form-done">
           <h3>Tak — beskeden er sendt.</h3>
-          <p>Vi vender tilbage hurtigst muligt. Haster det, så ring på +45 40 14 05 08.</p>
+          <p>Vi vender tilbage hurtigst muligt. Haster det, så ring på +45 42 42 26 84.</p>
         </div>
       </div>
     );

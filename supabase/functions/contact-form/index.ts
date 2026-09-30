@@ -128,7 +128,7 @@ async function handleCallback(body: any, json: Record<string, string>): Promise<
     normPhone(r.primary_contact_phone) === norm && Date.parse(r.created_at) > since30);
   if (dup) return new Response(JSON.stringify({ success: true }), { headers: json });
   if ((recent ?? []).length >= 20) {
-    return new Response(JSON.stringify({ error: "Prøv igen senere, eller ring på +45 40 14 05 08." }), { status: 429, headers: json });
+    return new Response(JSON.stringify({ error: "Prøv igen senere, eller ring på +45 42 42 26 84." }), { status: 429, headers: json });
   }
 
   const who = company ? `${name} · ${company}` : name;
