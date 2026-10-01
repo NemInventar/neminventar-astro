@@ -13,6 +13,7 @@ import '@fontsource/archivo/600-italic.css';
 import '../styles/site.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import { LINKEDIN } from '../lib/contact';
 
 interface Props {
   title: string;
@@ -53,8 +54,8 @@ const organization = {
   },
   areaServed: { '@type': 'Country', name: 'Danmark' },
   // Samme virksomhed andre steder — binder profilerne sammen til én enhed for Google og AI-søgning.
-  // Tilføj Krak, Proff, Bing Places og LinkedIn her, når de har en fast profil-URL.
-  sameAs: ['https://g.page/r/CZTJypcXhpHcEBM'],
+  // Tilføj Krak, Proff og Bing Places her, når de har en fast profil-URL.
+  sameAs: ['https://g.page/r/CZTJypcXhpHcEBM', LINKEDIN],
   hasMap: 'https://g.page/r/CZTJypcXhpHcEBM',
   knowsAbout: [
     'Krydsfiner-inventar', 'Kompaktlaminat', 'Toiletbåse', 'Garderober', 'Troldegarderober',

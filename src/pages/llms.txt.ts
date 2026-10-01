@@ -14,7 +14,7 @@ export const GET: APIRoute = async ({ site }) => {
   const lines = [
     '# Nem Inventar ApS',
     '',
-    '> Dansk leverandør af fast inventar til byggeri: skoler, daginstitutioner, idrætshaller og erhverv. Vi bygger til mål i krydsfiner, kompaktlaminat (HPL), møbellinoleum og massivt træ i egen produktion, og leverer som fagentreprise til hovedentreprenører og bygherrer i hele Danmark. Kontor: Mågevej 73, st. tv., 2400 København NV. CVR 45085473. Telefon +45 42 42 26 84, tilbud@neminventar.dk.',
+    '> Dansk leverandør af fast inventar til byggeri: skoler, daginstitutioner, idrætshaller og erhverv. Vi bygger til mål i krydsfiner, kompaktlaminat (HPL), møbellinoleum og massivt træ i egen produktion, og leverer som fagentreprise til hovedentreprenører og bygherrer i hele Danmark. Leverer også til private. Kontor: Mågevej 73, st. tv., 2400 København NV. CVR 45085473. Telefon +45 42 42 26 84, tilbud@neminventar.dk.',
     '',
     '## Det laver vi',
     ...emner.map((p) => `- [${p.nav_label}](${abs(p.slug)}): ${p.lead ?? p.seo_description}`),

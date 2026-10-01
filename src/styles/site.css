@@ -86,6 +86,21 @@ nav{
   padding:11px 22px;font-weight:600;transition:background .2s;
 }
 .nav-cta:hover{background:var(--warm)}
+/* Telefon og LinkedIn i headeren (01-10-2026). Telefonen bliver stående på mobil, hvor et tryk ringer op. */
+.nav-links .nav-tel{display:inline-flex;align-items:center;gap:7px;color:var(--ink);font-weight:700;white-space:nowrap}
+.nav-links .nav-tel svg{color:var(--warm)}
+.nav-links .nav-icon{display:inline-flex;align-items:center;color:var(--muted)}
+.nav-links .nav-icon:hover{color:var(--ink)}
+.nav-links .nav-icon::after{display:none}
+@media(max-width:1180px){.nav-links{gap:20px}}
+@media(max-width:960px){.nav-links a:not(.nav-cta):not(.nav-tel){display:none}}
+@media(max-width:680px){
+  .brand{font-size:16px}
+  .nav-links{gap:14px}
+  .nav-links .nav-tel{font-size:14.5px}
+  .nav-links .nav-tel .cc{display:none}
+  .nav-cta{padding:9px 16px}
+}
 
 /* ============ HERO ============ */
 .hero{padding:84px 0 88px;border-bottom:1px solid var(--line)}
@@ -359,7 +374,8 @@ footer a:hover{color:var(--ink)}
   border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);
   background:var(--soft);aspect-ratio:16/7;margin:18px 0 40px;
 }
-.case-hero img{width:100%;height:100%;object-fit:cover}
+/* Renders er ofte kvadratiske med inventaret i nederste del — beskær mod bunden, ikke midten. */
+.case-hero img{width:100%;height:100%;object-fit:cover;object-position:50% 78%}
 .case-detail h1{font-size:clamp(32px,4vw,54px);max-width:20ch}
 .case-detail .lead{font-size:19px;color:var(--muted);margin-top:20px;max-width:60ch;line-height:1.7}
 .case-meta{display:grid;grid-template-columns:repeat(var(--cols,3),1fr);gap:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff;margin-top:40px}
@@ -440,7 +456,6 @@ footer a:hover{color:var(--ink)}
   .vgrid{grid-template-columns:1fr}
   .v{border-right:none;border-bottom:1px solid var(--line)}
   .v:last-child{border-bottom:none}
-  .nav-links a:not(.nav-cta){display:none}
   .case .body{padding:26px 24px}
   .track{padding:28px 24px 20px}
   footer .right{text-align:left}
@@ -493,4 +508,15 @@ footer a:hover{color:var(--ink)}
 .callback-note{color:var(--muted);font-size:12.5px;line-height:1.6;margin:14px 0 0}
 .callback-note a{color:var(--warm);text-decoration:underline}
 .contact-info .btn{margin-top:26px}
+/* Opkaldsboksen flugter med teksten over: felterne må ikke være bredere end deres kolonne. */
+.field{min-width:0}
+.field input,.field textarea{width:100%;min-width:0}
+.contact-info .callback-form{margin-top:26px}
+.contact-tel{display:inline-block;margin-top:24px;font-family:'Archivo',sans-serif;font-size:clamp(26px,3vw,34px);font-weight:700;letter-spacing:-.02em;color:var(--ink);text-decoration:none}
+.contact-tel:hover{color:var(--warm)}
+/* Privat / erhverv i kontaktformularen */
+.kundetype{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:4px;margin-bottom:20px;background:var(--paper)}
+.kundetype button{border:none;background:none;font:inherit;font-size:14.5px;font-weight:600;color:var(--muted);padding:8px 20px;border-radius:999px;cursor:pointer}
+.kundetype button.on{background:var(--ink);color:var(--paper)}
+@media(max-width:680px){.contact-grid{grid-template-columns:1fr;gap:32px}}
 @media(max-width:560px){.form .row{grid-template-columns:1fr}.form{padding:24px}}

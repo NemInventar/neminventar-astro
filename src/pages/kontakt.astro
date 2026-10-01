@@ -2,22 +2,24 @@
 import Base from '../layouts/Base.astro';
 import ContactForm from '../components/ContactForm.tsx';
 import CallbackForm from '../components/CallbackForm.tsx';
+import { PHONE, PHONE_TEL, LINKEDIN } from '../lib/contact';
 ---
 <Base
   title="Kontakt — Nem Inventar"
-  description="Send os jeres mål eller hele udbuddet. Vi vender hurtigt tilbage med næste skridt.">
+  description="Send os jeres mål eller hele udbuddet. Vi leverer til byggeri og til private og vender hurtigt tilbage med næste skridt.">
   <section class="contact"><div class="wrap contact-grid">
     <div class="contact-info">
       <span class="label">Kontakt</span>
       <h1>Lad os tale om <em>jeres projekt.</em></h1>
-      <p class="lead">Skriv en arketype, et mål eller hele udbuddet — så vender vi hurtigt tilbage med næste skridt. Et indledende afklaringsmøde er gratis og uforpligtende.</p>
+      <p class="lead">Skriv en arketype, et mål eller hele udbuddet — så vender vi hurtigt tilbage med næste skridt. Et indledende afklaringsmøde er gratis og uforpligtende. Vi leverer også til private.</p>
+      <a href={`tel:${PHONE_TEL}`} class="contact-tel">{PHONE}</a>
       <div class="lines">
         <span class="k">Salg & tilbud</span>
         <a href="mailto:tilbud@neminventar.dk">tilbud@neminventar.dk</a>
         <span class="k">Generelt</span>
         <a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a>
-        <span class="k">Telefon</span>
-        <a href="tel:+4542422684">+45 42 42 26 84</a>
+        <span class="k">LinkedIn</span>
+        <a href={LINKEDIN} target="_blank" rel="noopener">Nem Inventar ApS på LinkedIn</a>
         <span class="k">Adresse</span>
         <span>Nem Inventar ApS · Mågevej 73, st. tv. · 2400 København NV · CVR 45085473</span>
       </div>

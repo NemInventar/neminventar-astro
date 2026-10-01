@@ -1,13 +1,14 @@
 ---
 // Delt footer. Base-bevidste interne links. Landingssiderne linkes fra hver side (intern linkstruktur).
 import { getWebLandingPages } from '../lib/supabase';
+import { PHONE, PHONE_TEL, LINKEDIN } from '../lib/contact';
 const base = import.meta.env.BASE_URL; // slutter med '/'
 const landing = await getWebLandingPages();
 ---
 <footer><div class="wrap foot">
   <div>
     <div class="brand">NEM<b style="color:var(--warm)">·</b>INVENTAR</div>
-    <p>Snedkerbygget inventar til byggeri.<br>Arketyper på bestilling — og hele projekter.</p>
+    <p>Snedkerbygget inventar til byggeri.<br>Arketyper på bestilling — og hele projekter.<br>Vi leverer også til private.</p>
     {landing.length > 0 && (
       <p class="foot-links foot-topics">
         {landing.map((l, i) => (<>{i > 0 && ' · '}<a href={`${base}${l.slug}`}>{l.nav_label}</a></>))}
@@ -24,7 +25,9 @@ const landing = await getWebLandingPages();
   <div class="right">
     <p>Nem Inventar ApS · CVR 45085473</p>
     <p>Mågevej 73, st. tv. · 2400 København NV</p>
-    <p><a href="tel:+4542422684">+45 42 42 26 84</a> · <a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a></p>
+    <p class="foot-tel"><a href={`tel:${PHONE_TEL}`}>{PHONE}</a></p>
+    <p><a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a></p>
+    <p><a href={LINKEDIN} target="_blank" rel="noopener" class="foot-li">LinkedIn</a></p>
   </div>
 </div></footer>
 
@@ -33,4 +36,7 @@ const landing = await getWebLandingPages();
   .foot-links a{color:var(--muted);text-decoration:none}
   .foot-links a:hover{color:var(--ink)}
   .foot-topics{max-width:62ch;line-height:1.9}
+  .foot-tel a{font-size:22px;font-weight:700;color:var(--ink);text-decoration:none}
+  .foot-tel a:hover{color:var(--warm)}
+  .foot-li{text-decoration:underline}
 </style>
