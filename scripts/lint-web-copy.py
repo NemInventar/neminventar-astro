@@ -34,7 +34,9 @@ ADVAR = [
     (r"\b\d{4}\s+(?:hvid|Olive)\b|\bNCS[- ]?S?\s*\d", "farve-/produktkode"),
     (r"produktionszone", "skolens interne rumbetegnelse"),
     (r"design for disassembly", "engelsk fagjargon"),
-    (r"\bDGNB\b", "påstand uden kilde (ingen DGNB-sag)"),
+    # DGNB må nævnes som noget vi leverer TIL (samme materialevalg og dokumentation som Svanemærket, Joachim 02-10-2026),
+    # men inventaret er aldrig selv DGNB-certificeret: DGNB certificerer byggerier.
+    (r"(?i)\bDGNB[- ](certificeret|godkendt|mærket)\s+(inventar|produkt|møbel|møbler|skab|skabe)", "DGNB certificerer byggerier, ikke inventar"),
     (r"(?i)\b(unik|førende|banebrydende|i verdensklasse|skræddersyet løsning|passion|innovativ)\w*", "marketing-floskel (brand-tone: ingen superlativer)"),
 ]
 
