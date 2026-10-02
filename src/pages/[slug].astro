@@ -17,6 +17,20 @@ const base = import.meta.env.BASE_URL;
 const site = Astro.site!;
 
 const paragraphs = (page.body ?? '').split('\n\n').filter(Boolean);
+// Links i brødtekst og FAQ-svar: [tekst](https://…) eller [tekst](/sti). Alt andet vises som ren tekst.
+const LINK = /\[([^\]]+)\]\(((?:https?:\/\/|\/)[^)\s]+)\)/g;
+const segs = (s: string) => {
+  const out: { t: string; href?: string }[] = [];
+  let last = 0;
+  for (const m of s.matchAll(LINK)) {
+    if (m.index! > last) out.push({ t: s.slice(last, m.index) });
+    out.push({ t: m[1], href: m[2].startsWith('/') ? base + m[2].slice(1) : m[2] });
+    last = m.index! + m[0].length;
+  }
+  if (last < s.length) out.push({ t: s.slice(last) });
+  return out;
+};
+const plain = (s: string) => s.replace(LINK, '$1');
 const images = (page.images ?? []).filter((im) => im.kind !== 'video');
 const videos = (page.images ?? []).filter((im) => im.kind === 'video');
 const hero = images[0];
@@ -65,7 +79,7 @@ const jsonLd = [
     ? [{
         '@context': 'https://schema.org',
         '@type': 'FAQPage',
-        mainEntity: page.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+        mainEntity: page.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: plain(f.a) } })),
       }]
     : []),
 ];
@@ -112,7 +126,7 @@ const imgLabel = (kind: string) =>
 
     {paragraphs.length > 0 && (
       <div class="prose lp-prose">
-        {paragraphs.map((para) => <p>{para}</p>)}
+        {paragraphs.map((para) => <p>{segs(para).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))}</p>)}
       </div>
     )}
 
@@ -176,7 +190,7 @@ const imgLabel = (kind: string) =>
         {page.faq.map((f) => (
           <details>
             <summary>{f.q}</summary>
-            <p>{f.a}</p>
+            <p>{segs(f.a).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))}</p>
           </details>
         ))}
       </div>

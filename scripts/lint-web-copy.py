@@ -30,7 +30,8 @@ FEJL = [
 ADVAR = [
     (r"\d+(?:[,.]\d+)?\s*(?:×|x)\s*\d+|\b\d+(?:[,.]\d+)?\s*mm\b|Ø\s*\d+", "mål i mm — for specifikt til en kundevendt tekst"),
     (r"\bR\d{2}\b", "radius-betegnelse"),
-    (r"FunderMax|Forbo|Ecophon|Oil Plus|PreColour|\b2C\b|cam-lås|safe-greb|soft-close", "mærke-/beslagsnavn — skriv hvad det gør, ikke hvad det hedder"),
+    (r"FunderMax|Forbo|Ecophon|cam-lås|safe-greb|soft-close", "mærke-/beslagsnavn — skriv hvad det gør, ikke hvad det hedder"),
+    (r"Oil Plus|PreColou?r|\b2C\b", "Rubio-produktnavn — kun tilladt i overflade-guiden (RUBIO_OK)"),
     (r"\b\d{4}\s+(?:hvid|Olive)\b|\bNCS[- ]?S?\s*\d", "farve-/produktkode"),
     (r"produktionszone", "skolens interne rumbetegnelse"),
     (r"design for disassembly", "engelsk fagjargon"),
@@ -45,6 +46,9 @@ def get(view, cols):
     return json.loads(urllib.request.urlopen(r, timeout=60).read())
 
 MM_RULE = ADVAR[0][0]
+RUBIO_RULE = ADVAR[3][0]
+# Overflade-guiden må nævne og linke Rubio Monocoats produkter (Joachim 02-10-2026: "det er ok vi linker til dem").
+RUBIO_OK = {"bejdset-olieret-eller-lakeret"}
 
 def mm_allowed(row, field, item):
     # Guides må forklare pladetykkelser, og et FAQ-svar på et spørgsmål OM tykkelse må give tallet.
@@ -78,6 +82,7 @@ for label, view, cols, fields in SOURCES:
             for rules, level in ((FEJL, "FEJL "), (ADVAR, "ADVAR")):
                 for pat, why in rules:
                     if pat == MM_RULE and mm_ok: continue
+                    if pat == RUBIO_RULE and label == "side" and row["slug"] in RUBIO_OK: continue
                     for m in re.finditer(pat, s):
                         ctx = s[max(0, m.start() - 35):m.end() + 35].replace("\n", " ")
                         print(f"{level} {label}/{row['slug']} · {field}: «{m.group(0)}» — {why}\n        …{ctx}…")
