@@ -123,6 +123,9 @@ export default function ContactForm() {
         {sending ? 'Sender…' : 'Send besked'} <span className="arr">→</span>
       </button>
       {status === 'error' && <p className="form-msg err">{errMsg}</p>}
+      {privat && (
+        <p className="callback-note">Som privat handler du efter vores <a href={`${import.meta.env.BASE_URL}handelsbetingelser`}>handelsbetingelser for private</a>.</p>
+      )}
     </form>
   );
 }

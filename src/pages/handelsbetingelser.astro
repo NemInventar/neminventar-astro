@@ -1,0 +1,108 @@
+---
+// Handelsbetingelser for private (Joachim 02-10-2026: "lav den bare").
+// Vilkårene bygger på selskabets standarder i company_settings_2026_05_03
+// (50 % ved bestilling / 50 % ved levering, netto 8 dage, tilbud gyldigt 30 dage, 8-10 uger fra godkendt tegning).
+// Erhverv aftales i tilbuddet (AB 18 / egne forbehold) — denne side gælder kun forbrugere.
+import Base from '../layouts/Base.astro';
+import { PHONE, PHONE_TEL } from '../lib/contact';
+const base = import.meta.env.BASE_URL;
+---
+<Base title="Handelsbetingelser for private — Nem Inventar" description="Handelsbetingelser for private kunder hos Nem Inventar ApS: tilbud, betaling, levering, montage, fortrydelsesret og reklamation.">
+  <article class="legal wrap">
+    <h1>Handelsbetingelser for private</h1>
+    <p class="upd">Gældende fra oktober 2026</p>
+
+    <p>Betingelserne gælder, når du som privatperson køber inventar hos os. Køber du som virksomhed, gælder de vilkår, der står i dit tilbud.</p>
+
+    <h2>1. Hvem du handler med</h2>
+    <p>
+      Nem Inventar ApS<br />
+      Mågevej 73, st. tv.<br />
+      2400 København NV<br />
+      CVR: 45085473<br />
+      Telefon: <a href={`tel:${PHONE_TEL}`}>{PHONE}</a><br />
+      E-mail: <a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a>
+    </p>
+
+    <h2>2. Tilbud og aftale</h2>
+    <p>Du får et skriftligt tilbud på mail. Det beskriver produktet, materialer, mål, pris, levering og de tilkøb, du har valgt. Tilbuddet gælder i 30 dage.</p>
+    <p>Aftalen er indgået, når du har accepteret tilbuddet skriftligt, og vi har sendt dig en ordrebekræftelse. Inden vi går i produktion, sender vi en tegning med de endelige mål, som du godkender.</p>
+
+    <h2>3. Priser</h2>
+    <p>Alle priser til private er inklusive moms. Levering står som egen linje i tilbuddet, og det samme gør tilkøb som opmåling, tegninger og montage. Der kommer ingen gebyrer ud over det, der står i tilbuddet.</p>
+    <p>Priser vist på vores hjemmeside som "fra"-priser gælder produktet i det standardmål og materiale, der står ved prisen.</p>
+
+    <h2>4. Betaling</h2>
+    <p>Du betaler 50 % af prisen, når du har godkendt tegningen, og resten ved levering. Du får en faktura, som betales med bankoverførsel senest 8 dage efter fakturadatoen.</p>
+
+    <h2>5. Mål</h2>
+    <p>Måler du selv op, laver vi produktet efter de mål, du har givet os, og som står på den tegning, du har godkendt. Køber du opmåling hos os, er det os, der står inde for målene.</p>
+
+    <h2>6. Levering</h2>
+    <p>Vi leverer til din adresse i Danmark. Færøerne og Grønland er ikke med. Leveringstiden står i ordrebekræftelsen og er normalt 8–10 uger fra, du har godkendt tegningen. Vi aftaler leveringsdagen med dig.</p>
+    <p>Levering omfatter aflæsning ved adressen. Skal vi bære produktet op ad trapper eller ind i boligen, står det i tilbuddet. Der skal være adgang for en varebil eller lastbil tæt på adressen.</p>
+    <p>Bliver leveringen forsinket af forhold, vi ikke har indflydelse på, fx forsinkede materialer hos en leverandør, giver vi dig besked med det samme og aftaler en ny dato. Dine rettigheder efter købeloven ved forsinkelse gælder uanset.</p>
+
+    <h2>7. Montage</h2>
+    <p>Montage er et tilkøb og står som egen linje i tilbuddet. Montagen udføres af os eller af en montør, vi har valgt.</p>
+    <p>Montagen forudsætter, at der er ryddet og tørt, at der er strøm og lys, og at væggen kan bære inventaret. Fortæl os, hvis der er rør eller ledninger i væggen, hvor vi skal skrue. Vi tilslutter ikke el, vand eller afløb. Det skal en autoriseret installatør gøre.</p>
+
+    <h2>8. Fortrydelsesret</h2>
+    <p><strong>Produkter efter dine egne mål.</strong> Der er ingen fortrydelsesret på produkter, vi laver efter dine egne mål, eller hvor konstruktion eller materiale er ændret ud over de valg, vi tilbyder som standard. Produktet er så fremstillet efter forbrugerens specifikationer (forbrugeraftalelovens § 18, stk. 2, nr. 3).</p>
+    <p><strong>Produkter i standardudførelse.</strong> Vælger du kun mellem vores standardmål, -materialer og -farver, har du 14 dages fortrydelsesret. Fristen løber fra den dag, du modtager produktet.</p>
+    <p>Det står i dit tilbud og i ordrebekræftelsen, om du har fortrydelsesret.</p>
+    <p><strong>Sådan fortryder du.</strong> Giv os besked inden fristen på <a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a>. Du kan bruge formularen nederst på siden, men det er ikke et krav. Du skal sende eller give os produktet tilbage senest 14 dage efter, du har givet besked.</p>
+    <p><strong>Returnering.</strong> Du betaler selv for at returnere produktet. Et skab kan ikke sendes med posten, så vi henter det hos dig. Prisen for at hente det står i kroner i dit tilbud og er den samme som leveringsprisen.</p>
+    <p><strong>Tilbagebetaling.</strong> Vi betaler det, du har betalt, tilbage senest 14 dage efter, vi har fået din besked, inklusive den almindelige leveringspris. Prisen for at hente produktet trækker vi fra. Du hæfter for en eventuel værdiforringelse, hvis du har brugt produktet mere, end det er nødvendigt for at se det efter.</p>
+    <p><strong>Montage i fortrydelsesperioden.</strong> Vil du have produktet monteret, inden fristen er udløbet, skal du bede os om det udtrykkeligt og bekræfte, at fortrydelsesretten på montagen bortfalder, når den er færdig. Fortryder du, inden montagen er færdig, betaler du en forholdsmæssig del af montageprisen.</p>
+
+    <h2>9. Reklamation</h2>
+    <p>Du har mindst 2 års reklamationsret efter købeloven. Den dækker fejl, der var der ved levering. Giv os besked inden rimelig tid, efter du har opdaget fejlen. Besked inden 2 måneder er altid rettidig.</p>
+    <p>Træ er et naturmateriale. Farve og åretegning varierer fra plade til plade, og træet ændrer farve med lyset. Det er ikke en fejl. Olierede overflader skal vedligeholdes. Du får en vedligeholdelsesvejledning med produktet.</p>
+    <p>Har du brug for en reservedel, fx en låge, et hængsel eller en skinne, kan vi levere den. Kontakt os.</p>
+    <figure class="eu-notice">
+      <img src={`${base}billeder/eu/eu-reklamationsret-da.svg`} alt="EU's meddelelse om den lovbestemte reklamationsret: Du har ret til mindst 2 års reklamationsret ved køb af varer i EU." loading="lazy" />
+      <figcaption>EU's harmoniserede meddelelse om den lovbestemte reklamationsret.</figcaption>
+    </figure>
+
+    <h2>10. Klage</h2>
+    <p>Er du utilfreds, så kontakt os først. Så finder vi en løsning.</p>
+    <p>Kan vi ikke blive enige, kan du klage til Mæglingsteamet for Forbrugerklager, Nævnenes Hus, Toldboden 2, 8800 Viborg, via <a href="https://kpo.naevneneshus.dk" rel="noopener">kpo.naevneneshus.dk</a>. Det kræver, at produktet har kostet mellem 1.220 og 100.000 kr., og at vi har afvist dit krav. Gebyret er 100 kr. Går sagen videre til Forbrugerklagenævnet, er gebyret 400 kr., som du får tilbage, hvis du får medhold. Satserne er fra 2026. De gældende står på <a href="https://naevneneshus.dk" rel="noopener">naevneneshus.dk</a>.</p>
+
+    <h2>11. Personoplysninger</h2>
+    <p>Vi behandler dine oplysninger efter vores <a href={`${base}privatlivspolitik`}>privatlivspolitik</a>.</p>
+
+    <h2>12. Lovvalg</h2>
+    <p>Aftalen er underlagt dansk ret.</p>
+
+    <h2>Fortrydelsesformular</h2>
+    <p class="form-note">Udfyld og send kun formularen, hvis du vil fortryde et køb af et produkt i standardmål.</p>
+    <div class="fortryd">
+      <p><strong>Standardfortrydelsesformular</strong><br />(denne formular udfyldes og returneres kun, hvis fortrydelsesretten gøres gældende)</p>
+      <p>Til: Nem Inventar ApS, Mågevej 73, st. tv., 2400 København NV, kontakt@neminventar.dk</p>
+      <p>Jeg/vi (*) meddeler herved, at jeg/vi (*) ønsker at gøre fortrydelsesretten gældende i forbindelse med min/vores (*) købsaftale om følgende varer (*)/levering af følgende tjenesteydelser (*)</p>
+      <p>Bestilt den (*)/modtaget den (*)</p>
+      <p>Forbrugerens navn (Forbrugernes navne)</p>
+      <p>Forbrugerens adresse (Forbrugernes adresser)</p>
+      <p>Forbrugerens underskrift (Forbrugernes underskrifter) (kun hvis formularens indhold meddeles på papir)</p>
+      <p>Dato</p>
+      <p class="fn">(*) Det ikke relevante udstreges.</p>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .legal{max-width:760px;margin:0 auto;padding:64px 28px 96px}
+  .legal h1{font-size:clamp(32px,4vw,46px);margin-bottom:10px}
+  .legal .upd{color:var(--muted);font-size:14px;margin-bottom:36px}
+  .legal h2{font-size:22px;margin:38px 0 12px}
+  .legal p{color:var(--ink);line-height:1.75;margin-bottom:14px}
+  .legal a{color:var(--warm);text-decoration:underline}
+  .legal .form-note{color:var(--muted);font-size:14.5px}
+  .fortryd{border:1px solid var(--line);border-radius:var(--radius);background:#fff;padding:22px 26px}
+  .fortryd p{margin-bottom:12px}
+  .fortryd .fn{color:var(--muted);font-size:13.5px;margin:6px 0 0}
+  .eu-notice{margin:24px 0 8px;max-width:520px}
+  .eu-notice img{width:100%;height:auto;border:1px solid var(--line);border-radius:var(--radius);background:#fff}
+  .eu-notice figcaption{color:var(--muted);font-size:13px;margin-top:8px}
+</style>
