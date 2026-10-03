@@ -14,6 +14,21 @@ Det gør v3:
 - **Hover:** alle billedfliser (hero, mosaik, projektkort, inventar, proces) løfter sig 4 px med skygge, og billedet zoomer 4-5 %.
 - De 5 nye typer findes ikke i `product_catalog` endnu — de skal oprettes som arketyper (med `product_web`-række), før de kan vises på det rigtige site.
 
+## Bygget i koden — gren `forside-v2` (04-10-2026)
+
+Milot bad om at få hele siden bygget i samme designsprog. Det ligger på grenen `forside-v2` (ikke på `main`, ikke deployet):
+`src/pages/index.astro` (ny), `src/components/DesignerTeaser.astro` (ny), `src/styles/site.css` (nyt afsnit "FORSIDE v2" nederst — de gamle klasser bruges stadig af `/en/`), `Nav.astro` (Projekter · Inventar · Designeren snart · Sådan arbejder vi · Om os), `Footer.astro` (tagline).
+
+Forskelle fra mockup v4 — Milots rettelser i runde 5:
+- **Alle de gamle afsnit er tilbage** i deres oprindelige form og klasser: "Fire ting, vi lægger vægt på", "Ikke lakeret. Olieret …", "Dokumentationen følger med leverancen" og "To veje ind. Samme værksted" (nu med Send mål/Send udbud-knapper). "Fra 3D-model til færdigt rum" står før dem.
+- **Flere projekter** fylder mere: to kort pr. række, 16:9-billede, resumé, datarækker (Leverance · Entreprenør · Arkitekt · Status — pladsholderen "Hovedentreprenør" vises ikke) og "Se projektet"-knap.
+- Alt indhold kommer fra Supabase-views; kun rækkefølgen, de 13 hero-fotos og de 5 typer uden arketype står i koden. Tal-striben og talgitteret parses fra `delivery_label` ("342 lockers" → 342 + lockers).
+- Ankrene `#katalog`, `#projekter`, `#ydelser`, `#cert`, `#kontakt` findes stadig, så landingssider, produktsider, `/en/` og brødkrummer virker.
+- Lint: ingen FEJL på den byggede forside (kun ADVAR på "60 × 210 × 60 cm" i designer-teaseren — tilsigtet).
+- Build lokalt: 61 sider, ingen fejl. Skærmbilleder taget på 1360 og 390 px.
+
+**Live:** `git checkout main && git merge forside-v2 && git push` → GitHub Actions bygger og deployer (3-4 min). **Fortryd:** `git revert <merge-commit> && git push`.
+
 ## Version 4 — Milots rettelser til v3 (samme dag)
 
 - **Inventar:** 5 små fliser pr. række var rodet. Nu 3 kort pr. række i samme størrelse som det nuværende katalog (4:3-billede, titel, beskrivelse, "Til mål · pris efter opmåling", "Se mere →"), men med foto/visualisering-mærke i stedet for nummer og familie som kicker. "Alle" viser 9 kort (et tværsnit: 6 fotos, 3 visualiseringer); "Vis alle 22 typer" eller et filter viser resten. Telefon: 2 kolonner, kompakte kort uden beskrivelse, 6 fremme.
