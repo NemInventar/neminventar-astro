@@ -1,6 +1,10 @@
 ---
+// Forside v2 (04-10-2026). Mockup og beslutninger: mockups/forside-v2.html + mockups/forside-v2-plan.md.
+// Indholdet kommer fra Supabase-views (v_web_products, v_web_cases, v_web_landing_pages). I koden står kun
+// rækkefølge, hvilke fotos der roterer i toppen, og fem typer der endnu ikke er arketyper (de peger på landingssider).
 import Base from '../layouts/Base.astro';
-import { getWebProducts, getWebCases, getWebLandingPages, categoryLabel } from '../lib/supabase';
+import DesignerTeaser from '../components/DesignerTeaser.astro';
+import { getWebProducts, getWebCases, getWebLandingPages, type WebCase, type WebProduct } from '../lib/supabase';
 import { cdn } from '../lib/img';
 
 const products = await getWebProducts();
@@ -9,146 +13,334 @@ const landing = await getWebLandingPages();
 const emner = landing.filter((l) => l.kind === 'emne');
 const segmenter = landing.filter((l) => l.kind === 'segment');
 const guides = landing.filter((l) => l.kind === 'guide');
+const base = import.meta.env.BASE_URL; // slutter med '/'
+const site = Astro.site!;
 
 const title = 'Fast inventar på mål til byggeri | Nem Inventar';
 const description =
-  'Fast inventar på mål: garderober, omklædningsskabe, kompaktlaminat og krydsfiner til skoler, institutioner og idrætshaller. Tegnet i 3D før produktion.';
-const pad = (n: number) => String(n + 1).padStart(2, '0');
-const base = import.meta.env.BASE_URL; // slutter med '/'
+  'Fast inventar på mål: garderober, lockers, højskabe, siddenicher og tekøkkener til skoler, institutioner og idrætshaller. Tegnet i 3D, bygget i egen produktion.';
+
+// ---------- Fremhævet projekt (Mørkhøj) og de andre ----------
+const FEATURED = 'morkhoj-skole';
+const featured = cases.find((c) => c.slug === FEATURED) ?? cases[0];
+const others = cases.filter((c) => c.slug !== featured?.slug);
+const gallery = featured?.gallery ?? [];
+const photo = (file: string) => `/billeder/morkhoj/${file}`;
+const altFor = (file: string, fallback: string) => gallery.find((g) => g.src.endsWith('/' + file))?.alt ?? fallback;
+
+// "342 lockers" → tal + tekst; "ca. 300 m² akustik" → "ca. 300 m²" + "akustik". Ingen match → null.
+const splitTal = (s: string) => {
+  const m = s.trim().match(/^((?:ca\.\s*)?[\d.,]+(?:\s*m²|\s*m\b)?)\s+(.+)$/);
+  return m ? { b: m[1], t: m[2] } : null;
+};
+const leverance = (c?: WebCase) => (c?.delivery_label ?? '').split(' · ').map((s) => s.trim()).filter(Boolean);
+// korte mærkater til talgitteret (leverancens fulde ord står i teksten og på projektsiden)
+const SHORT: Record<string, string> = { 'bejdsede sideafskærmninger': 'sideafskærmninger', 'polstrede nicher og siddemøbler': 'nicher og siddemøbler' };
+const tal = leverance(featured).map(splitTal).filter((x): x is { b: string; t: string } => !!x).map((x) => ({ b: x.b, t: SHORT[x.t] ?? x.t }));
+// overskriftens tre tal: korte mærkater og forskellige tal
+const headTal: { b: string; t: string }[] = [];
+for (const x of tal) { const t = x.t.replace(' og siddemøbler', ''); if (t.length <= 11 && !headTal.some((h) => h.b === x.b) && headTal.length < 3) headTal.push({ b: x.b, t }); }
+const ONE: Record<string, string> = { 'morkhoj-skole': 'Én skole.' };
+const one = ONE[featured?.slug ?? ''] ?? 'Ét byggeri.';
+
+// Toppen: to felter, der skifter ét ad gangen. Bredt felt = liggende fotos, smalt = højformater.
+// Flyttes til data (et hero-flag i case-galleriet), så fotos og tekster kan rettes i /tekster — se planen.
+type HeroItem = { file: string; pos: string; room: string; what: string };
+const HERO_L: HeroItem[] = [
+  { file: '33_lockere-roede-ved-doer-til-klasserum.jpg', pos: '50% 55%', room: 'Garderoben', what: 'lockers, bænk og skohylder' },
+  { file: '21_baenk-blaa-krydsfiner-med-hynder-og-roede-lockere.jpg', pos: '50% 55%', room: 'Garderoben', what: 'bænk med hynder foran lockers' },
+  { file: '25_baenke-blaa-med-ryghynder-og-mellemvaeg.jpg', pos: '50% 55%', room: 'Fællesarealet', what: 'bænke med ryghynder' },
+  { file: '22_klasserum-hoejskabe-blaa-og-vindueskarm-med-hynde.jpg', pos: '55% 50%', room: 'Klasserummet', what: 'højskabe og siddeplads i vindueskarmen' },
+  { file: '24_tekoekken-blaa-fronter-staalbordplade.jpg', pos: '40% 55%', room: 'Tekøkkenet', what: 'bordplade i rustfrit stål' },
+  { file: '34_niche-med-ryghynde-og-stikkontakt.jpg', pos: '60% 50%', room: 'Nichen', what: 'ryghynde og indbygget stik' },
+];
+const HERO_R: HeroItem[] = [
+  { file: '26_garderobe-lockere-roede-med-baenk-og-skohylder.jpg', pos: '50% 58%', room: 'Garderoben', what: '16 lockers over bænk og skohylder' },
+  { file: '20_lockere-roede-perforerede-laager-kodelaase-og-skohylder.jpg', pos: '50% 50%', room: 'Lågerne', what: 'perforeret, med kodelås' },
+  { file: '32_hoejskabe-blaa-og-siddeplads-ved-vindue.jpg', pos: '50% 45%', room: 'Klasserummet', what: 'højskab og siddeplads ved vinduet' },
+  { file: '27_hoejskab-blaa-krydsfiner-og-siddepladser.jpg', pos: '50% 50%', room: 'Højskabet', what: 'krydsfiner i skolens blå' },
+  { file: '23_polstret-niche-roed-afrundet-hjoerne.jpg', pos: '65% 50%', room: 'Nichen', what: 'polstret, afrundet hjørne' },
+  { file: '30_lockere-roede-i-hjoerne-med-skohylder.jpg', pos: '50% 50%', room: 'Garderoben', what: 'lockers i hjørnet' },
+  { file: '31_tekoekken-blaa-fronter-og-lamper.jpg', pos: '50% 55%', room: 'Tekøkkenet', what: 'blå fronter, stålbordplade' },
+];
+const heroData = (pool: HeroItem[]) => pool.map((h) => ({ src: cdn(photo(h.file)), pos: h.pos, alt: altFor(h.file, `${h.room}: ${h.what}`), room: h.room, what: h.what }));
+const heroL = heroData(HERO_L), heroR = heroData(HERO_R);
+const projektNavn = featured?.name ?? '';
+
+// Mosaik i den fremhævede sag: fotos, der ikke er i toppen
+const MOSAIK = [
+  { file: '25_baenke-blaa-med-ryghynder-og-mellemvaeg.jpg', pos: '50% 55%', cls: 'w', k: 'Fællesarealet', v: 'bænke med ryghynder' },
+  { file: '23_polstret-niche-roed-afrundet-hjoerne.jpg', pos: '72% 50%', cls: 't', k: 'Nichen', v: 'polstret, afrundet hjørne' },
+  { file: '28_niche-roed-polstret-med-bord.jpg', pos: '30% 40%', cls: 's', k: 'Gruppenichen', v: 'med bord og stik' },
+  { file: '34_niche-med-ryghynde-og-stikkontakt.jpg', pos: '60% 50%', cls: 's', k: 'Detaljen', v: 'stikkontakt bygget ind' },
+  { file: '37_baenk-med-hynde-i-sollys.jpg', pos: '50% 50%', cls: 's', k: 'Bænken', v: 'krydsfiner med hynde' },
+];
+
+// Tal-striben: første post i hver sags leverance (kun dem med et tal) + glastavler/akustik fra den fremhævede sag
+const tickerItems = [
+  ...cases.flatMap((c) => { const x = splitTal(leverance(c)[0] ?? ''); return x ? [{ b: x.b, t: x.t, c: c.name }] : []; }),
+  ...tal.filter((x) => ['glastavler', 'akustik'].includes(x.t)).map((x) => ({ b: x.b, t: x.t, c: projektNavn })),
+  { b: '8–12', t: 'uger', c: 'typisk fra ordre til levering' },
+];
+
+// Projektkortenes datarækker (som på projektsiden: pladsholderen "Hovedentreprenør" vises ikke som oplysning)
+const meta = (c: WebCase) => [
+  { k: 'Leverance', v: c.delivery_label },
+  ...(c.contractor_label && c.contractor_label !== 'Hovedentreprenør' ? [{ k: 'Entreprenør', v: c.contractor_label }] : []),
+  ...(c.architect_label ? [{ k: 'Arkitekt', v: c.architect_label }] : []),
+  { k: 'Status', v: c.status_label },
+].filter((m) => m.v);
+const isPhoto = (src: string | null | undefined) => !!src && (src.startsWith('/') || src.includes('neminventar.dk/'));
+
+// ---------- Inventar: alle arketyper + fem typer, der endnu ikke er arketyper ----------
+type Card = { key: string; name: string; href: string; img: string; pos: string; foto: boolean; fam: string; desc: string };
+const FAM: Record<string, string> = { garderober: 'Garderober og lockers', skabe: 'Højskabe og opbevaring', nicher: 'Nicher og bænke', koekken: 'Tekøkkener', omklaedning: 'Omklædning og vådrum', vaegge: 'Vægge, døre og akustik' };
+const famOf = (p: WebProduct) =>
+  /^(garderobe|skohylde)/.test(p.slug) ? 'garderober'
+  : /^(opbevaringsskab|hoejskab)/.test(p.slug) ? 'skabe'
+  : p.category === 'baenk' ? 'nicher'
+  : p.category === 'koekken' ? 'koekken'
+  : p.category === 'omklaedning' ? 'omklaedning'
+  : p.category === 'lockers' ? 'garderober'
+  : 'vaegge';
+// Fotos fra leverancen, hvor fotoet viser arketypen. Garderobeskabene har allerede fotoet som hero i product_web;
+// de tre andre skal samme vej (product_web.hero_image_id), så det ikke står i koden.
+const PHOTO: Record<string, { file: string; pos: string }> = {
+  'garderobeskab-perforerede-lager': { file: '33_lockere-roede-ved-doer-til-klasserum.jpg', pos: '40% 55%' },
+  'hoejskab-krydsfiner': { file: '32_hoejskabe-blaa-og-siddeplads-ved-vindue.jpg', pos: '40% 45%' },
+  'opbevaringsskab-bejdset-krydsfiner': { file: '27_hoejskab-blaa-krydsfiner-og-siddepladser.jpg', pos: '50% 50%' },
+  'koekkenvaeg-bejdset-krydsfiner': { file: '24_tekoekken-blaa-fronter-staalbordplade.jpg', pos: '40% 55%' },
+};
+const cards: Card[] = products.map((p) => {
+  const o = PHOTO[p.slug];
+  const img = o ? photo(o.file) : (p.primary_image ?? '');
+  return { key: p.slug, name: p.name, href: `${base}produkter/${p.slug}`, img, pos: o?.pos ?? '50% 60%', foto: isPhoto(img), fam: famOf(p), desc: p.intro ?? p.short_description ?? '' };
+});
+// Typer uden arketype endnu → deres landingsside. Oprettes som arketyper senere (se planen).
+const vinge = cases.find((c) => c.slug === 'daginstitution-vinge');
+const hasLanding = (slug: string) => landing.some((l) => l.slug === slug);
+const EXTRA: Card[] = [
+  { key: 'x-lockers', name: 'Lockers med kodelås og skohylder', href: `${base}lockers`, img: photo('20_lockere-roede-perforerede-laager-kodelaase-og-skohylder.jpg'), pos: '50% 45%', foto: true, fam: 'garderober', desc: 'Aflåselige rum i krydsfiner med kodelås, skohylder under og bænk foran. Til skoler og haller med mange brugere.' },
+  { key: 'x-boerne', name: 'Børnegarderober med skorist', href: `${base}garderober`, img: vinge?.hero_image_url ?? '', pos: '50% 60%', foto: isPhoto(vinge?.hero_image_url), fam: 'garderober', desc: 'Ét modul pr. barn med knager foroven og dybere bund med skorist. Olieret i farver, så rækkerne deles op.' },
+  { key: 'x-niche', name: 'Polstret siddeniche', href: `${base}siddenicher-og-baenke`, img: photo('23_polstret-niche-roed-afrundet-hjoerne.jpg'), pos: '70% 40%', foto: true, fam: 'nicher', desc: 'Polstret niche bygget ind i væggen, med afrundede hjørner og plads til bord og stik. Til fællesarealer og gange.' },
+  { key: 'x-baenke', name: 'Bænke med ryghynder', href: `${base}siddenicher-og-baenke`, img: photo('25_baenke-blaa-med-ryghynder-og-mellemvaeg.jpg'), pos: '50% 55%', foto: true, fam: 'nicher', desc: 'Bænke langs væggen i krydsfiner med ryghynder og siddehynder, bygget til fællesarealer med mange brugere.' },
+  { key: 'x-tavler', name: 'Glastavler og opslagstavler', href: `${base}akustik-og-glastavler`, img: photo('03_klasserum-tavlevaeg-og-opslagstavler.jpg'), pos: '50% 22%', foto: true, fam: 'vaegge', desc: 'Glastavler og opslagstavler planlagt som én samlet tavlevæg i klasserummet, med akustik, hvor der er brug for det.' },
+].filter((c) => c.img && hasLanding(c.href.slice(base.length)));
+// Rækkefølge: de første ni er et tværsnit af familierne (fotos først); resten grupperet pr. familie
+const FIRST = ['garderobeskab-perforerede-lager', 'x-lockers', 'hoejskab-krydsfiner', 'x-niche', 'x-baenke', 'koekkenvaeg-bejdset-krydsfiner', 'x-boerne', 'omklaedningsmoebel-gitterskaerm', 'hoejskab-kompaktlaminat'];
+const FAM_ORDER = Object.keys(FAM);
+const all = [...cards, ...EXTRA];
+const ordered: Card[] = [
+  ...FIRST.map((k) => all.find((c) => c.key === k)).filter((c): c is Card => !!c),
+  ...all.filter((c) => !FIRST.includes(c.key)).sort((a, b) => FAM_ORDER.indexOf(a.fam) - FAM_ORDER.indexOf(b.fam)),
+];
+const famCount = (f: string) => all.filter((c) => c.fam === f).length;
+const fotoTag = (c: Card) => (c.foto ? `Foto · ${projektNavn}` : '3D-visualisering');
+
+const ogImage = new URL(cdn(photo('33_lockere-roede-ved-doer-til-klasserum.jpg')), site).href;
 ---
-<Base title={title} description={description} alternates={[
-  { hreflang: 'da', href: new URL(base, Astro.site).href },
-  { hreflang: 'en', href: new URL(base + 'en/', Astro.site).href },
-  { hreflang: 'x-default', href: new URL(base, Astro.site).href },
+<Base title={title} description={description} image={ogImage} alternates={[
+  { hreflang: 'da', href: new URL(base, site).href },
+  { hreflang: 'en', href: new URL(base + 'en/', site).href },
+  { hreflang: 'x-default', href: new URL(base, site).href },
 ]}>
+  <script is:inline>document.documentElement.classList.add('js');</script>
 
-  <!-- ============ HERO ============ -->
-  <header class="hero" id="top"><div class="wrap hero-grid">
-    <div>
-      <span class="label">Snedkeri · København NV</span>
-      <h1>Fra én bænk til en <em>hel skole.</em></h1>
-      <p class="sub">Vi bygger fast inventar i træ og krydsfiner — til skoler, daginstitutioner, idrætshaller og erhverv. Hvert stykke tegnes i 3D før produktion, dokumenteres til certificeret byggeri, og leveres når byggepladsen er klar til det. Private kan også bestille.</p>
-      <div class="hero-cta">
-        <a href="#katalog" class="btn btn-primary">Se arketyperne <span class="arr">↓</span></a>
-        <a href="#projekter" class="btn btn-ghost">Start et projekt <span class="arr">→</span></a>
-      </div>
-      <div class="fact-row">
-        <span class="fact">Bygget til mål</span>
-        <span class="fact">3D-render før produktion</span>
-        <span class="fact">Leverer til certificeret byggeri</span>
-        <span class="fact">Delleverancer efter tidsplan</span>
-      </div>
+  <!-- ============ TOPPEN ============ -->
+  <header class="hero2" id="top"><div class="wrap hero2-grid">
+    <div class="hero2-head">
+      <span class="label">Fast inventar til byggeri</span>
+      <h1>Møbler til rum med mange <em>mennesker.</em></h1>
     </div>
-    <figure class="hero-fig">
-      <a class="frame" href={`${base}projekter/morkhoj-skole`} aria-label="Se projektet på Mørkhøj Skole">
-        <img src={cdn("/billeder/morkhoj/23_polstret-niche-roed-afrundet-hjoerne.jpg", 1100)} alt="Rød polstret niche med afrundet hjørne i krydsfiner på Mørkhøj Skole" />
-      </a>
-      <figcaption><b>Mørkhøj Skole</b>Foto fra leverancen: polstret niche med afrundet hjørne.</figcaption>
-    </figure>
+    <div class="hero2-cta">
+      <a href={`${base}kontakt`} class="btn btn-primary">Få en pris <span class="arr">→</span></a>
+      <a href="#katalog" class="btn btn-ghost">Se, hvad vi bygger <span class="arr">↓</span></a>
+    </div>
+    <div class="duo" id="duo" aria-label={`Fotos fra leverancen på ${projektNavn}`}>
+      <div class="slot a" id="slotA">
+        <img class="is-on" src={heroL[0].src} alt={heroL[0].alt} style={`--pos:${heroL[0].pos}`} fetchpriority="high" decoding="async" />
+        <span class="img-tag"><b>{heroL[0].room}</b>{heroL[0].what} · {projektNavn}</span>
+      </div>
+      <div class="slot b" id="slotB">
+        <img class="is-on" src={heroR[0].src} alt={heroR[0].alt} style={`--pos:${heroR[0].pos}`} fetchpriority="high" decoding="async" />
+        <span class="img-tag"><b>{heroR[0].room}</b>{heroR[0].what} · {projektNavn}</span>
+      </div>
+      <button type="button" class="pausebtn" id="heroPause" aria-label="Sæt billedskiftet på pause">❚❚</button>
+    </div>
+    <p class="hero2-sub">Garderober, lockers, bænke, højskabe og tekøkkener til skoler, daginstitutioner og idrætshaller. Tegnet i 3D af ingeniører, bygget i vores egenproduktion og leveret efter byggepladsens tidsplan.</p>
+    <div class="facts2" aria-label="Sådan arbejder vi">
+      <span class="fact2">Bygget til mål</span>
+      <span class="fact2">3D-render før produktion</span>
+      <span class="fact2">Egen produktion</span>
+      <span class="fact2">Leverer til certificeret byggeri</span>
+      <span class="fact2">Delleverancer efter tidsplan</span>
+    </div>
   </div></header>
+  <script is:inline type="application/json" id="hero-data" set:html={JSON.stringify({ L: heroL, R: heroR, name: projektNavn })} />
 
-  <!-- ============ KATALOG ============ -->
-  <section class="sec" id="katalog"><div class="wrap">
-    <div class="sec-head">
-      <div>
-        <span class="label">Kataloget</span>
-        <h2>Arketyper vi kender ud og ind.</h2>
-        <p class="lede">Konstruktioner vi har gennemarbejdet, så de kan bestilles direkte — i jeres mål, jeres materiale, jeres farve. Ingen faste priser, fordi intet bygges i faste mål.</p>
-      </div>
-      <a href="#kontakt" class="ulink">Mangler du noget særligt? →</a>
+  <!-- ============ TAL-STRIBE ============ -->
+  <div class="ticker" aria-label="Det har vi bygget">
+    <div class="ticker-track">
+      {tickerItems.map((x) => <span class="tk"><b>{x.b}</b><i>{x.t}</i>{x.c}</span>)}
+      {tickerItems.map((x) => <span class="tk dup" aria-hidden="true"><b>{x.b}</b><i>{x.t}</i>{x.c}</span>)}
     </div>
-    <div class="grid">
-      {products.map((p, i) => (
-        <article class="card">
-          <a class="ph" href={`${base}produkter/${p.slug}`} aria-label={p.name}>
-            <span class="num">{pad(i)}</span>
-            {p.primary_image && <img src={cdn(p.primary_image, 760)} alt={p.name} loading="lazy" />}
-          </a>
-          <div class="body">
-            <span class="kicker">{categoryLabel[p.category] ?? p.category}</span>
-            <h3><a href={`${base}produkter/${p.slug}`}>{p.name}</a></h3>
-            <p class="desc">{p.intro ?? p.short_description}</p>
-            <div class="foot">
-              <span class="made"><b>Til mål</b> · pris efter opmåling</span>
-              <a href={`${base}produkter/${p.slug}`} class="order">Se mere <span class="arr">→</span></a>
-            </div>
-          </div>
-        </article>
-      ))}
-    </div>
-    <p class="cat-note">Alle billeder er 3D-renders fra vores eget tilbudssystem — det er sådan I ser jeres inventar, før vi bygger det.</p>
-  </div></section>
+  </div>
 
-  <!-- ============ DET LAVER VI (landingssider) ============ -->
-  {emner.length > 0 && (
-    <section class="sec ydelser" id="ydelser" style="padding-top:0"><div class="wrap">
-      <div class="sec-head">
+  <!-- ============ FREMHÆVET PROJEKT ============ -->
+  {featured && (
+    <section class="sec sec-dark" id="projekter"><div class="wrap">
+      <div class="sec-head rv">
         <div>
-          <span class="label">Det laver vi</span>
-          <h2>Materialer og inventar vi bygger hver uge.</h2>
+          <span class="label">Projekter · fremhævet: {featured.name}</span>
+          <h2>{headTal.map((x) => `${x.b} ${x.t}`).join(', ')}. <em>{one}</em></h2>
+          <p class="lede">{featured.web_summary}</p>
         </div>
+        <a href={`${base}projekter/${featured.slug}`} class="ulink">Se hele projektet →</a>
       </div>
-      <div class="yd-grid">
-        {emner.map((l) => (
-          <a href={`${base}${l.slug}`}>
-            <span class="t">{l.nav_label} <span class="arr">→</span></span>
-            <span class="d">{l.lead}</span>
-          </a>
+      <div class="mos2 rv">
+        {MOSAIK.map((m) => (
+          <figure class={m.cls}>
+            <img src={cdn(photo(m.file), 1200)} alt={altFor(m.file, `${m.k}: ${m.v}`)} style={`--pos:${m.pos}`} loading="lazy" decoding="async" />
+            <figcaption class="img-tag"><b>{m.k}</b>{m.v}</figcaption>
+          </figure>
         ))}
       </div>
-      {segmenter.length > 0 && (
-        <div class="yd-seg lp-links">
-          {segmenter.map((l) => <a href={`${base}${l.slug}`}>{l.nav_label} <span class="arr">→</span></a>)}
+      {tal.length > 0 && (
+        <div class="talgitter rv" style={`--n:${tal.length}`}>
+          {tal.map((x) => <div><b>{x.b}</b><span>{x.t}</span></div>)}
         </div>
       )}
-      {guides.length > 0 && (
-        <div class="yd-seg lp-links">
-          {guides.map((l) => <a href={`${base}${l.slug}`}>Guide: {l.nav_label} <span class="arr">→</span></a>)}
-        </div>
-      )}
+      <p class="credit rv">Fotos fra leverancen. Vi har bygget inventaret — stole, borde, fliser og lamper er andres.</p>
+      <div class="feat-actions rv">
+        <a href={`${base}projekter/${featured.slug}`} class="btn btn-light">Se projektet <span class="arr">→</span></a>
+      </div>
     </div></section>
   )}
 
-  <!-- ============ BRIDGE ============ -->
-  <section class="bridge"><div class="wrap">
-    <span class="label">Og så det større</span>
-    <h2>Arketyperne er byggesten. Projekterne er, hvor de bliver til <em>rum.</em></h2>
-    <p class="b-lede">En enkelt bænk kan bestilles direkte fra kataloget. Et helt skolebyggeri kræver tilbudslister, materialegodkendelser, dokumentation og delleverancer der rammer en tidsplan. Vi laver begge dele — med de samme hænder og det samme system.</p>
-  </div></section>
-
-  <!-- ============ CASES ============ -->
-  <section class="cases" id="projekter"><div class="wrap">
-    <div class="case-grid">
-      {cases.map((c) => (
-        <article class="case">
+  <!-- ============ FLERE PROJEKTER ============ -->
+  <section class="sec" id="flere-projekter"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">Flere projekter</span>
+        <h2>Fra udbud til <em>montage.</em></h2>
+        <p class="lede">Vi tager det faste inventar som én samlet entreprise: tilbud på udbudsmaterialet, tegninger til godkendelse, egen produktion, levering i etaper efter byggepladsens tidsplan og montage.</p>
+      </div>
+    </div>
+    <div class="pgrid rv">
+      {others.map((c) => (
+        <article class="pcard">
           <a class="ph" href={`${base}projekter/${c.slug}`} aria-label={c.name}>
-            {c.hero_image_url && <img src={cdn(c.hero_image_url, 840)} alt={c.name} loading="lazy" />}
+            {c.hero_image_url && <img src={cdn(c.hero_image_url, 1000)} alt={c.name} loading="lazy" decoding="async" />}
+            <span class="ptag">{isPhoto(c.hero_image_url) ? 'Foto fra leverancen' : 'Visualisering'}</span>
           </a>
           <div class="body">
             <span class="status">{c.status_live && <span class="dot"></span>}{c.status_label}</span>
             <h3><a href={`${base}projekter/${c.slug}`}>{c.name}</a></h3>
             <p class="desc">{c.web_summary}</p>
-            <div class="meta">
-              <div class="row"><span class="k">Leverance</span><span class="v">{c.delivery_label}</span></div>
-              {c.contractor_label && c.contractor_label !== 'Hovedentreprenør' && <div class="row"><span class="k">Entreprenør</span><span class="v">{c.contractor_label}</span></div>}
-              <div class="row"><span class="k">Status</span><span class="v">{c.status_label}</span></div>
+            <div class="pmeta">
+              {meta(c).map((m) => <div class="prow"><span class="pk">{m.k}</span><span class="pv">{m.v}</span></div>)}
             </div>
-            <div style="margin-top:22px"><a href={`${base}projekter/${c.slug}`} class="btn btn-light">Se projektet <span class="arr">→</span></a></div>
+            <div class="pbtn"><a href={`${base}projekter/${c.slug}`} class="btn btn-primary">Se projektet <span class="arr">→</span></a></div>
+          </div>
+        </article>
+      ))}
+      <article class="pcard ask">
+        <span class="kick">Jeres byggeri</span>
+        <h3>Send tegninger eller udbud</h3>
+        <p>Vi læser materialet og vender tilbage med de spørgsmål, der skal afklares — og et tilbud med 3D og dokumentation, I kan holde op mod udbuddet.</p>
+        <a href={`${base}kontakt`} class="btn btn-primary">Start et projekt <span class="arr">→</span></a>
+      </article>
+    </div>
+  </div></section>
+
+  <!-- ============ INVENTAR (kataloget) ============ -->
+  <section class="sec inv" id="katalog"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">Inventar</span>
+        <h2>Konstruktionen er løst. Målene er <em>jeres.</em></h2>
+        <p class="lede">Typerne i kataloget er gennemarbejdet fra samling til overflade. I vælger mål, materiale og farve og ser resultatet i 3D med pris, før I bestiller. Mangler I en type, tegner vi den.</p>
+      </div>
+      <a href={`${base}kontakt`} class="ulink">Mangler I noget særligt? →</a>
+    </div>
+    <div class="filters rv" id="filters" role="group" aria-label="Filtrér typer">
+      <button type="button" class="fchip on" data-f="alle">Alle<small>{all.length}</small></button>
+      {FAM_ORDER.map((f) => <button type="button" class="fchip" data-f={f}>{FAM[f]}<small>{famCount(f)}</small></button>)}
+    </div>
+    <div class="types rv" id="types">
+      {ordered.map((c) => (
+        <article class="tcard" data-fam={c.fam}>
+          <a class="ph" href={c.href} aria-label={c.name}>
+            <img src={cdn(c.img, 800)} alt={c.name} style={`--pos:${c.pos}`} loading="lazy" decoding="async" />
+            <span class="ptag">{fotoTag(c)}</span>
+          </a>
+          <div class="body">
+            <span class="kicker">{FAM[c.fam]}</span>
+            <h3><a href={c.href}>{c.name}</a></h3>
+            <p class="desc">{c.desc}</p>
+            <div class="tfoot">
+              <span class="made"><b>Til mål</b> · pris efter opmåling</span>
+              <a href={c.href} class="order">Se mere <span class="arr">→</span></a>
+            </div>
           </div>
         </article>
       ))}
     </div>
+    <div class="showmore-row" id="showmoreRow"><button type="button" class="btn btn-ghost" id="showmore">Vis alle {all.length} typer <span class="arr">↓</span></button></div>
+
+    <!-- Det laver vi: landingssider pr. emne, målgruppe og guide (ankeret #ydelser bruges af alle landingssider) -->
+    <div class="yd-links rv" id="ydelser">
+      {segmenter.length > 0 && (
+        <div class="yd-row"><span class="lbl">Til:</span>{segmenter.map((l) => <a class="pill" href={`${base}${l.slug}`}>{l.nav_label}</a>)}</div>
+      )}
+      {emner.length > 0 && (
+        <div class="yd-row"><span class="lbl">Materialer og inventar:</span>{emner.map((l) => <a class="pill" href={`${base}${l.slug}`}>{l.nav_label}</a>)}</div>
+      )}
+      {guides.length > 0 && (
+        <div class="yd-row"><span class="lbl">Guides:</span>{guides.map((l) => <a class="pill" href={`${base}${l.slug}`}>{l.nav_label}</a>)}</div>
+      )}
+    </div>
+  </div></section>
+
+  <!-- ============ DESIGNEREN (kommer snart) ============ -->
+  <section class="sec designer" id="designer"><div class="wrap">
+    <div class="sec-head rv" style="margin-bottom:36px">
+      <div>
+        <span class="label">Designeren · kommer snart</span>
+        <h2>Se prisen, mens skabet tager <em>form.</em></h2>
+        <p class="lede">Sæt bredde, højde og dybde med skyderne, og se skabet i 3D. Vælg materiale, farve, indretning, låge og greb — prisen går op og ned med hvert valg. Prøv, hvordan det kommer til at virke:</p>
+      </div>
+    </div>
+    <DesignerTeaser />
+  </div></section>
+
+  <!-- ============ FRA 3D-MODEL TIL FÆRDIGT RUM ============ -->
+  <section class="sec" id="saadan"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">Sådan arbejder vi</span>
+        <h2>Fra 3D-model til <em>færdigt rum.</em></h2>
+        <p class="lede">Holdet er ingeniører. Hvert skab, hver bænk og hver niche bygges først som 3D-model; samme model giver tegningen til jeres godkendelse og styklisten til produktionen.</p>
+      </div>
+      {hasLanding('vaerkstedstegninger-og-3d-model') && <a href={`${base}vaerkstedstegninger-og-3d-model`} class="ulink">Sådan ser tegningerne ud →</a>}
+    </div>
+    <div class="steps4 rv">
+      <div class="st"><span class="n">1</span><div class="ph"><video src={cdn('/video/3d-model-garderobe.mp4')} poster={cdn('/video/3d-model-garderobe.jpg')} muted playsinline preload="metadata" data-inview data-start="4" aria-label="Skærmoptagelse af 3D-modellen af et garderobemodul" style="--pos:40% 50%"></video></div><h3>Tegnet i 3D</h3><p>I ser møblet i 3D og godkender det, før vi skærer den første plade.</p></div>
+      <div class="st"><span class="n">2</span><div class="ph"><img src={cdn('/billeder/proces/2d-vaerkstedstegning-skohylde.jpg')} alt="Værkstedstegning af et skohyldemodul" style="--pos:12% 50%" loading="lazy" /></div><h3>Tegningen</h3><p>Tegning til godkendelse og stykliste kommer fra samme model. Det, I godkender, er det, vi bygger.</p></div>
+      <div class="st"><span class="n">3</span><div class="ph"><video src={cdn('/video/proeveemne-locker.mp4')} poster={cdn('/video/proeveemne-locker.jpg')} muted playsinline preload="metadata" data-inview aria-label="Prøveemne af en locker"></video></div><h3>Prøveemnet</h3><p>Ved større leverancer bygger vi ét eksemplar først, så låge, lås og overflade kan godkendes i hånden.</p></div>
+      <div class="st"><span class="n">4</span><div class="ph"><img src={cdn(photo('35_detalje-haengsel-og-perforering-roed-laage.jpg'), 900)} alt={altFor('35_detalje-haengsel-og-perforering-roed-laage.jpg', 'Olieret låge med perforering og hængsel')} style="--pos:30% 50%" loading="lazy" /></div><h3>Møblet</h3><p>Leveret i etaper efter byggepladsens tidsplan og monteret af os.</p></div>
+    </div>
   </div></section>
 
   <!-- ============ HVAD VI STÅR FOR ============ -->
-  <section class="sec values" id="staar-for"><div class="wrap">
-    <div class="sec-head">
+  <section class="sec values" id="staar-for" style="padding-top:0"><div class="wrap">
+    <div class="sec-head rv">
       <div>
-        <span class="label">Sådan arbejder vi</span>
-        <h2>Fire ting, vi lægger vægt på.</h2>
+        <span class="label">Det, vi står for</span>
+        <h2>Fire ting, vi lægger <em>vægt på.</em></h2>
       </div>
     </div>
-    <div class="vgrid">
+    <div class="vgrid rv">
       <div class="v"><span class="n">I.</span><h3>Håndværket</h3><p>Samlinger, kanter og overflader vælges efter, hvor hårdt rummet bliver brugt. Overfladen kan repareres på stedet, så inventaret kan holdes pænt i mange år.</p></div>
       <div class="v"><span class="n">II.</span><h3>Det digitale</h3><p>Hvert stykke inventar tegnes og renderes i 3D, før produktionen starter. I godkender det, I faktisk får, før vi skærer den første plade.</p></div>
       <div class="v"><span class="n">III.</span><h3>Dokumentationen</h3><p>Produktdatablade, indeklimadokumentation og EPD'er, hvor producenten har dem, på de materialer vi bruger. Samlet og afleveret sammen med inventaret.</p></div>
@@ -158,7 +350,7 @@ const base = import.meta.env.BASE_URL; // slutter med '/'
 
   <!-- ============ OVERFLADEN ============ -->
   <section class="sec finish" id="overflade"><div class="wrap">
-    <div class="finish-grid">
+    <div class="finish-grid rv">
       <div>
         <span class="label">Overfladen</span>
         <h2>Ikke lakeret. Olieret — og bygget til at blive <em>vedligeholdt.</em></h2>
@@ -169,23 +361,24 @@ const base = import.meta.env.BASE_URL; // slutter med '/'
         <p>Det vigtigste er, at den kan vedligeholdes lokalt. Et slidt hjørne friskes op på stedet med ny olie, uden at hele møblet skal slibes ned. Dele, der håndteres hele dagen, som skydedøre, får en slidstærk topcoat oven på olien.</p>
       </div>
     </div>
-    <div class="finish-points">
+    <div class="finish-points rv">
       <div class="fp"><h3>Ingen film der kan skalle</h3><p>Olien sidder i træet, ikke som et lag ovenpå, så der er ingen film, der kan skalle af.</p></div>
       <div class="fp"><h3>Plet-reparerbar</h3><p>Slid udbedres lokalt og glider sammen med resten — uden synlige overgange eller afmontering.</p></div>
       <div class="fp"><h3>Dokumenteret til indeklimaet</h3><p>Overfladebehandlingen vælges, så den kan dokumenteres til indeklimakravene i certificeret byggeri.</p></div>
     </div>
   </div></section>
 
-  <!-- ============ CERTIFICERINGER ============ -->
-  <section class="certs" id="cert"><div class="wrap cert-grid">
+  <!-- ============ CERTIFICERET BYGGERI ============ -->
+  <section class="certs" id="cert"><div class="wrap cert-grid rv">
     <div>
       <span class="label">Certificeret byggeri</span>
       <h2>Dokumentationen følger med leverancen.</h2>
-      <p class="txt">Bygger I efter Svanemærket eller andre ordninger, leverer vi dokumentationen på de materialer, vi bruger, sammen med inventaret. Kræver udbuddet FSC- eller PEFC-træ, skriver vi i tilbuddet, hvilke plader der kan leveres med certificering fra leverandøren.</p>
+      <p class="txt">Bygger I efter Svanemærket, DGNB eller andre ordninger, leverer vi dokumentationen på de materialer, vi bruger, sammen med inventaret. Kræver udbuddet FSC- eller PEFC-træ, skriver vi i tilbuddet, hvilke plader der kan leveres med certificering fra leverandøren.</p>
     </div>
     <div>
       <div class="chip-row">
         <span class="chip">Svanemærket byggeri</span>
+        <span class="chip">DGNB</span>
         <span class="chip">EPD</span>
         <span class="chip">Indeklima</span>
       </div>
@@ -197,42 +390,62 @@ const base = import.meta.env.BASE_URL; // slutter med '/'
     </div>
   </div></section>
 
-  <!-- ============ PROCES ============ -->
+  <!-- ============ TO VEJE IND ============ -->
   <section class="process" id="proces"><div class="wrap">
-    <div class="sec-head">
+    <div class="sec-head rv">
       <div>
         <span class="label">Sådan kommer vi i gang</span>
-        <h2>To veje ind. Samme værksted.</h2>
+        <h2>To veje ind. Samme <em>værksted.</em></h2>
       </div>
     </div>
-    <div class="p-tracks">
+    <div class="p-tracks rv">
       <div class="track">
         <span class="t-kick">Spor 1 · Kataloget</span>
-        <h3>Sådan bestiller du en arketype</h3>
-        <div class="step"><span class="sn">1</span><div><b>Vælg og beskriv</b><p>Peg på en arketype og send os jeres mål, antal og ønsker til materiale og farve.</p></div></div>
+        <h3>Et enkelt møbel eller et rum</h3>
+        <div class="step"><span class="sn">1</span><div><b>Vælg typen</b><p>Peg på en type i kataloget og send os jeres mål, antal og ønsker til materiale og farve.</p></div></div>
         <div class="step"><span class="sn">2</span><div><b>Se den i 3D — med pris</b><p>I får en render af jeres konkrete løsning og en samlet pris. Justér til det sidder rigtigt.</p></div></div>
         <div class="step"><span class="sn">3</span><div><b>Vi bygger og leverer</b><p>Produktion, dokumentation og levering — montage hvis I vil have det med.</p></div></div>
+        <a href={`${base}kontakt`} class="btn btn-ghost" style="margin-top:18px">Send mål <span class="arr">→</span></a>
       </div>
       <div class="track alt">
         <span class="t-kick">Spor 2 · Projekter</span>
-        <h3>Sådan starter et projekt</h3>
+        <h3>Et helt byggeri</h3>
         <div class="step"><span class="sn">1</span><div><b>Send tegninger eller udbud</b><p>Arkitekttegninger, snedkerbeskrivelse eller tilbudsliste — vi læser materialet og stiller de rigtige spørgsmål.</p></div></div>
         <div class="step"><span class="sn">2</span><div><b>Tilbud med 3D og dokumentation</b><p>Struktureret tilbud, renders af nøgleemner og en plan for materialegodkendelser.</p></div></div>
         <div class="step"><span class="sn">3</span><div><b>Produktion i delleverancer</b><p>Vi leverer i takt med byggepladsen — ikke som én stor slutlevering, der vælter tidsplanen.</p></div></div>
+        <a href={`${base}kontakt`} class="btn btn-primary" style="margin-top:18px">Send udbud <span class="arr">→</span></a>
       </div>
     </div>
   </div></section>
 
-  <!-- ============ CTA ============ -->
-  <section class="cta" id="kontakt"><div class="wrap">
-    <span class="label">Kontakt</span>
-    <h2>Send os målene. Eller hele <em>udbuddet.</em></h2>
-    <p>Begge dele lander samme sted — hos et hold der kender byggeri, svarer i fagsprog og vender hurtigt tilbage med næste skridt. Vi leverer også vores produkter til private.</p>
-    <div class="cta-actions">
-      <a href="mailto:tilbud@neminventar.dk" class="btn btn-light">tilbud@neminventar.dk <span class="arr">→</span></a>
-      <a href="tel:+4542422684" class="btn btn-ghost" style="border-color:#443B2A;color:#CFC4B2">+45 42 42 26 84</a>
+  <!-- ============ KONTAKT ============ -->
+  <section class="sec sec-dark" id="kontakt"><div class="wrap">
+    <div class="sec-head rv" style="align-items:flex-start">
+      <div>
+        <span class="label">Kontakt</span>
+        <h2>Send os målene. Eller hele <em>udbuddet.</em></h2>
+        <p class="lede">En skitse med mål er nok til at komme i gang. Et udbud går vi igennem post for post. Er tegningerne ikke færdige endnu, sparrer vi gerne om konstruktion og materialer.</p>
+      </div>
     </div>
-    <p class="alt-contact">Generelle henvendelser: <a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a></p>
+    <div class="ccards rv">
+      <div class="ccard">
+        <span class="kick">Udbud og projekter</span>
+        <h3>Send tegninger eller tilbudsliste</h3>
+        <p>Arkitekttegninger, beskrivelse, tilbudsliste eller rumskemaer. Vi vender tilbage med de spørgsmål, der skal afklares, og et tilbud med 3D og dokumentation, I kan holde op mod udbuddet.</p>
+        <a href={`${base}kontakt`} class="btn btn-light">Send udbud <span class="arr">→</span></a>
+      </div>
+      <div class="ccard">
+        <span class="kick">Enkelte møbler</span>
+        <h3>Send mål og antal</h3>
+        <p>Skriv mål, antal og ønsker til materiale og farve. I får tegning og pris, før noget går i produktion. Typisk 8–12 uger fra ordre til levering. Private kan også bestille.</p>
+        <a href={`${base}kontakt`} class="btn btn-dark-ghost">Send mål <span class="arr">→</span></a>
+      </div>
+    </div>
+    <div class="clines rv">
+      <a href="tel:+4542422684" class="tel">+45 42 42 26 84</a>
+      <span><a href="mailto:tilbud@neminventar.dk">tilbud@neminventar.dk</a></span>
+      <span>Generelle henvendelser: <a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a></span>
+    </div>
   </div></section>
 
   <style>
@@ -247,4 +460,100 @@ const base = import.meta.env.BASE_URL; // slutter med '/'
       .finish-points{grid-template-columns:1fr;gap:24px;margin-top:40px;padding-top:32px}
     }
   </style>
+
+  <script>
+    // ---------- toppen: to felter, der skifter ét ad gangen. Første skift efter ca. 1 sekund ----------
+    (() => {
+      const dataEl = document.getElementById('hero-data');
+      const duo = document.getElementById('duo');
+      const pauseBtn = document.getElementById('heroPause');
+      if (!dataEl || !duo || !pauseBtn) return;
+      type Item = { src: string; pos: string; alt: string; room: string; what: string };
+      const data = JSON.parse(dataEl.textContent || '{}') as { L: Item[]; R: Item[]; name: string };
+      type Slot = { el: HTMLElement; pool: Item[]; i: number; imgs: (HTMLImageElement | null)[]; tag: HTMLElement };
+      const mk = (id: string, pool: Item[]): Slot | null => {
+        const el = document.getElementById(id); if (!el) return null;
+        const first = el.querySelector('img'); const tag = el.querySelector<HTMLElement>('.img-tag');
+        if (!first || !tag) return null;
+        return { el, pool, i: 0, imgs: pool.map((_, k) => (k === 0 ? first : null)), tag };
+      };
+      const slots = [mk('slotA', data.L), mk('slotB', data.R)].filter((s): s is Slot => !!s);
+      if (!slots.length) return;
+      const mq = matchMedia('(max-width: 860px)');
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const FIRST = 1100, STEP = 3200;
+      let first: number | undefined, timer: number | undefined, turn = 0, userPaused = false, hover = false;
+      // billederne hentes først, når de skal bruges — det næste gøres klar, så overblændingen aldrig viser et tomt felt
+      const ensure = (s: Slot, k: number) => {
+        k = (k + s.pool.length) % s.pool.length;
+        if (!s.imgs[k]) {
+          const it = s.pool[k], im = new Image();
+          im.src = it.src; im.alt = it.alt; im.decoding = 'async'; im.style.setProperty('--pos', it.pos);
+          s.el.insertBefore(im, s.tag); s.imgs[k] = im;
+        }
+        return s.imgs[k]!;
+      };
+      const show = (s: Slot, k: number) => {
+        s.i = (k + s.pool.length) % s.pool.length;
+        ensure(s, s.i);
+        s.el.classList.add('swapping');
+        s.imgs.forEach((im, j) => im && im.classList.toggle('is-on', j === s.i));
+        window.setTimeout(() => { const it = s.pool[s.i]; s.tag.innerHTML = `<b>${it.room}</b>${it.what} · ${data.name}`; s.el.classList.remove('swapping'); }, 300);
+        ensure(s, s.i + 1);
+      };
+      const canRun = () => !reduce && !userPaused && !hover;
+      const tick = () => { if (mq.matches || slots.length === 1) { const s = slots[slots.length - 1]; show(s, s.i + 1); return; } turn = 1 - turn; show(slots[turn], slots[turn].i + 1); };
+      const stop = () => { clearTimeout(first); clearInterval(timer); first = timer = undefined; pauseBtn.textContent = '▶'; pauseBtn.setAttribute('aria-label', 'Start billedskiftet'); };
+      const start = (delay: number) => { stop(); if (!canRun()) return; pauseBtn.textContent = '❚❚'; pauseBtn.setAttribute('aria-label', 'Sæt billedskiftet på pause'); first = window.setTimeout(() => { tick(); timer = window.setInterval(tick, STEP); }, delay); };
+      pauseBtn.addEventListener('click', () => { userPaused = !userPaused; if (userPaused) stop(); else start(300); });
+      duo.addEventListener('mouseenter', () => { hover = true; stop(); });
+      duo.addEventListener('mouseleave', () => { hover = false; start(1200); });
+      slots[slots.length - 1].el.addEventListener('click', () => { if (mq.matches) { const s = slots[slots.length - 1]; show(s, s.i + 1); start(STEP); } });   // telefon: tryk = næste
+      document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start(800)));
+      window.setTimeout(() => slots.forEach((s) => ensure(s, 1)), 600);
+      start(FIRST);
+    })();
+
+    // ---------- afsnit glider ind, når de rulles frem ----------
+    (() => {
+      const els = document.querySelectorAll('.rv');
+      if (!('IntersectionObserver' in window)) { els.forEach((el) => el.classList.add('in')); return; }
+      const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
+      els.forEach((el) => io.observe(el));
+    })();
+
+    // ---------- video spiller kun i synsfeltet; data-start springer optagelsens indledning over ----------
+    // Der spoles først ved afspilning: sættes currentTime før første play, smider browseren plakaten og viser et tomt felt.
+    (() => {
+      const vio = new IntersectionObserver((es) => es.forEach((e) => {
+        const v = e.target as HTMLVideoElement, start = +(v.dataset.start || 0);
+        if (e.isIntersecting) { if (start && v.currentTime < start) v.currentTime = start; v.play().catch(() => {}); }
+        else v.pause();
+      }), { threshold: 0.25 });
+      document.querySelectorAll<HTMLVideoElement>('video[data-inview]').forEach((v) => {
+        const start = +(v.dataset.start || 0);
+        if (start) v.addEventListener('ended', () => { v.currentTime = start; v.play().catch(() => {}); });
+        else v.loop = true;
+        vio.observe(v);
+      });
+    })();
+
+    // ---------- inventar: filtre + "vis alle" ("Alle" viser 9 på computer, 6 på telefon; et filter viser hele familien) ----------
+    (() => {
+      const types = document.getElementById('types'), more = document.getElementById('showmore'), row = document.getElementById('showmoreRow');
+      if (!types || !more || !row) return;
+      const cards = Array.from(types.querySelectorAll<HTMLElement>('.tcard'));
+      const chips = Array.from(document.querySelectorAll<HTMLElement>('#filters .fchip'));
+      let f = 'alle', expanded = false;
+      const apply = () => {
+        cards.forEach((t) => { t.hidden = !(f === 'alle' || t.dataset.fam === f); });
+        chips.forEach((c) => c.classList.toggle('on', c.dataset.f === f));
+        types.classList.toggle('expanded', expanded || f !== 'alle');
+        row.hidden = expanded || f !== 'alle';
+      };
+      chips.forEach((c) => c.addEventListener('click', () => { f = c.dataset.f || 'alle'; apply(); }));
+      more.addEventListener('click', () => { expanded = true; apply(); });
+      apply();
+    })();
+  </script>
 </Base>

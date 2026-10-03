@@ -8,7 +8,7 @@ const landing = await getWebLandingPages();
 <footer><div class="wrap foot">
   <div>
     <div class="brand">NEM<b style="color:var(--warm)">·</b>INVENTAR</div>
-    <p>Snedkerbygget inventar til byggeri.<br>Arketyper på bestilling — og hele projekter.<br>Vi leverer også til private.</p>
+    <p>Fast inventar til byggeri — tegnet i 3D, bygget i vores egenproduktion.<br>Enkelte møbler fra kataloget og hele projekter.<br>Vi leverer også til private.</p>
     {landing.length > 0 && (
       <p class="foot-links foot-topics">
         {landing.map((l, i) => (<>{i > 0 && ' · '}<a href={`${base}${l.slug}`}>{l.nav_label}</a></>))}
