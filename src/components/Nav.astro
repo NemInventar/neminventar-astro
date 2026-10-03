@@ -3,17 +3,22 @@
 // (import.meta.env.BASE_URL), så de virker både på custom domain ('/') og GitHub
 // projekt-side ('/repo/').
 // Telefonen står synligt i headeren (også på mobil, hvor et tryk ringer op) — Joachim 01-10-2026.
+// På telefon og tablet (≤960 px) ligger menupunkterne bag en menu-knap (<details>, virker uden JS).
 import { PHONE, PHONE_TEL, LINKEDIN } from '../lib/contact';
 const base = import.meta.env.BASE_URL; // slutter med '/'
+const links = [
+  { href: `${base}#projekter`, t: 'Projekter' },
+  { href: `${base}#katalog`, t: 'Inventar' },
+  { href: `${base}#designer`, t: 'Designeren', soon: true },
+  { href: `${base}#saadan`, t: 'Sådan arbejder vi' },
+  { href: `${base}om-os`, t: 'Om os' },
+  { href: `${base}kontakt`, t: 'Kontakt' },
+];
 ---
 <nav><div class="wrap nav-in">
   <a href={base} class="brand">NEM<b>·</b>INVENTAR</a>
   <div class="nav-links">
-    <a href={`${base}#projekter`}>Projekter</a>
-    <a href={`${base}#katalog`}>Inventar</a>
-    <a href={`${base}#designer`}>Designeren<span class="soon">snart</span></a>
-    <a href={`${base}#saadan`}>Sådan arbejder vi</a>
-    <a href={`${base}om-os`}>Om os</a>
+    {links.filter((l) => l.t !== 'Kontakt').map((l) => <a href={l.href}>{l.t}{l.soon && <span class="soon">snart</span>}</a>)}
     <a href={`${base}en/`} hreflang="en" lang="en" title="English">EN</a>
     <a href={LINKEDIN} class="nav-icon" target="_blank" rel="noopener" aria-label="Nem Inventar på LinkedIn" title="LinkedIn">
       <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
@@ -24,7 +29,26 @@ const base = import.meta.env.BASE_URL; // slutter med '/'
     </a>
     <a href={`${base}kontakt`} class="nav-cta">Få en pris</a>
   </div>
+  <details class="nav-menu" id="navMenu">
+    <summary aria-label="Menu"><span class="bars"></span></summary>
+    <div class="nav-panel">
+      <a href={`${base}kontakt`} class="btn btn-primary np-cta">Få en pris <span class="arr">→</span></a>
+      {links.map((l) => <a href={l.href}>{l.t}{l.soon && <span class="soon">snart</span>}<span class="arr">→</span></a>)}
+      <div class="np-foot">
+        <a href={`${base}en/`} hreflang="en" lang="en">In English</a>
+        <a href={LINKEDIN} target="_blank" rel="noopener">LinkedIn</a>
+        <a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a>
+      </div>
+    </div>
+  </details>
 </div></nav>
+
+<script>
+  // Menuen på telefon lukker, når man vælger et punkt (ankre på samme side skifter ikke side).
+  const menu = document.getElementById('navMenu') as HTMLDetailsElement | null;
+  menu?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => menu.removeAttribute('open')));
+  document.addEventListener('click', (e) => { if (menu?.open && !menu.contains(e.target as Node)) menu.removeAttribute('open'); });
+</script>
 
 <style>
   /* "snart"-mærke ved designeren, indtil den åbner */

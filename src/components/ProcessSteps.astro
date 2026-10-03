@@ -1,0 +1,23 @@
+---
+// "Fra 3D-model til færdigt rum" — fire trin med video og foto. Bruges på forsiden, om os, de målgruppe-rettede
+// landingssider og den engelske side. Videoerne afspilles kun i synsfeltet (script i Base.astro).
+import { cdn } from '../lib/img';
+import { morkhoj } from '../lib/catalog';
+interface Props { lang?: 'da' | 'en' }
+const { lang = 'da' } = Astro.props;
+const T = lang === 'en'
+  ? { v1: 'Screen recording of the 3D model of a wardrobe module', h1: 'Modelled in 3D', p1: 'You see the piece in 3D and approve it before we cut the first board.',
+      a2: 'Workshop drawing of a shoe-rack module', h2: 'The drawing', p2: 'The approval drawing and the parts list come from the same model. What you approve is what we build.',
+      v3: 'Sample piece of a locker', h3: 'The sample piece', p3: 'On larger deliveries we build one unit first, so door, lock and finish can be approved by hand.',
+      a4: 'Oiled door with perforation and hinge', h4: 'The piece', p4: 'Delivered in stages to the site schedule and installed by us.' }
+  : { v1: 'Skærmoptagelse af 3D-modellen af et garderobemodul', h1: 'Tegnet i 3D', p1: 'I ser møblet i 3D og godkender det, før vi skærer den første plade.',
+      a2: 'Værkstedstegning af et skohyldemodul', h2: 'Tegningen', p2: 'Tegning til godkendelse og stykliste kommer fra samme model. Det, I godkender, er det, vi bygger.',
+      v3: 'Prøveemne af en locker', h3: 'Prøveemnet', p3: 'Ved større leverancer bygger vi ét eksemplar først, så låge, lås og overflade kan godkendes i hånden.',
+      a4: 'Olieret låge med perforering og hængsel', h4: 'Møblet', p4: 'Leveret i etaper efter byggepladsens tidsplan og monteret af os.' };
+---
+<div class="steps4 rv">
+  <div class="st"><span class="n">1</span><div class="ph"><video src={cdn('/video/3d-model-garderobe.mp4')} poster={cdn('/video/3d-model-garderobe.jpg')} muted playsinline preload="metadata" data-inview data-start="4" aria-label={T.v1} style="--pos:40% 50%"></video></div><h3>{T.h1}</h3><p>{T.p1}</p></div>
+  <div class="st"><span class="n">2</span><div class="ph"><img src={cdn('/billeder/proces/2d-vaerkstedstegning-skohylde.jpg')} alt={T.a2} style="--pos:12% 50%" loading="lazy" /></div><h3>{T.h2}</h3><p>{T.p2}</p></div>
+  <div class="st"><span class="n">3</span><div class="ph"><video src={cdn('/video/proeveemne-locker.mp4')} poster={cdn('/video/proeveemne-locker.jpg')} muted playsinline preload="metadata" data-inview aria-label={T.v3}></video></div><h3>{T.h3}</h3><p>{T.p3}</p></div>
+  <div class="st"><span class="n">4</span><div class="ph"><img src={cdn(morkhoj('35_detalje-haengsel-og-perforering-roed-laage.jpg'), 900)} alt={T.a4} style="--pos:30% 50%" loading="lazy" /></div><h3>{T.h4}</h3><p>{T.p4}</p></div>
+</div>

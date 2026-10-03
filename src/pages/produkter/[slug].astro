@@ -1,24 +1,37 @@
 ---
+// Produktside (arketype). Indhold fra v_web_products; farvevarianter fra images_meta; fotos fra leverancen,
+// hvor de viser typen (lib/catalog PHOTO). Projekter og landingssider, der nævner typen, vises nedenunder.
 import Base from '../../layouts/Base.astro';
 import CallbackForm from '../../components/CallbackForm.tsx';
-import { getWebProducts, getWebColors, categoryLabel, type WebProduct } from '../../lib/supabase';
+import ProductCard from '../../components/ProductCard.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import ContactCta from '../../components/ContactCta.astro';
+import { getWebProducts, getWebColors, getWebCases, getWebLandingPages, type WebProduct, type WebCase, type WebLanding } from '../../lib/supabase';
 import { cdn } from '../../lib/img';
 import { chipLabels } from '../../lib/labels';
+import { FAM, famOf, productImage, fotoTag, isPhoto, photoProjectName } from '../../lib/catalog';
 
 export async function getStaticPaths() {
-  const products = await getWebProducts();
-  return products.map((p) => ({ params: { slug: p.slug }, props: { product: p } }));
+  const [products, cases, landing] = await Promise.all([getWebProducts(), getWebCases(), getWebLandingPages()]);
+  return products.map((p) => ({ params: { slug: p.slug }, props: { product: p, products, cases, landing } }));
 }
 
-interface Props { product: WebProduct }
-const { product } = Astro.props;
+interface Props { product: WebProduct; products: WebProduct[]; cases: WebCase[]; landing: WebLanding[] }
+const { product, products, cases, landing } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
 const materials = chipLabels(product.materials);
 const finishes = chipLabels(product.finishes);
 const applications = chipLabels(product.applications);
 const paragraphs = (product.story ?? product.short_description ?? '').split('\n\n').filter(Boolean);
-const gallery = product.images ?? (product.primary_image ? [product.primary_image] : []);
-const hero = product.primary_image ?? gallery[0];
-const base = import.meta.env.BASE_URL;
+const fam = famOf(product);
+const projectName = photoProjectName(cases);
+
+// Galleri: fotoet fra leverancen først (hvis typen har et), derefter de godkendte billeder
+const pi = productImage(product);
+const rest = (product.images ?? []).filter((u) => u !== pi.img);
+const gallery = [pi.img, ...rest].filter(Boolean);
+const tagOf = (src: string) => fotoTag(isPhoto(src), projectName);
 
 // Farvevarianter: kun aktiv når produktet har color_order OG billeder tagget med palette-slugs.
 const palette = product.color_order?.length ? await getWebColors() : [];
@@ -29,27 +42,40 @@ const colorGroups = (product.color_order ?? [])
     return color && imgs.length ? { ...color, image: imgs[0] } : null;
   })
   .filter((g): g is NonNullable<typeof g> => g !== null);
-const site = Astro.site!;
+
+// Landingssider, der nævner typen, og projekterne de peger på (data, ikke gæt)
+const relLanding = landing.filter((l) => (l.product_slugs ?? []).includes(product.slug));
+const caseSlugs = [...new Set(relLanding.flatMap((l) => l.case_slugs ?? []))];
+const relCases = caseSlugs.map((s) => cases.find((c) => c.slug === s)).filter((c): c is WebCase => !!c).slice(0, 3);
+// Andre typer: samme familie først, derefter resten
+const others = [...products.filter((p) => p.slug !== product.slug && famOf(p) === fam), ...products.filter((p) => p.slug !== product.slug && famOf(p) !== fam)].slice(0, 3);
+const showDesigner = fam === 'skabe' || fam === 'garderober';
+
 const jsonLd = [{
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Nem Inventar', item: new URL(base, site).href },
-    { '@type': 'ListItem', position: 2, name: 'Arketyper', item: new URL(base + '#katalog', site).href },
+    { '@type': 'ListItem', position: 2, name: 'Inventar', item: new URL(base + '#katalog', site).href },
     { '@type': 'ListItem', position: 3, name: product.name, item: new URL(`${base}produkter/${product.slug}`, site).href },
   ],
 }];
 ---
-<Base title={product.seo_title} description={product.seo_description} image={hero} jsonLd={jsonLd}>
-  <section class="detail"><div class="wrap">
-    <a href={`${base}#katalog`} class="crumb">← Tilbage til kataloget</a>
-    <div class="detail-grid">
+<Base title={product.seo_title} description={product.seo_description} image={gallery[0] ? cdn(gallery[0], 1200) : undefined} jsonLd={jsonLd}>
+  <section class="pd"><div class="wrap">
+    <div class="crumbrow"><a href={`${base}#katalog`} class="crumb">← Kataloget</a></div>
+    <div class="pd-grid">
       <div class="gallery">
-        {hero && <div class="main"><img id="main-img" src={cdn(hero, 1000)} alt={product.name} fetchpriority="high" /></div>}
+        {gallery[0] && (
+          <figure class="pd-main">
+            <img id="main-img" src={cdn(gallery[0], 1200)} alt={product.name} style={`--pos:${pi.pos}`} fetchpriority="high" />
+            <span class="ptag" id="main-tag">{tagOf(gallery[0])}</span>
+          </figure>
+        )}
         {colorGroups.length > 1 && (
           <div class="swatches" role="group" aria-label="Vælg farve">
             {colorGroups.map((g) => (
-              <button class="swatch" data-src={cdn(g.image, 1000)} aria-label={`Vis farven ${g.label}`}>
+              <button class="swatch" data-src={cdn(g.image, 1200)} data-tag={tagOf(g.image)} aria-label={`Vis farven ${g.label}`}>
                 <span class="sw-dot" style={`background:${g.swatch_hex}`}></span>{g.label}
               </button>
             ))}
@@ -58,41 +84,86 @@ const jsonLd = [{
         {gallery.length > 1 && (
           <div class="thumbs">
             {gallery.map((src, i) => (
-              <button class={`thumb${i === 0 ? ' active' : ''}`} data-src={cdn(src, 1000)} aria-label={`Vis billede ${i + 1}`}>
-                <img src={cdn(src, 220)} alt={`${product.name} – billede ${i + 1}`} loading="lazy" />
+              <button class={`thumb${i === 0 ? ' active' : ''}`} data-src={cdn(src, 1200)} data-tag={tagOf(src)} aria-label={`Vis billede ${i + 1}`}>
+                <img src={cdn(src, 240)} alt={`${product.name} – billede ${i + 1}`} loading="lazy" />
               </button>
             ))}
           </div>
         )}
       </div>
       <div class="detail-body">
-        <span class="kicker">{categoryLabel[product.category] ?? product.category}</span>
+        <span class="kicker">{FAM[fam]}</span>
         <h1>{product.name}</h1>
         {product.hero_tagline && <p class="lead">{product.hero_tagline}</p>}
         <div class="prose">
           {paragraphs.map((para) => <p>{para}</p>)}
         </div>
-        <div class="spec">
-          {materials.length ? (<><h4>Materialer</h4><div class="chips">{materials.map((m) => <span>{m}</span>)}</div></>) : null}
-          {finishes.length ? (<><h4>Overflade</h4><div class="chips">{finishes.map((f) => <span>{f}</span>)}</div></>) : null}
-          {applications.length ? (<><h4>Velegnet til</h4><div class="chips">{applications.map((a) => <span>{a}</span>)}</div></>) : null}
+        <div class="pd-spec">
+          {materials.length > 0 && <div class="row"><span class="k">Materialer</span><div class="chips">{materials.map((m) => <span>{m}</span>)}</div></div>}
+          {finishes.length > 0 && <div class="row"><span class="k">Overflade</span><div class="chips">{finishes.map((f) => <span>{f}</span>)}</div></div>}
+          {applications.length > 0 && <div class="row"><span class="k">Velegnet til</span><div class="chips">{applications.map((a) => <span>{a}</span>)}</div></div>}
         </div>
+        <p class="pd-made"><b>Til mål</b> · pris efter opmåling · tegnet i 3D til godkendelse, før vi bygger</p>
         <div class="detail-cta">
-          <a href={`mailto:tilbud@neminventar.dk?subject=${encodeURIComponent('Forespørgsel: ' + product.name)}`} class="btn btn-primary">Få pris på denne <span class="arr">→</span></a>
-          <a href={`${base}#kontakt`} class="btn btn-ghost">Kontakt os</a>
+          <a href={`${base}kontakt?emne=${encodeURIComponent(product.name)}`} class="btn btn-primary">Få pris på denne <span class="arr">→</span></a>
+          <a href="tel:+4542422684" class="btn btn-ghost">+45 42 42 26 84</a>
           <CallbackForm client:load />
         </div>
+        {showDesigner && (
+          <p class="pd-designer"><span class="soon">Snart</span><span>Byg skabet selv i designeren: mål, materiale, farve og låge — og se prisen følge med.</span><a href={`${base}#designer`}>Se designeren →</a></p>
+        )}
       </div>
     </div>
   </div></section>
 
+  {relCases.length > 0 && (
+    <section class="sec" id="projekter"><div class="wrap">
+      <div class="sec-head rv">
+        <div>
+          <span class="label">Fra vores projekter</span>
+          <h2>Sager med inventar i samme <em>familie.</em></h2>
+          <p class="lede">Projekter, hvor vi har bygget {FAM[fam].toLowerCase()} — tegnet til rummet, bygget i vores egenproduktion og monteret af os.</p>
+        </div>
+        <a href={`${base}#projekter`} class="ulink">Alle projekter →</a>
+      </div>
+      <div class={`pgrid rv${relCases.length > 2 ? ' three' : ''}`}>
+        {relCases.map((c) => <ProjectCard c={c} compact={relCases.length > 2} />)}
+      </div>
+    </div></section>
+  )}
+
+  {others.length > 0 && (
+    <section class="sec inv" id="andre"><div class="wrap">
+      <div class="sec-head rv">
+        <div>
+          <span class="label">Inventar</span>
+          <h2>Andre typer i <em>kataloget.</em></h2>
+          <p class="lede">Konstruktionen er løst. Målene er jeres: I vælger mål, materiale og farve, og ser resultatet i 3D med pris, før I bestiller.</p>
+        </div>
+        <a href={`${base}#katalog`} class="ulink">Hele kataloget →</a>
+      </div>
+      <div class="types all rv">
+        {others.map((p) => { const im = productImage(p); return (
+          <ProductCard name={p.name} href={`${base}produkter/${p.slug}`} img={im.img} pos={im.pos} tag={fotoTag(im.foto, projectName)} fam={FAM[famOf(p)]} desc={p.intro ?? p.short_description ?? ''} />
+        ); })}
+      </div>
+      {relLanding.length > 0 && (
+        <div class="yd-row rv" style="margin-top:36px"><span class="lbl">Læs mere om:</span>{relLanding.map((l) => <a class="pill" href={`${base}${l.slug}`}>{l.nav_label}</a>)}</div>
+      )}
+    </div></section>
+  )}
+
+  <ContactCta subject={product.name} />
+
   <script>
     const main = document.getElementById('main-img') as HTMLImageElement | null;
+    const tag = document.getElementById('main-tag');
     const pickers = document.querySelectorAll<HTMLButtonElement>('.thumb, .swatch');
     pickers.forEach((btn) => {
       btn.addEventListener('click', () => {
-        const src = btn.dataset.src;
-        if (main && src) main.src = src;
+        const { src, tag: t } = btn.dataset;
+        if (main && src) { main.style.opacity = '0'; main.onload = () => { main.style.opacity = '1'; }; main.src = src; if (main.complete) main.style.opacity = '1'; }
+        if (tag && t) tag.textContent = t;
         pickers.forEach((b) => b.classList.toggle('active', b.dataset.src === src));
       });
     });

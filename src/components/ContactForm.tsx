@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // Poster til contact-form edge function på ERP-projektet (guhbrpektblabndqttgp).
 // Funktionen sender en notifikation via Microsoft Graph til tilbud@ + kontakt@ med reply-to
@@ -15,6 +15,13 @@ export default function ContactForm() {
   const privat = kundetype === 'privat';
   const [status, setStatus] = useState<Status>('idle');
   const [errMsg, setErrMsg] = useState('');
+
+  // Kommer man fra en produkt- eller landingsside ("Få pris på denne"), står emnet i ?emne=… og skrives
+  // øverst i beskeden, så vi ved, hvad henvendelsen handler om. Sættes efter mount, så server og klient er ens.
+  useEffect(() => {
+    const emne = new URLSearchParams(location.search).get('emne');
+    if (emne) setForm((f) => (f.message ? f : { ...f, message: `Vedr. ${emne}\n\n` }));
+  }, []);
 
   const update = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));

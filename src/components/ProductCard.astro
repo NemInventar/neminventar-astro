@@ -1,0 +1,21 @@
+---
+// Kort for en type i kataloget — samme kort på forsiden, landingssiderne og produktsiderne ("Andre typer").
+import { cdn } from '../lib/img';
+interface Props { name: string; href: string; img: string; pos?: string; tag: string; fam: string; desc: string; dataFam?: string }
+const { name, href, img, pos = '50% 60%', tag, fam, desc, dataFam } = Astro.props;
+---
+<article class="tcard" data-fam={dataFam}>
+  <a class="ph" href={href} aria-label={name}>
+    {img && <img src={cdn(img, 800)} alt={name} style={`--pos:${pos}`} loading="lazy" decoding="async" />}
+    <span class="ptag">{tag}</span>
+  </a>
+  <div class="body">
+    <span class="kicker">{fam}</span>
+    <h3><a href={href}>{name}</a></h3>
+    <p class="desc">{desc}</p>
+    <div class="tfoot">
+      <span class="made"><b>Til mål</b> · pris efter opmåling</span>
+      <a href={href} class="order">Se mere <span class="arr">→</span></a>
+    </div>
+  </div>
+</article>

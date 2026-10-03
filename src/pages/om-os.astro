@@ -1,141 +1,133 @@
 ---
+// Om os: hvem vi er (ingeniører, der bygger i træ), holdet og vores egenproduktion — vist med 3D-modellen,
+// prøveemnet og processen frem for stedet (intet må afsløre, hvor produktionen ligger; se skill seo).
 import Base from '../layouts/Base.astro';
+import Ticker from '../components/Ticker.astro';
+import ProcessSteps from '../components/ProcessSteps.astro';
+import ContactCta from '../components/ContactCta.astro';
+import { getWebCases } from '../lib/supabase';
+import { cdn } from '../lib/img';
+import { TEAM } from '../lib/team';
 const base = import.meta.env.BASE_URL;
-
-const team = [
-  { name: 'Joachim Skovbogaard', role: 'Administrerende direktør', desc: 'Kontakt og koordinering med entreprenører, arkitekter m.fl.', email: 'js@neminventar.dk', phone: '+45 20 54 14 88', img: 'joachim.png',
-    edu: 'Civilingeniør · kandidat i Construction Management · kandidat i datavidenskab',
-    bio: 'Joachim er civilingeniør med speciale i bærende konstruktioner fra Ingeniørhøjskolen i Aarhus. Han har en kandidat i Construction Management fra Aarhus Universitet og en kandidat i datavidenskab fra Syddansk Universitet. Han har arbejdet i byggebranchen siden 2017 med lean, lokationsbaseret planlægning og byggestyring, bl.a. hos Enemærke & Petersen på store renoveringssager. Hos Nem Inventar står han for kontakten til entreprenører og arkitekter, tilbuddene og de digitale værktøjer, der binder tegning, produktion og levering sammen.' },
-  { name: 'Milot Salihu', role: 'Medejer · salg og leverandører', desc: 'Salg, leverandørkoordinering og proces.', email: 'kontakt@neminventar.dk', phone: '+45 42 42 26 84', img: 'milot.png',
-    edu: 'Proces og Innovation, DTU · Management & Technology, TUM',
-    bio: 'Milot er uddannet i Proces og Innovation fra DTU og har læst Management & Technology ved TUM School of Management. Før Nem Inventar var han projektleder og siden partner inden for automation og robotteknologi hos Novo Nordisk, hvor han satte nye produktionslinjer og udstyr i drift. Han underviser også som gæsteforelæser på DTU. Hos Nem Inventar står han for salget, leverandørerne og koordineringen af produktionen.' },
-  { name: 'Christian Foss', role: 'Produktansvarlig', desc: 'Produktdesign, innovation og kvalitet.', email: 'cf@neminventar.dk', phone: '+45 24 64 97 43', img: 'christian.png',
-    edu: 'Professionsbachelor i Proces og Innovation, DTU',
-    bio: 'Christian er uddannet professionsbachelor i Proces og Innovation fra DTU i 2022. Han har arbejdet som teknisk designer og produktudviklingskonsulent i industrien og som business analyst i finanssektoren. Hos Nem Inventar tegner han produkterne i 3D, laver produktionstegningerne og holder øje med, at kundens krav, kvaliteten og prisen hænger sammen.' },
-];
-
-// Egenproduktionen: fotos lægges i public/billeder/produktion/ og tilføjes her. Tom liste = ingen fotorække.
-// Intet må afsløre hvor produktionen ligger: ingen skilte, tekst, udsigt eller navne (se skill seo, hårde grænser).
-const prodPhotos: { src: string; alt: string }[] = [];
+const cases = await getWebCases();
 ---
 <Base
   title="Om os — Nem Inventar"
   description="Nem Inventar er ingeniører, der bygger fast inventar i træ til byggeri. Bygget ordentligt, dokumenteret ordentligt og leveret efter byggepladsens tidsplan.">
-  <section class="about-hero"><div class="wrap">
-    <span class="label">Om os</span>
-    <h1>Vi er ingeniører, der bygger i <em>træ.</em></h1>
-    <p class="lead">Nem Inventar laver fast inventar til byggeri — bænke, garderober, akustik og specialløsninger efter tegning. Vi er et ungt værksted med en enkel overbevisning: inventar skal bygges ordentligt, dokumenteres ordentligt, og leveres når byggepladsen er klar til det.</p>
+
+  <!-- ============ TOPPEN ============ -->
+  <header class="hero2 about2"><div class="wrap hero2-grid">
+    <div class="hero2-head">
+      <span class="label">Om os</span>
+      <h1>Vi er ingeniører, der bygger i <em>træ.</em></h1>
+    </div>
+    <div class="hero2-cta">
+      <a href={`${base}#projekter`} class="btn btn-ghost">Se projekterne <span class="arr">→</span></a>
+      <a href={`${base}kontakt`} class="btn btn-primary">Kontakt os <span class="arr">→</span></a>
+    </div>
+    <div class="duo" aria-label="3D-model og prøveemne">
+      <div class="slot a">
+        <video class="is-on" src={cdn('/video/3d-model-garderobe.mp4')} poster={cdn('/video/3d-model-garderobe.jpg')} muted playsinline preload="metadata" data-inview data-start="4" aria-label="Skærmoptagelse af 3D-modellen af et garderobemodul" style="--pos:40% 50%"></video>
+        <span class="img-tag"><b>3D-modellen</b>det, I godkender, før vi bygger</span>
+      </div>
+      <div class="slot b">
+        <video class="is-on" src={cdn('/video/proeveemne-locker.mp4')} poster={cdn('/video/proeveemne-locker.jpg')} muted playsinline preload="metadata" data-inview aria-label="Prøveemne af en locker i vores egenproduktion"></video>
+        <span class="img-tag"><b>Prøveemnet</b>ét eksemplar, før serien bygges</span>
+      </div>
+    </div>
+    <p class="hero2-sub">Nem Inventar laver fast inventar til byggeri — garderober, lockers, bænke, højskabe, tekøkkener og akustik efter tegning. Vi er et ungt hold med en enkel overbevisning: inventar skal bygges ordentligt, dokumenteres ordentligt og leveres, når byggepladsen er klar til det.</p>
+    <div class="facts2" aria-label="Kort om os">
+      <span class="fact2">Ingeniører</span>
+      <span class="fact2">Startet 2024</span>
+      <span class="fact2">Tegnet i 3D</span>
+      <span class="fact2">Egen produktion</span>
+      <span class="fact2">København NV</span>
+    </div>
+  </div></header>
+
+  <Ticker cases={cases} extra={[{ b: '8–12', t: 'uger', c: 'typisk fra ordre til levering' }]} />
+
+  <!-- ============ TRE TING ============ -->
+  <section class="sec" id="saadan-taenker-vi"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">Det, vi står for</span>
+        <h2>Håndværk, grebet an som <em>ingeniørarbejde.</em></h2>
+      </div>
+    </div>
+    <div class="agrid rv">
+      <article>
+        <span class="n">I.</span>
+        <h3>Vi tænker i mål, tolerancer og montage</h3>
+        <p>Vi kommer fra byggeriet, ikke fra møbelbutikken. Det betyder, at vi tænker i mål, tolerancer, materialer og montage fra første tegning. Vi bygger i krydsfiner, kompaktlaminat og massivt træ, med samlinger og overflader, der er valgt efter, hvor hårdt rummet bliver brugt.</p>
+        <p>Og vi gør det digitalt: hvert stykke inventar tegnes og renderes i 3D, før vi skærer den første plade. I godkender det, I faktisk får.</p>
+      </article>
+      <article>
+        <span class="n">II.</span>
+        <h3>Både hele byggerier og den enkelte bænk</h3>
+        <p>Vi leverer til større byggerier — skoler, daginstitutioner, idrætshaller og erhverv — med tilbudslister, materialegodkendelser og delleverancer, der følger byggepladsens tidsplan. Og vi laver også den enkelte bænk.</p>
+        <p>Vi taler arkitekters og entreprenørers sprog, og vi ser os selv som den del af projektet, der gør de andres arbejde nemmere.</p>
+      </article>
+      <article>
+        <span class="n">III.</span>
+        <h3>Dokumentationen følger med</h3>
+        <p>Bygger I efter Svanemærket, DGNB eller andre ordninger, leverer vi dokumentationen på de materialer, vi bruger: produktdatablade, indeklimadokumentation og EPD'er, hvor producenten har dem.</p>
+        <p>Kræver udbuddet FSC- eller PEFC-træ, skriver vi i tilbuddet, hvilke plader der kan leveres med certificering fra leverandøren.</p>
+      </article>
+    </div>
   </div></section>
 
-  <section class="about"><div class="wrap about-grid">
-    <article>
-      <h2>Håndværk, grebet an som ingeniørarbejde</h2>
-      <p>Vi kommer fra byggeriet, ikke fra møbelbutikken. Det betyder at vi tænker i mål, tolerancer, materialer og montage fra første tegning. Vi bygger i krydsfiner, kompaktlaminat og massivt træ, med samlinger og overflader, der er valgt efter, hvor hårdt rummet bliver brugt.</p>
-      <p>Og vi gør det digitalt: hvert stykke inventar tegnes og renderes i 3D, før vi skærer den første plade. I godkender det, I faktisk får.</p>
-    </article>
-    <article>
-      <h2>Både hele byggerier og den enkelte bænk</h2>
-      <p>Vi leverer til større byggerier — skoler, daginstitutioner, idrætshaller og erhverv — med tilbudslister, materialegodkendelser og delleverancer, der følger byggepladsens tidsplan. Og vi laver også den enkelte bænk.</p>
-      <p>Vi taler arkitekters og entreprenørers sprog, og vi ser os selv som den del af projektet, der gør de andres arbejde nemmere.</p>
-    </article>
-    <article>
-      <h2>Dokumentationen følger med</h2>
-      <p>Bygger I efter Svanemærket eller andre ordninger, leverer vi dokumentationen på de materialer, vi bruger: produktdatablade, indeklimadokumentation og EPD'er, hvor producenten har dem. Kræver udbuddet FSC- eller PEFC-træ, skriver vi i tilbuddet, hvilke plader der kan leveres med certificering fra leverandøren.</p>
-    </article>
-  </div></section>
-
-  <section class="team"><div class="wrap">
-    <div class="sec-head"><div>
-      <span class="label">Holdet</span>
-      <h2>Menneskene bag.</h2>
-    </div></div>
-    <div class="team-grid">
-      {team.map((m) => (
-        <article class="member">
+  <!-- ============ HOLDET ============ -->
+  <section class="sec" id="holdet" style="padding-top:0"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">Holdet</span>
+        <h2>Menneskene <em>bag.</em></h2>
+        <p class="lede">Tre mand, der tegner, sælger og bygger — og som I kommer til at tale med fra første mail til sidste montage.</p>
+      </div>
+    </div>
+    <div class="team2 rv">
+      {TEAM.map((m) => (
+        <article class="member2">
           <div class="m-photo"><img src={`${base}team/${m.img}`} alt={m.name} loading="lazy" /></div>
-          <h3>{m.name}</h3>
-          <p class="m-role">{m.role}</p>
-          <p class="m-desc">{m.desc}</p>
-          <p class="m-edu">{m.edu}</p>
-          <details class="m-more">
-            <summary>Uddannelse og baggrund</summary>
-            <p>{m.bio}</p>
-          </details>
-          <p class="m-contact">
-            <a href={`mailto:${m.email}`}>{m.email}</a><br />
-            <a href={`tel:${m.phone.replace(/\s/g, '')}`}>{m.phone}</a>
-          </p>
+          <div class="body">
+            <h3>{m.name}</h3>
+            <p class="m-role">{m.role}</p>
+            <p class="m-desc">{m.desc}</p>
+            <p class="m-edu">{m.edu}</p>
+            <details class="m-more">
+              <summary>Uddannelse og baggrund</summary>
+              <p>{m.bio}</p>
+            </details>
+            <p class="m-contact">
+              <a href={`mailto:${m.email}`}>{m.email}</a><br />
+              <a href={`tel:${m.phone.replace(/\s/g, '')}`}>{m.phone}</a>
+            </p>
+          </div>
         </article>
       ))}
     </div>
   </div></section>
 
-  <section class="production"><div class="wrap">
-    <div class="sec-head"><div>
-      <span class="label">Produktionen</span>
-      <h2>Vores egenproduktion.</h2>
-    </div></div>
-    <div class="prod-text">
-      <p>Vi producerer inventaret i vores egen produktion. Opskæring, samling, overfladebehandling og pakning foregår hos os selv, så vi styrer kvaliteten og tidsplanen fra plade til færdigt emne.</p>
-      <p>Produktionen arbejder ud fra den samme 3D-model og stykliste, som I har godkendt, og hvert produkt følges gennem produktionen med sin egen tjekliste. Olie og farvet olie påføres i produktionen, så inventaret kommer færdigbehandlet ud på pladsen.</p>
-      <p>Vi følger op på arbejdsmiljøet og registrerer nærved-hændelser og ulykker, så vi kan rette årsagen og ikke kun symptomet.</p>
-    </div>
-    {prodPhotos.length > 0 && (
-      <div class="prod-photos">
-        {prodPhotos.map((ph) => (<img src={`${base}${ph.src.replace(/^\//, '')}`} alt={ph.alt} loading="lazy" />))}
+  <!-- ============ PRODUKTIONEN ============ -->
+  <section class="sec sec-dark" id="produktionen"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">Produktionen</span>
+        <h2>Vores <em>egenproduktion.</em></h2>
       </div>
-    )}
-  </div></section>
-
-  <section class="about-cta"><div class="wrap">
-    <h2>Vil I vide mere?</h2>
-    <p>Se vores arketyper, kig på projekterne, eller skriv til os om det, I står med.</p>
-    <div class="cta-actions">
-      <a href={`${base}#katalog`} class="btn btn-primary">Se arketyperne <span class="arr">→</span></a>
-      <a href={`${base}kontakt`} class="btn btn-ghost">Kontakt os</a>
     </div>
+    <div class="prod-text2 rv">
+      <div class="prose">
+        <p>Vi producerer inventaret i vores egen produktion. Opskæring, samling, overfladebehandling og pakning foregår hos os selv, så vi styrer kvaliteten og tidsplanen fra plade til færdigt emne.</p>
+      </div>
+      <div class="prose">
+        <p>Produktionen arbejder ud fra den samme 3D-model og stykliste, som I har godkendt, og hvert produkt følges gennem produktionen med sin egen tjekliste. Olie og farvet olie påføres i produktionen, så inventaret kommer færdigbehandlet ud på pladsen.</p>
+        <p>Vi følger op på arbejdsmiljøet og registrerer nærved-hændelser og ulykker, så vi kan rette årsagen og ikke kun symptomet.</p>
+      </div>
+    </div>
+    <ProcessSteps />
   </div></section>
+
+  <ContactCta />
 </Base>
-
-<style>
-  .about-hero{padding:80px 0 56px;border-bottom:1px solid var(--line)}
-  .about-hero h1{font-size:clamp(40px,5.4vw,72px);margin:24px 0 0;max-width:16ch}
-  .about-hero .lead{font-size:20px;color:var(--muted);max-width:62ch;margin-top:26px;line-height:1.65}
-  .about{padding:88px 0}
-  .about-grid{display:grid;gap:56px;max-width:840px}
-  .about article h2{font-size:clamp(24px,3vw,34px);margin-bottom:18px}
-  .about article p{font-size:17px;color:var(--ink);line-height:1.8;margin-bottom:14px;max-width:64ch}
-  .about-cta{background:var(--dark);color:var(--dark-text);padding:96px 0;text-align:center}
-  .about-cta h2{color:#F4EFE6;font-size:clamp(28px,3.6vw,44px)}
-  .about-cta p{color:#A99D88;font-size:18px;margin:18px auto 34px;max-width:46ch}
-  .about-cta .btn-ghost{color:#F4EFE6;border-color:rgba(244,239,230,.35)}
-  .about-cta .btn-ghost:hover{border-color:#F4EFE6}
-
-  .team{padding:0 0 96px}
-  .team .sec-head{margin-bottom:40px}
-  .team .sec-head h2{font-size:clamp(28px,3.4vw,42px);margin-top:18px}
-  .team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
-  .member .m-photo{aspect-ratio:1/1;border-radius:var(--radius);overflow:hidden;background:var(--soft);border:1px solid var(--line);margin-bottom:18px}
-  .member .m-photo img{width:100%;height:100%;object-fit:cover}
-  .member h3{font-size:21px;margin-bottom:4px}
-  .member .m-role{color:var(--warm);font-weight:600;font-size:14px;letter-spacing:.02em;margin-bottom:10px}
-  .member .m-desc{color:var(--muted);font-size:15px;line-height:1.6;margin-bottom:12px}
-  .member .m-edu{color:var(--ink);font-size:14px;line-height:1.55;margin-bottom:8px}
-  .member .m-more{margin-bottom:14px;font-size:14.5px}
-  .member .m-more summary{cursor:pointer;color:var(--warm);font-weight:600;list-style:none}
-  .member .m-more summary::-webkit-details-marker{display:none}
-  .member .m-more summary::after{content:' +'}
-  .member .m-more[open] summary::after{content:' −'}
-  .member .m-more p{color:var(--muted);line-height:1.65;margin-top:10px}
-  .member .m-contact{font-size:14px;line-height:1.7}
-  .member .m-contact a{color:var(--ink)}
-  .member .m-contact a:hover{color:var(--warm)}
-  .production{padding:0 0 96px}
-  .production .sec-head{margin-bottom:28px}
-  .production .sec-head h2{font-size:clamp(28px,3.4vw,42px);margin-top:18px}
-  .prod-text{max-width:840px}
-  .prod-text p{font-size:17px;color:var(--ink);line-height:1.8;margin-bottom:14px;max-width:64ch}
-  .prod-photos{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px}
-  .prod-photos img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:var(--radius);border:1px solid var(--line)}
-  @media(max-width:780px){.team-grid{grid-template-columns:1fr;gap:36px;max-width:420px}.prod-photos{grid-template-columns:1fr}}
-</style>

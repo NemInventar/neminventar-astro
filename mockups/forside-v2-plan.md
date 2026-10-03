@@ -14,6 +14,30 @@ Det gør v3:
 - **Hover:** alle billedfliser (hero, mosaik, projektkort, inventar, proces) løfter sig 4 px med skygge, og billedet zoomer 4-5 %.
 - De 5 nye typer findes ikke i `product_catalog` endnu — de skal oprettes som arketyper (med `product_web`-række), før de kan vises på det rigtige site.
 
+## Hele sitet i samme designsprog — gren `forside-v2` (04-10-2026, runde 7)
+
+Milot godkendte forsiden ("det er fint, jeg kan godt lide det her — det skal ikke online endnu") og bad om, at resten af sitet får samme designsprog. Gjort på samme gren, stadig ikke merget:
+
+**Fælles byggeklodser** (`src/components/`): `ProductCard` (katalogkort), `ProjectCard` (projektkort med datarækker + "Se projektet"), `ProcessSteps` ("Fra 3D-model til færdigt rum", dansk/engelsk), `ContactCta` (kontakt-afsnit, fuld/kort, dansk/engelsk, `?emne=` til kontaktsiden), `Ticker` (tal-striben). Regler ét sted i `src/lib/catalog.ts` (familier, fotos, tal fra leverancen, datarækker) og holdet i `src/lib/team.ts`. Reveal- og video-scriptet ligger i `Base.astro`, så alle sider har det.
+
+| Side | Før | Nu |
+|---|---|---|
+| **Nav** | 7 tekstlinks, intet på telefon ud over telefon + "Få pris" | Projekter · Inventar · Designeren (snart) · Sådan arbejder vi · Om os · EN · LinkedIn · telefon · Få en pris. På telefon/tablet: menu-knap med panel (virker uden JS); "Få en pris" flytter ind øverst i panelet ved ≤680 px, så alt står på én linje |
+| **Footer** | Én lang linje med 30 links | Fire spalter: hvem vi er · Inventar og materialer (to kolonner) · Til + Guides · Nem Inventar + Det juridiske. Bundlinje med © og adresse |
+| **Produktside** | Lille galleri, tekst, mailto-knap | Stort billede (4:3) med foto/visualisering-mærke, farve-swatches, familie som kicker, spec i rækker, "Få pris på denne" → kontaktformular med emnet forudfyldt, designer-boks (snart) på skabe/garderober, tre projekter fra samme familie (data fra landingssidernes `product_slugs`/`case_slugs`), tre andre typer, "Læs mere om"-pills, kontakt |
+| **Projektside** | Titel, billede, tekst, 4 celler, gitter med 26 billeder blandet | Titel + faktaboks (Leverance/Entreprenør/Arkitekt/Status + "Har I et lignende projekt?"), hero 21:9 med mærke og tekst, talgitter fra `delivery_label`, tekst + "Det leverede vi"-liste (klæbende), fotos først med hvert 5. stort, visualiseringer for sig og mærket, **lysboks** (native `<dialog>`, piletaster, tæller), tre andre projekter, kontakt |
+| **Landingssider (emne/segment)** | Galleri + tekst, cases i mørke kort uden data, arketyper som gamle kort, FAQ | Samme opbygning, men med nye kort (ProjectCard med datarækker, ProductCard), 3 kort pr. række (2×2 ved præcis fire), målgruppesider får "Fra 3D-model til færdigt rum", FAQ med label + overskrift, "Se også" som pills, kontakt med emne |
+| **Guides** | Som emne-siderne | Artikel-layout: overskrift → stort billede 21:9 → "kort fortalt" i tre kolonner → tekst med klæbende kontaktboks i siden → ekstra billeder → FAQ |
+| **Om os** | Tekst-spalte, hold, tekst om produktionen | Samme top som forsiden med 3D-video + prøveemne-video i de to felter, mærkater, tal-stribe; tre ting i et gitter (I/II/III); hold som kort med hover; produktionen som mørkt afsnit med proces-trinnene |
+| **Kontakt** | Tekst + formular | Tekst + tre trin (Vi læser materialet → Tegning og pris → Vi bygger og leverer) + formular; "Hvem du taler med" med de tre |
+| **EN** | Tekst-spalter | Samme top som forsiden (to fotos, mærkater), to kort + referencekort med tre fotos, proces-trin på engelsk, kontakt på engelsk |
+| **404** | Lille tekstblok | Overskrift med kursiv-ord, pills til Forsiden/Inventar/Projekter/Om os/Kontakt, kontakt-afsnit |
+| **Juridiske sider** | Hver sin kopi af `.legal`-styles | Fælles `.legal` i site.css |
+
+Testet: build 61 sider · lint 0 FEJL på alle håndskrevne sider · ingen vandret overløb ved 390 px · menu åbner/lukker · lysboks med piletaster · kontakt-forudfyldning · farveskift på produktside · alle interne links på 7 nøglesider svarer 200.
+
+**Datarettelser, der stadig venter:** foto 01 (børnenavne) i Mørkhøj-galleriet · de tre produkter, der viser et Mørkhøj-foto fra koden (`catalog.ts` PHOTO), skal have fotoet som `product_web.hero_image_id`, så listen kan væk · de 5 typer uden arketype.
+
 ## Bygget i koden — gren `forside-v2` (04-10-2026)
 
 Milot bad om at få hele siden bygget i samme designsprog. Det ligger på grenen `forside-v2` (ikke på `main`, ikke deployet):

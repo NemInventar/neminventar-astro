@@ -1,8 +1,12 @@
 ---
+// Kontakt: formular (erhverv/privat), telefon, "bestil et opkald" og hvem man taler med.
+// ?emne=<produkt eller side> forudfylder beskeden (ContactForm).
 import Base from '../layouts/Base.astro';
 import ContactForm from '../components/ContactForm.tsx';
 import CallbackForm from '../components/CallbackForm.tsx';
 import { PHONE, PHONE_TEL, LINKEDIN } from '../lib/contact';
+import { TEAM } from '../lib/team';
+const base = import.meta.env.BASE_URL;
 ---
 <Base
   title="Kontakt — Nem Inventar"
@@ -11,8 +15,13 @@ import { PHONE, PHONE_TEL, LINKEDIN } from '../lib/contact';
     <div class="contact-info">
       <span class="label">Kontakt</span>
       <h1>Lad os tale om <em>jeres projekt.</em></h1>
-      <p class="lead">Skriv en arketype, et mål eller hele udbuddet — så vender vi hurtigt tilbage med næste skridt. Et indledende afklaringsmøde er gratis og uforpligtende. Vi leverer også til private.</p>
+      <p class="lead">Skriv et mål, en type fra kataloget eller hele udbuddet — så vender vi tilbage med næste skridt. Et indledende afklaringsmøde er gratis og uforpligtende. Vi leverer også til private.</p>
       <a href={`tel:${PHONE_TEL}`} class="contact-tel">{PHONE}</a>
+      <div class="ksteps">
+        <div class="step"><span class="sn">1</span><div><b>Vi læser materialet</b><p>Mål, tegninger, beskrivelse eller tilbudsliste — og stiller de spørgsmål, der skal afklares før prisen.</p></div></div>
+        <div class="step"><span class="sn">2</span><div><b>Tegning og pris</b><p>I får jeres løsning i 3D og en pris, I kan holde op mod udbuddet eller budgettet.</p></div></div>
+        <div class="step"><span class="sn">3</span><div><b>Vi bygger og leverer</b><p>I vores egenproduktion, leveret efter byggepladsens tidsplan — typisk 8–12 uger fra ordre.</p></div></div>
+      </div>
       <div class="lines">
         <span class="k">Salg & tilbud</span>
         <a href="mailto:tilbud@neminventar.dk">tilbud@neminventar.dk</a>
@@ -26,5 +35,27 @@ import { PHONE, PHONE_TEL, LINKEDIN } from '../lib/contact';
       <CallbackForm client:load label="Hellere tale sammen? Bestil et opkald" />
     </div>
     <ContactForm client:load />
+  </div></section>
+
+  <section class="sec" id="hvem" style="padding-top:0"><div class="wrap">
+    <div class="sec-head rv" style="margin-bottom:28px">
+      <div>
+        <span class="label">Hvem du taler med</span>
+        <h2>Tre mand, der tegner, sælger og <em>bygger.</em></h2>
+      </div>
+      <a href={`${base}om-os`} class="ulink">Mere om holdet →</a>
+    </div>
+    <div class="who2 rv">
+      {TEAM.map((m) => (
+        <div class="w">
+          <img src={`${base}team/${m.img}`} alt={m.name} loading="lazy" />
+          <div>
+            <b>{m.name}</b>
+            <small>{m.role}</small>
+            <div class="wc"><a href={`mailto:${m.email}`}>{m.email}</a><br /><a href={`tel:${m.phone.replace(/\s/g, '')}`}>{m.phone}</a></div>
+          </div>
+        </div>
+      ))}
+    </div>
   </div></section>
 </Base>

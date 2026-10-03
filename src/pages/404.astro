@@ -2,18 +2,23 @@
 // Side for adresser der ikke findes. GitHub Pages serverer dist/404.html.
 // Tæller i Plausible som hændelsen "404" med den adresse, folk prøvede — så vi kan se brudte links.
 import Base from '../layouts/Base.astro';
+import ContactCta from '../components/ContactCta.astro';
 const base = import.meta.env.BASE_URL;
 ---
 <Base title="Siden findes ikke — Nem Inventar" description="Siden findes ikke. Se alt vi laver, eller skriv til os.">
-  <section class="sec"><div class="wrap" style="max-width:720px;padding:96px 0">
-    <span class="kicker">404</span>
-    <h1 style="margin:14px 0 18px">Siden findes ikke</h1>
-    <p class="lead">Adressen er flyttet eller skrevet forkert. Se alt vi laver, eller send os tegningerne direkte.</p>
-    <div class="detail-cta" style="margin-top:32px">
-      <a href={base} class="btn btn-primary">Til forsiden <span class="arr">→</span></a>
-      <a href="mailto:tilbud@neminventar.dk" class="btn btn-ghost">tilbud@neminventar.dk</a>
+  <section class="nf"><div class="wrap">
+    <span class="label">404</span>
+    <h1>Siden findes <em>ikke.</em></h1>
+    <p class="lead">Adressen er flyttet eller skrevet forkert. Det, du leder efter, ligger sikkert et af stederne her — ellers så send os tegningerne direkte.</p>
+    <div class="yd-row">
+      <a class="pill" href={base}>Forsiden</a>
+      <a class="pill" href={`${base}#katalog`}>Inventar</a>
+      <a class="pill" href={`${base}#projekter`}>Projekter</a>
+      <a class="pill" href={`${base}om-os`}>Om os</a>
+      <a class="pill" href={`${base}kontakt`}>Kontakt</a>
     </div>
   </div></section>
+  <ContactCta />
   <script is:inline>
     window.plausible && window.plausible('404', { props: { path: location.pathname } });
   </script>

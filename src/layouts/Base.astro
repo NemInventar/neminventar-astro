@@ -91,6 +91,8 @@ const ld = [organization, ...jsonLd];
   <meta name="twitter:description" content={description} />
   <meta name="twitter:image" content={ogImage} />
 
+  <!-- Afsnit, der glider ind ved scroll (.rv), er kun skjult når JS kører — crawlere og no-JS ser alt -->
+  <script is:inline>document.documentElement.classList.add('js');</script>
   <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
   <link rel="apple-touch-icon" href={`${base}favicon.svg`} />
   <meta name="theme-color" content="#17140E" />
@@ -115,5 +117,32 @@ const ld = [organization, ...jsonLd];
   <Nav />
   <slot />
   <Footer />
+  <script>
+    // ---------- afsnit glider ind, når de rulles frem ----------
+    (() => {
+      const els = document.querySelectorAll('.rv');
+      if (!els.length) return;
+      if (!('IntersectionObserver' in window)) { els.forEach((el) => el.classList.add('in')); return; }
+      const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
+      els.forEach((el) => io.observe(el));
+    })();
+    // ---------- video spiller kun i synsfeltet; data-start springer optagelsens indledning over ----------
+    // Der spoles først ved afspilning: sættes currentTime før første play, smider browseren plakaten og viser et tomt felt.
+    (() => {
+      const vids = document.querySelectorAll<HTMLVideoElement>('video[data-inview]');
+      if (!vids.length) return;
+      const vio = new IntersectionObserver((es) => es.forEach((e) => {
+        const v = e.target as HTMLVideoElement, start = +(v.dataset.start || 0);
+        if (e.isIntersecting) { if (start && v.currentTime < start) v.currentTime = start; v.play().catch(() => {}); }
+        else v.pause();
+      }), { threshold: 0.25 });
+      vids.forEach((v) => {
+        const start = +(v.dataset.start || 0);
+        if (start) v.addEventListener('ended', () => { v.currentTime = start; v.play().catch(() => {}); });
+        else v.loop = true;
+        vio.observe(v);
+      });
+    })();
+  </script>
 </body>
 </html>
