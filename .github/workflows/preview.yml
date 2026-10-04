@@ -48,7 +48,8 @@ jobs:
           SITE_URL: https://neminventar.dk
 
       - name: Skjul forhåndsvisningen for søgemaskiner
-        run: printf '/*\n  X-Robots-Tag: noindex, nofollow\n' >> dist/_headers
+        run: |
+          printf '/*\n  X-Robots-Tag: noindex, nofollow\n' >> dist/_headers
 
       - name: Udgiv forhåndsvisning (Cloudflare Pages)
         env:
