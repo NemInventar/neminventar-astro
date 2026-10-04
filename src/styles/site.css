@@ -586,6 +586,10 @@ footer a:hover{color:var(--ink)}
 .tk b{font-family:'Archivo',sans-serif;font-size:24px;font-weight:600;letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums}
 .tk i{font-style:normal;color:var(--ink);font-weight:500}
 .tk::after{content:"";width:5px;height:5px;border-radius:50%;background:var(--warm);margin-left:52px;align-self:center}
+/* båndet med firmanavne (Projekter): navnet i brødtekst-størrelse, rollen som lille mærkat — tallenes store skrift passer ikke til ord */
+.ticker-names .tk b{font-size:16px;font-weight:600;letter-spacing:-.01em}
+.ticker-names .tk i{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--warm);font-weight:700}
+.ticker-names .tk{font-size:14px}
 @media(prefers-reduced-motion:reduce){.ticker-track{animation:none;flex-wrap:wrap;width:auto;gap:18px 40px}.tk::after{display:none}.ticker .dup{display:none}}
 
 /* ---------- fremhævet projekt: mosaik + talgitter ---------- */
