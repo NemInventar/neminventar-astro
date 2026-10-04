@@ -23,6 +23,9 @@ const colors = await getWebColors();
 const MORKHOJ_COLORS = ['roedbrun', 'blaa'];
 // Kulørbåndets rækkefølge: lys → mørk med Skovgrøn i midten (planen). Ukendte slugs lægges bagerst.
 const BAND_ORDER = ['natur', 'roeget-eg', 'roedbrun', 'skovgroen', 'blaa', 'charcoal', 'sort'];
+// Træprøver i public/billeder/kuloerer/<slug>.jpg: fem er Rubios egne prøver på ask (Pure, Cocoa, Fern, Charcoal, Black —
+// kræver Rubios ok før go-live), rødbrun og blå er udsnit af vores låger på Mørkhøj (kulørerne er blandet til os).
+const SWATCH_IMG = new Set(['natur', 'roeget-eg', 'roedbrun', 'skovgroen', 'blaa', 'charcoal', 'sort']);
 const bandColors = [...colors].sort((a, b) => ((BAND_ORDER.indexOf(a.slug) + 1) || 99) - ((BAND_ORDER.indexOf(b.slug) + 1) || 99));
 const emner = landing.filter((l) => l.kind === 'emne');
 const segmenter = landing.filter((l) => l.kind === 'segment');
@@ -356,15 +359,16 @@ const ogImage = new URL(cdn(morkhoj('33_lockere-roede-ved-doer-til-klasserum.jpg
         </div>
         <a href="https://rubiomonocoat.dk/pages/colour" target="_blank" rel="noopener" class="ulink">Hele Rubios farvekort ↗</a>
       </div>
-      <div class="ov-band" role="list" aria-label="Vores syv standardkulører">
+      <div class="ov-band" role="list" aria-label="Vores syv standardkulører på træ">
         {bandColors.map((c) => (
-          <div class={`ov-swatch${c.slug === 'natur' ? ' light' : ''}`} role="listitem" style={`--c:${c.swatch_hex}`}>
+          <div class={`ov-swatch${SWATCH_IMG.has(c.slug) ? ' has-img' : ''}`} role="listitem" style={`--c:${c.swatch_hex}`}>
+            {SWATCH_IMG.has(c.slug) && <img src={cdn(`/billeder/kuloerer/${c.slug}.jpg`)} alt={`${c.label} på træ`} loading="lazy" decoding="async" />}
             <span class="nm">{c.label}</span>
             {MORKHOJ_COLORS.includes(c.slug) && <span class="where">{projektNavn}</span>}
           </div>
         ))}
       </div>
-      <p class="ov-note">Farverne på skærmen er vejledende.</p>
+      <p class="ov-note">Prøverne på ask er Rubio Monocoats egne; den rødbrune og den blå er vores låger på {projektNavn}. Farverne på skærmen er vejledende.</p>
     </div>
   </div></section>
 
@@ -473,9 +477,14 @@ const ogImage = new URL(cdn(morkhoj('33_lockere-roede-ved-doer-til-klasserum.jpg
     .ov-band{display:grid;grid-template-columns:repeat(7,1fr);height:240px;border-radius:var(--radius);overflow:hidden}
     .ov-swatch{position:relative;background:var(--c);display:flex;flex-direction:column;justify-content:flex-end;padding:16px 14px;color:var(--paper);background-image:radial-gradient(circle at 30% 15%,rgba(255,255,255,.14),rgba(255,255,255,0) 55%),repeating-linear-gradient(100deg,rgba(0,0,0,0) 0 3px,rgba(0,0,0,.05) 3px 4px);transition:filter .25s}
     .ov-swatch.light{color:var(--ink)}
+    /* træprøve som foto: billedet bag, mørk tone i bunden, så navnet kan læses på alle kulører */
+    .ov-swatch img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+    .ov-swatch.has-img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(0,0,0,.55))}
+    .ov-swatch.has-img{color:var(--paper)}
+    .ov-swatch .nm,.ov-swatch .where{position:relative;z-index:1;text-shadow:0 1px 2px rgba(0,0,0,.35)}
     .ov-swatch .nm{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
-    .ov-swatch .where{font-size:12px;opacity:.82;margin-top:4px}
-    .ov-swatch:hover{filter:brightness(1.07)}
+    .ov-swatch .where{font-size:12px;opacity:.85;margin-top:4px}
+    .ov-swatch:hover img{transform:scale(1.06)}
     .ov-note{margin-top:10px;font-size:12.5px;color:var(--muted)}
     /* links i proces-trinnene (Dalux / iBinder) */
     .p-tracks .step p a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--warm);text-underline-offset:3px}
@@ -490,6 +499,7 @@ const ogImage = new URL(cdn(morkhoj('33_lockere-roede-ved-doer-til-klasserum.jpg
       .ov-band{grid-template-columns:1fr;height:auto}
       .ov-swatch{min-height:56px;flex-direction:row;align-items:center;justify-content:space-between;padding:0 16px}
       .ov-swatch .where{margin-top:0}
+      .ov-swatch.has-img::after{background:linear-gradient(90deg,rgba(0,0,0,.5),rgba(0,0,0,.15) 55%,rgba(0,0,0,.45))}
     }
   </style>
 
