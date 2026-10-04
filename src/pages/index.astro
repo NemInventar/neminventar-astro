@@ -313,7 +313,7 @@ const ogImage = new URL(cdn(morkhoj('33_lockere-roede-ved-doer-til-klasserum.jpg
       </div>
       <div class="ov-cards">
         <article class="ov-card">
-          <YouTubeFacade id="IJjFtMQniR0" title="Sådan lægges Precolor Easy på" kicker="Video fra Rubio Monocoat · YouTube" color="#84402F" note="" />
+          <YouTubeFacade id="IJjFtMQniR0" title="Sådan lægges Precolor Easy på" kicker="Film fra Rubio Monocoat · YouTube" color="#43687C" poster={cdn(morkhoj('29_baenk-blaa-afrundet-hjoerne-med-hynde.jpg'))} pos="50% 60%" note="" />
           <div class="ov-card-body">
             <span class="ov-n">01</span>
             <div>
@@ -324,7 +324,12 @@ const ogImage = new URL(cdn(morkhoj('33_lockere-roede-ved-doer-til-klasserum.jpg
           </div>
         </article>
         <article class="ov-card">
-          <YouTubeFacade id="rWPvOH_5b6g" title="Sådan lægges Oil Plus 2C på" kicker="Video fra Rubio Monocoat · YouTube" color="#43687C" note="" />
+          <!-- Rubios eget klip fra produktsiden (rubiomonocoat.dk/products/oil-plus-2c): olien hældes på en egeplade og poleres ind.
+               Ligger på vores server som lydløst loop (800 px, 1,3 MB) — kræver Rubio Monocoat Denmarks ok, før sitet går online. -->
+          <div class="ov-media">
+            <video src={cdn('/video/rubio-oil-plus-2c.mp4')} poster={cdn('/video/rubio-oil-plus-2c.jpg')} muted loop playsinline preload="metadata" data-inview aria-label="Rubio Monocoat: Oil Plus 2C hældes på en egeplade og poleres ind med en pad" style="--pos:50% 45%"></video>
+            <span class="ov-media-tag"><b>Film · Rubio Monocoat</b>Oil Plus 2C lægges på</span>
+          </div>
           <div class="ov-card-body">
             <span class="ov-n">02</span>
             <div>
@@ -335,7 +340,7 @@ const ogImage = new URL(cdn(morkhoj('33_lockere-roede-ved-doer-til-klasserum.jpg
           </div>
         </article>
       </div>
-      <p class="ov-consent">Videoerne hentes fra YouTube, først når du klikker på afspil.</p>
+      <p class="ov-consent">Klippet med olien er Rubio Monocoats eget. Filmen om Precolor Easy hentes fra YouTube, først når du klikker på afspil.</p>
       <div class="ov-points">
         <div><b>Pletreparation.</b><p>Et slidt hjørne friskes op med olie, uden at hele fladen skal slibes.</p></div>
         <div><b>0 % VOC.</b><p>Olien indeholder ingen flygtige organiske stoffer — relevant i rum, hvor børn er hele dagen.</p></div>
@@ -448,6 +453,12 @@ const ogImage = new URL(cdn(morkhoj('33_lockere-roede-ved-doer-til-klasserum.jpg
     .ov-cards{display:grid;grid-template-columns:1fr 1fr;gap:28px}
     .ov-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
     .ov-card .yt-btn,.ov-card .yt iframe{border-radius:0}
+    .ov-card .yt-btn,.ov-media{aspect-ratio:4/3}
+    /* Rubios klip som lydløst loop (spiller kun i synsfeltet via data-inview i Base.astro) */
+    .ov-media{position:relative;background:var(--soft);overflow:hidden}
+    .ov-media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:var(--pos,50% 50%);display:block}
+    .ov-media-tag{position:absolute;left:14px;bottom:12px;display:inline-flex;gap:8px;align-items:baseline;padding:7px 12px;border-radius:999px;background:rgba(250,248,243,.92);color:var(--muted);font-size:12.5px;line-height:1;border:1px solid var(--line)}
+    .ov-media-tag b{color:var(--ink);font-weight:600}
     .ov-card-body{display:grid;grid-template-columns:56px 1fr;gap:14px;padding:22px 26px 24px;align-items:start}
     .ov-n{font-family:'Archivo',sans-serif;font-weight:700;font-size:30px;line-height:1;color:var(--warm);letter-spacing:-.02em}
     .ov-card h4{font-size:21px;margin:0 0 8px;font-weight:600}
