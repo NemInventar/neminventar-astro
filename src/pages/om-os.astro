@@ -1,89 +1,114 @@
 ---
-// Om os: hvem vi er (ingeniører, der bygger i træ), holdet og vores egenproduktion — vist med 3D-modellen,
-// prøveemnet og processen frem for stedet (intet må afsløre, hvor produktionen ligger; se skill seo).
+// Om os (v3, 04-10-2026 — plan: Opus, scratchpad/omos-plan). Milot: ingen videoer i toppen; egenproduktionen i centrum —
+// hvad den betyder for kunden fase for fase, og hvilke muligheder den åbner. Tekst-først top, ét stillfoto, tidslinje,
+// ProcessSteps i det mørke afsnit, holdet, referencer. Intet må afsløre, hvor produktionen ligger (se skill seo).
 import Base from '../layouts/Base.astro';
 import Ticker from '../components/Ticker.astro';
 import ProcessSteps from '../components/ProcessSteps.astro';
+import ProjectCard from '../components/ProjectCard.astro';
 import ContactCta from '../components/ContactCta.astro';
 import { getWebCases } from '../lib/supabase';
 import { cdn } from '../lib/img';
+import { morkhoj, PHOTO_PROJECT_SLUG } from '../lib/catalog';
 import { TEAM } from '../lib/team';
 const base = import.meta.env.BASE_URL;
 const cases = await getWebCases();
+const reference = cases.find((c) => c.slug === PHOTO_PROJECT_SLUG) ?? cases[0];
+
+// Kæden: det, der sker hos os selv — fra model til pakket emne
+const CHAIN = ['3D-model', 'Værkstedstegning', 'Opskæring', 'Samling', 'Overfladebehandling', 'Pakning'];
+
+// Tidslinjen: fem faser i samarbejdet, hver med "Det kan I"
+const FASER = [
+  { n: '01', fase: 'Før tilbud', h: 'Et tilbud på det, vi selv bygger.', p: 'Prisen regnes på vores egen produktion, også når udbuddet kræver FSC- eller PEFC-plader. Leveringstiden følger vores produktionsplan: typisk 8–12 uger fra ordre.',
+    kan: [{ b: 'Frie mål.', p: 'Alt bygges til mål, så rummet skal ikke tilpasses et standardmodul.' }] },
+  { n: '02', fase: 'Under tegning', h: 'Samme model fra render til stykliste.', p: 'I godkender 3D-modellen og renderen, før der skæres. Værkstedstegningerne trækkes ud af den, så intet tegnes om på vejen.',
+    kan: [{ b: 'Kulør.', p: 'Rubio Monocoat har blandet to kulører af deres hårdvoksolie specielt til os. En til jeres byggeri kan blandes på samme måde.' }] },
+  { n: '03', fase: 'Under produktion', h: 'Vi står selv for produktionen.', p: 'Derfor styrer vi kvalitet og tidsplan, og en rettet tegning går direkte til dem, der bygger.',
+    kan: [{ b: 'Sene ændringer.', p: 'En ændring sent i forløbet kan stadig komme med.' }, { b: 'Prøveemne.', p: 'Ved større leverancer godkender I det første eksemplar i hånden, før serien bygges.' }] },
+  { n: '04', fase: 'Ved levering', h: 'Leveret, når pladsen er klar.', p: 'Vi pakker selv og monterer, hvis I ønsker det. Materialerne har vi selv købt ind, så datablade, indeklimadokumentation og EPD’er, hvor de findes, følger med.',
+    kan: [{ b: 'Delleverancer.', p: 'I får inventaret i etaper, i takt med byggepladsens tidsplan.' }] },
+  { n: '05', fase: 'Efter aflevering', h: 'Modellen ligger klar.', p: 'Vi gemmer 3D-modellen, så I kan bygge videre på det, I har. Slid på overfladen kan repareres pletvis.',
+    kan: [{ b: 'Reservedele og flere enheder.', p: 'En ny låge eller ti skabe mere — fra samme model og i samme kulør.' }] },
+];
 ---
 <Base
   title="Om os — Nem Inventar"
-  description="Nem Inventar er ingeniører, der bygger fast inventar i træ til byggeri. Bygget ordentligt, dokumenteret ordentligt og leveret efter byggepladsens tidsplan.">
+  description="Nem Inventar tegner fast inventar i 3D og bygger det i egen produktion: frie mål, prøveemner, sene ændringer og reservedele fra samme model.">
 
-  <!-- ============ TOPPEN ============ -->
-  <header class="hero2 about2"><div class="wrap hero2-grid">
-    <div class="hero2-head">
+  <!-- ============ TOPPEN (tekst-først, intet der bevæger sig) ============ -->
+  <header class="about-top" id="top"><div class="wrap">
+    <div class="about-head">
       <span class="label">Om os</span>
-      <h1>Vi er ingeniører, der bygger i <em>træ.</em></h1>
-    </div>
-    <div class="hero2-cta">
-      <a href={`${base}#projekter`} class="btn btn-ghost">Se projekterne <span class="arr">→</span></a>
-      <a href={`${base}kontakt`} class="btn btn-primary">Kontakt os <span class="arr">→</span></a>
-    </div>
-    <div class="duo" aria-label="3D-model og prøveemne">
-      <div class="slot a">
-        <video class="is-on" src={cdn('/video/3d-model-garderobe.mp4')} poster={cdn('/video/3d-model-garderobe.jpg')} muted playsinline preload="metadata" data-inview data-start="4" aria-label="Skærmoptagelse af 3D-modellen af et garderobemodul" style="--pos:40% 50%"></video>
-        <span class="img-tag"><b>3D-modellen</b>det, I godkender, før vi bygger</span>
-      </div>
-      <div class="slot b">
-        <video class="is-on" src={cdn('/video/proeveemne-locker.mp4')} poster={cdn('/video/proeveemne-locker.jpg')} muted playsinline preload="metadata" data-inview aria-label="Prøveemne af en locker i vores egenproduktion"></video>
-        <span class="img-tag"><b>Prøveemnet</b>ét eksemplar, før serien bygges</span>
+      <h1>Vi tegner det.<br />Vi bygger det <em>selv.</em></h1>
+      <p class="lede">Fast inventar til skoler, institutioner, idrætshaller og erhverv. Fra 3D-model til færdigt møbel sker det hele hos os — uden mellemled.</p>
+      <div class="about-btns">
+        <a href={`${base}kontakt`} class="btn btn-primary">Send mål eller udbud <span class="arr">→</span></a>
+        <a href="#samarbejdet" class="btn btn-ghost">Sådan arbejder vi sammen <span class="arr">↓</span></a>
       </div>
     </div>
-    <p class="hero2-sub">Nem Inventar laver fast inventar til byggeri — garderober, lockers, bænke, højskabe, tekøkkener og akustik efter tegning. Vi er et ungt hold med en enkel overbevisning: inventar skal bygges ordentligt, dokumenteres ordentligt og leveres, når byggepladsen er klar til det.</p>
-    <div class="facts2" aria-label="Kort om os">
-      <span class="fact2">Ingeniører</span>
-      <span class="fact2">Startet 2024</span>
-      <span class="fact2">Tegnet i 3D</span>
-      <span class="fact2">Egen produktion</span>
-      <span class="fact2">København NV</span>
-    </div>
+    <aside class="chain" aria-label="Det, der sker hos os selv">
+      <span class="label">Hos os selv</span>
+      <ol>
+        {CHAIN.map((s, i) => (<>{i > 0 && <li class="sep" aria-hidden="true">→</li>}<li>{s}</li></>))}
+      </ol>
+    </aside>
   </div></header>
 
-  <Ticker cases={cases} extra={[{ b: '8–12', t: 'uger', c: 'typisk fra ordre til levering' }]} />
+  <!-- ============ FOTOBÅND ============ -->
+  <section class="photo-band"><div class="wrap">
+    <figure class="rv">
+      <a class="img" href={`${base}projekter/${reference?.slug ?? PHOTO_PROJECT_SLUG}`} aria-label={`Se projektet ${reference?.name ?? 'Mørkhøj Skole'}`}>
+        <img src={cdn(morkhoj('33_lockere-roede-ved-doer-til-klasserum.jpg'))} alt="Rødbrune lockers med bænk og skohylder ved døren til et klasserum" fetchpriority="high" decoding="async" />
+      </a>
+      <figcaption>Lockers med skohylder til {reference?.name ?? 'Mørkhøj Skole'}. Tegnet af os, bygget i vores egen produktion.</figcaption>
+    </figure>
+  </div></section>
 
-  <!-- ============ TRE TING ============ -->
-  <section class="sec" id="saadan-taenker-vi"><div class="wrap">
+  <!-- ============ TIDSLINJEN: EGENPRODUKTIONEN FASE FOR FASE ============ -->
+  <section class="tl-sec" id="samarbejdet"><div class="wrap">
     <div class="sec-head rv">
       <div>
-        <span class="label">Det, vi står for</span>
-        <h2>Håndværk, grebet an som <em>ingeniørarbejde.</em></h2>
+        <span class="label">Egen produktion</span>
+        <h2>Hvad det betyder for <em>jer.</em></h2>
+        <p class="lede">Når vi både tegner og bygger, er der færre overleveringer — og mere, I kan nå at ændre. Sådan mærker I det, fase for fase.</p>
       </div>
     </div>
-    <div class="agrid rv">
-      <article>
-        <span class="n">I.</span>
-        <h3>Vi tænker i mål, tolerancer og montage</h3>
-        <p>Vi kommer fra byggeriet, ikke fra møbelbutikken. Det betyder, at vi tænker i mål, tolerancer, materialer og montage fra første tegning. Vi bygger i krydsfiner, kompaktlaminat og massivt træ, med samlinger og overflader, der er valgt efter, hvor hårdt rummet bliver brugt.</p>
-        <p>Og vi gør det digitalt: hvert stykke inventar tegnes og renderes i 3D, før vi skærer den første plade. I godkender det, I faktisk får.</p>
-      </article>
-      <article>
-        <span class="n">II.</span>
-        <h3>Både hele byggerier og den enkelte bænk</h3>
-        <p>Vi leverer til større byggerier — skoler, daginstitutioner, idrætshaller og erhverv — med tilbudslister, materialegodkendelser og delleverancer, der følger byggepladsens tidsplan. Og vi laver også den enkelte bænk.</p>
-        <p>Vi taler arkitekters og entreprenørers sprog, og vi ser os selv som den del af projektet, der gør de andres arbejde nemmere.</p>
-      </article>
-      <article>
-        <span class="n">III.</span>
-        <h3>Dokumentationen følger med</h3>
-        <p>Bygger I efter Svanemærket, DGNB eller andre ordninger, leverer vi dokumentationen på de materialer, vi bruger: produktdatablade, indeklimadokumentation og EPD'er, hvor producenten har dem.</p>
-        <p>Kræver udbuddet FSC- eller PEFC-træ, skriver vi i tilbuddet, hvilke plader der kan leveres med certificering fra leverandøren.</p>
-      </article>
+    <ol class="tl rv">
+      {FASER.map((f) => (
+        <li class="tl-row">
+          <div class="tl-phase"><b>{f.n}</b><span>{f.fase}</span></div>
+          <div class="tl-body">
+            <h3>{f.h}</h3>
+            <p>{f.p}</p>
+          </div>
+          <div class="tl-cards">
+            {f.kan.map((k) => (<div class="tl-card"><small>Det kan I</small><b>{k.b}</b><p>{k.p}</p></div>))}
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div></section>
+
+  <!-- ============ SÅDAN SER DET UD (mørk, med ProcessSteps) ============ -->
+  <section class="sec sec-dark" id="saadan-ser-det-ud"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">Sådan ser det ud</span>
+        <h2>Fra skærm til <em>byggeplads.</em></h2>
+        <p class="lede">Fire trin, vi selv står for — fra modellen, I godkender, til møblet på pladsen.</p>
+      </div>
     </div>
+    <ProcessSteps />
   </div></section>
 
   <!-- ============ HOLDET ============ -->
-  <section class="sec" id="holdet" style="padding-top:0"><div class="wrap">
+  <section class="sec" id="holdet"><div class="wrap">
     <div class="sec-head rv">
       <div>
         <span class="label">Holdet</span>
-        <h2>Menneskene <em>bag.</em></h2>
-        <p class="lede">Dem, I kommer til at tale med hele vejen gennem sagen. Vi tegner, sælger og følger produktionen — selve møblerne bygges i vores egenproduktion.</p>
+        <h2>Én kontakt hele <em>vejen.</em></h2>
+        <p class="lede">Én af os er jeres kontakt fra første tegning til montage — også mens møblerne er i produktion.</p>
       </div>
     </div>
     <div class="team2 rv">
@@ -109,25 +134,82 @@ const cases = await getWebCases();
     </div>
   </div></section>
 
-  <!-- ============ PRODUKTIONEN ============ -->
-  <section class="sec sec-dark" id="produktionen"><div class="wrap">
+  <!-- ============ REFERENCER ============ -->
+  <Ticker cases={cases} extra={[{ b: '8–12', t: 'uger', c: 'typisk fra ordre til levering' }]} />
+  <section class="sec" id="referencer"><div class="wrap">
     <div class="sec-head rv">
       <div>
-        <span class="label">Produktionen</span>
-        <h2>Vores <em>egenproduktion.</em></h2>
+        <span class="label">Referencer</span>
+        <h2>Dem, vi har bygget <em>med.</em></h2>
+        <p class="lede">{reference?.name ?? 'Mørkhøj Skole'}, med Ason A/S som hovedentreprenør og Rønnow Arkitekter som arkitekt.</p>
       </div>
+      <a href={`${base}#projekter`} class="ulink">Alle projekter →</a>
     </div>
-    <div class="prod-text2 rv">
-      <div class="prose">
-        <p>Vi producerer inventaret i vores egen produktion. Opskæring, samling, overfladebehandling og pakning foregår hos os selv, så vi styrer kvaliteten og tidsplanen fra plade til færdigt emne.</p>
+    <div class="ref-grid rv">
+      <div class="ref-text">
+        <p>Et helt byggeri er den ene vej ind: udbud, tilbudsliste, materialegodkendelser og delleverancer, der følger byggepladsens tidsplan. Den anden vej er mindre: vi laver også den enkelte bænk eller reol.</p>
+        <p>Begge dele tegnes i 3D og bygges i vores egen produktion — med samme kulører, samme dokumentation og samme kontakt hele vejen.</p>
       </div>
-      <div class="prose">
-        <p>Produktionen arbejder ud fra den samme 3D-model og stykliste, som I har godkendt, og hvert produkt følges gennem produktionen med sin egen tjekliste. Olie og farvet olie påføres i produktionen, så inventaret kommer færdigbehandlet ud på pladsen.</p>
-        <p>Vi følger op på arbejdsmiljøet og registrerer nærved-hændelser og ulykker, så vi kan rette årsagen og ikke kun symptomet.</p>
-      </div>
+      {reference && <ProjectCard c={reference} />}
     </div>
-    <ProcessSteps />
   </div></section>
 
   <ContactCta />
+
+  <style>
+    /* ---- toppen: tekst først, kæden til højre ---- */
+    .about-top{padding:64px 0 36px}
+    .about-top .wrap{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:48px;align-items:end}
+    .about-head h1{font-size:clamp(38px,5.2vw,72px);line-height:1.02;letter-spacing:-.02em;margin-top:22px}
+    .about-head .lede{font-size:clamp(17px,1.5vw,21px);line-height:1.55;color:var(--ink);margin-top:22px;max-width:34em}
+    .about-btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+    .chain{border:1px solid var(--line);border-radius:var(--radius);background:#fff;padding:22px 24px}
+    .chain .label{margin-bottom:14px}
+    .chain ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px 6px;align-items:center}
+    .chain li{font-size:14px;font-weight:600;padding:8px 12px;border-radius:999px;background:var(--soft);color:var(--ink)}
+    .chain li.sep{background:none;padding:0 2px;color:var(--warm);font-weight:700}
+    /* ---- fotobånd ---- */
+    .photo-band{padding:36px 0 0}
+    .photo-band figure{margin:0}
+    .photo-band .img{display:block;aspect-ratio:16/9;border-radius:var(--radius);overflow:hidden;background:var(--soft)}
+    .photo-band img{width:100%;height:100%;object-fit:cover;object-position:50% 62%;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+    .photo-band .img:hover img{transform:scale(1.03)}
+    .photo-band figcaption{margin-top:10px;font-size:14px;color:var(--muted)}
+    /* ---- tidslinjen ---- */
+    .tl-sec{background:var(--soft);padding:88px 0;margin-top:72px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .tl{list-style:none;margin:40px 0 0;padding:0}
+    .tl-row{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,6fr) minmax(0,4fr);gap:32px;padding:34px 0;border-top:1px solid var(--line)}
+    .tl-row:last-child{border-bottom:1px solid var(--line)}
+    .tl-phase{display:flex;gap:12px;align-items:baseline;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--warm);font-weight:700}
+    .tl-phase b{font-family:'Archivo',sans-serif;font-size:30px;letter-spacing:-.02em;color:var(--ink);line-height:1}
+    .tl-body h3{font-size:22px;margin:0 0 10px;letter-spacing:-.01em;line-height:1.2}
+    .tl-body p{font-size:16px;line-height:1.7;color:var(--muted);max-width:52ch;margin:0}
+    .tl-cards{display:grid;gap:12px;align-content:start}
+    .tl-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px;transition:transform .35s cubic-bezier(.2,.7,.2,1),border-color .2s}
+    .tl-card:hover{transform:translateY(-2px);border-color:#D8D0BF}
+    .tl-card small{display:block;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--warm);font-weight:700;margin-bottom:6px}
+    .tl-card b{display:block;font-size:16px;margin-bottom:4px}
+    .tl-card p{font-size:14.5px;color:var(--muted);line-height:1.6;margin:0}
+    /* ---- referencer ---- */
+    .ref-grid{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:40px;align-items:start;margin-top:28px}
+    .ref-text p{font-size:16.5px;color:var(--muted);line-height:1.7;max-width:48ch;margin:0 0 14px}
+    @media(max-width:880px){
+      .about-top{padding:40px 0 24px}
+      .about-top .wrap{grid-template-columns:1fr;gap:26px}
+      .about-head h1{font-size:40px}
+      .about-btns .btn{width:100%;justify-content:center}
+      .chain ol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+      .chain li{text-align:center;font-size:13px;padding:10px 8px;border-radius:10px;min-width:0;overflow-wrap:anywhere}
+      .chain li.sep{display:none}
+      .photo-band{padding-top:24px}
+      .photo-band .img{aspect-ratio:4/3}
+      .photo-band img{object-position:50% 55%}
+      .tl-sec{padding:56px 0;margin-top:48px}
+      .tl{margin-top:28px}
+      .tl-row{grid-template-columns:1fr;gap:14px;padding:26px 0 26px 24px;position:relative}
+      .tl-row::before{content:"";position:absolute;left:6px;top:0;bottom:0;width:2px;background:var(--line)}
+      .tl-row::after{content:"";position:absolute;left:1px;top:34px;width:12px;height:12px;border-radius:50%;background:var(--warm)}
+      .ref-grid{grid-template-columns:1fr;gap:22px}
+    }
+  </style>
 </Base>
