@@ -122,3 +122,11 @@ Når priserne er kalibreret: teaseren erstattes af prototypen i demo-tilstand, i
 - **Påstande i billeder.** Stole, borde, fliser og lamper er ikke vores — billedtekster nævner kun det, vi har bygget. Ingen Mørkhøj-fotos på arketyper, de ikke viser.
 - **Tung karrusel.** `cdn()` sender `/billeder/`-stier igennem uden skalering. Uden `<Picture>` bliver heroen flere MB på mobil.
 - **Mails.** Alle knapper er `mailto:` i mockuppen. På sitet bør "Send udbud" og "Send mål" gå til kontaktformularen med forvalgt spor.
+
+## Tilføjet 04-10-2026 (Milot)
+
+**Filer i kontaktformularen.** "Få en pris" kan nu tage tegninger, udbudsmateriale og fotos med (op til 10 filer à 50 MB; pdf, dwg, dxf, ifc, rvt, skp, step, zip, billeder, Office, csv, txt). Flowet er to trin i `src/components/ContactForm.tsx`: `action=upload-urls` → browseren lægger filerne direkte i den private Storage-bucket `web-henvendelser` → beskeden sendes med `upload_id` + stier. Mailen til tilbud@/kontakt@ får links (30 dage), og henvendelsen gemmes i `web_henvendelser_2026_10_04`, så filerne kan findes igen, når linkene er udløbet (`files[].path`). Edge-funktionen `contact-form` er **v5 og allerede deployet** — den deles med live-sitet, og det gamle kald uden filer virker uændret. Kildekoden ligger i `supabase/functions/contact-form/index.ts`. Privatlivspolitikkens §2 nævner filerne.
+
+**Rubio Monocoat ved navn.** Forsidens `#overflade` nævner Rubio Monocoat som fast partner (link til rubiomonocoat.dk) med en partner-blok: foto af den blå tekøkkenfront + kort med "Ét lag · Plantebaseret, 0 % VOC · Egne kulører". Aldrig farvekoder eller produktionssted. Produktsidernes spec-label hedder stadig "Hårdvoksolie" (`src/lib/labels.ts`) — ændres kun på Milots ord.
+
+**Test uden mail:** `scratchpad/test_form_ui.py` lader trin 1-2 gå til den rigtige funktion og besvarer trin 3 lokalt med `page.route`, så der aldrig sendes en mail under test. Testfilerne ligger i bucketen under `2026-10/<upload_id>/` og kan slettes i Supabase → Storage.
