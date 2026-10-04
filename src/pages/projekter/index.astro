@@ -35,6 +35,12 @@ const firmLine = (p: Partner, kind: 'architects' | 'contractors') =>
 const domain = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
 const roleOf = (kind: 'architects' | 'contractors') => (kind === 'architects' ? 'Arkitekt' : 'Entreprenør');
 
+// Båndet øverst viser firmaerne, ikke tallene (Milot 04-10): navn · rolle · sagerne. Kun navne, der må vises.
+const band = [
+  ...partners.architects.named.map((p) => ({ b: p.name, t: 'arkitekt', c: p.cases.map((c) => c.name).join(' · ') })),
+  ...partners.contractors.named.map((p) => ({ b: p.name, t: 'entreprenør', c: p.cases.map((c) => c.name).join(' · ') })),
+];
+
 const GROUPS: { kind: 'architects' | 'contractors'; label: string; intro: string; list: { named: Partner[]; unnamed: WebCase[] } }[] = [
   { kind: 'architects', label: 'Arkitekter', intro: 'Vi gør arkitektens projekt til 3D-model, værkstedstegninger og færdigt inventar.', list: partners.architects },
   { kind: 'contractors', label: 'Entreprenører', intro: 'Vi leverer det faste inventar til entreprenøren, fra tilbud og tegninger til levering på pladsen.', list: partners.contractors },
@@ -63,7 +69,7 @@ const jsonLd = [
     </div>
   </div></header>
 
-  <Ticker cases={cases} />
+  <Ticker cases={[]} extra={band} />
 
   <!-- ============ ALLE SAGER ============ -->
   <section class="sec" id="alle"><div class="wrap">

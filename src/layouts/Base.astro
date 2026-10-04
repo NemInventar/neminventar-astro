@@ -118,6 +118,18 @@ const ld = [organization, ...jsonLd];
   <slot />
   <Footer />
   <script>
+    // ---------- ankre fra andre sider (fx "Inventar" → /#katalog) ----------
+    // Browseren ruller til ankeret, før skrifter og billeder er færdige; når indholdet ovenfor derefter vokser, ender
+    // ankeret ude af syne (målt 04-10-2026). Så rulles der igen, uden glid, når siden og skrifterne er klar — og en gang til kort efter.
+    (() => {
+      const hash = location.hash;
+      if (!hash || hash.length < 2) return;
+      const target = () => document.getElementById(decodeURIComponent(hash.slice(1)));
+      const jump = () => { const el = target(); if (!el) return; const h = document.documentElement; const prev = h.style.scrollBehavior; h.style.scrollBehavior = 'auto'; el.scrollIntoView({ block: 'start' }); h.style.scrollBehavior = prev; };
+      const run = () => { jump(); setTimeout(jump, 400); setTimeout(jump, 1200); };
+      if (document.readyState === 'complete') run(); else window.addEventListener('load', run, { once: true });
+      if ('fonts' in document) (document as any).fonts.ready.then(jump);
+    })();
     // ---------- afsnit glider ind, når de rulles frem ----------
     (() => {
       const els = document.querySelectorAll('.rv');
