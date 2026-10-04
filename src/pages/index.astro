@@ -10,6 +10,7 @@ import ProjectCard from '../components/ProjectCard.astro';
 import ProcessSteps from '../components/ProcessSteps.astro';
 import ContactCta from '../components/ContactCta.astro';
 import Ticker from '../components/Ticker.astro';
+import YouTubeFacade from '../components/YouTubeFacade.astro';
 import { getWebProducts, getWebCases, getWebLandingPages, getWebColors } from '../lib/supabase';
 import { cdn } from '../lib/img';
 import { FAM, FAM_ORDER, famOf, productImage, fotoTag, isPhoto, morkhoj, photoProjectName, tal, PHOTO_PROJECT_SLUG } from '../lib/catalog';
@@ -20,6 +21,9 @@ const landing = await getWebLandingPages();
 // Kulørstriben i overflade-afsnittet: vores standardkulører (alle Rubio Monocoat). To af dem sidder på Mørkhøj.
 const colors = await getWebColors();
 const MORKHOJ_COLORS = ['roedbrun', 'blaa'];
+// Kulørbåndets rækkefølge: lys → mørk med Skovgrøn i midten (planen). Ukendte slugs lægges bagerst.
+const BAND_ORDER = ['natur', 'roeget-eg', 'roedbrun', 'skovgroen', 'blaa', 'charcoal', 'sort'];
+const bandColors = [...colors].sort((a, b) => ((BAND_ORDER.indexOf(a.slug) + 1) || 99) - ((BAND_ORDER.indexOf(b.slug) + 1) || 99));
 const emner = landing.filter((l) => l.kind === 'emne');
 const segmenter = landing.filter((l) => l.kind === 'segment');
 const guides = landing.filter((l) => l.kind === 'guide');
@@ -268,58 +272,94 @@ const ogImage = new URL(cdn(morkhoj('33_lockere-roede-ved-doer-til-klasserum.jpg
     </div>
   </div></section>
 
-  <!-- ============ OVERFLADEN ============ -->
-  <section class="sec sec-dark finish" id="overflade"><div class="wrap">
-    <div class="finish-grid rv">
-      <div>
+  <!-- ============ OVERFLADEN · Nem Inventar × Rubio Monocoat (plan: scratchpad/overfladen-plan.md, Opus 04-10-2026) ============ -->
+  <section class="sec finish" id="overflade"><div class="wrap">
+    <div class="ov-top rv">
+      <div class="ov-head">
         <span class="label">Overfladen</span>
-        <h2>Ikke lakeret. Olieret — og bygget til at blive <em>vedligeholdt.</em></h2>
+        <h2>Olieret med <em>Rubio&nbsp;Monocoat.</em></h2>
+        <p class="ov-lede">Vi har valgt det, fordi det holder inventaret pænt længst: olien binder sig i træet, og slid kan repareres pletvis.</p>
       </div>
-      <div class="finish-body">
-        <p>Lak lægger en film oven på træet. Den ser fin ud et par år, og når den ridser eller skaller, skal hele fladen slibes ned og gøres om.</p>
-        <p>Vi olierer i stedet, og vi har valgt én fast partner til det: belgiske <a href="https://www.rubiomonocoat.dk/" target="_blank" rel="noopener">Rubio Monocoat</a>. Deres hårdvoksolie binder sig til træets øverste fibre og hærder dér i stedet for at ligge som en film ovenpå. Træet beholder sit udtryk, overfladen tåler slid, vand og daglig rengøring — og et slidt hjørne friskes op på stedet med ny olie, uden at hele møblet skal slibes ned.</p>
-        <p>Det er en af de dyrere behandlinger, man kan give træ, og vi har valgt den med vilje. Kuløren kan gentages præcist, når der skal bygges til, og dele, der håndteres hele dagen, som skydedøre, får en slidstærk topcoat oven på olien.</p>
-      </div>
+      <aside class="ov-partner" aria-label="Samarbejde mellem Nem Inventar og Rubio Monocoat">
+        <p class="ov-lockup"><span>Nem Inventar</span><span><i aria-hidden="true">×</i> Rubio Monocoat</span></p>
+        <div class="ov-partner-foot">
+          <p>Rubio Monocoat har blandet de to kulører til {projektNavn} specielt til os.</p>
+          <a href="https://www.rubiomonocoat.dk/" target="_blank" rel="noopener">Rubio Monocoat Denmark ↗</a>
+        </div>
+      </aside>
     </div>
 
-    <div class="rubio rv">
-      <a class="rpic" href={`${base}projekter/${PHOTO_PROJECT_SLUG}`} aria-label={`Se projektet ${projektNavn}`}>
-        <img src={cdn(morkhoj('35_detalje-haengsel-og-perforering-roed-laage.jpg'))} alt="Rød locker-låge i krydsfiner med perforering og hængsel" loading="lazy" decoding="async" style="--pos:40% 50%" />
-        <span class="img-tag"><b>Vores røde</b>lockers · {projektNavn}</span>
-      </a>
-      <a class="rpic" href={`${base}projekter/${PHOTO_PROJECT_SLUG}`} aria-label={`Se projektet ${projektNavn}`}>
-        <img src={cdn(morkhoj('27_hoejskab-blaa-krydsfiner-og-siddepladser.jpg'))} alt="Blå højskab i krydsfiner — låger med synlig åretegning og bøjlegreb" loading="lazy" decoding="async" style="--pos:50% 30%;--zoom:1.55;--origin:69% 38%" />
-        <span class="img-tag"><b>Vores blå</b>højskab · {projektNavn}</span>
-      </a>
-      <div class="rsys">
-        <span class="label">Systemet · to trin</span>
-        <div class="rstep"><span class="rn">01</span><div><b>Precolor Easy</b><small>Farven</small><p>Vandbaseret forbehandling, der giver træet sin kulør uden at dække åretegningen. Tørrer natten over, før olien lægges på.</p><a href="https://rubiomonocoat.dk/products/precolour" target="_blank" rel="noopener">Precolor Easy hos Rubio Monocoat ↗</a></div></div>
-        <div class="rstep"><span class="rn">02</span><div><b>Oil Plus 2C</b><small>Beskyttelsen</small><p>Plantebaseret hårdvoksolie med 0 % VOC. Ét lag, der binder sig til træets fibre, tåler vand og rengøring og kan repareres pletvis.</p><a href="https://rubiomonocoat.dk/products/oil-plus-2c" target="_blank" rel="noopener">Oil Plus 2C hos Rubio Monocoat ↗</a></div></div>
-        <div class="rpartner">
-          <span>Fast samarbejdspartner</span>
-          <a href="https://www.rubiomonocoat.com/" target="_blank" rel="noopener">Rubio Monocoat</a>
-          <a href="https://www.rubiomonocoat.dk/" target="_blank" rel="noopener">Rubio Monocoat Denmark</a>
+    <div class="ov-photos rv">
+      <figure class="ov-fig">
+        <a class="rpic" href={`${base}projekter/${PHOTO_PROJECT_SLUG}`} aria-label={`Se projektet ${projektNavn}`}>
+          <img src={cdn(morkhoj('35_detalje-haengsel-og-perforering-roed-laage.jpg'))} alt="Rødbrun locker-låge i krydsfiner med perforering og hængsel" loading="lazy" decoding="async" style="--pos:40% 50%" />
+        </a>
+        <figcaption>Rødbrun på lockerlåger. {projektNavn}.</figcaption>
+      </figure>
+      <figure class="ov-fig">
+        <a class="rpic" href={`${base}projekter/${PHOTO_PROJECT_SLUG}`} aria-label={`Se projektet ${projektNavn}`}>
+          <img src={cdn(morkhoj('27_hoejskab-blaa-krydsfiner-og-siddepladser.jpg'))} alt="Blåt højskab i krydsfiner — låger med synlig åretegning og bøjlegreb" loading="lazy" decoding="async" style="--pos:50% 30%;--zoom:1.55;--origin:69% 38%" />
+        </a>
+        <figcaption>Blå på højskab — åretegningen står igennem kuløren. {projektNavn}.</figcaption>
+      </figure>
+    </div>
+
+    <div class="ov-steps rv">
+      <div class="sec-head">
+        <div>
+          <h3 class="ov-h3">Behandlet i <em>to</em> trin.</h3>
+          <p class="lede">Begge trin lægges på i vores egenproduktion, før inventaret leveres.</p>
         </div>
       </div>
+      <div class="ov-cards">
+        <article class="ov-card">
+          <YouTubeFacade id="IJjFtMQniR0" title="Sådan lægges Precolor Easy på" kicker="Video fra Rubio Monocoat · YouTube" color="#84402F" note="" />
+          <div class="ov-card-body">
+            <span class="ov-n">01</span>
+            <div>
+              <h4>Precolor Easy</h4>
+              <p>Vandbaseret forbehandling, der giver kuløren uden at dække åretegningen. Tørrer natten over.</p>
+              <a href="https://rubiomonocoat.dk/products/precolour" target="_blank" rel="noopener">Precolor Easy hos Rubio Monocoat ↗</a>
+            </div>
+          </div>
+        </article>
+        <article class="ov-card">
+          <YouTubeFacade id="rWPvOH_5b6g" title="Sådan lægges Oil Plus 2C på" kicker="Video fra Rubio Monocoat · YouTube" color="#43687C" note="" />
+          <div class="ov-card-body">
+            <span class="ov-n">02</span>
+            <div>
+              <h4>Oil Plus 2C</h4>
+              <p>Plantebaseret hårdvoksolie, der binder sig til træets yderste fibre og beskytter i ét lag.</p>
+              <a href="https://rubiomonocoat.dk/products/oil-plus-2c" target="_blank" rel="noopener">Oil Plus 2C hos Rubio Monocoat ↗</a>
+            </div>
+          </div>
+        </article>
+      </div>
+      <p class="ov-consent">Videoerne hentes fra YouTube, først når du klikker på afspil.</p>
+      <div class="ov-points">
+        <div><b>Pletreparation.</b><p>Et slidt hjørne friskes op med olie, uden at hele fladen skal slibes.</p></div>
+        <div><b>0 % VOC.</b><p>Olien indeholder ingen flygtige organiske stoffer — relevant i rum, hvor børn er hele dagen.</p></div>
+        <div><b>Samme kulør igen.</b><p>Alle kulører har en fast betegnelse hos Rubio Monocoat, så olien til en reparation kan efterbestilles.</p></div>
+      </div>
     </div>
 
-    <div class="kuloerer rv">
-      <div>
-        <h3>Syv kulører i kataloget, hele Rubios farvekort bagved — <em>eller jeres egen.</em></h3>
-        <p>Alle vores standardkulører er Rubio Monocoat, og Rubios eget farvekort har omkring 40 flere. Skal farven passe til noget bestemt, får vi den blandet — som den røde og den blå på {projektNavn}.</p>
+    <div class="ov-colors rv">
+      <div class="sec-head">
+        <div>
+          <h3 class="ov-h3">Syv kulører — eller <em>jeres</em> egen.</h3>
+          <p class="lede">Alle syv er fra Rubio Monocoat. Bagved ligger Rubios farvekort med omkring 40 kulører, og vi kan få blandet en til jer — som til {projektNavn}.</p>
+        </div>
+        <a href="https://rubiomonocoat.dk/pages/colour" target="_blank" rel="noopener" class="ulink">Hele Rubios farvekort ↗</a>
       </div>
-      <div class="swatches">
-        {colors.map((c) => (
-          <div class="sw"><span class="dot" style={`--c:${c.swatch_hex}`}></span><b>{c.label}</b>{MORKHOJ_COLORS.includes(c.slug) && <small>{projektNavn}</small>}</div>
+      <div class="ov-band" role="list" aria-label="Vores syv standardkulører">
+        {bandColors.map((c) => (
+          <div class={`ov-swatch${c.slug === 'natur' ? ' light' : ''}`} role="listitem" style={`--c:${c.swatch_hex}`}>
+            <span class="nm">{c.label}</span>
+            {MORKHOJ_COLORS.includes(c.slug) && <span class="where">{projektNavn}</span>}
+          </div>
         ))}
-        <a class="sw more" href="https://rubiomonocoat.dk/pages/colour" target="_blank" rel="noopener"><span class="dot"></span><b>Alle kulører</b><small>hos Rubio ↗</small></a>
       </div>
-    </div>
-
-    <div class="finish-points rv">
-      <div class="fp"><h3>Ingen film der kan skalle</h3><p>Olien sidder i træet, ikke som et lag ovenpå, så der er ingen film, der kan skalle af.</p></div>
-      <div class="fp"><h3>Plet-reparerbar</h3><p>Slid udbedres lokalt og glider sammen med resten — uden synlige overgange eller afmontering.</p></div>
-      <div class="fp"><h3>Dokumenteret til indeklimaet</h3><p>Overfladebehandlingen vælges, så den kan dokumenteres til indeklimakravene i certificeret byggeri.</p></div>
+      <p class="ov-note">Farverne på skærmen er vejledende.</p>
     </div>
   </div></section>
 
@@ -384,54 +424,61 @@ const ogImage = new URL(cdn(morkhoj('33_lockere-roede-ved-doer-til-klasserum.jpg
   <ContactCta variant="full" />
 
   <style>
-    /* ---- Overfladen: mørk sektion med de to kulørfotos, Rubios to-trins system og kulørstriben ---- */
-    .finish-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;align-items:start}
-    .finish-grid h2{font-size:clamp(28px,3.4vw,44px);margin-top:22px}
-    .finish-body p{font-size:17px;color:var(--dark-text);line-height:1.8;margin-bottom:14px;max-width:60ch}
-    .finish-body a{color:#F4EFE6;text-decoration:underline;text-decoration-color:var(--warm-soft);text-underline-offset:3px}
-    .finish-body a:hover{color:var(--warm-soft)}
-    .rubio{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,3fr) minmax(0,6fr);gap:18px;margin-top:56px}
-    .rpic{position:relative;display:block;border-radius:var(--radius);overflow:hidden;aspect-ratio:3/4;background:#2A241C}
+    /* ---- Overfladen · Nem Inventar × Rubio Monocoat — lyst afsnit, Skovgrøn (#5A6B4E) som signaturflade ---- */
+    .ov-top{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:40px;align-items:stretch}
+    .ov-head h2{font-size:clamp(34px,4.6vw,64px);margin-top:22px;line-height:1.02;letter-spacing:-.02em}
+    .ov-lede{margin-top:22px;font-size:clamp(18px,1.6vw,22px);line-height:1.5;color:var(--ink);max-width:30em}
+    .ov-partner{background:#5A6B4E;color:var(--paper);border-radius:var(--radius);padding:30px 34px;display:flex;flex-direction:column;justify-content:space-between;gap:34px;min-height:320px}
+    .ov-lockup{font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(28px,3vw,40px);line-height:1.05;letter-spacing:-.02em;display:grid;gap:4px;margin:0}
+    .ov-lockup i{font-style:normal;opacity:.55;margin-right:.08em}
+    .ov-partner-foot p{font-size:15px;line-height:1.55;color:rgba(250,248,243,.86);margin:0 0 10px;max-width:34ch}
+    .ov-partner-foot a{color:var(--paper);font-weight:600;text-decoration:none;border-bottom:1px solid rgba(250,248,243,.5)}
+    .ov-partner-foot a:hover{border-bottom-color:var(--paper)}
+    .ov-photos{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:40px}
+    .ov-fig{margin:0}
+    .ov-fig .rpic{aspect-ratio:4/5;background:var(--soft)}
+    .ov-fig figcaption{margin-top:10px;font-size:14px;color:var(--muted)}
+    .rpic{position:relative;display:block;border-radius:var(--radius);overflow:hidden}
     /* --zoom/--origin: beskær ind i fotoet, så kun kuløren er med (det blå højskab står ved siden af et gardin) */
     .rpic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:var(--pos,50% 50%);transform:scale(var(--zoom,1));transform-origin:var(--origin,50% 50%);transition:transform .6s cubic-bezier(.2,.7,.2,1)}
     .rpic:hover img{transform:scale(calc(var(--zoom,1) * 1.04))}
-    .rpic .img-tag{right:auto;max-width:calc(100% - 28px)}
-    .rsys{border:1px solid var(--dark-line);border-radius:var(--radius);padding:30px 32px;display:flex;flex-direction:column;gap:22px;background:rgba(255,255,255,.03)}
-    .rstep{display:grid;grid-template-columns:52px 1fr;gap:16px;align-items:start}
-    .rn{font-family:'Archivo',sans-serif;font-weight:700;font-size:30px;line-height:1;color:var(--warm-soft);letter-spacing:-.02em}
-    .rstep b{display:block;font-size:20px;color:#F4EFE6;font-weight:600;line-height:1.2}
-    .rstep small{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--warm-soft);margin:4px 0 8px}
-    .rstep p{font-size:15px;color:var(--dark-muted);line-height:1.65;margin:0 0 8px}
-    .rstep a{font-size:14px;color:#F4EFE6;text-decoration:underline;text-decoration-color:var(--warm-soft);text-underline-offset:3px}
-    .rstep a:hover{color:var(--warm-soft)}
-    .rpartner{margin-top:auto;padding-top:18px;border-top:1px solid var(--dark-line);display:flex;flex-wrap:wrap;gap:8px 18px;align-items:baseline;font-size:14.5px;color:var(--dark-muted)}
-    .rpartner a{color:#F4EFE6;font-weight:600;text-decoration:none;border-bottom:1px solid var(--warm-soft)}
-    .rpartner a:hover{color:var(--warm-soft)}
-    .kuloerer{margin-top:56px;padding-top:48px;border-top:1px solid var(--dark-line);display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:40px;align-items:center}
-    .kuloerer h3{font-size:clamp(22px,2.4vw,30px);line-height:1.15;color:#F4EFE6}
-    .kuloerer h3 em{color:var(--warm-soft);font-style:italic}
-    .kuloerer p{margin-top:12px;font-size:15.5px;color:var(--dark-muted);line-height:1.7;max-width:48ch}
-    .swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:18px 14px}
-    .sw{display:grid;justify-items:center;text-align:center;gap:8px;text-decoration:none;color:inherit}
-    .sw .dot{width:72px;height:72px;border-radius:50%;background:var(--c,#6E6759);background-image:radial-gradient(circle at 35% 30%,rgba(255,255,255,.22),rgba(255,255,255,0) 55%),repeating-linear-gradient(100deg,rgba(0,0,0,0) 0 3px,rgba(0,0,0,.06) 3px 4px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),0 10px 24px rgba(0,0,0,.35);transition:transform .35s cubic-bezier(.2,.7,.2,1)}
-    .sw:hover .dot{transform:scale(1.1)}
-    .sw b{font-size:14px;color:#F4EFE6;font-weight:600}
-    .sw small{display:block;font-size:11.5px;color:var(--warm-soft);margin-top:-4px}
-    .sw.more .dot{background:conic-gradient(#E0CBA6,#84402F,#43687C,#5A6B4E,#211E19,#6B4A2F,#E0CBA6)}
-    .finish-points{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:56px;padding-top:48px;border-top:1px solid var(--dark-line)}
-    .fp h3{font-size:18px;margin-bottom:10px;color:#F4EFE6}
-    .fp p{font-size:14.5px;color:var(--dark-muted);line-height:1.65}
+    .ov-h3{font-size:clamp(26px,3vw,40px);line-height:1.08;letter-spacing:-.02em}
+    .ov-steps,.ov-colors{margin-top:72px}
+    .ov-steps .sec-head,.ov-colors .sec-head{margin-bottom:28px}
+    .ov-cards{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+    .ov-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
+    .ov-card .yt-btn,.ov-card .yt iframe{border-radius:0}
+    .ov-card-body{display:grid;grid-template-columns:56px 1fr;gap:14px;padding:22px 26px 24px;align-items:start}
+    .ov-n{font-family:'Archivo',sans-serif;font-weight:700;font-size:30px;line-height:1;color:var(--warm);letter-spacing:-.02em}
+    .ov-card h4{font-size:21px;margin:0 0 8px;font-weight:600}
+    .ov-card p{font-size:15px;color:var(--muted);line-height:1.6;margin:0 0 10px}
+    .ov-card a{font-size:14px;color:var(--ink);text-decoration:underline;text-decoration-color:var(--warm);text-underline-offset:3px}
+    .ov-card a:hover{color:var(--warm)}
+    .ov-consent{margin-top:12px;font-size:12.5px;color:var(--muted)}
+    .ov-points{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:36px;padding-top:32px;border-top:1px solid var(--line)}
+    .ov-points b{display:block;font-size:17px;margin-bottom:6px}
+    .ov-points p{font-size:14.5px;color:var(--muted);line-height:1.6}
+    /* kulørbåndet: syv felter uden mellemrum, som plader set fra kanten; Natur får mørk tekst */
+    .ov-band{display:grid;grid-template-columns:repeat(7,1fr);height:240px;border-radius:var(--radius);overflow:hidden}
+    .ov-swatch{position:relative;background:var(--c);display:flex;flex-direction:column;justify-content:flex-end;padding:16px 14px;color:var(--paper);background-image:radial-gradient(circle at 30% 15%,rgba(255,255,255,.14),rgba(255,255,255,0) 55%),repeating-linear-gradient(100deg,rgba(0,0,0,0) 0 3px,rgba(0,0,0,.05) 3px 4px);transition:filter .25s}
+    .ov-swatch.light{color:var(--ink)}
+    .ov-swatch .nm{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+    .ov-swatch .where{font-size:12px;opacity:.82;margin-top:4px}
+    .ov-swatch:hover{filter:brightness(1.07)}
+    .ov-note{margin-top:10px;font-size:12.5px;color:var(--muted)}
     /* links i proces-trinnene (Dalux / iBinder) */
     .p-tracks .step p a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--warm);text-underline-offset:3px}
     .p-tracks .step p a:hover{color:var(--warm)}
     @media(max-width:880px){
-      .finish-grid{grid-template-columns:1fr;gap:28px}
-      .rubio{grid-template-columns:1fr 1fr;gap:12px;margin-top:40px}
-      .rsys{grid-column:1/-1;padding:24px 20px}
-      .kuloerer{grid-template-columns:1fr;gap:24px;margin-top:40px;padding-top:32px}
-      .swatches{grid-template-columns:repeat(4,1fr);gap:14px 8px}
-      .sw .dot{width:56px;height:56px}
-      .finish-points{grid-template-columns:1fr;gap:24px;margin-top:40px;padding-top:32px}
+      .ov-top{grid-template-columns:1fr;gap:22px}
+      .ov-partner{min-height:200px;padding:24px 22px;gap:22px}
+      .ov-photos{grid-template-columns:1fr;gap:18px;margin-top:28px}
+      .ov-steps,.ov-colors{margin-top:48px}
+      .ov-cards{grid-template-columns:1fr;gap:18px}
+      .ov-points{grid-template-columns:1fr;gap:20px;margin-top:28px;padding-top:24px}
+      .ov-band{grid-template-columns:1fr;height:auto}
+      .ov-swatch{min-height:56px;flex-direction:row;align-items:center;justify-content:space-between;padding:0 16px}
+      .ov-swatch .where{margin-top:0}
     }
   </style>
 
