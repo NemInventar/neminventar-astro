@@ -452,10 +452,10 @@ const ogImage = new URL(cdn(morkhoj('33_lockere-roede-ved-doer-til-klasserum.jpg
     .ov-steps .sec-head,.ov-colors .sec-head{margin-bottom:28px}
     .ov-cards{display:grid;grid-template-columns:1fr 1fr;gap:28px}
     .ov-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
-    .ov-card .yt-btn,.ov-card .yt iframe{border-radius:0}
-    .ov-card .yt-btn,.ov-media{aspect-ratio:4/3}
-    /* Rubios klip som lydløst loop (spiller kun i synsfeltet via data-inview i Base.astro) */
-    .ov-media{position:relative;background:var(--soft);overflow:hidden}
+    /* Rubios klip som lydløst loop (spiller kun i synsfeltet via data-inview i Base.astro). Kvadratisk som klippet selv,
+       så intet beskæres — YouTube-feltet i det andet kort gøres kvadratisk i site.css (.ov-card .yt-btn), fordi
+       komponentens elementer ikke rammes af denne fils scopede regler. */
+    .ov-media{position:relative;background:var(--soft);overflow:hidden;aspect-ratio:1/1}
     .ov-media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:var(--pos,50% 50%);display:block}
     .ov-media-tag{position:absolute;left:14px;bottom:12px;display:inline-flex;gap:8px;align-items:baseline;padding:7px 12px;border-radius:999px;background:rgba(250,248,243,.92);color:var(--muted);font-size:12.5px;line-height:1;border:1px solid var(--line)}
     .ov-media-tag b{color:var(--ink);font-weight:600}

@@ -1113,6 +1113,8 @@ footer a:hover{color:var(--ink)}
 .yt-note{font-size:12.5px;color:var(--muted);line-height:1.5}
 .yt-note a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--warm);text-underline-offset:3px}
 @media(max-width:600px){.yt-text{left:14px;right:78px;bottom:14px}.yt-play{width:48px;height:48px;right:14px;bottom:12px}}
+/* i forsidens trin-kort: feltet er kvadratisk som Rubios klip ved siden af, og uden egne runde hjørner (kortet har dem) */
+.ov-card .yt-btn,.ov-card .yt iframe{border-radius:0;aspect-ratio:1/1}
 
 /* ---------- 404 ---------- */
 .nf{padding:72px 0 96px}
