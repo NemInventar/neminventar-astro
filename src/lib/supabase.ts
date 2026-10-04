@@ -53,6 +53,13 @@ export interface WebCase {
   status_live: boolean;
   architect_label: string | null; // NULL medmindre show_architect_name (godkendt)
   gallery: WebImage[] | null;
+  web_partners: WebPartners | null; // samarbejdspartnere på sagen (fx Rubio Monocoat på Mørkhøj) — NULL = ingen blok
+}
+
+export interface WebPartners {
+  title?: string | null;
+  text: string;
+  list: { name: string; url: string; role?: string | null }[];
 }
 
 // Billede med ærlig mærkning: 'foto' = fra leverancen, 'visualisering' = render/stand-in,

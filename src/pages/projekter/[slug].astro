@@ -28,6 +28,8 @@ const meta = caseMeta(project);
 const numbers = tal(project);
 const items = leverance(project);
 const others = cases.filter((c) => c.slug !== project.slug).slice(0, 3);
+// Samarbejdspartnere på sagen (case_web.web_partners) — fx Rubio Monocoat på Mørkhøj Skole
+const partners = project.web_partners && project.web_partners.text ? project.web_partners : null;
 // Lysboksens liste: hero + fotos + andre, i den rækkefølge de står på siden
 const lb = [
   ...(project.hero_image_url ? [{ src: project.hero_image_url, alt: heroItem?.alt ?? project.name, kind: heroItem?.kind ?? (heroIsPhoto ? 'foto' : 'visualisering'), caption: heroItem?.caption ?? '' }] : []),
@@ -93,6 +95,20 @@ let lbIndex = 0;
         )}
       </aside>
     </div>
+
+    {partners && (
+      <div class="cd-partner rv">
+        <div>
+          <span class="label">{partners.title ?? 'Samarbejdspartnere'}</span>
+          <p>{partners.text}</p>
+        </div>
+        <div class="cp-list">
+          {partners.list.map((p) => (
+            <a href={p.url} target="_blank" rel="noopener" class="cp"><b>{p.name}</b>{p.role && <span>{p.role}</span>}<em aria-hidden="true">↗</em></a>
+          ))}
+        </div>
+      </div>
+    )}
 
     {fotos.length > 0 && (
       <>
