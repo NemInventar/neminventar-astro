@@ -277,10 +277,29 @@ const ogImage = new URL(cdn(morkhoj('33_lockere-roede-ved-doer-til-klasserum.jpg
       </div>
       <div class="finish-body">
         <p>Lak lægger en film oven på træet. Den ser fin ud et par år, og når den ridser eller skaller, skal hele fladen slibes ned og gøres om.</p>
-        <p>Vi olierer i stedet. Træinventaret behandles med en hårdvoksolie, der trænger ned i træets øverste fibre og hærder dér i stedet for at ligge som en film ovenpå. Træet beholder sit naturlige udtryk, og overfladen tåler slid, vand og daglig rengøring.</p>
-        <p>Det vigtigste er, at den kan vedligeholdes lokalt. Et slidt hjørne friskes op på stedet med ny olie, uden at hele møblet skal slibes ned. Dele, der håndteres hele dagen, som skydedøre, får en slidstærk topcoat oven på olien.</p>
+        <p>Vi olierer i stedet, og vi har valgt én fast partner til det: belgiske <a href="https://www.rubiomonocoat.dk/" target="_blank" rel="noopener">Rubio Monocoat</a>. Alt vores træinventar behandles med deres hårdvoksolie, som binder sig til træets øverste fibre og hærder dér i stedet for at ligge som en film ovenpå. Træet beholder sit naturlige udtryk, og overfladen tåler slid, vand og daglig rengøring.</p>
+        <p>Det er en af de dyrere behandlinger, man kan give træ, og vi har valgt den med vilje. Et slidt hjørne friskes op på stedet med ny olie, uden at hele møblet skal slibes ned, og kuløren kan gentages præcist, når der skal bygges til. Dele, der håndteres hele dagen, som skydedøre, får en slidstærk topcoat oven på olien.</p>
       </div>
     </div>
+
+    <div class="partner rv">
+      <a class="partner-img" href={`${base}projekter/morkhoj-skole`} aria-label="Se projektet Mørkhøj Skole">
+        <img src={`${base}billeder/morkhoj/36_detalje-haengsel-blaa-front-tekoekken.jpg`} alt="Tekøkkenfront i krydsfiner, olieret i blå — detalje ved hængsel og bordplade" loading="lazy" />
+        <span class="img-tag">Foto · Mørkhøj Skole · vores egen blå</span>
+      </a>
+      <div class="partner-card">
+        <span class="label">Fast samarbejdspartner</span>
+        <h3>Rubio Monocoat</h3>
+        <p>Belgisk producent af plantebaseret hårdvoksolie til træ. Vi har valgt dem, fordi behandlingen holder, kan repareres på stedet og kan dokumenteres — og fordi kulørerne kan blandes til os.</p>
+        <div class="partner-facts">
+          <div><b>Ét lag</b><span>Farver og beskytter i samme arbejdsgang. Olien binder sig til træet i stedet for at ligge ovenpå.</span></div>
+          <div><b>Plantebaseret · 0 % VOC</b><span>Uden opløsningsmidler, der afgasser til rummet. Det tæller med i indeklimadokumentationen.</span></div>
+          <div><b>Egne kulører</b><span>Vores røde og blå er blandet til os hos Rubio Monocoat og kan gentages præcist ved næste levering.</span></div>
+        </div>
+        <a href="https://www.rubiomonocoat.dk/" target="_blank" rel="noopener" class="btn btn-ghost">Se Rubio Monocoat <span class="arr">↗</span></a>
+      </div>
+    </div>
+
     <div class="finish-points rv">
       <div class="fp"><h3>Ingen film der kan skalle</h3><p>Olien sidder i træet, ikke som et lag ovenpå, så der er ingen film, der kan skalle af.</p></div>
       <div class="fp"><h3>Plet-reparerbar</h3><p>Slid udbedres lokalt og glider sammen med resten — uden synlige overgange eller afmontering.</p></div>
@@ -347,9 +366,28 @@ const ogImage = new URL(cdn(morkhoj('33_lockere-roede-ved-doer-til-klasserum.jpg
     .finish-points{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:56px;padding-top:48px;border-top:1px solid var(--line)}
     .fp h3{font-size:18px;margin-bottom:10px}
     .fp p{font-size:14.5px;color:var(--muted);line-height:1.65}
+    .finish-body a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--warm);text-underline-offset:3px}
+    .finish-body a:hover{color:var(--warm)}
+    /* partner-blokken: foto af den olierede overflade + kort om Rubio Monocoat */
+    .partner{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:40px;align-items:stretch;margin-top:56px}
+    .partner-img{position:relative;display:block;border-radius:var(--radius);overflow:hidden;min-height:380px;background:var(--soft)}
+    .partner-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 40%;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+    .partner-img:hover img{transform:scale(1.04)}
+    .partner-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:36px 40px;display:flex;flex-direction:column;gap:18px}
+    .partner-card h3{font-size:clamp(26px,2.6vw,34px);margin:0;line-height:1.1}
+    .partner-card>p{font-size:16px;color:var(--muted);line-height:1.7;max-width:56ch;margin:0}
+    .partner-facts{display:grid;gap:12px;border-top:1px solid var(--line);padding-top:18px}
+    .partner-facts div{display:grid;grid-template-columns:minmax(170px,auto) 1fr;gap:16px;font-size:14.5px;line-height:1.55}
+    .partner-facts b{color:var(--ink);font-weight:600}
+    .partner-facts span{color:var(--muted)}
+    .partner-card .btn{align-self:flex-start;margin-top:auto}
     @media(max-width:880px){
       .finish-grid{grid-template-columns:1fr;gap:28px}
       .finish-points{grid-template-columns:1fr;gap:24px;margin-top:40px;padding-top:32px}
+      .partner{grid-template-columns:1fr;gap:20px;margin-top:40px}
+      .partner-img{min-height:260px}
+      .partner-card{padding:26px 22px}
+      .partner-facts div{grid-template-columns:1fr;gap:4px}
     }
   </style>
 

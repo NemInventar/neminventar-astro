@@ -1,11 +1,39 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // Poster til contact-form edge function på ERP-projektet (guhbrpektblabndqttgp).
 // Funktionen sender en notifikation via Microsoft Graph til tilbud@ + kontakt@ med reply-to
 // = afsenderen. verify_jwt=false → ingen nøgle i klient-bundtet (fast modtager + honeypot beskytter).
+//
+// Filer (04-10-2026): tegninger, udbudsmateriale og fotos kan vedhæftes. Flowet er to trin:
+//   1) action='upload-urls' → funktionen tjekker filtype/størrelse og udsteder signerede upload-adresser
+//   2) browseren PUT'er hver fil direkte til Storage (bucket web-henvendelser, privat) — ingen nøgle, ingen omvej
+//   3) beskeden sendes med upload_id + fil-stierne; mailen får links, og henvendelsen gemmes i Supabase.
+// Grænserne (10 filer, 50 MB, filtyper) er de samme som i funktionen — tjekkes her for hurtig besked til brugeren.
 const FUNCTION_URL = 'https://guhbrpektblabndqttgp.supabase.co/functions/v1/contact-form';
+const MAX_FILES = 10;
+const MAX_MB = 50;
+const EXT = ['pdf', 'dwg', 'dxf', 'ifc', 'rvt', 'skp', 'step', 'stp', 'zip', '7z', 'rar', 'jpg', 'jpeg', 'png', 'heic', 'heif', 'webp', 'gif', 'doc', 'docx', 'xls', 'xlsx', 'csv', 'txt', 'pptx', 'odt', 'ods'];
+const ACCEPT = EXT.map((e) => '.' + e).join(',') + ',image/*,application/pdf';
 
 type Status = 'idle' | 'sending' | 'ok' | 'error';
+type UploadUrl = { name: string; size: number; path: string; url: string; token: string };
+type Progress = { i: number; pct: number };
+
+const extOf = (n: string) => (n.match(/\.([A-Za-z0-9]{1,8})$/)?.[1] ?? '').toLowerCase();
+const fmt = (n: number) => (n >= 1024 * 1024 ? `${(n / 1024 / 1024).toFixed(1).replace('.', ',')} MB` : `${Math.max(1, Math.round(n / 1024))} KB`);
+
+// PUT direkte til den signerede adresse. XMLHttpRequest, så vi kan vise fremdrift på store tegninger.
+function putFile(url: string, file: File, onProgress: (pct: number) => void): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('PUT', url);
+    xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
+    xhr.upload.onprogress = (e) => { if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100)); };
+    xhr.onload = () => (xhr.status >= 200 && xhr.status < 300 ? resolve() : reject(new Error(`upload ${xhr.status}`)));
+    xhr.onerror = () => reject(new Error('upload network'));
+    xhr.send(file);
+  });
+}
 
 export default function ContactForm() {
   const [form, setForm] = useState({ name: '', company: '', phone: '', email: '', message: '', website: '' });
@@ -15,6 +43,11 @@ export default function ContactForm() {
   const privat = kundetype === 'privat';
   const [status, setStatus] = useState<Status>('idle');
   const [errMsg, setErrMsg] = useState('');
+  const [files, setFiles] = useState<File[]>([]);
+  const [progress, setProgress] = useState<Progress | null>(null);
+  const [sentFiles, setSentFiles] = useState(0);
+  const [drag, setDrag] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   // Kommer man fra en produkt- eller landingsside ("Få pris på denne"), står emnet i ?emne=… og skrives
   // øverst i beskeden, så vi ved, hvad henvendelsen handler om. Sættes efter mount, så server og klient er ens.
@@ -25,6 +58,23 @@ export default function ContactForm() {
 
   const update = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+
+  function addFiles(list: FileList | File[]) {
+    const next = [...files];
+    const errs: string[] = [];
+    for (const f of Array.from(list)) {
+      if (next.some((x) => x.name === f.name && x.size === f.size)) continue;
+      if (!EXT.includes(extOf(f.name))) { errs.push(`${f.name}: den filtype kan ikke sendes her`); continue; }
+      if (f.size > MAX_MB * 1024 * 1024) { errs.push(`${f.name}: over ${MAX_MB} MB`); continue; }
+      if (f.size === 0) { errs.push(`${f.name}: filen er tom`); continue; }
+      if (next.length >= MAX_FILES) { errs.push(`Højst ${MAX_FILES} filer ad gangen`); break; }
+      next.push(f);
+    }
+    setFiles(next);
+    if (errs.length) { setStatus('error'); setErrMsg(errs.join(' · ')); }
+    else if (status === 'error') { setStatus('idle'); setErrMsg(''); }
+  }
+  const removeFile = (i: number) => setFiles((fs) => fs.filter((_, j) => j !== i));
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -41,21 +91,48 @@ export default function ContactForm() {
     }
     setStatus('sending');
     setErrMsg('');
+    const headers = { 'Content-Type': 'application/json' };
     try {
+      // Trin 1 + 2: filerne lægges i Storage, før beskeden sendes
+      let upload_id: string | undefined;
+      const sent: { name: string; size: number; path: string }[] = [];
+      if (files.length) {
+        const r = await fetch(FUNCTION_URL, {
+          method: 'POST', headers,
+          body: JSON.stringify({ action: 'upload-urls', website: form.website, files: files.map((f) => ({ name: f.name, size: f.size, type: f.type })) }),
+        });
+        const d = await r.json().catch(() => ({}));
+        const urls: UploadUrl[] = Array.isArray(d?.files) ? d.files : [];
+        if (!r.ok || !d?.success || urls.length !== files.length) throw new Error(d?.error || 'Kunne ikke gøre klar til upload.');
+        upload_id = d.upload_id;
+        for (let i = 0; i < files.length; i++) {
+          setProgress({ i, pct: 0 });
+          try {
+            await putFile(urls[i].url, files[i], (pct) => setProgress({ i, pct }));
+          } catch {
+            throw new Error(`${files[i].name} kunne ikke sendes. Prøv igen — eller send filerne i en mail til tilbud@neminventar.dk.`);
+          }
+          sent.push({ name: files[i].name, size: files[i].size, path: urls[i].path });
+        }
+        setProgress(null);
+      }
+      // Trin 3: beskeden
       const res = await fetch(FUNCTION_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, company: privat ? 'Privatkunde' : form.company }),
+        method: 'POST', headers,
+        body: JSON.stringify({ ...form, company: privat ? 'Privatkunde' : form.company, side: location.pathname, upload_id, files: sent }),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data?.success) {
+        setSentFiles(Number(data.files ?? sent.length));
         setStatus('ok');
       } else {
         throw new Error(data?.error || 'Kunne ikke sende beskeden.');
       }
     } catch (err) {
+      setProgress(null);
       setStatus('error');
-      setErrMsg('Der opstod en fejl ved afsendelse. Prøv igen, eller ring til os på +45 42 42 26 84.');
+      const msg = err instanceof Error ? err.message : '';
+      setErrMsg(msg && !/^upload /.test(msg) ? msg : 'Der opstod en fejl ved afsendelse. Prøv igen, eller ring til os på +45 42 42 26 84.');
     }
   }
 
@@ -63,7 +140,7 @@ export default function ContactForm() {
     return (
       <div className="form">
         <div className="form-done">
-          <h3>Tak — beskeden er sendt.</h3>
+          <h3>Tak — beskeden{sentFiles ? ` og ${sentFiles} ${sentFiles === 1 ? 'fil' : 'filer'}` : ''} er sendt.</h3>
           <p>Vi vender tilbage hurtigst muligt. Haster det, så ring på +45 42 42 26 84.</p>
         </div>
       </div>
@@ -71,6 +148,10 @@ export default function ContactForm() {
   }
 
   const sending = status === 'sending';
+  const sendLabel = sending
+    ? (progress ? `Sender fil ${progress.i + 1} af ${files.length} · ${progress.pct} %` : 'Sender…')
+    : files.length ? `Send besked og ${files.length} ${files.length === 1 ? 'fil' : 'filer'}` : 'Send besked';
+
   return (
     <form className="form" onSubmit={submit} noValidate>
       {/* Honeypot — usynligt for mennesker; bots udfylder det og afvises server-side */}
@@ -123,16 +204,46 @@ export default function ContactForm() {
         <label htmlFor="cf-message">{privat ? 'Hvad skal du have lavet? *' : 'Besked / projektbeskrivelse *'}</label>
         <textarea id="cf-message" name="message" required rows={5} value={form.message} onChange={update}
           disabled={sending} placeholder={privat
-            ? 'Fx en reol på mål til stuen eller skabe til entréen — gerne med mål.'
-            : 'Beskriv kort jeres projekt og behov — eller vedhæft tegninger i en mail.'} />
+            ? 'Fx en reol på mål til stuen eller skabe til entréen — gerne med mål. Et foto af rummet kan vedhæftes herunder.'
+            : 'Beskriv kort jeres projekt og behov. Tegninger, beskrivelse eller tilbudsliste kan vedhæftes herunder.'} />
+      </div>
+      <div className="field">
+        <label htmlFor="cf-files">{privat ? 'Fotos, skitser eller tegninger (valgfrit)' : 'Tegninger, beskrivelse eller tilbudsliste (valgfrit)'}</label>
+        <div className={`dropzone${drag ? ' drag' : ''}${sending ? ' off' : ''}`} role="button" tabIndex={sending ? -1 : 0}
+          aria-label="Vælg filer, eller træk dem hertil"
+          onClick={() => !sending && fileRef.current?.click()}
+          onKeyDown={(e) => { if (!sending && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); fileRef.current?.click(); } }}
+          onDragOver={(e) => { e.preventDefault(); if (!sending) setDrag(true); }}
+          onDragLeave={() => setDrag(false)}
+          onDrop={(e) => { e.preventDefault(); setDrag(false); if (!sending && e.dataTransfer.files?.length) addFiles(e.dataTransfer.files); }}>
+          <input ref={fileRef} id="cf-files" type="file" multiple accept={ACCEPT} hidden disabled={sending}
+            onChange={(e) => { if (e.target.files?.length) addFiles(e.target.files); e.target.value = ''; }} />
+          <span className="dz-ico" aria-hidden="true">↑</span>
+          <span><b>Træk filer hertil</b> eller klik for at vælge</span>
+          <small>PDF, DWG, DXF, IFC, billeder, Excel, Word, ZIP · højst {MAX_FILES} filer à {MAX_MB} MB</small>
+        </div>
+        {files.length > 0 && (
+          <ul className="filelist" aria-label="Valgte filer">
+            {files.map((f, i) => (
+              <li key={f.name + f.size}>
+                <span className="fn" title={f.name}>{f.name}</span>
+                <span className="fs">{fmt(f.size)}</span>
+                {progress && progress.i === i ? <span className="fp">{progress.pct} %</span>
+                  : progress && progress.i > i ? <span className="fp ok">✓</span>
+                  : <button type="button" aria-label={`Fjern ${f.name}`} onClick={() => removeFile(i)} disabled={sending}>✕</button>}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
       <button type="submit" className="btn btn-primary" disabled={sending}>
-        {sending ? 'Sender…' : 'Send besked'} <span className="arr">→</span>
+        {sendLabel} <span className="arr">→</span>
       </button>
       {status === 'error' && <p className="form-msg err">{errMsg}</p>}
-      {privat && (
-        <p className="callback-note">Som privat handler du efter vores <a href={`${import.meta.env.BASE_URL}handelsbetingelser`}>handelsbetingelser for private</a>.</p>
-      )}
+      <p className="callback-note">
+        Oplysninger og filer gemmes hos vores databehandler og bruges kun til at svare dig — se vores <a href={`${import.meta.env.BASE_URL}privatlivspolitik`}>privatlivspolitik</a>.
+        {privat && <> Som privat handler du efter vores <a href={`${import.meta.env.BASE_URL}handelsbetingelser`}>handelsbetingelser for private</a>.</>}
+      </p>
     </form>
   );
 }
