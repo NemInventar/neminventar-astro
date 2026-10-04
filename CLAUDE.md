@@ -2,7 +2,28 @@
 
 Det **nye** marketingsite for Nem Inventar (neminventar.dk). Bygget for at løse crawl-barhed (SEO) og for at gøre indhold redigerbart fra Supabase uden kode. Erstatter det gamle site (se "Forhold til det gamle site").
 
-> Parent-scope: `../CLAUDE.md` (mappe-oversigt) og workspace-roden `../../CLAUDE.md` (virksomhed, hold, regler). Gentages ikke her.
+> Parent-scope: workspace-roden `CLAUDE.md` (virksomhed, hold, regler). Gentages ikke her.
+
+---
+
+## Flere Claude-sessioner samtidig — GitHub er sandheden, ikke SharePoint
+
+- **Arbejd kun i din egen klon: `C:\dev\neminventar-astro`** (alle maskiner, alle brugere). Mangler den:
+  `git clone https://github.com/NemInventar/neminventar-astro.git C:\dev\neminventar-astro` og kopiér `.env`
+  (SUPABASE_URL + SUPABASE_ANON_KEY — den offentlige anon-nøgle, hent med Supabase MCP `get_publishable_keys`).
+  SharePoint-kopien (`99. Hjemmesider/neminventar-astro`) er låst: git-hooks afviser commit og push. OneDrive synker
+  `.git` fil for fil, og to skrivende maskiner i samme mappe ødelægger repoet.
+- **Før du går i gang:** `git pull --rebase`. Større arbejde (fx overhalingen på `forside-v2`) sker på en **branch**
+  og merges til `main` med en pull request; små tekst- og billedrettelser må gå direkte på `main`.
+- **Hver branch tjekkes og forhåndsvises automatisk** (`.github/workflows/preview.yml`): samme tekst-lint og build som
+  udgivelsen, og en forhåndsvisning på `https://<branch>.neminventar-preview.pages.dev` (noindex, adressen står i
+  kørslens Summary på GitHub). Rød kørsel = merges ikke.
+- **`main` er live** (GitHub Pages ved push + natligt build kl. 04) og **beskyttet**: ingen force-push, ingen sletning.
+  Rul tilbage med `git revert <commit>` + push.
+- **Databasen er fælles og har ingen branches — og natbygget læser den.** Ændrer en branch en tabel eller et view, som
+  `main` læser, går det levende site i stykker kl. 04, selv om koden ligger på en branch. Derfor: byg nyt *ved siden af*
+  (ny kolonne, nyt view, fx `v_web_*_v2`), lad branchen læse det nye, og fjern det gamle først efter merge.
+  Gem SQL-ændringer som fil i `sql/`. Tekst rettet i Supabase (fx i /tekster) går live ved næste build — også fra en branch-session.
 
 ---
 
