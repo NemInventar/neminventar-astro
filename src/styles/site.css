@@ -666,7 +666,10 @@ footer a:hover{color:var(--ink)}
 .tcard:hover .order .arr{transform:translateX(4px)}
 /* "Alle" viser 9 kort — "Vis alle" eller et filter viser resten (filter = hele familien) */
 .types:not(.expanded) .tcard:nth-child(n+10){display:none}
+/* filtret sætter hidden på kortene — display:flex ovenfor må ikke overtrumfe det (Milot 04-10: "der sker ingenting") */
+.tcard[hidden]{display:none!important}
 .showmore-row{display:flex;justify-content:center;margin-top:32px}
+.showmore-row[hidden]{display:none}
 .yd-links{margin-top:48px;padding-top:36px;border-top:1px solid var(--line)}
 .yd-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
 .yd-row .lbl{font-size:13.5px;color:var(--muted);margin-right:6px}

@@ -130,3 +130,15 @@ Når priserne er kalibreret: teaseren erstattes af prototypen i demo-tilstand, i
 **Rubio Monocoat ved navn.** Forsidens `#overflade` nævner Rubio Monocoat som fast partner (link til rubiomonocoat.dk) med en partner-blok: foto af den blå tekøkkenfront + kort med "Ét lag · Plantebaseret, 0 % VOC · Egne kulører". Aldrig farvekoder eller produktionssted. Produktsidernes spec-label hedder stadig "Hårdvoksolie" (`src/lib/labels.ts`) — ændres kun på Milots ord.
 
 **Test uden mail:** `scratchpad/test_form_ui.py` lader trin 1-2 gå til den rigtige funktion og besvarer trin 3 lokalt med `page.route`, så der aldrig sendes en mail under test. Testfilerne ligger i bucketen under `2026-10/<upload_id>/` og kan slettes i Supabase → Storage.
+
+**Toppen: blå til venstre, rød til højre.** Milot: aldrig to røde skabe ved siden af hinanden. Fordi felterne skifter ét ad gangen, kan farverne ikke veksle *pr. felt* uden at der opstår rød+rød-øjeblikke — derfor er `HERO_L` kun blå rum (liggende) og `HERO_R` kun røde (stående). Så veksler hvert skift mellem blå og rød, og parret er altid blandet. Fotos med røde lockers i baggrunden (21) hører ikke til venstre. Samme par (22 + 26) på EN-forsiden.
+
+**Overfladen (v2, mørk).** Sektionen er nu `sec-dark`: to kulørfotos (35 rød, 36 blå), Rubios to trin med links til produkterne (`rubiomonocoat.dk/products/precolour`, `/products/oil-plus-2c`), partnerlinje med Rubio Monocoat (rubiomonocoat.com) og Rubio Monocoat Denmark (rubiomonocoat.dk), og en kulørstribe fra `v_web_colors` (7 standardkulører inkl. Skovgrøn; Rødbrun og Blå mærket Mørkhøj) + link til Rubios farvekort (`/pages/colour`). Lint-reglen "Rubio-produktnavn kun i overflade-guiden" (Joachim 02-10) advarer nu på forsiden og Mørkhøj — den skal udvides eller accepteres.
+
+**Partnere på projektsiden.** Ny kolonne `case_web_2026_06_11.web_partners` (jsonb: `title`, `text`, `list[{name,url,role}]`), eksponeret i `v_web_cases` og rendret som `.cd-partner` efter brødteksten. Mørkhøj er udfyldt ("Samarbejde om overfladen" — Rubio Monocoat + Rubio Monocoat Denmark). Det gamle site ignorerer kolonnen, så blokken er usynlig indtil merge. Andre sager: NULL = ingen blok.
+
+**Katalog-filtrene virkede ikke.** Scriptet satte `hidden` på kortene, men `.tcard{display:flex}` overtrumfede attributten, så intet forsvandt (samme for "Vis alle"-rækken). Rettet med `.tcard[hidden]{display:none!important}` + `.showmore-row[hidden]`. Test: `scratchpad/test_filter.py` — hver familie viser præcis sine kort (7/4/3/2/1/5 af 22), "Alle" viser 9, "Vis alle" viser 22 og skjuler sig selv.
+
+**Overfladens blå foto.** 36 (tekøkkenet) viste bordpladen i en anden farve — nu 27 (det blå højskab), beskåret med `--zoom`/`--origin` på billedet, så gardinet og bænken ryger ud. "Fyrre hos Rubio" læstes som træsorten → "hele Rubios farvekort bagved — eller jeres egen".
+
+**Dalux og iBinder.** Tre steder med links: forsidens `#cert` ("Digitalt fra udbud til aflevering" + chips Dalux · iBinder · IFC-modeller), To veje spor 2 trin 1, kontaktsidens trin 1 — og én sætning på EN-forsiden. Adresser: `dalux.com/da/`, `ibinder.com/da/` (EN: `dalux.com/`, `ibinder.com/en/`).
