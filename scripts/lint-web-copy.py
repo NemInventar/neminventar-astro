@@ -21,8 +21,8 @@ if not KEY:
 
 FEJL = [
     (r"\bKosovo\b|\bFerizaj\b|Korpus\s+SH", "produktionssted nævnes ikke udadtil — skriv 'egen produktion'"),
-    (r"\bJSP\b", "entreprenør må ikke nævnes"),
-    (r"\bSundby\b", "sagsnavn kræver tilladelse — brug det anonymiserede navn"),
+    # Entreprenør- og arkitektnavne samt sagsnavnet "Sundby Idrætspark" må nævnes (Milot 04-10-2026: alle firmanavne
+    # må bruges overalt på sitet). Hvilke navne der vises, styres af show_customer_name/show_architect_name i case_web.
     (r"\bT\d{2}\b|\btilbudslinje|\bquote\b|\bBOM\b|\brumkode", "internt tilbudssprog"),
     (r"\bprojekt(?:nummer|nr)\b|\b2[56]\d{3}\b", "internt sagsnummer"),
     (r"\b(?:paa|foer|moede|faerdig|stoerre|aabn)\w*", "translittereret dansk (aa/oe/ae)"),
