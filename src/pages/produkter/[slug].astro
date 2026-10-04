@@ -124,7 +124,7 @@ const jsonLd = [{
           <h2>Sager med inventar i samme <em>familie.</em></h2>
           <p class="lede">Projekter, hvor vi har bygget {FAM[fam].toLowerCase()} — tegnet til rummet, bygget i vores egenproduktion og monteret af os.</p>
         </div>
-        <a href={`${base}#projekter`} class="ulink">Alle projekter →</a>
+        <a href={`${base}projekter`} class="ulink">Alle projekter →</a>
       </div>
       <div class={`pgrid rv${relCases.length > 2 ? ' three' : ''}`}>
         {relCases.map((c) => <ProjectCard c={c} compact={relCases.length > 2} />)}

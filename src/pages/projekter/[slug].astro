@@ -41,7 +41,7 @@ const jsonLd = [{
   '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Nem Inventar', item: new URL(base, site).href },
-    { '@type': 'ListItem', position: 2, name: 'Projekter', item: new URL(base + '#projekter', site).href },
+    { '@type': 'ListItem', position: 2, name: 'Projekter', item: new URL(base + 'projekter', site).href },
     { '@type': 'ListItem', position: 3, name: project.name, item: new URL(`${base}projekter/${project.slug}`, site).href },
   ],
 }];
@@ -50,7 +50,7 @@ let lbIndex = 0;
 <Base title={project.seo_title} description={desc} image={project.hero_image_url ? cdn(project.hero_image_url, 1200) : undefined} jsonLd={jsonLd}>
   <section class="cd2"><div class="wrap">
     <div class="crumbrow">
-      <a href={`${base}#projekter`} class="crumb">← Alle projekter</a>
+      <a href={`${base}projekter`} class="crumb">← Alle projekter</a>
     </div>
     <div class="cd-head">
       <div>
@@ -157,7 +157,7 @@ let lbIndex = 0;
           <span class="label">Flere projekter</span>
           <h2>Fra udbud til <em>montage.</em></h2>
         </div>
-        <a href={`${base}#projekter`} class="ulink">Alle projekter →</a>
+        <a href={`${base}projekter`} class="ulink">Alle projekter →</a>
       </div>
       <div class="pgrid three rv">
         {others.map((c) => <ProjectCard c={c} compact />)}

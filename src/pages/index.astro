@@ -190,15 +190,10 @@ const ogImage = new URL(cdn(morkhoj('33_lockere-roede-ved-doer-til-klasserum.jpg
         <p class="lede">Vi tager det faste inventar som én samlet entreprise: tilbud på udbudsmaterialet, tegninger til godkendelse, egen produktion, levering i etaper efter byggepladsens tidsplan og montage.</p>
       </div>
     </div>
-    <div class="pgrid rv">
-      {others.map((c) => <ProjectCard c={c} />)}
-      <article class="pcard ask">
-        <span class="kick">Jeres byggeri</span>
-        <h3>Send tegninger eller udbud</h3>
-        <p>Vi læser materialet og vender tilbage med de spørgsmål, der skal afklares — og et tilbud med 3D og dokumentation, I kan holde op mod udbuddet.</p>
-        <a href={`${base}kontakt`} class="btn btn-primary">Start et projekt <span class="arr">→</span></a>
-      </article>
+    <div class="pgrid three rv">
+      {others.slice(0, 3).map((c) => <ProjectCard c={c} compact />)}
     </div>
+    <div class="showmore-row rv"><a href={`${base}projekter`} class="btn btn-ghost">Alle projekter, arkitekter og entreprenører <span class="arr">→</span></a></div>
   </div></section>
 
   <!-- ============ INVENTAR (kataloget) ============ -->

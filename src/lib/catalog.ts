@@ -66,3 +66,31 @@ export const caseMeta = (c: WebCase) => [
 
 export const imgLabel = (kind: string) =>
   kind === 'foto' ? 'Foto fra leverancen' : kind === 'tegning' ? 'Tegning' : kind === 'video' ? 'Video' : 'Visualisering';
+
+// ---------- Partnere på tværs af sager: arkitekter og entreprenører ----------
+// Navn og link kommer kun med, når sagen tillader det (show_customer_name / show_architect_name i case_web);
+// sager med skjult navn samles i "unnamed", så siden kan vise dem som "Rolle · Sag" uden firmanavn.
+export type Partner = { name: string; url: string | null; cases: WebCase[] };
+export const partnersOf = (cases: WebCase[]) => {
+  const grp = (pick: (c: WebCase) => { name: string | null; url: string | null; has: boolean }) => {
+    const named = new Map<string, Partner>();
+    const unnamed: WebCase[] = [];
+    for (const c of cases) {
+      const p = pick(c);
+      if (!p.has) continue;
+      if (!p.name) { unnamed.push(c); continue; }
+      const e = named.get(p.name) ?? { name: p.name, url: p.url, cases: [] };
+      e.cases.push(c);
+      if (!e.url && p.url) e.url = p.url;
+      named.set(p.name, e);
+    }
+    return { named: [...named.values()].sort((a, b) => b.cases.length - a.cases.length || a.name.localeCompare(b.name, 'da')), unnamed };
+  };
+  return {
+    architects: grp((c) => ({ name: c.architect_label, url: c.architect_url, has: c.has_architect })),
+    contractors: grp((c) => ({
+      name: c.contractor_label && c.contractor_label !== 'Hovedentreprenør' ? c.contractor_label : null,
+      url: c.contractor_url, has: c.has_contractor,
+    })),
+  };
+};

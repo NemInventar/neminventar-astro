@@ -54,6 +54,10 @@ export interface WebCase {
   architect_label: string | null; // NULL medmindre show_architect_name (godkendt)
   gallery: WebImage[] | null;
   web_partners: WebPartners | null; // samarbejdspartnere på sagen (fx Rubio Monocoat på Mørkhøj) — NULL = ingen blok
+  contractor_url: string | null;    // kun når show_customer_name
+  architect_url: string | null;     // kun når show_architect_name
+  has_contractor: boolean;          // der FINDES en entreprenør på sagen (navnet kan være skjult)
+  has_architect: boolean;           // der FINDES en arkitekt på sagen (navnet kan være skjult)
 }
 
 export interface WebPartners {

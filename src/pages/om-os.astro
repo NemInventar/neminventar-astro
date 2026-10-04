@@ -18,23 +18,24 @@ const reference = cases.find((c) => c.slug === PHOTO_PROJECT_SLUG) ?? cases[0];
 // Kæden: det, der sker hos os selv — fra model til pakket emne
 const CHAIN = ['3D-model', 'Værkstedstegning', 'Opskæring', 'Samling', 'Overfladebehandling', 'Pakning'];
 
-// Tidslinjen: fem faser i samarbejdet, hver med "Det kan I"
+// Tidslinjen: fem faser i samarbejdet, hver med "Det kan I" (Milot 04-10: ikke "sene ændringer" — et låst design er en styrke;
+// til gengæld Apple Vision Pro ude hos kunden, så designet er set i rummet, før det låses).
 const FASER = [
-  { n: '01', fase: 'Før tilbud', h: 'Et tilbud på det, vi selv bygger.', p: 'Prisen regnes på vores egen produktion, også når udbuddet kræver FSC- eller PEFC-plader. Leveringstiden følger vores produktionsplan: typisk 8–12 uger fra ordre.',
-    kan: [{ b: 'Frie mål.', p: 'Alt bygges til mål, så rummet skal ikke tilpasses et standardmodul.' }] },
-  { n: '02', fase: 'Under tegning', h: 'Samme model fra render til stykliste.', p: 'I godkender 3D-modellen og renderen, før der skæres. Værkstedstegningerne trækkes ud af den, så intet tegnes om på vejen.',
-    kan: [{ b: 'Kulør.', p: 'Rubio Monocoat har blandet to kulører af deres hårdvoksolie specielt til os. En til jeres byggeri kan blandes på samme måde.' }] },
-  { n: '03', fase: 'Under produktion', h: 'Vi står selv for produktionen.', p: 'Derfor styrer vi kvalitet og tidsplan, og en rettet tegning går direkte til dem, der bygger.',
-    kan: [{ b: 'Sene ændringer.', p: 'En ændring sent i forløbet kan stadig komme med.' }, { b: 'Prøveemne.', p: 'Ved større leverancer godkender I det første eksemplar i hånden, før serien bygges.' }] },
-  { n: '04', fase: 'Ved levering', h: 'Leveret, når pladsen er klar.', p: 'Vi pakker selv og monterer, hvis I ønsker det. Materialerne har vi selv købt ind, så datablade, indeklimadokumentation og EPD’er, hvor de findes, følger med.',
-    kan: [{ b: 'Delleverancer.', p: 'I får inventaret i etaper, i takt med byggepladsens tidsplan.' }] },
-  { n: '05', fase: 'Efter aflevering', h: 'Modellen ligger klar.', p: 'Vi gemmer 3D-modellen, så I kan bygge videre på det, I har. Slid på overfladen kan repareres pletvis.',
-    kan: [{ b: 'Reservedele og flere enheder.', p: 'En ny låge eller ti skabe mere — fra samme model og i samme kulør.' }] },
+  { n: '01', fase: 'Før tilbud', h: 'Prisen regnes af dem, der skal bygge.', p: 'Tilbuddet bygger på vores egne timer og de materialer, vi selv køber ind, og leveringstiden på vores egen produktionsplan: typisk 8–12 uger fra ordre.',
+    kan: [{ b: 'Bestemme alle mål.', p: 'Bredde, højde og dybde tegnes efter jeres rum.' }, { b: 'Kræve certificeret træ.', p: 'Vi køber selv pladerne og leverer FSC eller PEFC, når udbuddet kræver det.' }] },
+  { n: '02', fase: 'Under tegning', h: 'Designet låses, når I er sikre.', p: 'I godkender 3D-modellen og renderne. Derefter trækker vi værkstedstegninger og styklister ud af samme model, så det, I har sagt ja til, er det, der bliver skåret.',
+    kan: [{ b: 'Se det i rummet.', p: 'Vi tager Apple Vision Pro med ud og viser inventaret i fuld størrelse i det rum, hvor det skal stå.' }, { b: 'Vælge kuløren.', p: 'Vi bruger hårdvoksolie fra Rubio Monocoat og kan få en kulør blandet til jeres byggeri.' }] },
+  { n: '03', fase: 'Under produktion', h: 'Bygget præcis, som I godkendte det.', p: 'Vores egne folk skærer, samler og olierer efter tegningerne, så det er os, der står inde for kvalitet og tidsplan.',
+    kan: [{ b: 'Godkende et prøveemne.', p: 'Ved større leverancer bygger vi ét eksemplar først, og når I har godkendt det i hånden, bygges serien magen til.' }] },
+  { n: '04', fase: 'Ved levering', h: 'Leveret i den rækkefølge, byggeriet skal bruge det.', p: 'Vi pakker selv. Fordi vi også køber materialerne, følger datablade, indeklimadokumentation og de EPD’er, der findes, med i afleveringen.',
+    kan: [{ b: 'Få det i etaper.', p: 'Rum for rum eller etage for etage, i takt med byggeriet.' }, { b: 'Få det monteret.', p: 'Vi monterer også, hvis I ønsker det, så én svarer for inventaret, til det sidste skab sidder fast.' }] },
+  { n: '05', fase: 'Efter aflevering', h: 'Vi kan bygge det samme igen.', p: 'Vi gemmer 3D-modellen. Slid på olien udbedres pletvis, uden at hele fladen skal slibes.',
+    kan: [{ b: 'Bestille reservedele.', p: 'En ny låge eller hylde laves fra den gemte model, i samme kulør.' }, { b: 'Bygge videre.', p: 'Flere enheder i samme mål og kulør, når der bliver brug for dem.' }] },
 ];
 ---
 <Base
   title="Om os — Nem Inventar"
-  description="Nem Inventar tegner fast inventar i 3D og bygger det i egen produktion: frie mål, prøveemner, sene ændringer og reservedele fra samme model.">
+  description="Nem Inventar tegner fast inventar i 3D og bygger det i egen produktion: frie mål, design set i rummet, før det låses, prøveemner og reservedele fra samme model.">
 
   <!-- ============ TOPPEN (tekst-først, intet der bevæger sig) ============ -->
   <header class="about-top" id="top"><div class="wrap">
@@ -69,9 +70,9 @@ const FASER = [
   <section class="tl-sec" id="samarbejdet"><div class="wrap">
     <div class="sec-head rv">
       <div>
-        <span class="label">Egen produktion</span>
-        <h2>Hvad det betyder for <em>jer.</em></h2>
-        <p class="lede">Når vi både tegner og bygger, er der færre overleveringer — og mere, I kan nå at ændre. Sådan mærker I det, fase for fase.</p>
+        <span class="label">Fra tilbud til aflevering</span>
+        <h2 class="tl-h2">Vi har vores egen <em>produktion.</em></h2>
+        <p class="lede">Vi skærer, samler, olierer og pakker inventaret selv. Vi bestiller det ikke hos andre, og derfor svarer vi for tegningen, kvaliteten og tidsplanen. Sådan mærker I det, fra tilbuddet til årene efter afleveringen.</p>
       </div>
     </div>
     <ol class="tl rv">
@@ -140,10 +141,10 @@ const FASER = [
     <div class="sec-head rv">
       <div>
         <span class="label">Referencer</span>
-        <h2>Dem, vi har bygget <em>med.</em></h2>
-        <p class="lede">{reference?.name ?? 'Mørkhøj Skole'}, med Ason A/S som hovedentreprenør og Rønnow Arkitekter som arkitekt.</p>
+        <h2>Et helt byggeri eller en enkelt <em>bænk.</em></h2>
+        <p class="lede">{reference?.name ?? 'Mørkhøj Skole'}, med Ason A/S som hovedentreprenør og Rønnow Arkitekter som arkitekt — og alle de andre sager med de arkitekter og entreprenører, vi har bygget sammen med.</p>
       </div>
-      <a href={`${base}#projekter`} class="ulink">Alle projekter →</a>
+      <a href={`${base}projekter`} class="ulink">Alle projekter, arkitekter og entreprenører →</a>
     </div>
     <div class="ref-grid rv">
       <div class="ref-text">
@@ -171,12 +172,15 @@ const FASER = [
     /* ---- fotobånd ---- */
     .photo-band{padding:36px 0 0}
     .photo-band figure{margin:0}
-    .photo-band .img{display:block;aspect-ratio:16/9;border-radius:var(--radius);overflow:hidden;background:var(--soft)}
+    /* lavt bånd (Milot 04-10: fotoet var for stort — man kunne ikke se, hvad der gemte sig længere nede) */
+    .photo-band .img{display:block;aspect-ratio:21/8;max-height:380px;border-radius:var(--radius);overflow:hidden;background:var(--soft)}
     .photo-band img{width:100%;height:100%;object-fit:cover;object-position:50% 62%;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
     .photo-band .img:hover img{transform:scale(1.03)}
     .photo-band figcaption{margin-top:10px;font-size:14px;color:var(--muted)}
     /* ---- tidslinjen ---- */
     .tl-sec{background:var(--soft);padding:88px 0;margin-top:72px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .tl-h2{font-size:clamp(34px,4.4vw,56px);line-height:1.02;letter-spacing:-.02em}
+    .tl-sec .lede{max-width:40em;font-size:17px}
     .tl{list-style:none;margin:40px 0 0;padding:0}
     .tl-row{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,6fr) minmax(0,4fr);gap:32px;padding:34px 0;border-top:1px solid var(--line)}
     .tl-row:last-child{border-bottom:1px solid var(--line)}
