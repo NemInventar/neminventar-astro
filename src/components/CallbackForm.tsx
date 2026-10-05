@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { hentKilde } from '../lib/kilde';
 
 // "Bestil et opkald" — poster til contact-form edge function med kind='opkald'.
 // Funktionen opretter et lead i CRM, lægger en opgave på Milots huskeliste og giver ham besked
@@ -31,11 +32,7 @@ export default function CallbackForm({ defaultOpen = false, label = 'Bestil et o
     }
     setStatus('sending');
     setErrMsg('');
-    let ref = '';
-    try {
-      const h = document.referrer ? new URL(document.referrer).hostname : '';
-      if (h && h !== location.hostname) ref = h;
-    } catch { /* ugyldig referrer */ }
+    const ref = hentKilde().referrer_host;
     try {
       const res = await fetch(FUNCTION_URL, {
         method: 'POST',

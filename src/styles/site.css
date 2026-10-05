@@ -488,11 +488,12 @@ footer a:hover{color:var(--ink)}
 .form .row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
 .field label{font-size:13.5px;font-weight:600;color:var(--ink)}
-.field input,.field textarea{
+.field input,.field textarea,.field select{
   border:1px solid var(--line);border-radius:10px;padding:12px 14px;font:inherit;font-size:15px;
   background:var(--paper);color:var(--ink);transition:border-color .2s,box-shadow .2s;
 }
-.field input:focus,.field textarea:focus{outline:none;border-color:var(--warm);box-shadow:0 0 0 3px rgba(162,101,42,.12)}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--warm);box-shadow:0 0 0 3px rgba(162,101,42,.12)}
+.field label .valgfrit{font-weight:400;color:var(--muted)}
 .field textarea{resize:vertical;min-height:120px}
 .form .btn{width:100%;justify-content:center;border:none;cursor:pointer}
 .form .btn[disabled]{opacity:.6;cursor:not-allowed}
@@ -521,3 +522,20 @@ footer a:hover{color:var(--ink)}
 .kundetype button.on{background:var(--ink);color:var(--paper)}
 @media(max-width:680px){.contact-grid{grid-template-columns:1fr;gap:32px}}
 @media(max-width:560px){.form .row{grid-template-columns:1fr}.form{padding:24px}}
+
+/* ---------- kontaktformular: filer (tegninger, udbudsmateriale, fotos) ---------- */
+.dropzone{border:1.5px dashed #CDC3AE;border-radius:12px;padding:18px 16px;text-align:center;background:var(--paper);cursor:pointer;display:grid;gap:3px;justify-items:center;font-size:14.5px;color:var(--muted);transition:border-color .2s,background .2s}
+.dropzone:hover,.dropzone.drag,.dropzone:focus-visible{border-color:var(--warm);background:#FBF6EE}
+.dropzone.off{cursor:default;opacity:.6}
+.dropzone b{color:var(--ink);font-weight:600}
+.dropzone small{font-size:12.5px;color:var(--muted);line-height:1.5}
+.dz-ico{width:34px;height:34px;border-radius:50%;background:var(--soft);display:grid;place-items:center;color:var(--warm);font-weight:700;margin-bottom:4px}
+.dropzone:hover .dz-ico,.dropzone.drag .dz-ico{background:var(--warm);color:#fff}
+.filelist{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
+.filelist li{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:8px 10px 8px 14px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:13.5px}
+.filelist .fn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}
+.filelist .fs{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.filelist .fp{color:var(--warm);font-weight:600;font-variant-numeric:tabular-nums;min-width:44px;text-align:right}
+.filelist .fp.ok{color:#1F6F5C}
+.filelist button{border:0;background:var(--soft);width:26px;height:26px;border-radius:50%;cursor:pointer;color:var(--muted);font-size:12px;line-height:1;display:grid;place-items:center}
+.filelist button:hover{background:var(--line);color:var(--ink)}
