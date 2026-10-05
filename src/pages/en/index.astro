@@ -3,90 +3,106 @@
 // arkitekter og indkøbere. Samme regler som de danske sider: ingen mm-mål, ingen mærkenavne på dele,
 // levering påstås kun med navngiven sag. Udvides kun, hvis Search Console viser engelske søgninger.
 import Base from '../../layouts/Base.astro';
+import ProcessSteps from '../../components/ProcessSteps.astro';
+import ContactCta from '../../components/ContactCta.astro';
+import { cdn } from '../../lib/img';
+import { morkhoj } from '../../lib/catalog';
 const base = import.meta.env.BASE_URL;
 const site = Astro.site!;
-const img = (f: string) => `${base}billeder/morkhoj/${f}`;
 ---
 <Base
   lang="en"
   title="Built-in joinery for construction in Denmark | Nem Inventar"
   description="Fixed furniture for Danish schools, daycare centres and sports halls: wardrobes, lockers, toilet cubicles and kitchenettes, produced and installed."
-  image={new URL(img('01_garderobe-lockere-og-baenk-med-skorum-roed.jpg'), site).href}
+  image={new URL(cdn(morkhoj('33_lockere-roede-ved-doer-til-klasserum.jpg')), site).href}
   alternates={[
     { hreflang: 'da', href: new URL(base, site).href },
     { hreflang: 'en', href: new URL(base + 'en/', site).href },
     { hreflang: 'x-default', href: new URL(base, site).href },
   ]}>
-  <section class="en-hero"><div class="wrap">
-    <span class="label">In English</span>
-    <h1>Built-in joinery for schools, daycare centres and <em>sports facilities.</em></h1>
-    <p class="lead">Nem Inventar ApS designs, produces and installs fixed furniture for construction projects in Denmark: wardrobes, lockers, toilet cubicles, changing-room benches, kitchenettes, shelving and acoustic panels. We work as a subcontractor for main contractors and building owners, from our office in Copenhagen and our own production.</p>
-    <div class="detail-cta">
+
+  <header class="hero2"><div class="wrap hero2-grid">
+    <div class="hero2-head">
+      <span class="label">In English</span>
+      <h1>Built-in joinery for schools, daycare centres and <em>sports facilities.</em></h1>
+    </div>
+    <div class="hero2-cta">
       <a href="mailto:tilbud@neminventar.dk?subject=Enquiry" class="btn btn-primary">Send drawings or tender documents <span class="arr">→</span></a>
       <a href="tel:+4542422684" class="btn btn-ghost">+45 42 42 26 84</a>
     </div>
-  </div></section>
-
-  <section class="en-body"><div class="wrap en-grid">
-    <article>
-      <h2>What we make</h2>
-      <ul>
-        <li><b>Wardrobes and lockers</b> for pupils, children and staff, with benches, shoe racks and seating niches.</li>
-        <li><b>Toilet cubicles, partitions and wash counters</b> in compact laminate for wet areas.</li>
-        <li><b>Changing-room furniture</b> with wall-hung benches, so the floor stays free for cleaning.</li>
-        <li><b>Kitchenettes and mobile kitchen islands</b> with worktops in linoleum, laminate, compact laminate or stainless steel.</li>
-        <li><b>Shelving, tall cabinets, niches and acoustic panels</b>, built to the room.</li>
-      </ul>
-      <p>Most of our joinery is made in pine or birch plywood with an oiled finish, so worn surfaces can be repaired on site instead of being sanded down. Where water is involved, we use compact laminate.</p>
-    </article>
-
-    <article>
-      <h2>How we work</h2>
-      <p>We work from the architect's drawings and the tender documents. You get a price per item following your bill of quantities, and any differences between drawings and quantities are listed as reservations, so our offer can be compared with others.</p>
-      <p>Every element is modelled in 3D and approved before production. Deliveries follow the site schedule, in stages if needed, and we install everything ourselves.</p>
-    </article>
-
-    <article>
-      <h2>Documentation</h2>
-      <p>For buildings seeking the Nordic Swan Ecolabel or similar schemes, we use materials suitable for certified construction and hand over product data sheets, indoor-climate documentation and EPDs where the manufacturer provides them. If the tender requires FSC or PEFC timber, our quote states which boards can be supplied with certification from the supplier.</p>
-    </article>
-
-    <article>
-      <h2>Reference: Mørkhøj School, Copenhagen</h2>
-      <p>Together with the main contractor Ason A/S and Rønnow Arkitekter, we are delivering the fixed furniture for Mørkhøj School in stages: lockers and benches, tall cabinets in the school's colours, upholstered seating niches, kitchenettes, glass boards and acoustic panels.</p>
-      <div class="en-photos">
-        <figure><img src={img('01_garderobe-lockere-og-baenk-med-skorum-roed.jpg')} alt="Red lockers with bench and shoe storage at Mørkhøj School" loading="lazy" /><figcaption>Lockers with bench and shoe storage</figcaption></figure>
-        <figure><img src={img('06_niche-polstret-bordeaux-med-borde.jpg')} alt="Upholstered seating niche with tables at Mørkhøj School" loading="lazy" /><figcaption>Upholstered seating niche</figcaption></figure>
+    <div class="duo" aria-label="Photos from the delivery to Mørkhøj School">
+      <div class="slot a">
+        <img class="is-on" src={cdn(morkhoj('22_klasserum-hoejskabe-blaa-og-vindueskarm-med-hynde.jpg'))} alt="Blue plywood tall cabinets and a window seat in a classroom at Mørkhøj School" style="--pos:55% 50%" fetchpriority="high" />
+        <span class="img-tag"><b>The cloakroom</b>lockers, bench and shoe shelves · Mørkhøj School</span>
       </div>
-      <p class="note">Photos from the delivery. More projects (in Danish): <a href={`${base}#projekter`}>projects</a>.</p>
-    </article>
+      <div class="slot b">
+        <img class="is-on" src={cdn(morkhoj('26_garderobe-lockere-roede-med-baenk-og-skohylder.jpg'))} alt="Red lockers over a bench and shoe shelves at Mørkhøj School" style="--pos:50% 58%" fetchpriority="high" />
+        <span class="img-tag"><b>The doors</b>perforated, with code locks · Mørkhøj School</span>
+      </div>
+    </div>
+    <p class="hero2-sub">Nem Inventar ApS designs, produces and installs fixed furniture for construction projects in Denmark: wardrobes, lockers, toilet cubicles, changing-room benches, kitchenettes, shelving and acoustic panels. We work as a subcontractor for main contractors and building owners, from our office in Copenhagen and our own production.</p>
+    <div class="facts2" aria-label="How we work">
+      <span class="fact2">Built to measure</span>
+      <span class="fact2">3D model before production</span>
+      <span class="fact2">Own production</span>
+      <span class="fact2">Documentation for certified buildings</span>
+      <span class="fact2">Deliveries to the site schedule</span>
+    </div>
+  </div></header>
 
-    <article>
-      <h2>Contact</h2>
-      <p>We reply in English. Drawings and tender documents in Danish or English are both fine.</p>
-      <p><a href="mailto:tilbud@neminventar.dk">tilbud@neminventar.dk</a> · <a href="tel:+4542422684">+45 42 42 26 84</a><br />Nem Inventar ApS · Mågevej 73, st. tv. · 2400 Copenhagen NV · Denmark · VAT DK45085473</p>
-      <p class="note">The rest of this website is in Danish. <a href={base} hreflang="da" lang="da">Til den danske side</a></p>
-    </article>
+  <section class="sec" id="what"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">What we make</span>
+        <h2>Fixed furniture for rooms with many <em>people.</em></h2>
+      </div>
+    </div>
+    <div class="agrid two rv">
+      <article>
+        <span class="n">I.</span>
+        <h3>What we make</h3>
+        <ul>
+          <li><b>Wardrobes and lockers</b> for pupils, children and staff, with benches, shoe racks and seating niches.</li>
+          <li><b>Toilet cubicles, partitions and wash counters</b> in compact laminate for wet areas.</li>
+          <li><b>Changing-room furniture</b> with wall-hung benches, so the floor stays free for cleaning.</li>
+          <li><b>Kitchenettes and mobile kitchen islands</b> with worktops in linoleum, laminate, compact laminate or stainless steel.</li>
+          <li><b>Shelving, tall cabinets, niches and acoustic panels</b>, built to the room.</li>
+        </ul>
+        <p>Most of our joinery is made in pine or birch plywood, finished with Rubio Monocoat hardwax oil rather than lacquer, so worn surfaces can be repaired on site instead of being sanded down. Where water is involved, we use compact laminate.</p>
+      </article>
+      <article>
+        <span class="n">II.</span>
+        <h3>How we work</h3>
+        <p>We work from the architect's drawings and the tender documents. You get a price per item following your bill of quantities, and any differences between drawings and quantities are listed as reservations, so our offer can be compared with others. If the tender runs in <a href="https://www.dalux.com/" target="_blank" rel="noopener">Dalux</a> or <a href="https://ibinder.com/en/" target="_blank" rel="noopener">iBinder</a>, invite us there: we work in both, with IFC models, from tender to handover.</p>
+        <p>Every element is modelled in 3D and approved before production. Deliveries follow the site schedule, in stages if needed, and we install everything ourselves.</p>
+        <h3 style="margin-top:22px">Documentation</h3>
+        <p>For buildings seeking the Nordic Swan Ecolabel, DGNB or similar schemes, we use materials suitable for certified construction and hand over product data sheets, indoor-climate documentation and EPDs where the manufacturer provides them. If the tender requires FSC or PEFC timber, our offer states which boards can be supplied with certification from the supplier.</p>
+      </article>
+      <article class="span2">
+        <span class="n">III.</span>
+        <h3>Reference: Mørkhøj School, Copenhagen</h3>
+        <p>Together with the main contractor Ason A/S and Rønnow Arkitekter, we are delivering the fixed furniture for Mørkhøj School in stages: 342 lockers with shoe shelves, tall cabinets in the school's colours, upholstered seating niches, kitchenettes, glass boards and acoustic panels — every room modelled in 3D and approved before production.</p>
+        <div class="cd-gallery" style="margin-top:18px;grid-template-columns:repeat(3,1fr)">
+          <figure class="gfig" style="cursor:default"><img src={cdn(morkhoj('26_garderobe-lockere-roede-med-baenk-og-skohylder.jpg'), 800)} alt="Cloakroom with red lockers over a bench and shoe shelves at Mørkhøj School" loading="lazy" style="object-position:50% 58%" /><figcaption class="img-tag"><b>Photo</b>Lockers with bench and shoe shelves</figcaption></figure>
+          <figure class="gfig" style="cursor:default"><img src={cdn(morkhoj('32_hoejskabe-blaa-og-siddeplads-ved-vindue.jpg'), 800)} alt="Tall cabinet in plywood and a window seat at Mørkhøj School" loading="lazy" style="object-position:50% 45%" /><figcaption class="img-tag"><b>Photo</b>Tall cabinets and window seat</figcaption></figure>
+          <figure class="gfig" style="cursor:default"><img src={cdn(morkhoj('24_tekoekken-blaa-fronter-staalbordplade.jpg'), 800)} alt="Kitchenette with blue plywood fronts and a stainless steel worktop at Mørkhøj School" loading="lazy" style="object-position:40% 55%" /><figcaption class="img-tag"><b>Photo</b>Kitchenette with stainless steel worktop</figcaption></figure>
+        </div>
+        <p class="cd-note">Photos from the delivery. We built the furniture; chairs, tables, tiles and lamps are by others. More projects (in Danish): <a href={`${base}projekter`} style="color:var(--ink);text-decoration:underline">projects</a>.</p>
+      </article>
+    </div>
   </div></section>
-</Base>
 
-<style>
-  .en-hero{padding:80px 0 56px;border-bottom:1px solid var(--line)}
-  .en-hero h1{font-size:clamp(36px,5vw,64px);margin:24px 0 0;max-width:20ch}
-  .en-hero .lead{font-size:19px;color:var(--muted);max-width:64ch;margin-top:24px;line-height:1.65}
-  .en-hero .detail-cta{margin-top:30px}
-  .en-body{padding:72px 0 96px}
-  .en-grid{display:grid;gap:52px;max-width:860px}
-  .en-grid h2{font-size:clamp(24px,3vw,32px);margin-bottom:16px}
-  .en-grid p,.en-grid li{font-size:17px;color:var(--ink);line-height:1.75;max-width:66ch}
-  .en-grid p{margin-bottom:12px}
-  .en-grid ul{padding-left:20px;margin-bottom:14px}
-  .en-grid li{margin-bottom:6px}
-  .en-photos{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:18px 0 10px}
-  .en-photos img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:var(--radius);border:1px solid var(--line)}
-  .en-photos figcaption{font-size:13.5px;color:var(--muted);margin-top:6px}
-  .note{font-size:15px;color:var(--muted)}
-  .en-grid a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
-  .en-grid a:hover{color:var(--warm)}
-  @media(max-width:700px){.en-photos{grid-template-columns:1fr}}
-</style>
+  <section class="sec" id="how" style="padding-top:0"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">How we work</span>
+        <h2>From 3D model to <em>finished room.</em></h2>
+        <p class="lede">The team are engineers. Every cabinet, bench and niche is built as a 3D model first; the same model gives the drawing for your approval and the parts list for production.</p>
+      </div>
+    </div>
+    <ProcessSteps lang="en" />
+    <p class="cd-note rv" style="margin-top:28px">The rest of this website is in Danish. <a href={base} hreflang="da" lang="da" style="color:var(--ink);text-decoration:underline">Til den danske side</a></p>
+  </div></section>
+
+  <ContactCta lang="en" />
+</Base>

@@ -1,0 +1,138 @@
+---
+// Teaser for designeren (prismodulet), der kommer snart. Viser idéen — mål, materiale, farve, greb, låger der åbner —
+// uden priser: priserne er ikke kalibreret endnu (Joachim/Milot 03-10-2026). Bygget i CSS-3D, ingen three.js på forsiden.
+// Den rigtige prototype ligger i ni-apps under /prisbog/designer/; når den åbner, erstattes teaseren af den.
+// Styles: site.css under "designeren". Udvalget af materialer og farver følger webpaletten (web_colors) og prototypen.
+const base = import.meta.env.BASE_URL;
+---
+<div class="dz rv">
+  <div class="dz-stage" id="dzStage">
+    <div class="dz-brand"><span class="brand">NEM<b>·</b>INVENTAR</span><span>Skabe på mål</span><span class="dz-proto">Kommer snart</span></div>
+    <div class="dz-floor"></div>
+    <div class="dz-cabwrap">
+      <div class="cab one" id="dzCab" data-mat="birk" data-greb="push" style="--w:60;--h:210;--d:60">
+        <div class="back"></div>
+        <div class="sideL"></div>
+        <div class="inner" id="dzInner"></div>
+        <div class="bottom"></div>
+        <div class="side"></div>
+        <div class="top"></div>
+        <div class="doors"><div class="door L"><span class="greb"></span></div><div class="door R"><span class="greb"></span></div></div>
+        <div class="sokkel"></div>
+        <div class="sokkelS"></div>
+        <div class="dz-shadow"></div>
+      </div>
+    </div>
+    <div class="dz-pills">
+      <button type="button" class="dz-pill" id="dzDoors" aria-pressed="false">Åbn låger</button>
+      <button type="button" class="dz-pill" id="dzTurn" aria-pressed="false">Drej</button>
+    </div>
+    <div class="dz-size" id="dzSize">60 × 210 × 60 cm</div>
+  </div>
+  <div class="dz-panel">
+    <div class="dz-scroll">
+      <h3>Byg dit <em>højskab.</em></h3>
+      <p class="dz-intro">Alt det, du vælger her, kan vi bygge. Når designeren åbner, står prisen nedenfor og følger med. Læg skabet i kurven: levering er med, opmåling og montage kan vælges til.</p>
+      <div class="dz-steps">
+        <section class="dz-step">
+          <div class="dz-steph"><span class="no">01</span><span class="ttl">Mål</span><span class="sum" id="dzSum1"></span></div>
+          <div class="dz-sl"><div class="dz-sltop"><label for="dz-b">Bredde</label><output id="dz-ob" for="dz-b">60<small>cm</small></output></div><input type="range" id="dz-b" min="40" max="120" value="60" step="1" /></div>
+          <div class="dz-sl"><div class="dz-sltop"><label for="dz-h">Højde</label><output id="dz-oh" for="dz-h">210<small>cm</small></output></div><input type="range" id="dz-h" min="120" max="240" value="210" step="1" /></div>
+          <p class="dz-note" id="dzLaage">1 låge til og med 65 cm bredde · 2 låger fra 66 cm</p>
+        </section>
+        <section class="dz-step">
+          <div class="dz-steph"><span class="no">02</span><span class="ttl">Materiale</span><span class="sum" id="dzSum2"></span></div>
+          <div class="dz-mats" id="dzMats" role="group" aria-label="Materiale">
+            <button type="button" class="dz-mat on" data-mat="birk" style="--sw:linear-gradient(90deg,#EFE2C8,#E6D6B6 45%,#F0E4CB)"><span class="sw"></span><span><b>Birkekrydsfiner</b><small>Lys birk med klar olie</small></span></button>
+            <button type="button" class="dz-mat" data-mat="eg" style="--sw:linear-gradient(90deg,#D3AA76,#C69A64 50%,#D5AC78)"><span class="sw"></span><span><b>Egetræsfinér</b><small>Varm, levende åretegning</small></span></button>
+            <button type="button" class="dz-mat" data-mat="kryds" style="--sw:linear-gradient(90deg,#8FA5C4,#6E86A8)"><span class="sw"></span><span><b>Krydsfiner, farvet olie</b><small>Åren skinner igennem farven</small></span></button>
+            <button type="button" class="dz-mat" data-mat="kompakt" style="--sw:linear-gradient(90deg,#BDBBB6,#3B3C3E)"><span class="sw"></span><span><b>Kompaktlaminat</b><small>Tåler vand og slid</small></span></button>
+          </div>
+          <div id="dzFarveRow" hidden>
+            <div class="dz-lbl">Farve <span id="dzFarveNavn"></span></div>
+            <div class="dz-dots" id="dzFarver" role="group" aria-label="Farve"></div>
+          </div>
+        </section>
+        <section class="dz-step">
+          <div class="dz-steph"><span class="no">03</span><span class="ttl">Lågen</span><span class="sum" id="dzSum3"></span></div>
+          <div class="dz-lbl" style="margin-top:12px">Greb</div>
+          <div class="dz-segc" id="dzGreb" role="group" aria-label="Greb">
+            <button type="button" data-v="push" class="on">Uden greb</button>
+            <button type="button" data-v="std">Stål</button>
+            <button type="button" data-v="sort">Sort</button>
+            <button type="button" data-v="trae">Træ</button>
+          </div>
+          <p class="dz-note" id="dzGrebNote">Lågen åbner, når du trykker på den.</p>
+        </section>
+      </div>
+    </div>
+    <div class="dz-pricebar">
+      <p class="dz-spec" id="dzSpec"></p>
+      <div class="dz-pbmain">
+        <div>
+          <div class="dz-amount"><span class="dz-live" aria-hidden="true"></span><span class="dz-soon">Pris · kommer snart</span><span class="dz-delta" id="dzDelta">opdateret</span></div>
+          <div class="dz-vat">Levering er altid med. Montage og opmåling som tilvalg.</div>
+        </div>
+        <a class="btn btn-primary" href="mailto:kontakt@neminventar.dk?subject=Giv%20mig%20besked%2C%20n%C3%A5r%20designeren%20%C3%A5bner">Få besked, når den åbner <span class="arr">→</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="dz-foot rv"><span>Indtil da:</span><a href={`${base}kontakt`} class="ulink">Send os målene →</a></div>
+
+<script>
+  // Tilstand → 3D-skab (CSS-variabler), resuméer og spec-linje. Ingen priser.
+  const $ = <T extends Element = HTMLElement>(s: string) => document.querySelector(s) as T;
+  const cab = $('#dzCab'), inner = $('#dzInner');
+  if (cab && inner) {
+    type Farve = { v: string; l: string; c: string; tint?: string; flat?: string };
+    const S = { b: 60, h: 210, d: 60, mat: 'birk', farve: { kryds: 'blaa', kompakt: 'lysgraa' } as Record<string, string>, greb: 'push', open: false, turn: false };
+    const MAT: Record<string, string> = { birk: 'Birkekrydsfiner, klar olie', eg: 'Egetræsfinér, klar olie', kryds: 'Krydsfiner', kompakt: 'Kompaktlaminat' };
+    const FARVER: Record<string, Farve[]> = {
+      kryds: [{ v: 'natur', l: 'Klar olie', c: '#E1C092' }, { v: 'blaa', l: 'Blå', c: '#4F6E95', tint: 'rgba(52,86,130,.78)' }, { v: 'roed', l: 'Rød', c: '#7E3237', tint: 'rgba(120,36,44,.82)' }, { v: 'groen', l: 'Skovgrøn', c: '#4C6B5B', tint: 'rgba(58,96,78,.8)' }, { v: 'koks', l: 'Koksgrå', c: '#3C3A37', tint: 'rgba(40,38,36,.86)' }],
+      kompakt: [{ v: 'lysgraa', l: 'Lys grå', c: '#BDBBB6', flat: '#BDBBB6' }, { v: 'antracit', l: 'Antracit', c: '#3B3C3E', flat: '#3B3C3E' }],
+    };
+    const GREB: Record<string, [string, string]> = { push: ['Uden greb', 'Lågen åbner, når du trykker på den.'], std: ['Stålgreb', 'Greb i børstet stål.'], sort: ['Sort greb', 'Sort bøjlegreb.'], trae: ['Trægreb', 'Drejet i massiv eg og olieret som skabet.'] };
+    const fill = (inp: HTMLInputElement) => { const p = (+inp.value - +inp.min) / (+inp.max - +inp.min); inp.style.setProperty('--p', `calc(${p * 100}% + ${11 - p * 22}px)`); };
+    let deltaT: number | undefined;
+    const delta = () => { const d = $('#dzDelta'); d.classList.add('show'); clearTimeout(deltaT); deltaT = window.setTimeout(() => d.classList.remove('show'), 1100); };
+    const farve = () => (FARVER[S.mat] || []).find((f) => f.v === S.farve[S.mat]);
+    function render(user: boolean) {
+      cab.style.setProperty('--w', String(S.b)); cab.style.setProperty('--h', String(S.h)); cab.style.setProperty('--d', String(S.d));
+      cab.dataset.mat = S.mat; cab.dataset.greb = S.greb;
+      cab.classList.toggle('one', S.b <= 65); cab.classList.toggle('open', S.open);
+      cab.style.transform = S.turn ? 'rotateX(-8deg) rotateY(30deg)' : 'rotateX(-8deg) rotateY(-32deg)';
+      const f = farve();
+      cab.style.setProperty('--tint', f?.tint ?? 'rgba(0,0,0,0)');
+      cab.style.setProperty('--flat', f?.flat ?? '#BDBBB6');
+      const n = Math.max(2, Math.min(6, Math.round(S.h / 40)));
+      inner.innerHTML = Array.from({ length: n - 1 }, (_, i) => `<i class="shelf" style="top:calc(${((i + 1) / n) * 100}% - var(--D)/2)"></i>`).join('');
+      $('#dzSize').textContent = `${S.b} × ${S.h} × ${S.d} cm`;
+      $('#dz-ob').innerHTML = `${S.b}<small>cm</small>`; $('#dz-oh').innerHTML = `${S.h}<small>cm</small>`;
+      $('#dzLaage').textContent = S.b <= 65 ? '1 låge til og med 65 cm bredde · 2 låger fra 66 cm' : '2 låger, der åbner fra midten';
+      document.querySelectorAll<HTMLElement>('#dzMats .dz-mat').forEach((m) => m.classList.toggle('on', m.dataset.mat === S.mat));
+      const fl = FARVER[S.mat]; const row = $('#dzFarveRow'); row.hidden = !fl;
+      if (fl) {
+        const dots = $('#dzFarver');
+        if (dots.dataset.mat !== S.mat) { dots.dataset.mat = S.mat; dots.innerHTML = fl.map((c) => `<button type="button" class="dz-dot" data-v="${c.v}" aria-label="${c.l}" title="${c.l}" style="--c:${c.c}"></button>`).join(''); }
+        dots.querySelectorAll<HTMLElement>('.dz-dot').forEach((d) => d.classList.toggle('on', d.dataset.v === S.farve[S.mat]));
+        $('#dzFarveNavn').textContent = f ? f.l : '';
+      }
+      document.querySelectorAll<HTMLElement>('#dzGreb button').forEach((b) => b.classList.toggle('on', b.dataset.v === S.greb));
+      $('#dzGrebNote').textContent = GREB[S.greb][1];
+      const matT = S.mat === 'kryds' && f ? `Krydsfiner, ${f.v === 'natur' ? 'klar olie' : f.l.toLowerCase() + ' olie'}` : S.mat === 'kompakt' && f ? `Kompaktlaminat, ${f.l.toLowerCase()}` : MAT[S.mat];
+      $('#dzSum1').textContent = `${S.b} × ${S.h} × ${S.d} cm`; $('#dzSum2').textContent = matT; $('#dzSum3').textContent = GREB[S.greb][0];
+      $('#dzSpec').innerHTML = `<b>Højskab ${S.b} × ${S.h} × ${S.d} cm</b> · ${S.b <= 65 ? '1 låge' : '2 låger'} · ${n - 1} hylder · ${matT} · ${GREB[S.greb][0].toLowerCase()}`;
+      const bd = $('#dzDoors'); bd.textContent = S.open ? 'Luk låger' : 'Åbn låger'; bd.setAttribute('aria-pressed', String(S.open));
+      $('#dzTurn').setAttribute('aria-pressed', String(S.turn));
+      if (user) delta();
+    }
+    (['b', 'h'] as const).forEach((k) => { const inp = $<HTMLInputElement>(`#dz-${k}`); fill(inp); inp.addEventListener('input', () => { S[k] = +inp.value; fill(inp); render(true); }); });
+    $('#dzMats').addEventListener('click', (e) => { const b = (e.target as HTMLElement).closest<HTMLElement>('.dz-mat'); if (!b || !b.dataset.mat) return; S.mat = b.dataset.mat; render(true); });
+    $('#dzFarver').addEventListener('click', (e) => { const b = (e.target as HTMLElement).closest<HTMLElement>('.dz-dot'); if (!b || !b.dataset.v) return; S.farve[S.mat] = b.dataset.v; render(true); });
+    $('#dzGreb').addEventListener('click', (e) => { const b = (e.target as HTMLElement).closest<HTMLElement>('button'); if (!b || !b.dataset.v) return; S.greb = b.dataset.v; render(true); });
+    $('#dzDoors').addEventListener('click', () => { S.open = !S.open; render(false); });
+    $('#dzTurn').addEventListener('click', () => { S.turn = !S.turn; render(false); });
+    render(false);
+  }
+</script>

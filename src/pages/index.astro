@@ -1,250 +1,177 @@
 ---
+// Forside v3 (05-10-2026): "Se det, før vi bygger det." Godkendt af Joachim ("forsiden er vild, det er præcis sådan
+// det skal være"). Mockup: mockups/forside-v3.html · spec: docs/superpowers/specs/2026-10-05-ny-forside-design.md.
+// Syv afsnit med almindelig scroll: toppen med tre veje → bevisbjælke → inspiration → det laver vi → sådan arbejder vi
+// → projekter → kulører → kontakt. Indhold fra Supabase-views; kun udvalg og rækkefølge står i src/lib/forside.ts.
+// En sag nævnes sparsomt (opmærksomhedspunkt, Joachim 05-10): fotos får en billedtekst om, hvad de viser.
 import Base from '../layouts/Base.astro';
-import { getWebProducts, getWebCases, getWebLandingPages, categoryLabel } from '../lib/supabase';
+import HeroPaths from '../components/HeroPaths.astro';
+import ProofRow from '../components/ProofRow.astro';
+import InspirationMosaic from '../components/InspirationMosaic.astro';
+import KulorBand from '../components/KulorBand.astro';
+import ProcessSteps from '../components/ProcessSteps.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { getWebProducts, getWebCases, getWebLandingPages, getWebColors } from '../lib/supabase';
 import { cdn } from '../lib/img';
+import { morkhoj } from '../lib/catalog';
+import { KATALOG_TOP, PROJEKTER } from '../lib/forside';
+import { TEAM } from '../lib/team';
+import { PHONE, PHONE_TEL } from '../lib/contact';
 
 const products = await getWebProducts();
 const cases = await getWebCases();
 const landing = await getWebLandingPages();
-const emner = landing.filter((l) => l.kind === 'emne');
+const colors = await getWebColors();
+const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
 const segmenter = landing.filter((l) => l.kind === 'segment');
+const emner = landing.filter((l) => l.kind === 'emne');
 const guides = landing.filter((l) => l.kind === 'guide');
+const hasLanding = (slug: string) => landing.some((l) => l.slug === slug);
+const projekter = PROJEKTER.map((s) => cases.find((c) => c.slug === s)).filter((c): c is NonNullable<typeof c> => !!c);
+const typer = [...products].sort((a, b) => a.name.localeCompare(b.name, 'da'));
 
 const title = 'Fast inventar på mål til byggeri | Nem Inventar';
-const description =
-  'Fast inventar på mål: garderober, omklædningsskabe, kompaktlaminat og krydsfiner til skoler, institutioner og idrætshaller. Tegnet i 3D før produktion.';
-const pad = (n: number) => String(n + 1).padStart(2, '0');
-const base = import.meta.env.BASE_URL; // slutter med '/'
+const description = 'Fast inventar på mål til skoler, institutioner, idrætshaller og boliger. Se det i 3D, send en skitse eller et udbud, og få svar inden for én arbejdsdag.';
+const ogImage = new URL(cdn(morkhoj('33_lockere-roede-ved-doer-til-klasserum.jpg')), site).href;
+
+// Katalogpanelets typer som ItemList (søgemaskiner og AI-assistenter kan læse, hvad vi bygger)
+const itemList = {
+  '@context': 'https://schema.org', '@type': 'ItemList', name: 'Fast inventar fra Nem Inventar',
+  itemListElement: KATALOG_TOP.map((k, i) => products.find((p) => p.slug === k.slug)).filter((p) => !!p)
+    .map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p!.name, url: new URL(`${base}produkter/${p!.slug}`, site).href })),
+};
 ---
-<Base title={title} description={description} alternates={[
-  { hreflang: 'da', href: new URL(base, Astro.site).href },
-  { hreflang: 'en', href: new URL(base + 'en/', Astro.site).href },
-  { hreflang: 'x-default', href: new URL(base, Astro.site).href },
+<Base title={title} description={description} image={ogImage} jsonLd={[itemList]} alternates={[
+  { hreflang: 'da', href: new URL(base, site).href },
+  { hreflang: 'en', href: new URL(base + 'en/', site).href },
+  { hreflang: 'x-default', href: new URL(base, site).href },
 ]}>
 
-  <!-- ============ HERO ============ -->
-  <header class="hero" id="top"><div class="wrap hero-grid">
-    <div>
-      <span class="label">Snedkeri · København NV</span>
-      <h1>Fra én bænk til en <em>hel skole.</em></h1>
-      <p class="sub">Vi bygger fast inventar i træ og krydsfiner — til skoler, daginstitutioner, idrætshaller og erhverv. Hvert stykke tegnes i 3D før produktion, dokumenteres til certificeret byggeri, og leveres når byggepladsen er klar til det. Private kan også bestille.</p>
-      <div class="hero-cta">
-        <a href="#katalog" class="btn btn-primary">Se arketyperne <span class="arr">↓</span></a>
-        <a href="#projekter" class="btn btn-ghost">Start et projekt <span class="arr">→</span></a>
-      </div>
-      <div class="fact-row">
-        <span class="fact">Bygget til mål</span>
-        <span class="fact">3D-render før produktion</span>
-        <span class="fact">Leverer til certificeret byggeri</span>
-        <span class="fact">Delleverancer efter tidsplan</span>
-      </div>
-    </div>
-    <figure class="hero-fig">
-      <a class="frame" href={`${base}projekter/morkhoj-skole`} aria-label="Se projektet på Mørkhøj Skole">
-        <img src={cdn("/billeder/morkhoj/23_polstret-niche-roed-afrundet-hjoerne.jpg", 1100)} alt="Rød polstret niche med afrundet hjørne i krydsfiner på Mørkhøj Skole" />
-      </a>
-      <figcaption><b>Mørkhøj Skole</b>Foto fra leverancen: polstret niche med afrundet hjørne.</figcaption>
-    </figure>
-  </div></header>
+  <!-- 1 · TOPPEN: tre veje -->
+  <HeroPaths products={products} colors={colors} />
 
-  <!-- ============ KATALOG ============ -->
-  <section class="sec" id="katalog"><div class="wrap">
-    <div class="sec-head">
+  <!-- 2 · BEVIS: fire tal fra fire sager -->
+  <ProofRow cases={cases} />
+
+  <!-- 3 · INSPIRATION -->
+  <section class="sec" id="inventar"><div class="wrap">
+    <div class="sec-head rv">
       <div>
-        <span class="label">Kataloget</span>
-        <h2>Arketyper vi kender ud og ind.</h2>
-        <p class="lede">Konstruktioner vi har gennemarbejdet, så de kan bestilles direkte — i jeres mål, jeres materiale, jeres farve. Ingen faste priser, fordi intet bygges i faste mål.</p>
+        <span class="label">Inspiration</span>
+        <h2>Set i 3D, før det <em>bygges.</em></h2>
+        <p class="lede">Visualiseringer af typer, vi bygger. Hver udgave kan prissættes, som den står, eller bygges om til jeres mål og kulør.</p>
       </div>
-      <a href="#kontakt" class="ulink">Mangler du noget særligt? →</a>
+      <a href="#katalog" class="ulink">Til kataloget i toppen ↑</a>
     </div>
-    <div class="grid">
-      {products.map((p, i) => (
-        <article class="card">
-          <a class="ph" href={`${base}produkter/${p.slug}`} aria-label={p.name}>
-            <span class="num">{pad(i)}</span>
-            {p.primary_image && <img src={cdn(p.primary_image, 760)} alt={p.name} loading="lazy" />}
-          </a>
-          <div class="body">
-            <span class="kicker">{categoryLabel[p.category] ?? p.category}</span>
-            <h3><a href={`${base}produkter/${p.slug}`}>{p.name}</a></h3>
-            <p class="desc">{p.intro ?? p.short_description}</p>
-            <div class="foot">
-              <span class="made"><b>Til mål</b> · pris efter opmåling</span>
-              <a href={`${base}produkter/${p.slug}`} class="order">Se mere <span class="arr">→</span></a>
-            </div>
-          </div>
-        </article>
-      ))}
-    </div>
-    <p class="cat-note">Alle billeder er 3D-renders fra vores eget tilbudssystem — det er sådan I ser jeres inventar, før vi bygger det.</p>
-  </div></section>
+    <div class="rv"><InspirationMosaic products={products} /></div>
 
-  <!-- ============ DET LAVER VI (landingssider) ============ -->
-  {emner.length > 0 && (
-    <section class="sec ydelser" id="ydelser" style="padding-top:0"><div class="wrap">
-      <div class="sec-head">
-        <div>
-          <span class="label">Det laver vi</span>
-          <h2>Materialer og inventar vi bygger hver uge.</h2>
-        </div>
-      </div>
-      <div class="yd-grid">
-        {emner.map((l) => (
-          <a href={`${base}${l.slug}`}>
-            <span class="t">{l.nav_label} <span class="arr">→</span></span>
-            <span class="d">{l.lead}</span>
-          </a>
-        ))}
-      </div>
-      {segmenter.length > 0 && (
-        <div class="yd-seg lp-links">
-          {segmenter.map((l) => <a href={`${base}${l.slug}`}>{l.nav_label} <span class="arr">→</span></a>)}
-        </div>
-      )}
-      {guides.length > 0 && (
-        <div class="yd-seg lp-links">
-          {guides.map((l) => <a href={`${base}${l.slug}`}>Guide: {l.nav_label} <span class="arr">→</span></a>)}
-        </div>
-      )}
-    </div></section>
-  )}
-
-  <!-- ============ BRIDGE ============ -->
-  <section class="bridge"><div class="wrap">
-    <span class="label">Og så det større</span>
-    <h2>Arketyperne er byggesten. Projekterne er, hvor de bliver til <em>rum.</em></h2>
-    <p class="b-lede">En enkelt bænk kan bestilles direkte fra kataloget. Et helt skolebyggeri kræver tilbudslister, materialegodkendelser, dokumentation og delleverancer der rammer en tidsplan. Vi laver begge dele — med de samme hænder og det samme system.</p>
-  </div></section>
-
-  <!-- ============ CASES ============ -->
-  <section class="cases" id="projekter"><div class="wrap">
-    <div class="case-grid">
-      {cases.map((c) => (
-        <article class="case">
-          <a class="ph" href={`${base}projekter/${c.slug}`} aria-label={c.name}>
-            {c.hero_image_url && <img src={cdn(c.hero_image_url, 840)} alt={c.name} loading="lazy" />}
-          </a>
-          <div class="body">
-            <span class="status">{c.status_live && <span class="dot"></span>}{c.status_label}</span>
-            <h3><a href={`${base}projekter/${c.slug}`}>{c.name}</a></h3>
-            <p class="desc">{c.web_summary}</p>
-            <div class="meta">
-              <div class="row"><span class="k">Leverance</span><span class="v">{c.delivery_label}</span></div>
-              {c.contractor_label && c.contractor_label !== 'Hovedentreprenør' && <div class="row"><span class="k">Entreprenør</span><span class="v">{c.contractor_label}</span></div>}
-              <div class="row"><span class="k">Status</span><span class="v">{c.status_label}</span></div>
-            </div>
-            <div style="margin-top:22px"><a href={`${base}projekter/${c.slug}`} class="btn btn-light">Se projektet <span class="arr">→</span></a></div>
-          </div>
-        </article>
-      ))}
+    <!-- 3b · DET LAVER VI: link-hubben til typerne og landingssiderne (ankeret #ydelser bruges af alle landingssider) -->
+    <div class="yd-links rv" id="ydelser">
+      <h2 class="label yd-h">Det laver vi</h2>
+      <div class="yd-row"><span class="lbl">Typer:</span>{typer.map((p) => <a class="pill" href={`${base}produkter/${p.slug}`}>{p.name}</a>)}</div>
+      {segmenter.length > 0 && <div class="yd-row"><span class="lbl">Til:</span>{segmenter.map((l) => <a class="pill" href={`${base}${l.slug}`}>{l.nav_label}</a>)}</div>}
+      {emner.length > 0 && <div class="yd-row"><span class="lbl">Materialer og inventar:</span>{emner.map((l) => <a class="pill" href={`${base}${l.slug}`}>{l.nav_label}</a>)}</div>}
+      {guides.length > 0 && <div class="yd-row"><span class="lbl">Guides:</span>{guides.map((l) => <a class="pill" href={`${base}${l.slug}`}>{l.nav_label}</a>)}</div>}
     </div>
   </div></section>
 
-  <!-- ============ HVAD VI STÅR FOR ============ -->
-  <section class="sec values" id="staar-for"><div class="wrap">
-    <div class="sec-head">
+  <!-- 4 · SÅDAN ARBEJDER VI -->
+  <section class="sec" id="saadan" style="padding-top:0"><div class="wrap">
+    <div class="sec-head rv">
       <div>
         <span class="label">Sådan arbejder vi</span>
-        <h2>Fire ting, vi lægger vægt på.</h2>
+        <h2>Fra 3D-model til <em>færdigt rum.</em></h2>
+        <p class="lede">Holdet er ingeniører. Hvert skab, hver bænk og hver niche bygges først som 3D-model; samme model giver tegningen til jeres godkendelse og styklisten til produktionen.</p>
       </div>
+      {hasLanding('vaerkstedstegninger-og-3d-model') && <a href={`${base}vaerkstedstegninger-og-3d-model`} class="ulink">Sådan ser tegningerne ud →</a>}
     </div>
-    <div class="vgrid">
-      <div class="v"><span class="n">I.</span><h3>Håndværket</h3><p>Samlinger, kanter og overflader vælges efter, hvor hårdt rummet bliver brugt. Overfladen kan repareres på stedet, så inventaret kan holdes pænt i mange år.</p></div>
-      <div class="v"><span class="n">II.</span><h3>Det digitale</h3><p>Hvert stykke inventar tegnes og renderes i 3D, før produktionen starter. I godkender det, I faktisk får, før vi skærer den første plade.</p></div>
-      <div class="v"><span class="n">III.</span><h3>Dokumentationen</h3><p>Produktdatablade, indeklimadokumentation og EPD'er, hvor producenten har dem, på de materialer vi bruger. Samlet og afleveret sammen med inventaret.</p></div>
-      <div class="v"><span class="n">IV.</span><h3>Samarbejdet</h3><p>Vi taler arkitekters og entreprenørers sprog: tegningslæsning, rumskemaer, tilsyn og delleverancer, der følger byggepladsens tidsplan.</p></div>
+    <ProcessSteps />
+    <div class="docs rv">
+      <b>Dokumentation og filer:</b>
+      <span class="chip">Svanemærket byggeri</span><span class="chip">DGNB</span><span class="chip">EPD</span><span class="chip">IFC-modeller</span>
+      <a class="chip" href="https://www.dalux.com/da/" target="_blank" rel="noopener">Dalux ↗</a>
+      <a class="chip" href="https://ibinder.com/da/" target="_blank" rel="noopener">iBinder ↗</a>
     </div>
   </div></section>
 
-  <!-- ============ OVERFLADEN ============ -->
-  <section class="sec finish" id="overflade"><div class="wrap">
-    <div class="finish-grid">
+  <!-- 5 · PROJEKTER (her nævnes sagerne ved navn) -->
+  <section class="sec projekter-udvalg" id="projekter-udvalg"><div class="wrap">
+    <div class="sec-head rv">
       <div>
-        <span class="label">Overfladen</span>
-        <h2>Ikke lakeret. Olieret — og bygget til at blive <em>vedligeholdt.</em></h2>
+        <span class="label">Projekter</span>
+        <h2>Skoler, boliger og <em>idræt.</em></h2>
+        <p class="lede">Et udvalg af de sager, vi har leveret eller har i produktion.</p>
       </div>
-      <div class="finish-body">
-        <p>Lak lægger en film oven på træet. Den ser fin ud et par år, og når den ridser eller skaller, skal hele fladen slibes ned og gøres om.</p>
-        <p>Vi olierer i stedet. Træinventaret behandles med en hårdvoksolie, der trænger ned i træets øverste fibre og hærder dér i stedet for at ligge som en film ovenpå. Træet beholder sit naturlige udtryk, og overfladen tåler slid, vand og daglig rengøring.</p>
-        <p>Det vigtigste er, at den kan vedligeholdes lokalt. Et slidt hjørne friskes op på stedet med ny olie, uden at hele møblet skal slibes ned. Dele, der håndteres hele dagen, som skydedøre, får en slidstærk topcoat oven på olien.</p>
-      </div>
+      <a href={`${base}projekter`} class="ulink">Alle projekter, arkitekter og entreprenører →</a>
     </div>
-    <div class="finish-points">
-      <div class="fp"><h3>Ingen film der kan skalle</h3><p>Olien sidder i træet, ikke som et lag ovenpå, så der er ingen film, der kan skalle af.</p></div>
-      <div class="fp"><h3>Plet-reparerbar</h3><p>Slid udbedres lokalt og glider sammen med resten — uden synlige overgange eller afmontering.</p></div>
-      <div class="fp"><h3>Dokumenteret til indeklimaet</h3><p>Overfladebehandlingen vælges, så den kan dokumenteres til indeklimakravene i certificeret byggeri.</p></div>
-    </div>
+    <div class="pgrid three rv">{projekter.map((c) => <ProjectCard c={c} compact />)}</div>
   </div></section>
 
-  <!-- ============ CERTIFICERINGER ============ -->
-  <section class="certs" id="cert"><div class="wrap cert-grid">
-    <div>
-      <span class="label">Certificeret byggeri</span>
-      <h2>Dokumentationen følger med leverancen.</h2>
-      <p class="txt">Bygger I efter Svanemærket eller andre ordninger, leverer vi dokumentationen på de materialer, vi bruger, sammen med inventaret. Kræver udbuddet FSC- eller PEFC-træ, skriver vi i tilbuddet, hvilke plader der kan leveres med certificering fra leverandøren.</p>
-    </div>
-    <div>
-      <div class="chip-row">
-        <span class="chip">Svanemærket byggeri</span>
-        <span class="chip">EPD</span>
-        <span class="chip">Indeklima</span>
-      </div>
-      <div class="doc-list">
-        <div class="d"><span><b>EPD'er og produktdatablade</b> på de anvendte materialer</span></div>
-        <div class="d"><span><b>Indeklimadokumentation</b> til certificeringsordningens krav</span></div>
-        <div class="d"><span><b>Certificeret træ</b> efter udbuddets krav, med leverandørens dokumentation</span></div>
-      </div>
-    </div>
-  </div></section>
-
-  <!-- ============ PROCES ============ -->
-  <section class="process" id="proces"><div class="wrap">
-    <div class="sec-head">
+  <!-- 6 · KULØRER -->
+  <section class="sec" id="kulorer"><div class="wrap">
+    <div class="sec-head rv">
       <div>
-        <span class="label">Sådan kommer vi i gang</span>
-        <h2>To veje ind. Samme værksted.</h2>
+        <span class="label">Overflade</span>
+        <h2>Syv kulører — eller <em>jeres</em> egen.</h2>
+        <p class="lede">Vi olierer med Rubio Monocoat. Bagved ligger et farvekort med omkring 40 kulører, og vi kan få blandet en til jer.</p>
       </div>
+      {hasLanding('bejdset-olieret-eller-lakeret') && <a href={`${base}bejdset-olieret-eller-lakeret`} class="ulink">Bejdset, olieret eller lakeret? →</a>}
     </div>
-    <div class="p-tracks">
-      <div class="track">
-        <span class="t-kick">Spor 1 · Kataloget</span>
-        <h3>Sådan bestiller du en arketype</h3>
-        <div class="step"><span class="sn">1</span><div><b>Vælg og beskriv</b><p>Peg på en arketype og send os jeres mål, antal og ønsker til materiale og farve.</p></div></div>
-        <div class="step"><span class="sn">2</span><div><b>Se den i 3D — med pris</b><p>I får en render af jeres konkrete løsning og en samlet pris. Justér til det sidder rigtigt.</p></div></div>
-        <div class="step"><span class="sn">3</span><div><b>Vi bygger og leverer</b><p>Produktion, dokumentation og levering — montage hvis I vil have det med.</p></div></div>
-      </div>
-      <div class="track alt">
-        <span class="t-kick">Spor 2 · Projekter</span>
-        <h3>Sådan starter et projekt</h3>
-        <div class="step"><span class="sn">1</span><div><b>Send tegninger eller udbud</b><p>Arkitekttegninger, snedkerbeskrivelse eller tilbudsliste — vi læser materialet og stiller de rigtige spørgsmål.</p></div></div>
-        <div class="step"><span class="sn">2</span><div><b>Tilbud med 3D og dokumentation</b><p>Struktureret tilbud, renders af nøgleemner og en plan for materialegodkendelser.</p></div></div>
-        <div class="step"><span class="sn">3</span><div><b>Produktion i delleverancer</b><p>Vi leverer i takt med byggepladsen — ikke som én stor slutlevering, der vælter tidsplanen.</p></div></div>
-      </div>
+    <div class="rv"><KulorBand colors={colors} /></div>
+    <div class="surf rv">
+      <div><b>Olie, ikke lak</b><span>Ét lag hårdvoksolie, der trænger ind i træet. Der er ingen lakfilm, der kan skalle af.</span></div>
+      <div><b>Slid kan pletrepareres</b><span>En ridse slibes og olieres på stedet uden at skifte lågen.</span></div>
+      <div><b>Samme kulør igen</b><span>Kuløren er en opskrift, så en ekstra låge om tre år får samme farve.</span></div>
     </div>
   </div></section>
 
-  <!-- ============ CTA ============ -->
-  <section class="cta" id="kontakt"><div class="wrap">
-    <span class="label">Kontakt</span>
-    <h2>Send os målene. Eller hele <em>udbuddet.</em></h2>
-    <p>Begge dele lander samme sted — hos et hold der kender byggeri, svarer i fagsprog og vender hurtigt tilbage med næste skridt. Vi leverer også vores produkter til private.</p>
-    <div class="cta-actions">
-      <a href="mailto:tilbud@neminventar.dk" class="btn btn-light">tilbud@neminventar.dk <span class="arr">→</span></a>
-      <a href="tel:+4542422684" class="btn btn-ghost" style="border-color:#443B2A;color:#CFC4B2">+45 42 42 26 84</a>
+  <!-- 7 · KONTAKT -->
+  <section class="sec sec-dark" id="kontakt"><div class="wrap kontakt-grid">
+    <div class="rv">
+      <span class="label">Kontakt</span>
+      <h2 class="kontakt-h">Send os tegningerne. <em>Eller en skitse.</em></h2>
+      <p class="lede">Et udbud, en tegning eller et foto af rummet med mål er nok til en pris. Vi svarer inden for én arbejdsdag.</p>
+      <div class="kontakt-btns">
+        <a href="#send" class="btn btn-light">Send materialet <span class="arr">→</span></a>
+        <a href="#design" class="btn btn-dark-ghost">Design det selv</a>
+      </div>
+      <div class="clines">
+        <a href={`tel:${PHONE_TEL}`} class="tel">{PHONE}</a>
+        <span><a href="mailto:tilbud@neminventar.dk">tilbud@neminventar.dk</a></span>
+        <span>Nem Inventar ApS · Mågevej 73, st. tv. · 2400 København NV · CVR 45085473</span>
+      </div>
     </div>
-    <p class="alt-contact">Generelle henvendelser: <a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a></p>
+    <div class="team rv">
+      {TEAM.map((m) => (
+        <div class="mem">
+          <img src={`${base}team/${m.img}`} alt={m.name} loading="lazy" decoding="async" />
+          <div><b>{m.name}</b><span>{m.desc}</span><a href={`mailto:${m.email}`}>{m.email}</a></div>
+        </div>
+      ))}
+    </div>
   </div></section>
 
   <style>
-    .finish-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;align-items:start}
-    .finish-grid h2{font-size:clamp(28px,3.4vw,44px);margin-top:22px}
-    .finish-body p{font-size:17px;color:var(--ink);line-height:1.8;margin-bottom:14px;max-width:60ch}
-    .finish-points{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:56px;padding-top:48px;border-top:1px solid var(--line)}
-    .fp h3{font-size:18px;margin-bottom:10px}
-    .fp p{font-size:14.5px;color:var(--muted);line-height:1.65}
-    @media(max-width:880px){
-      .finish-grid{grid-template-columns:1fr;gap:28px}
-      .finish-points{grid-template-columns:1fr;gap:24px;margin-top:40px;padding-top:32px}
-    }
+    .yd-links{margin-top:48px;padding-top:28px;border-top:1px solid var(--line)}
+    .yd-h{margin-bottom:6px}
+    .docs{display:flex;gap:8px 10px;flex-wrap:wrap;align-items:center;margin-top:32px;padding-top:22px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+    .docs b{color:var(--ink);font-weight:600;margin-right:6px}
+    .docs .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 12px;font-size:13px;color:var(--ink);text-decoration:none}
+    .projekter-udvalg{background:var(--soft);border-block:1px solid var(--line)}
+    .surf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 28px;margin-top:28px}
+    .surf div{border-top:1px solid var(--line);padding-top:12px}
+    .surf b{font-family:'Archivo',sans-serif;font-size:17px;display:block}
+    .surf span{font-size:14.5px;color:var(--muted)}
+    .kontakt-grid{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:clamp(28px,5vw,72px);align-items:start}
+    .kontakt-h{font-size:clamp(32px,4.2vw,56px);line-height:1;letter-spacing:-.03em;margin-top:22px}
+    .kontakt-btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+    .team{display:grid;gap:12px}
+    .mem{display:grid;grid-template-columns:64px 1fr;gap:14px;align-items:center;border:1px solid var(--dark-line);border-radius:16px;padding:12px;background:var(--dark-2)}
+    .mem img{width:64px;height:64px;border-radius:12px;object-fit:cover;background:#3a3226}
+    .mem b{display:block;font-family:'Archivo',sans-serif;font-size:16px;color:#F4EFE6}
+    .mem span{display:block;font-size:13.5px;color:var(--dark-muted)}
+    .mem a{font-size:13.5px;color:#F4EFE6;text-decoration-color:#5A4F3C;text-underline-offset:3px}
+    @media (max-width:900px){.kontakt-grid{grid-template-columns:1fr}.surf{grid-template-columns:1fr}}
   </style>
 </Base>

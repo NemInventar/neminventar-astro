@@ -99,7 +99,7 @@ Mockuppen er facit for rækkefølge, tekst og udseende. Komponenterne fra v2 gen
 - **Ankre og SEO:** katalogpanelet har `id="katalog"`, og "Det laver vi" har `id="ydelser"`, fordi landingssider, Nav, 404, produktsidernes brødkrumme (JSON-LD) og `/en/` linker dertil. `#projekter` peger på `/projekter` som i v2. Kickeren bliver en del af `<h1>`: "Fast inventar til byggeri. *Se det, før vi bygger det.*", så H1 har et kategoriord. Katalogpanelet får JSON-LD `ItemList` over typerne. Organization-JSON-LD fra v2 bevares.
 - **Telefon (under 980 px) og `saveData`:** 3D hentes kun ved tryk på "Se i 3D". Stillbilledet er standard, fordi three og en løbende animation er for dyrt for alle besøgende. Reduced motion respekteres.
 - Forsiden har som udgangspunkt kun én navngiven sagshenvisning ud over Projekter-sektionen, nemlig bevisbjælken.
-- **Svarløftet** "Svar inden for én arbejdsdag" står ét sted i toppen og ét sted i formularen, ikke seks. Det er et nyt løfte og kræver Joachims ok (§11).
+- **Svarløftet** "Svar inden for én arbejdsdag" står ét sted i toppen og ét sted i formularen, ikke seks. Joachim 05-10-2026: det gælder altid, også i ferier.
 - **Terminologi:** "bejdset" bruges kun om bejdsede låger, mens overfladen generelt hedder "olieret" (overflade-guiden er kilden).
 - `lint-web-copy.py`: ny **ADVAR**-regel, når et sagsnavn fra `case_web.public_title` står mere end 2 gange i den renderede HTML for en side.
 - Ingen målangivelser i mm i kundetekst, ingen stednavne fra egenproduktionen, ingen mærkenavne på dele (uændrede regler).
@@ -111,7 +111,7 @@ Mockuppen er facit for rækkefølge, tekst og udseende. Komponenterne fra v2 gen
 **D3a-lite (designer-sessionen, før indlejringen):**
 - **Tilstand i URL'en:** `designer.html?p=<id>&t=<base64url(JSON-tilstand)>` læses ved start og skrives ved ændring (`replaceState`). `konfiguration` i leadet er samme JSON. Det er grundlaget for "Åbn i designeren", varianterne og leadet.
 - **Eget Pages-projekt (`ni-designer`)**, bygget af ni-apps' gate fra en `dist/offentlig/`, der kun indeholder kerne, produkter og three. Ingen `pris/`, ingen `*/pris.js`, ingen `prisgitter.json`, ingen `intern.js`. Ingen Access og ingen bypass på `ni-apps`, fordi en bypass på `/prisbog/designer/*` ville åbne prisgitteret ved siden af. Testen kører på **dist-fillisten**, ikke kun importgrafen. Download-API'et får usynlig Turnstile.
-- **Domæne:** anbefaling `designer.neminventar.dk` som custom domain **på `ni-designer`-projektet**, fordi tillid kræver eget domæne. Fallback er `ni-designer.pages.dev`. Kræver DNS (Joachims beslutning, §11).
+- **Domæne (Joachim 05-10-2026):** `ni-designer.pages.dev` fra start. neminventar.dk's DNS ligger i Microsoft 365 (ns1-4.bdm.microsoftonline.com), så `designer.neminventar.dk` kræver en CNAME, som en M365-administrator skal lægge ind. Det kan ske senere uden kodeændring ud over `DESIGNER_URL`.
 
 **D3b · indlejring i toppen:** én bundlet og versioneret fil `indlejr.v1.js` (esbuild med three indbygget, ca. 170 KB brotli). API'et er frosset pr. version og dækket af `test/designer-indlejr.test.mjs`:
 
@@ -127,7 +127,7 @@ d.ryd()
 - `ni-designer` sender CORS til `https://neminventar.dk` og `*.neminventar-preview.pages.dev`.
 - Hjemmesiden ejer **knapperne rundt om** 3D'en: kulør, antal og højde, læsefeltet og "Få et tilbud". Designeren ejer scenen og geometrien. "Hent IFC" i toppen åbner permalinket med `&hent=ifc`.
 - **Mellemtrin, hvis bundlen trækker ud:** en iframe (`embed.html` + postMessage) på `ni-designer` (ikke `ni-apps`, som sender `X-Frame-Options: DENY`). Så bor knapperne i rammen.
-- **Indtil D3b findes**, viser toppen stillbilledet og knappen "Åbn designeren" (eller "Send os materialet", hvis D3a-lite heller ikke er klar). Mockuppens egen three.js-kode bruges **ikke** i produktion, så vi ikke får to geometrier.
+- **Indtil D3b findes** (Joachim ok 05-10-2026): toppen bruger `src/scripts/hero3d.ts`, mockuppens scene, uden pris og uden IFC. Den indlæses efter `load` på computer og ved tryk på telefon, og stillbilledet er LCP. Når `indlejr.v1.js` findes, erstatter den `hero3d.ts`, som så fjernes, så der kun er én geometri.
 
 **"Få et tilbud" i designeren (D3b):** sender `kind=besked, spor=designer, konfiguration, permalink` og evt. billedet som fil til `contact-form` v6, med Turnstile-token. Samme felter fra både hjemmesiden og designeren.
 
@@ -152,9 +152,9 @@ En **variant** er en bestemt udgave af en type, som vi har en render af. Titel, 
 
 ## 9. Opmærksomhedspunkter
 
-- **Rubio:** kulørprøverne på ask og videoklippet er Rubio Monocoats materiale. Deres skriftlige ok skal ligge, før det går live. Indtil da bruger kulørbåndet kun vores egne prøver, eller også vises båndet uden de fem Rubio-prøver.
+- **Rubio (Joachim 05-10-2026):** vi må bruge Rubio Monocoats prøver og klip, og renderfarverne baseres på dem. Rubios kort har i dag ingen sort eller grå, fordi deres "Black" og "Charcoal" er brune toner på alle træsorter. Båndet viser derfor Rubios prøve på ask for natur (Pure), røget eg (Cocoa) og skovgrøn (Fern), vores egne låger for rødbrun og blå, og sort og charcoal som farveflade. `web_colors.finish_note` og `prompt_modifier` bærer Rubio-navnet, og `swatch_hex` for røget eg og skovgrøn er målt på Rubios prøve.
 - **Foto 01** (børnenes navne) må ikke bruges, og fotos med navnemærker i fuld størrelse skal retoucheres først.
-- **Priser** i toppen er eksempler, indtil prisgitteret er valideret: "fra ca." og kun godkendte prisbogsprodukter. Den perforerede locker med kodelås er ikke regnet.
+- **Priser:** ingen i toppen, før prisgitteret er valideret (B5). "Fra ca." kun på katalogkort for godkendte prisbogsprodukter. Den perforerede locker med kodelås er ikke regnet.
 - **Én sandhed:** sagstal, kulører og typer kommer fra views. I koden står kun udvalg og rækkefølge.
 
 ## 10. Test og bevis
@@ -165,13 +165,15 @@ En **variant** er en bestemt udgave af en type, som vi har en render af. Titel, 
 - Lighthouse på forsiden på mobil: LCP under 2,5 s og CLS under 0,05.
 - Forhåndsvisning: `https://forside-v3.neminventar-preview.pages.dev` (preview.yml). Merge til `main` først efter Joachims ok.
 
-## 11. Beslutninger, der venter på Joachim
+## 11. Beslutninger (Joachim 05-10-2026)
 
-1. **Domæne til designeren:** `designer.neminventar.dk` på `ni-designer` (anbefalet, kræver DNS) eller `ni-designer.pages.dev`?
-2. **Rubio-ok:** hvem spørger Rubio Monocoat Denmark, og må båndet gå live med kun vores to prøver (rødbrun og blå) og fem farveflader i mellemtiden?
-3. **Lead-automatik:** må formularen oprette leads i CRM automatisk med `assigned_to 'milot'` (forslaget), eller skal et menneske stadig oprette dem fra mailen?
-4. **Svarløftet:** "Svar inden for én arbejdsdag" er et nyt offentligt løfte. Holder det, også i ferier?
-5. **Ingen pris i toppen** indtil gitteret er valideret (B5, Fable). Mockuppen viste eksempelpriser. Er det i orden?
+1. **D1 til `main`:** ja. PR #1 er merget og live 05-10.
+2. **Lead-automatik:** ja. Formularen opretter lead i CRM med `assigned_to 'milot'` og en huskeliste-pointer (`contact-form` v6).
+3. **Midlertidig 3D i toppen:** ja (§6).
+4. **Domæne:** `ni-designer.pages.dev` nu, eget domæne senere (§6).
+5. **Rubio:** vi må bruge deres materiale (§9).
+6. **Svarløftet:** "Svar inden for én arbejdsdag" gælder altid.
+7. **Forsiden live:** når Joachim har set forhåndsvisningen eller planen for resten.
 
 ## 12. Fable-gennemgang 05-10-2026 — hvad der blev ændret
 

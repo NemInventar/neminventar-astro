@@ -1,0 +1,837 @@
+<title>Ny forside neminventar.dk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,500;0,600;0,700;0,800;1,500;1,600;1,700&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --paper:#FAF8F3; --ink:#17140E; --muted:#6E6759; --soft:#F1EDE3; --line:#E5DFD2;
+  --warm:#A2652A; --warm-soft:#C98A4B; --dark:#1C1812; --dark-2:#221D15; --dark-line:#332C1F;
+  --dark-text:#CFC4B2; --dark-muted:#A99D88; --card:#FFFDF9; --ok:#3B8A4F;
+  --ease:cubic-bezier(.2,.7,.2,1);
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"Inter",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+}
+html{background:var(--paper);scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:inherit}
+img{display:block}
+.wrap{max-width:1280px;margin:0 auto;padding-inline:clamp(16px,4vw,48px)}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--warm);outline-offset:3px;border-radius:6px}
+.kicker{display:flex;align-items:center;gap:12px;font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--warm);margin-bottom:18px}
+.kicker::before{content:"";width:28px;height:1px;background:var(--warm)}
+.h2{font-size:clamp(32px,4.2vw,56px);line-height:1;letter-spacing:-.03em;font-weight:800}
+.h2 em{font-style:italic;font-weight:600;color:var(--warm)}
+.sec{padding-block:clamp(56px,8vw,104px)}
+.sechead{display:flex;justify-content:space-between;align-items:flex-end;gap:16px 40px;flex-wrap:wrap;margin-bottom:clamp(24px,3vw,40px)}
+.sechead p{color:var(--muted);max-width:52ch;margin:16px 0 0;font-size:17px}
+.more{font-weight:600;font-size:15px;text-decoration:none;white-space:nowrap;border-bottom:1px solid var(--warm-soft);padding-bottom:2px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border-radius:999px;padding:12px 20px;font-weight:600;font-size:15px;text-decoration:none;border:1px solid transparent;cursor:pointer;transition:transform .2s var(--ease),background .2s,border-color .2s;white-space:nowrap}
+.btn:hover{transform:translateY(-1px)}
+.btn.ink{background:var(--ink);color:var(--paper)}
+.btn.ghost{border-color:var(--line);background:var(--card)}
+.btn.sm{padding:8px 14px;font-size:13.5px}
+.tagv{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.06em;background:rgba(250,248,243,.92);color:var(--ink);border-radius:999px;padding:4px 10px}
+
+/* mockup-bjælke */
+.mbar{background:var(--ink);color:#EDE6D8;font-size:13px}
+.mbar .wrap{display:flex;gap:10px 20px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding-block:10px}
+.mbar b{font-family:var(--display);letter-spacing:.02em}
+.mbar a{color:#EDE6D8}
+
+/* nav */
+.nav{border-bottom:1px solid var(--line);background:var(--paper);position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
+.nav .wrap{display:flex;align-items:center;gap:28px;height:68px}
+.logo{font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:.01em;text-decoration:none;margin-right:auto;white-space:nowrap}
+.nav .links{display:flex;gap:26px;font-size:15px;color:var(--muted)}
+.nav .links a{text-decoration:none}
+.nav .links a:hover{color:var(--ink)}
+.tel{font-weight:600;font-size:15px;white-space:nowrap;text-decoration:none}
+.menu{display:none;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--card);place-items:center}
+@media (max-width:1040px){.nav .links{display:none}.nav .btn{display:none}.menu{display:grid}.nav .wrap{gap:14px}}
+
+/* ============ 1 TOP ============ */
+.hero{padding-block:clamp(28px,4.5vw,56px) clamp(32px,4vw,56px)}
+.hero .grid{display:grid;grid-template-columns:minmax(0,4.6fr) minmax(0,7.4fr);gap:clamp(24px,3.6vw,52px);align-items:start}
+.hero h1{font-size:clamp(42px,4.9vw,72px);line-height:.95;letter-spacing:-.035em;font-weight:800}
+.hero h1 em{font-style:italic;font-weight:600;color:var(--warm)}
+.lead{font-size:17px;color:var(--muted);max-width:42ch;margin:20px 0 0}
+.paths{display:grid;gap:10px;margin-top:28px}
+.path{display:grid;grid-template-columns:44px 1fr 20px;gap:14px;align-items:center;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;cursor:pointer;transition:border-color .2s,background .2s,transform .2s var(--ease)}
+.path:hover{border-color:#cdbfa6;transform:translateX(2px)}
+.path[aria-selected="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.path .ic{width:44px;height:44px;border-radius:12px;background:var(--soft);display:grid;place-items:center;color:var(--warm)}
+.path[aria-selected="true"] .ic{background:#2e2820;color:var(--warm-soft)}
+.path b{display:block;font-family:var(--display);font-size:18px;font-weight:700;letter-spacing:-.01em}
+.path small{display:block;font-size:13.5px;color:var(--muted);margin-top:2px;line-height:1.4}
+.path[aria-selected="true"] small{color:var(--dark-text)}
+.path .ar{font-size:18px;opacity:.5}
+.assure{display:flex;gap:8px 18px;flex-wrap:wrap;margin-top:18px;font-size:13.5px;color:var(--muted)}
+.assure span{display:flex;align-items:center;gap:7px}
+.assure span::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--warm-soft)}
+
+.panelwrap{position:relative}
+.panel{border:1px solid var(--line);background:var(--card);border-radius:24px;overflow:hidden;box-shadow:0 30px 60px -44px rgba(60,40,10,.4)}
+.panel[hidden]{display:none!important}
+.panel{scroll-margin-top:84px}
+.phead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid var(--line)}
+.seg{display:inline-flex;background:var(--soft);border-radius:999px;padding:3px}
+.seg button{border:0;background:none;border-radius:999px;padding:7px 14px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.phead .note{font-size:12.5px;color:var(--muted)}
+
+/* design selv */
+.stage{position:relative;aspect-ratio:16/11;max-width:100%;background:linear-gradient(180deg,#EFE8DA 0%,#EAE2D2 72%,#DCD3C3 72.2%,#D6CDBC 100%)}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab;transition:opacity .6s var(--ease)}
+.stage canvas:active{cursor:grabbing}
+.stage .photo{position:absolute;inset:0;margin:0;opacity:0;transition:opacity .6s var(--ease);pointer-events:none}
+.stage .photo img{width:100%;height:100%;object-fit:cover}
+.stage .photo .tagv{position:absolute;left:14px;bottom:14px}
+.stage.show-photo canvas{opacity:0;pointer-events:none}
+.stage.show-photo .photo{opacity:1}
+.stage .hint{position:absolute;left:14px;top:14px;display:flex;gap:8px;align-items:center;background:rgba(250,248,243,.9);border:1px solid var(--line);border-radius:999px;padding:6px 12px 6px 10px;font-size:12px;color:var(--muted);transition:opacity .4s}
+.stage .hint i{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 4px rgba(59,138,79,.18)}
+.stage.show-photo .hint{opacity:0}
+.stage .toggle{position:absolute;right:14px;top:14px;background:rgba(23,20,14,.88);color:var(--paper);border:0;border-radius:999px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer}
+.ctrl{display:grid;grid-template-columns:auto auto 1fr;gap:14px 28px;align-items:end;padding:16px 18px;border-top:1px solid var(--line)}
+.lbl{display:block;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.sw{display:flex;gap:8px}
+.sw button{width:28px;height:28px;border-radius:50%;border:2px solid var(--card);box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0;transition:transform .15s}
+.sw button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--ink);transform:scale(1.06)}
+.colname{font-size:12.5px;color:var(--muted);margin-top:6px;min-height:1.2em}
+.steps{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.step{display:flex;align-items:center;border:1px solid var(--line);border-radius:999px;background:var(--paper)}
+.step button{width:32px;height:32px;border:0;background:none;font-size:18px;cursor:pointer;border-radius:50%}
+.step button:disabled{opacity:.3;cursor:default}
+.step output{min-width:22px;text-align:center;font-weight:600;font-variant-numeric:tabular-nums}
+.seg.h button{padding:6px 10px;font-size:13px}
+.read{text-align:right;justify-self:end}
+.read .spec{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.read .sum{font-family:var(--display);font-weight:700;font-size:22px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.read .sum small{font-family:var(--body);font-weight:500;font-size:12px;color:var(--muted)}
+.acts{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 18px 16px;border-top:1px solid var(--line);background:var(--paper)}
+.acts .sp{flex:1}
+.acts .lnk{font-size:13.5px;font-weight:600;text-decoration-color:var(--warm-soft);text-underline-offset:3px}
+
+/* katalog-panel */
+.cgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:16px}
+.cc{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--paper);display:flex;flex-direction:column}
+.cc .im{position:relative;aspect-ratio:4/3;overflow:hidden}
+.cc .im img{width:100%;height:100%;object-fit:cover;transition:transform .6s var(--ease)}
+.cc:hover .im img{transform:scale(1.04)}
+.cc .im .tagv{position:absolute;left:8px;top:8px}
+.cc .tx{padding:10px 12px 12px;display:flex;flex-direction:column;gap:8px;flex:1}
+.cc h3{font-size:15px;font-weight:700;letter-spacing:-.01em;line-height:1.2}
+.badges{display:flex;gap:6px;flex-wrap:wrap}
+.badge{font-size:11px;font-weight:600;border-radius:5px;padding:2px 6px;border:1px solid var(--line);color:var(--muted)}
+.badge.on{border-color:var(--ink);color:var(--ink)}
+.cc .ca{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
+.cc .ca button{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 10px;font-size:12.5px;font-weight:600;cursor:pointer}
+.cc .ca button.pri{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.cfoot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:0 18px 18px}
+.cfoot span{font-size:13px;color:var(--muted)}
+
+/* send-panel */
+.sendbody{padding:18px;display:grid;gap:14px}
+.drop{border:1.5px dashed #cdbfa6;border-radius:16px;background:var(--paper);padding:22px;text-align:center;cursor:pointer;transition:background .2s,border-color .2s}
+.drop:hover,.drop.over{background:#F5EFE3;border-color:var(--warm)}
+.drop b{font-family:var(--display);font-size:17px;display:block}
+.drop span{font-size:13px;color:var(--muted)}
+.drop ul{list-style:none;margin:10px 0 0;padding:0;font-size:13px;color:var(--ink)}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fld label{display:block;font-size:12.5px;font-weight:600;margin-bottom:5px}
+.fld input,.fld select,.fld textarea{width:100%;border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:10px 12px;font-size:15px}
+.fld textarea{min-height:76px;resize:vertical}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:2px solid var(--warm-soft);outline-offset:0;border-color:transparent}
+.sendrow{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.sendrow small{color:var(--muted);font-size:12.5px}
+.sent{border-radius:12px;background:#EEF4EC;color:#24502F;padding:12px 14px;font-size:14px}
+.mailbox{display:grid;gap:12px;padding:6px 0}
+.mailbig{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-family:var(--display);font-size:clamp(22px,3vw,32px);font-weight:700;letter-spacing:-.02em;user-select:all}
+.mailbox p{margin:0;color:var(--muted);max-width:52ch}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--paper);padding:12px 18px;border-radius:14px;font-size:14px;max-width:min(520px,calc(100vw - 32px));opacity:0;pointer-events:none;transition:opacity .25s,transform .25s var(--ease);z-index:50}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:980px){
+  .hero .grid{grid-template-columns:1fr}
+  .hero h1{font-size:clamp(40px,11vw,60px)}
+  .stage{aspect-ratio:4/5}
+  .stage .toggle{top:auto;bottom:14px}
+  .ctrl{grid-template-columns:1fr;gap:14px}
+  .read{text-align:left;justify-self:stretch;border-top:1px solid var(--line);padding-top:12px}
+  .cgrid{grid-template-columns:1fr 1fr}
+}
+@media (max-width:520px){ .f2{grid-template-columns:1fr} .cc .ca button{padding:5px 8px} .path small{font-size:13px} }
+
+/* ============ 2 BEVIS ============ */
+.proof{border-block:1px solid var(--line);background:var(--card)}
+.proof .wrap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.proof div{padding:22px 20px;border-left:1px solid var(--line)}
+.proof div:first-child{border-left:0;padding-left:0}
+.proof b{display:block;font-family:var(--display);font-size:32px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.1}
+.proof span{font-size:14px;color:var(--muted)}
+@media (max-width:900px){.proof .wrap{grid-template-columns:1fr 1fr}.proof div{border-left:0;padding-left:0;border-top:1px solid var(--line)}.proof div:nth-child(-n+2){border-top:0}}
+
+/* ============ 3 INSPIRATION ============ */
+.mos{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px}
+.mt{position:relative;margin:0;border-radius:18px;overflow:hidden;background:var(--soft);min-height:0}
+.mt img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease)}
+.mt:hover img{transform:scale(1.035)}
+.mt.w8{grid-column:span 8;aspect-ratio:1200/655}
+.mt.w4{grid-column:span 4;aspect-ratio:600/655}
+.mt.w4 img{position:absolute;inset:0}
+.mt .tagv{position:absolute;left:12px;top:12px}
+.mt figcaption{position:absolute;left:0;right:0;bottom:0;padding:40px 16px 14px;background:linear-gradient(180deg,rgba(23,20,14,0),rgba(23,20,14,.72));color:#F7F2E8;display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap}
+.mt figcaption b{font-family:var(--display);font-size:17px;font-weight:700;display:block}
+.mt figcaption span{font-size:13px;color:#E3D9C7}
+.mt .ma{display:flex;gap:6px;flex-wrap:wrap;opacity:0;transform:translateY(6px);transition:opacity .25s,transform .25s var(--ease)}
+.mt:hover .ma,.mt:focus-within .ma{opacity:1;transform:none}
+.mt .ma button{border:0;border-radius:999px;padding:6px 11px;font-size:12.5px;font-weight:600;cursor:pointer;background:rgba(250,248,243,.95);color:var(--ink)}
+.mt .ma button.pri{background:var(--warm-soft);color:var(--ink)}
+@media (hover:none){.mt .ma{opacity:1;transform:none}}
+@media (max-width:900px){
+  .mos{grid-template-columns:1fr 1fr;gap:10px}
+  .mt.w8{grid-column:1/-1}
+  .mt.w4{grid-column:span 1;aspect-ratio:1/1}
+  .mt figcaption{padding:28px 10px 10px}
+  .mt figcaption b{font-size:14px}
+  .mt.w4 .ma{display:none}
+}
+
+/* ============ 4 PROCES ============ */
+.steps4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+.st{position:relative}
+.st .ph{position:relative;aspect-ratio:4/5;border-radius:14px;overflow:hidden;background:#fff;border:1px solid var(--line);transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
+.st:hover .ph{transform:translateY(-4px);box-shadow:0 18px 36px -24px rgba(40,25,5,.45)}
+.st .ph img,.st .ph video{width:100%;height:100%;object-fit:cover;object-position:var(--pos,50% 50%)}
+.st .n{position:absolute;top:12px;left:12px;z-index:2;width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-size:13px;font-weight:600}
+.st h3{font-size:19px;margin-top:16px}
+.st p{font-size:14.5px;color:var(--muted);margin:6px 0 0;line-height:1.55}
+.docs{display:flex;gap:8px 10px;flex-wrap:wrap;align-items:center;margin-top:32px;padding-top:22px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+.docs b{color:var(--ink);font-weight:600;margin-right:6px}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 12px;font-size:13px;color:var(--ink)}
+@media (max-width:1020px){.steps4{grid-template-columns:1fr 1fr;gap:22px 16px}}
+@media (max-width:560px){.st h3{font-size:16px}.st p{font-size:13.5px}}
+
+/* ============ 5 PROJEKTER ============ */
+.pgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.pc{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--card);display:flex;flex-direction:column;text-decoration:none;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.pc:hover{transform:translateY(-4px);box-shadow:0 22px 40px -28px rgba(40,25,5,.5)}
+.pc .im{position:relative;aspect-ratio:4/3;overflow:hidden}
+.pc .im img{width:100%;height:100%;object-fit:cover}
+.pc .im .tagv{position:absolute;left:10px;top:10px}
+.pc .tx{padding:16px 18px 18px;display:flex;flex-direction:column;gap:6px;flex:1}
+.pc .stat{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--warm)}
+.pc h3{font-size:22px;letter-spacing:-.02em}
+.pc p{margin:0;font-size:14.5px;color:var(--muted)}
+.pc dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:10px 0 0;font-size:13.5px;padding-top:10px;border-top:1px solid var(--line)}
+.pc dt{color:var(--muted)}
+.pc dd{margin:0;font-weight:500}
+@media (max-width:900px){.pgrid{grid-template-columns:1fr}}
+
+/* ============ 6 KULØRER ============ */
+.kul{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-radius:18px;overflow:hidden;height:clamp(150px,16vw,190px)}
+.kul figure{position:relative;margin:0;min-width:0}
+.kul img{width:100%;height:100%;object-fit:cover}
+.kul figcaption{position:absolute;left:12px;bottom:12px;font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.5)}
+.kulnote{font-size:12.5px;color:var(--muted);margin-top:10px}
+.surf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 28px;margin-top:28px}
+.surf div{border-top:1px solid var(--line);padding-top:12px}
+.surf b{font-family:var(--display);font-size:17px;display:block}
+.surf span{font-size:14.5px;color:var(--muted)}
+@media (max-width:760px){
+  .kul{grid-template-columns:1fr;height:auto}
+  .kul figure{height:44px}
+  .kul figcaption{top:50%;bottom:auto;transform:translateY(-50%)}
+  .surf{grid-template-columns:1fr}
+}
+
+/* ============ 7 KONTAKT ============ */
+.contact{background:var(--dark);color:#F4EEE2}
+.contact .grid{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:clamp(28px,5vw,72px);align-items:start}
+.contact .h2 em{color:var(--warm-soft)}
+.contact p{color:var(--dark-text);max-width:46ch;font-size:17px}
+.contact .btn.ink{background:#F4EEE2;color:var(--ink)}
+.contact .btn.ghost{background:transparent;border-color:#5A4F3C;color:#F4EEE2}
+.team{display:grid;gap:12px}
+.mem{display:grid;grid-template-columns:64px 1fr;gap:14px;align-items:center;border:1px solid var(--dark-line);border-radius:16px;padding:12px;background:var(--dark-2)}
+.mem img{width:64px;height:64px;border-radius:12px;object-fit:cover;background:#3a3226}
+.mem b{display:block;font-family:var(--display);font-size:16px}
+.mem span{display:block;font-size:13.5px;color:var(--dark-muted)}
+.mem a{font-size:13.5px;color:#F4EEE2;text-decoration-color:#5A4F3C;text-underline-offset:3px}
+.addr{margin-top:22px;font-size:13.5px;color:var(--dark-muted)}
+@media (max-width:900px){.contact .grid{grid-template-columns:1fr}}
+
+.foot{background:var(--dark-2);color:var(--dark-muted);font-size:13px;border-top:1px solid var(--dark-line)}
+.foot .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:18px}
+
+/* noter */
+.notes{padding-block:48px 72px}
+.notes h2{font-size:clamp(24px,2.6vw,32px);letter-spacing:-.02em}
+.notes .tw{overflow-x:auto;margin-top:18px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+.notes table{border-collapse:collapse;width:100%;min-width:680px;font-size:14px}
+.notes th,.notes td{text-align:left;padding:11px 16px;border-top:1px solid var(--line);vertical-align:top}
+.notes thead th{border-top:0;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.notes td:first-child{font-weight:600}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01s!important;scroll-behavior:auto!important}}
+</style>
+
+<div class="mbar"><div class="wrap">
+  <span><b>Mockup</b> · ny forside til neminventar.dk · 05-10-2026 · ikke live · knapper sender intet</span>
+  <a href="#noter">Hvad er ægte →</a>
+</div></div>
+
+<header class="nav"><div class="wrap">
+  <a class="logo" href="#top">NEM·INVENTAR</a>
+  <nav class="links" aria-label="Hovedmenu"><a href="#inventar">Inventar</a><a href="#top" data-go="design">Designeren</a><a href="#proces">Sådan arbejder vi</a><a href="#projekter">Projekter</a><a href="#kontakt">Om os</a></nav>
+  <a class="tel" href="#kontakt">+45 42 42 26 84</a>
+  <a class="btn ink" href="#top" data-go="send">Få en pris</a>
+  <button class="menu" type="button" aria-label="Menu"><svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 1h16M1 7h16M1 13h16"/></svg></button>
+</div></header>
+
+<!-- ================= 1 · TOP ================= -->
+<section class="hero" id="top"><div class="wrap grid">
+  <div>
+    <div class="kicker">Fast inventar til byggeri</div>
+    <h1>Se det, før vi <em>bygger</em> det.</h1>
+    <p class="lead">Lockers, garderober, højskabe og bænke til skoler, institutioner, idrætshaller og boliger. Tegnet i 3D af ingeniører og bygget i vores egenproduktion.</p>
+    <div class="paths" role="tablist" aria-label="Tre veje ind">
+      <button class="path" role="tab" id="t-design" aria-controls="p-design" aria-selected="true" data-p="design">
+        <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg></span>
+        <span><b>Design det selv</b><small>Lockers og højskabe i 3D. Mål, kulør og antal. Hent IFC.</small></span><span class="ar">→</span>
+      </button>
+      <button class="path" role="tab" id="t-katalog" aria-controls="p-katalog" aria-selected="false" data-p="katalog">
+        <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg></span>
+        <span><b>Vælg fra kataloget</b><small>17 typer fra vores leverancer. Hent IFC, åbn i designeren eller få en pris.</small></span><span class="ar">→</span>
+      </button>
+      <button class="path" role="tab" id="t-send" aria-controls="p-send" aria-selected="false" data-p="send">
+        <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 18v-6M9 15l3-3 3 3"/></svg></span>
+        <span><b>Send os materialet</b><small>En skitse, udbuddet eller bare en mail. Pris inden for én arbejdsdag.</small></span><span class="ar">→</span>
+      </button>
+    </div>
+    <div class="assure"><span>Svar inden for én arbejdsdag</span><span>Monteret af os</span><span>Leveret efter byggepladsens tidsplan</span></div>
+  </div>
+
+  <div class="panelwrap">
+    <!-- design selv -->
+    <div class="panel" id="p-design" role="tabpanel" aria-labelledby="t-design">
+      <div class="phead">
+        <div class="seg" id="prod"><button type="button" aria-pressed="true" data-k="locker">Lockers</button><button type="button" aria-pressed="false" data-k="hoejskab">Højskab</button></div>
+        <span class="note" id="pnote">Fra ca. 1.900 kr. pr. rum inkl. montage og levering</span>
+      </div>
+      <div class="stage" id="stage">
+        <canvas id="c" aria-label="3D-model"></canvas>
+        <figure class="photo" aria-hidden="true"><img id="photoImg" src="m/lockers-moerkhoej.jpg" alt=""><span class="tagv" id="photoTag">Foto fra en leverance</span></figure>
+        <div class="hint"><i></i>3D · træk for at dreje · tryk på en låge</div>
+        <button class="toggle" id="toggle" type="button">Se den i et rum</button>
+      </div>
+      <div class="ctrl">
+        <div><span class="lbl">Kulør</span><div class="sw" id="sw"></div><div class="colname" id="colname"></div></div>
+        <div id="dimctl"></div>
+        <div class="read"><div class="spec" id="spec"></div><div class="sum" id="sum"></div></div>
+      </div>
+      <div class="acts">
+        <button class="btn ink sm" type="button" data-toast="tilbud">Få et tilbud på denne</button>
+        <button class="btn ghost sm" type="button" data-toast="ifc">Hent IFC</button>
+        <button class="btn ghost sm" type="button" data-toast="dxf">Hent DXF</button>
+        <span class="sp"></span>
+        <a class="lnk" href="#top">Åbn i designeren →</a>
+      </div>
+    </div>
+
+    <!-- katalog -->
+    <div class="panel" id="p-katalog" role="tabpanel" aria-labelledby="t-katalog" hidden>
+      <div class="phead"><b style="font-family:var(--display)">Kataloget</b><span class="note">6 af 17 typer · alle er bygget på mål</span></div>
+      <div class="cgrid" id="cgrid"></div>
+      <div class="cfoot"><span>Visualiseringer og fotos af typer, vi bygger.</span><a class="more" href="#inventar">Se alle 17 typer →</a></div>
+    </div>
+
+    <!-- send -->
+    <div class="panel" id="p-send" role="tabpanel" aria-labelledby="t-send" hidden>
+      <div class="phead">
+        <div class="seg" id="mode"><button type="button" aria-pressed="true" data-m="skitse">Skitse eller foto</button><button type="button" aria-pressed="false" data-m="udbud">Udbud og tegninger</button><button type="button" aria-pressed="false" data-m="mail">Bare en mail</button></div>
+      </div>
+      <form class="sendbody" id="sendform" novalidate>
+        <div class="drop" id="drop" tabindex="0" role="button" aria-label="Vælg filer">
+          <b id="dropT">Læg skitsen eller et foto her</b>
+          <span id="dropS">Et foto af rummet, en håndtegning eller mål på et stykke papir er nok · billeder, pdf</span>
+          <ul id="files"></ul>
+          <input type="file" id="fileIn" multiple hidden>
+        </div>
+        <div class="f2">
+          <div class="fld"><label for="f-navn">Navn</label><input id="f-navn" autocomplete="name"></div>
+          <div class="fld"><label for="f-firma">Firma <span style="font-weight:400;color:var(--muted)">(valgfrit)</span></label><input id="f-firma" autocomplete="organization"></div>
+          <div class="fld"><label for="f-mail">Mail</label><input id="f-mail" type="email" autocomplete="email"></div>
+          <div class="fld"><label for="f-tlf">Telefon <span style="font-weight:400;color:var(--muted)">(valgfrit)</span></label><input id="f-tlf" type="tel" autocomplete="tel"></div>
+        </div>
+        <div class="fld"><label for="f-hvad">Hvad skal I have?</label><textarea id="f-hvad" placeholder="Fx 6 højskabe i blå krydsfiner, 210 cm høje, til et personalerum."></textarea></div>
+        <div class="fld"><label for="f-kilde">Hvor fandt I os?</label>
+          <select id="f-kilde"><option value="">Vælg</option><option>Google</option><option>ChatGPT eller anden AI</option><option>Anbefaling</option><option>LinkedIn</option><option>Vi har arbejdet sammen før</option><option>Andet</option></select></div>
+        <div class="sendrow"><small>Vi svarer inden for én arbejdsdag. Filerne bruges kun til jeres pris.</small><button class="btn ink" type="submit">Send · få en pris</button></div>
+        <div class="sent" id="sent" hidden>Mockup: intet er sendt. På sitet lander henvendelsen i CRM med kilden udfyldt, og filerne ligger klar til tilbuddet.</div>
+      </form>
+      <div class="sendbody" id="mailmode" hidden>
+        <div class="mailbox">
+          <span class="lbl" style="margin:0">Skriv direkte til os</span>
+          <div class="mailbig"><span id="mailaddr">tilbud@neminventar.dk</span><button class="btn ghost sm" type="button" id="copy">Kopiér</button></div>
+          <p>Skriv, hvad I skal have, og vedhæft gerne tegninger eller udbuddet. Vi svarer inden for én arbejdsdag.</p>
+          <p>Telefon <b style="color:var(--ink);user-select:all">+45 42 42 26 84</b> · hverdage 8-16</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ================= 2 · BEVIS ================= -->
+<section class="proof" aria-label="Fra leverancerne"><div class="wrap">
+  <div><b>342</b><span>lockers med skohylder · Mørkhøj Skole</span></div>
+  <div><b>230</b><span>badeværelsesskabe i kompaktlaminat · Bølholmen</span></div>
+  <div><b>150 m</b><span>bænke og 150 locker-rum · Sundby Idrætspark</span></div>
+  <div><b>92</b><span>børnegarderober · Daginstitution Vinge</span></div>
+</div></section>
+
+<!-- ================= 3 · INSPIRATION ================= -->
+<section class="sec" id="inventar"><div class="wrap">
+  <div class="sechead">
+    <div><div class="kicker">Inspiration</div><h2 class="h2">Set i 3D, før det <em>bygges.</em></h2>
+    <p>Visualiseringer af typer, vi bygger. Hver udgave kan hentes som IFC til jeres model, åbnes i designeren eller prissættes, som den står.</p></div>
+    <a class="more" href="#inventar">Alle 17 typer og deres varianter →</a>
+  </div>
+  <div class="mos" id="mos"></div>
+</div></section>
+
+<!-- ================= 4 · PROCES ================= -->
+<section class="sec" id="proces" style="padding-top:0"><div class="wrap">
+  <div class="sechead">
+    <div><div class="kicker">Sådan arbejder vi</div><h2 class="h2">Fra 3D-model til <em>færdigt rum.</em></h2>
+    <p>Holdet er ingeniører. Hvert skab, hver bænk og hver niche bygges først som 3D-model. Samme model giver tegningen til jeres godkendelse og styklisten til produktionen.</p></div>
+    <a class="more" href="#proces">Sådan ser tegningerne ud →</a>
+  </div>
+  <div class="steps4">
+    <div class="st"><span class="n">1</span><div class="ph"><video id="v3d" src="m/model.mp4" poster="m/model.jpg" muted loop playsinline preload="metadata" aria-label="Skærmoptagelse af 3D-modellen af et garderobemodul" style="--pos:40% 50%"></video></div><h3>Tegnet i 3D</h3><p>I ser møblet i 3D og godkender det, før vi skærer den første plade.</p></div>
+    <div class="st"><span class="n">2</span><div class="ph"><img src="r/tegning-skohylde.jpg" alt="Værkstedstegning af et skohyldemodul" style="--pos:12% 50%" loading="lazy"></div><h3>Tegningen</h3><p>Tegning til godkendelse og stykliste kommer fra samme model. Det, I godkender, er det, vi bygger.</p></div>
+    <div class="st"><span class="n">3</span><div class="ph"><video src="m/proeve.mp4" poster="m/proeve.jpg" muted loop playsinline preload="metadata" aria-label="Prøveemne af en locker"></video></div><h3>Prøveemnet</h3><p>Ved større leverancer bygger vi ét eksemplar først, så låge, lås og overflade kan godkendes i hånden.</p></div>
+    <div class="st"><span class="n">4</span><div class="ph"><img src="r/foto-detalje-haengsel.jpg" alt="Olieret låge med perforering og hængsel" style="--pos:30% 50%" loading="lazy"></div><h3>Møblet</h3><p>Leveret i etaper efter byggepladsens tidsplan og monteret af os.</p></div>
+  </div>
+  <div class="docs"><b>Dokumentation og filer:</b><span class="chip">Svanemærket byggeri</span><span class="chip">DGNB</span><span class="chip">EPD</span><span class="chip">IFC-modeller</span><span class="chip">Dalux</span><span class="chip">iBinder</span></div>
+</div></section>
+
+<!-- ================= 5 · PROJEKTER ================= -->
+<section class="sec" id="projekter" style="background:var(--soft);border-block:1px solid var(--line)"><div class="wrap">
+  <div class="sechead">
+    <div><div class="kicker">Projekter</div><h2 class="h2">Skoler, boliger og <em>idræt.</em></h2>
+    <p>Et udvalg af de sager, vi har leveret eller har i produktion.</p></div>
+    <a class="more" href="#projekter">Alle projekter, arkitekter og entreprenører →</a>
+  </div>
+  <div class="pgrid">
+    <a class="pc" href="#projekter"><div class="im"><img src="r/foto-lockers-skohylder.jpg" alt="Røde lockers med perforerede låger og skohylder" style="object-position:50% 40%" loading="lazy"><span class="tagv">Foto</span></div>
+      <div class="tx"><span class="stat">Leveres i etaper · 2026</span><h3>Mørkhøj Skole</h3><p>342 lockers med skohylder, højskabe, polstrede nicher, tekøkkener og ca. 300 m² akustik.</p>
+      <dl><dt>Entreprenør</dt><dd>Ason A/S</dd><dt>Arkitekt</dt><dd>Rønnow Arkitekter</dd></dl></div></a>
+    <a class="pc" href="#projekter"><div class="im"><img src="r/hoejskab-kompakt.jpg" alt="Højskab i kompaktlaminat til badeværelse" loading="lazy"><span class="tagv">Visualisering</span></div>
+      <div class="tx"><span class="stat">Leveret</span><h3>Bølholmen, Stenløse</h3><p>230 badeværelsesskabe i kompaktlaminat til 220 boliger. Leveret og i drift.</p>
+      <dl><dt>Entreprenør</dt><dd>Enemærke &amp; Petersen</dd></dl></div></a>
+    <a class="pc" href="#projekter"><div class="im"><img src="r/baenk-natur.jpg" alt="Omklædningsbænk med integreret knagerække" loading="lazy"><span class="tagv">Visualisering</span></div>
+      <div class="tx"><span class="stat">I produktion · 2026</span><h3>Sundby Idrætspark</h3><p>150 m bænke, 150 locker-rum, vaskeborde i kompaktlaminat og et tekøkken til foreningslokalet.</p>
+      <dl><dt>Leverance</dt><dd>Omklædning og foreningslokale</dd></dl></div></a>
+  </div>
+</div></section>
+
+<!-- ================= 6 · KULØRER ================= -->
+<section class="sec" id="kulorer"><div class="wrap">
+  <div class="sechead">
+    <div><div class="kicker">Overflade</div><h2 class="h2">Syv kulører — eller <em>jeres</em> egen.</h2>
+    <p>Vi olierer med Rubio Monocoat. Bagved ligger et farvekort med omkring 40 kulører, og vi kan få blandet en til jer.</p></div>
+    <a class="more" href="#kulorer">Bejdset, olieret eller lakeret? →</a>
+  </div>
+  <div class="kul" id="kul"></div>
+  <div class="kulnote">Prøverne er olieret træ. Farverne på skærmen er vejledende.</div>
+  <div class="surf">
+    <div><b>Olie, ikke lak</b><span>Ét lag hårdvoksolie, der trænger ind i træet. Der er ingen lakfilm, der kan skalle af.</span></div>
+    <div><b>Slid kan pletrepareres</b><span>En ridse slibes og olieres på stedet uden at skifte lågen.</span></div>
+    <div><b>Samme kulør igen</b><span>Kuløren er en opskrift, så en ekstra låge om tre år får samme farve.</span></div>
+  </div>
+</div></section>
+
+<!-- ================= 7 · KONTAKT ================= -->
+<section class="sec contact" id="kontakt"><div class="wrap grid">
+  <div>
+    <div class="kicker" style="color:var(--warm-soft)">Kontakt</div>
+    <h2 class="h2">Send os tegningerne. <em>Eller en skitse.</em></h2>
+    <p>Et udbud, en tegning eller et foto af rummet med mål er nok til en pris. Vi svarer inden for én arbejdsdag.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:24px">
+      <a class="btn ink" href="#top" data-go="send">Send materialet →</a>
+      <a class="btn ghost" href="#top" data-go="design">Design det selv</a>
+    </div>
+    <div class="addr">Nem Inventar ApS · Mågevej 73, st. tv., 2400 København NV · CVR 45085473</div>
+  </div>
+  <div class="team">
+    <div class="mem"><img src="r/joachim.jpg" alt="Joachim Skovbogaard"><div><b>Joachim Skovbogaard</b><span>Entreprenører, arkitekter og tilbud</span><a href="#kontakt">js@neminventar.dk</a></div></div>
+    <div class="mem"><img src="r/milot.jpg" alt="Milot Salihu"><div><b>Milot Salihu</b><span>Salg, leverandører og produktion</span><a href="#kontakt">kontakt@neminventar.dk · 42 42 26 84</a></div></div>
+    <div class="mem"><img src="r/christian.jpg" alt="Christian Foss"><div><b>Christian Foss</b><span>3D-modeller, tegninger og kvalitet</span><a href="#kontakt">cf@neminventar.dk</a></div></div>
+  </div>
+</div></section>
+<footer class="foot"><div class="wrap"><span>© 2026 Nem Inventar ApS</span><span>Inventar · Designeren · Projekter · Om os · Kontakt · English</span></div></footer>
+
+<!-- ================= noter ================= -->
+<section class="notes" id="noter"><div class="wrap">
+  <h2>Hvad er ægte i mockuppen</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Element</th><th>I mockuppen</th><th>På det rigtige site</th></tr></thead>
+    <tbody>
+      <tr><td>Renders og fotos</td><td>Ægte: renders fra kataloget og fotos fra leverancerne. Billedteksterne nævner ikke projektet</td><td>Hentes fra kataloget (v_web_products), som i dag</td></tr>
+      <tr><td>3D (lockers og højskab)</td><td>Bygget til mockuppen</td><td>Designerens kerne med den samme deleliste, der giver 3D, skitse og IFC/DXF</td></tr>
+      <tr><td>Priser</td><td>Eksempler fra prisbogen: locker 30 × 80 × 40 cm i krydsfiner 1.873 kr. og højskab 60 × 210 × 60 cm i krydsfiner 8.958 kr., begge inkl. montage og levering</td><td>Kun godkendte prisbogsprodukter, og kun når prisgitteret er valideret mod motoren. Indtil da står der "Få et tilbud"</td></tr>
+      <tr><td>Hent IFC/DXF</td><td>Viser en besked</td><td>Lockers og højskab kan det allerede i designeren. De andre typer får knappen, når deres filer findes</td></tr>
+      <tr><td>Send os materialet</td><td>Sender intet</td><td>Formularen fra v2 (filer op til 10 × 50 MB) plus "Hvor fandt I os?". Henvendelsen lander i CRM med kilden udfyldt</td></tr>
+    </tbody>
+  </table></div>
+</div></section>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var fmt = new Intl.NumberFormat("da-DK");
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ---------- toast ---------- */
+  var toastEl = $("toast"), tT;
+  var TOASTS = {
+    ifc: "På sitet hentes en IFC4-fil af præcis denne udgave (Revit, ArchiCAD). Ét objekt pr. modul, uden pris.",
+    dxf: "På sitet hentes en DXF-fil (AutoCAD): plan med lågesving, forfra, fra siden.",
+    tilbud: "På sitet sendes konfigurationen, skitsen og IFC-filen med i henvendelsen. I får prisen inden for én arbejdsdag.",
+    designer: "På sitet åbnes designeren med netop denne udgave valgt.",
+    pris: "På sitet åbnes formularen med typen og kuløren udfyldt."
+  };
+  function toast(k){ toastEl.textContent = TOASTS[k] || k; toastEl.classList.add("on"); clearTimeout(tT); tT = setTimeout(function(){ toastEl.classList.remove("on"); }, 3600); }
+  document.addEventListener("click", function(e){ var b = e.target.closest("[data-toast]"); if (b) toast(b.dataset.toast); });
+
+  /* ---------- tre veje ---------- */
+  var tabs = document.querySelectorAll(".path");
+  function go(p){
+    Array.prototype.forEach.call(tabs, function(t){ var on = t.dataset.p === p; t.setAttribute("aria-selected", on ? "true" : "false"); $("p-" + t.dataset.p).hidden = !on; });
+    if (p === "design" && scene3d) scene3d.wake();
+  }
+  Array.prototype.forEach.call(tabs, function(t){ t.addEventListener("click", function(){
+    go(t.dataset.p);
+    if (window.innerWidth < 980) $("p-" + t.dataset.p).scrollIntoView({behavior: reduce ? "auto" : "smooth", block: "start"});
+  }); });
+  document.querySelectorAll("[data-go]").forEach(function(a){ a.addEventListener("click", function(){ go(a.dataset.go); }); });
+
+  /* ---------- katalog ---------- */
+  var CAT = [
+    {n:"Lockers med perforerede låger", img:"r/foto-lockers-doer.jpg", tag:"Foto", d:true, ifc:true},
+    {n:"Højskab i krydsfiner", img:"r/hoejskab-natur.jpg", tag:"Visualisering", d:true, ifc:true},
+    {n:"Højskab med bejdsede låger", img:"r/hoejskab-bejdset-roedbrun.jpg", tag:"Visualisering", d:true, ifc:true},
+    {n:"Garderobeskab med siddeniche", img:"r/garderobeskab-skovgroen.jpg", tag:"Visualisering", d:false, ifc:false},
+    {n:"Omklædningsbænk med knagerække", img:"r/baenk-charcoal.jpg", tag:"Visualisering", d:false, ifc:false},
+    {n:"Køkkenvæg med bejdsede låger", img:"r/koekken-blaa.jpg", tag:"Visualisering", d:false, ifc:false}
+  ];
+  $("cgrid").innerHTML = CAT.map(function(c){
+    return '<article class="cc"><div class="im"><img src="' + c.img + '" alt="' + c.n + '" loading="lazy"><span class="tagv">' + c.tag + '</span></div>' +
+      '<div class="tx"><h3>' + c.n + '</h3><div class="badges"><span class="badge' + (c.d ? ' on' : '') + '">' + (c.d ? '3D-designer' : 'Designer senere') + '</span><span class="badge' + (c.ifc ? ' on' : '') + '">IFC' + (c.ifc ? '' : ' kommer') + '</span></div>' +
+      '<div class="ca">' + (c.d ? '<button type="button" class="pri" data-toast="designer">Åbn i designeren</button>' : '<button type="button" class="pri" data-toast="pris">Få pris</button>') +
+      (c.ifc ? '<button type="button" data-toast="ifc">IFC</button>' : '') + '</div></div></article>';
+  }).join("");
+
+  /* ---------- inspiration ---------- */
+  var MOS = [
+    {w:8, img:"r/hoejskab-blaa.jpg", n:"Højskab i krydsfiner", v:"Blå låger, natur korpus", d:true},
+    {w:4, img:"r/hoejskab-bejdset-roedbrun.jpg", n:"Højskabsvæg til loftet", v:"Bejdset rødbrun", d:true},
+    {w:4, img:"r/garderobeskab-skovgroen.jpg", n:"Garderobe med siddeniche", v:"Skovgrøn med polstret niche", d:false},
+    {w:8, img:"r/hoejskab-terrakotta.jpg", n:"Højskab med HPL-låger", v:"Terrakotta, gribehuller", d:true},
+    {w:4, img:"r/skohylde-locker-roedbrun.jpg", n:"Skohylde med locker", v:"Rødbrun", d:true},
+    {w:4, img:"r/koekken-blaa.jpg", n:"Køkkenvæg", v:"Bejdsede låger, blå", d:false},
+    {w:4, img:"r/garderobereol-blaa.jpg", n:"Garderobereol med nicher", v:"Blå", d:false}
+  ];
+  $("mos").innerHTML = MOS.map(function(m){
+    return '<figure class="mt w' + m.w + '"><img src="' + m.img + '" alt="' + m.n + ', ' + m.v + '" loading="lazy"><span class="tagv">Visualisering</span>' +
+      '<figcaption><div><b>' + m.n + '</b><span>' + m.v + '</span></div><div class="ma">' +
+      (m.d ? '<button type="button" class="pri" data-toast="designer">Åbn denne i designeren</button>' : '<button type="button" class="pri" data-toast="pris">Få pris på denne</button>') +
+      '<button type="button" data-toast="ifc">IFC</button></div></figcaption></figure>';
+  }).join("");
+
+  /* ---------- kulører ---------- */
+  var KUL = [["natur","Natur"],["roeget-eg","Røget eg"],["roedbrun","Rødbrun"],["skovgroen","Skovgrøn"],["blaa","Blå"],["charcoal","Charcoal"],["sort","Sort"]];
+  $("kul").innerHTML = KUL.map(function(k){ return '<figure><img src="r/kul-' + k[0] + '.jpg" alt="Træprøve i ' + k[1].toLowerCase() + '" loading="lazy"><figcaption>' + k[1] + '</figcaption></figure>'; }).join("");
+
+  /* ---------- send ---------- */
+  var MODES = {
+    skitse:{t:"Læg skitsen eller et foto her", s:"Et foto af rummet, en håndtegning eller mål på et stykke papir er nok · billeder, pdf", ph:"Fx 6 højskabe i blå krydsfiner, 210 cm høje, til et personalerum."},
+    udbud:{t:"Læg udbuddet og tegningerne her", s:"pdf, dwg, ifc, zip · op til 10 filer à 50 MB · eller send et link til Dalux/iBinder", ph:"Fx Fast inventar til ny daginstitution, licitation 14/11. Link til udbudsportalen: …"}
+  };
+  var curMode = "skitse";
+  document.querySelectorAll("#mode button").forEach(function(b){
+    b.addEventListener("click", function(){
+      curMode = b.dataset.m;
+      document.querySelectorAll("#mode button").forEach(function(x){ x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      var mail = curMode === "mail"; $("sendform").hidden = mail; $("mailmode").hidden = !mail;
+      if (!mail) { $("dropT").textContent = MODES[curMode].t; $("dropS").textContent = MODES[curMode].s; $("f-hvad").placeholder = MODES[curMode].ph; }
+    });
+  });
+  var drop = $("drop"), fileIn = $("fileIn");
+  function showFiles(list){ $("files").innerHTML = Array.prototype.map.call(list, function(f){ return "<li>" + f.name.replace(/</g,"&lt;") + " · " + Math.max(1, Math.round(f.size / 1024)) + " KB</li>"; }).join(""); }
+  drop.addEventListener("click", function(){ fileIn.click(); });
+  drop.addEventListener("keydown", function(e){ if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileIn.click(); } });
+  fileIn.addEventListener("change", function(){ showFiles(fileIn.files); });
+  ["dragenter","dragover"].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.add("over"); }); });
+  ["dragleave","drop"].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.remove("over"); }); });
+  drop.addEventListener("drop", function(e){ if (e.dataTransfer && e.dataTransfer.files) showFiles(e.dataTransfer.files); });
+  $("sendform").addEventListener("submit", function(e){ e.preventDefault(); $("sent").hidden = false; });
+  $("copy").addEventListener("click", function(){
+    var t = $("mailaddr").textContent, b = this;
+    function done(){ b.textContent = "Kopieret"; setTimeout(function(){ b.textContent = "Kopiér"; }, 1600); }
+    try { navigator.clipboard.writeText(t).then(done, function(){ selectText(); }); } catch (err) { selectText(); }
+    function selectText(){ var r = document.createRange(); r.selectNodeContents($("mailaddr")); var s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+  });
+
+  /* ---------- design selv: tilstand ---------- */
+  var COLORS = [
+    {slug:"roedbrun", label:"Rødbrun", hex:"#84402F"},
+    {slug:"blaa", label:"Blå", hex:"#43687C"},
+    {slug:"skovgroen", label:"Skovgrøn", hex:"#5A6B4E"},
+    {slug:"natur", label:"Natur", hex:"#E0CBA6"},
+    {slug:"sort", label:"Sort", hex:"#2A2621"}
+  ];
+  var PROD = {
+    locker:   {c:6, r:2, color:COLORS[0], photo:"m/lockers-moerkhoej.jpg", photoTag:"Foto fra en leverance", note:"Fra ca. 1.900 kr. pr. rum inkl. montage og levering"},
+    hoejskab: {c:4, h:2.1, color:COLORS[1], photo:"r/hoejskab-blaa.jpg", photoTag:"Visualisering", note:"Fra ca. 9.000 kr. pr. skab i krydsfiner inkl. montage og levering"}
+  };
+  var cur = "locker";
+  var st = function(){ return PROD[cur]; };
+
+  var swEl = $("sw");
+  COLORS.forEach(function(col){
+    var b = document.createElement("button");
+    b.type = "button"; b.style.background = col.hex; b.title = col.label; b.setAttribute("aria-label", col.label); b.dataset.slug = col.slug;
+    b.addEventListener("click", function(){ st().color = col; syncUI(); if (scene3d) scene3d.recolor(); });
+    swEl.appendChild(b);
+  });
+
+  function dimUI(){
+    var s = st(), el = $("dimctl");
+    if (cur === "locker") {
+      el.innerHTML = '<span class="lbl">Antal rum</span><div class="steps">' +
+        '<div class="step" title="Søjler"><button type="button" data-d="c,-1" aria-label="Færre søjler">−</button><output>' + s.c + '</output><button type="button" data-d="c,1" aria-label="Flere søjler">+</button></div>' +
+        '<span style="color:var(--muted)">×</span>' +
+        '<div class="step" title="Rum i højden"><button type="button" data-d="r,-1" aria-label="Færre rum i højden">−</button><output>' + s.r + '</output><button type="button" data-d="r,1" aria-label="Flere rum i højden">+</button></div></div>';
+    } else {
+      el.innerHTML = '<span class="lbl">Antal og højde</span><div class="steps">' +
+        '<div class="step" title="Antal skabe"><button type="button" data-d="c,-1" aria-label="Færre skabe">−</button><output>' + s.c + '</output><button type="button" data-d="c,1" aria-label="Flere skabe">+</button></div>' +
+        '<div class="seg h" id="hseg">' + [1.8, 2.1, 2.4].map(function(h){ return '<button type="button" data-h="' + h + '" aria-pressed="' + (s.h === h) + '">' + Math.round(h * 100) + '</button>'; }).join("") + '</div></div>';
+    }
+    var lim = cur === "locker" ? {c:[1,10], r:[1,3]} : {c:[1,8]};
+    el.querySelectorAll("[data-d]").forEach(function(b){
+      var p = b.dataset.d.split(","), k = p[0], d = +p[1];
+      b.disabled = (d < 0 && s[k] <= lim[k][0]) || (d > 0 && s[k] >= lim[k][1]);
+      b.addEventListener("click", function(){ s[k] = Math.max(lim[k][0], Math.min(lim[k][1], s[k] + d)); syncUI(); if (scene3d) scene3d.rebuild(); });
+    });
+    el.querySelectorAll("[data-h]").forEach(function(b){ b.addEventListener("click", function(){ s.h = +b.dataset.h; syncUI(); if (scene3d) scene3d.rebuild(); }); });
+  }
+
+  function syncUI(){
+    var s = st();
+    Array.prototype.forEach.call(swEl.children, function(x){ x.setAttribute("aria-pressed", x.dataset.slug === s.color.slug ? "true" : "false"); });
+    $("colname").textContent = s.color.label;
+    $("pnote").textContent = s.note;
+    $("photoImg").src = s.photo; $("photoTag").textContent = s.photoTag;
+    dimUI();
+    if (cur === "locker") {
+      var n = s.c * s.r, w = Math.round((s.c * 0.30 + 0.018) * 100), h = Math.round((0.43 + s.r * 0.80) * 100);
+      $("spec").textContent = n + (n === 1 ? " locker" : " lockers") + " · " + w + " × " + h + " cm · med bænk";
+      $("sum").innerHTML = "ca. " + fmt.format(Math.round(n * 1873 / 500) * 500) + " kr. <small>eksempel</small>";
+    } else {
+      var f = s.h === 1.8 ? 0.9 : s.h === 2.4 ? 1.1 : 1;
+      $("spec").textContent = s.c + (s.c === 1 ? " højskab" : " højskabe") + " · " + (s.c * 60) + " × " + Math.round(s.h * 100) + " × 60 cm";
+      $("sum").innerHTML = "ca. " + fmt.format(Math.round(s.c * 8958 * f / 500) * 500) + " kr. <small>eksempel</small>";
+    }
+  }
+  document.querySelectorAll("#prod button").forEach(function(b){
+    b.addEventListener("click", function(){
+      cur = b.dataset.k;
+      document.querySelectorAll("#prod button").forEach(function(x){ x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      $("stage").classList.remove("show-photo"); $("toggle").textContent = "Se den i et rum";
+      syncUI(); if (scene3d) scene3d.rebuild();
+    });
+  });
+  $("toggle").addEventListener("click", function(){
+    var on = $("stage").classList.toggle("show-photo");
+    this.textContent = on ? "Tilbage til 3D" : "Se den i et rum";
+  });
+  syncUI();
+
+  /* ---------- 3D ---------- */
+  var scene3d = null;
+  function fallback(){ $("stage").classList.add("show-photo"); $("toggle").hidden = true; }
+  if (!window.THREE) fallback(); else { try { scene3d = build3d(); } catch (e) { fallback(); } }
+
+  function build3d(){
+    var canvas = $("c");
+    var renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:true, alpha:true});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 0.92;
+    renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    var scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(30, 1, 0.1, 60);
+    scene.add(new THREE.HemisphereLight(0xFFF4E4, 0xCFC2AA, 0.55));
+    var sun = new THREE.DirectionalLight(0xFFEBD2, 1.0);
+    sun.position.set(-2.6, 4.2, 3.6); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+    var sc = sun.shadow.camera; sc.left = -4.5; sc.right = 4.5; sc.top = 4; sc.bottom = -1; sc.near = 0.5; sc.far = 14;
+    sun.shadow.bias = -0.0006; scene.add(sun);
+    var fill = new THREE.DirectionalLight(0xE6EDF4, 0.32); fill.position.set(3.5, 2, 4); scene.add(fill);
+    function lin(hex){ var c = new THREE.Color(hex); c.convertSRGBToLinear(); return c; }
+    function dark(hex, k){ var c = new THREE.Color(hex); c.multiplyScalar(k); c.convertSRGBToLinear(); return c; }
+    var wall = new THREE.Mesh(new THREE.PlaneGeometry(18, 7), new THREE.MeshStandardMaterial({color:lin("#EEE7D9"), roughness:1}));
+    wall.position.set(0, 3.5, 0); wall.receiveShadow = true; scene.add(wall);
+    var floor = new THREE.Mesh(new THREE.PlaneGeometry(18, 8), new THREE.MeshStandardMaterial({color:lin("#D8CFBF"), roughness:1}));
+    floor.rotation.x = -Math.PI / 2; floor.position.set(0, 0, 4); floor.receiveShadow = true; scene.add(floor);
+
+    function canvasTex(w, h, draw){ var cv = document.createElement("canvas"); cv.width = w; cv.height = h; var g = cv.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, w, h); draw(g, w, h); var t = new THREE.CanvasTexture(cv); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4; return t; }
+    var dots = canvasTex(232, 616, function(g, w, h){ g.fillStyle = "rgba(18,10,6,.78)"; for (var y = 34; y < h - 26; y += 21) for (var x = 22; x < w - 14; x += 21) { g.beginPath(); g.arc(x, y, 3.4, 0, Math.PI * 2); g.fill(); } });
+    var grain = canvasTex(256, 1024, function(g, w, h){
+      var seed = 7; function rnd(){ seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+      for (var i = 0; i < 150; i++) { var x = rnd() * w, a = 0.015 + rnd() * 0.035, wd = 0.6 + rnd() * 1.6, amp = 1.5 + rnd() * 2.5, per = 260 + rnd() * 220; g.strokeStyle = "rgba(80,50,20," + a + ")"; g.lineWidth = wd; g.beginPath(); g.moveTo(x, 0); for (var y = 0; y <= h; y += 16) g.lineTo(x + Math.sin(y / per + i) * amp, y); g.stroke(); }
+    });
+
+    var M = {
+      korpus: new THREE.MeshStandardMaterial({roughness:.72}),
+      inner:  new THREE.MeshStandardMaterial({roughness:.9}),
+      front:  new THREE.MeshStandardMaterial({roughness:.66}),
+      natur:  new THREE.MeshStandardMaterial({color:lin("#E2C79C"), roughness:.62, map:grain}),
+      bench:  new THREE.MeshStandardMaterial({color:lin("#D7B37E"), roughness:.55}),
+      lock:   new THREE.MeshStandardMaterial({color:lin("#1d1b19"), roughness:.4, metalness:.3}),
+      hole:   new THREE.MeshStandardMaterial({color:lin("#2a1f17"), roughness:1}),
+      sokkel: new THREE.MeshStandardMaterial({color:lin("#2b2420"), roughness:.9})
+    };
+    function recolor(){
+      var hex = st().color.hex;
+      if (cur === "locker") { M.korpus.color = lin(hex); M.korpus.map = null; M.inner.color = dark(hex, .38); M.front.map = dots; }
+      else { M.korpus.color = lin("#E2C79C"); M.korpus.map = grain; M.inner.color = lin("#CDB089"); M.front.map = grain; }
+      M.korpus.needsUpdate = true; M.front.color = lin(hex); M.front.needsUpdate = true; kick();
+    }
+
+    var unit = null, doors = [], fronts = [], dims = {w:2, h:2};
+    function box(w, h, d, mat, x, y, z){ var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true; unit.add(m); return m; }
+    function dispose(o){ o.traverse(function(n){ if (n.geometry) n.geometry.dispose(); }); }
+    function addDoor(px, py, pz, dw, dh, right, ajar, delay, grip){
+      var pivot = new THREE.Group(); pivot.position.set(px, py, pz);
+      var geo = new THREE.BoxGeometry(dw, dh, 0.018); geo.translate(right ? -dw / 2 : dw / 2, 0, 0);
+      var door = new THREE.Mesh(geo, [M.korpus, M.korpus, M.korpus, M.korpus, M.front, M.inner]);
+      door.castShadow = true; door.receiveShadow = true; pivot.add(door);
+      if (grip) { grip.forEach(function(gm){ pivot.add(gm); }); }
+      unit.add(pivot);
+      var sign = right ? 1 : -1, open = 1.75 * sign, aj = ajar ? 0.62 * sign : 0;
+      var d = {pivot:pivot, a: reduce ? aj : 1.85 * sign, t: aj, open: open, start: reduce ? 0 : performance.now() + delay};
+      pivot.rotation.y = d.a; door.userData.d = d; doors.push(d); fronts.push(door);
+    }
+
+    function buildLocker(){
+      var s = PROD.locker, C = s.c, R = s.r, RW = 0.30, RH = 0.80, T = 0.018, W = C * RW + T, x0 = -W / 2;
+      var baseH = 0.40, baseD = 0.42, benchT = 0.03, benchD = 0.47;
+      box(W - 0.05, 0.07, baseD - 0.05, M.sokkel, 0, 0.035, (baseD - 0.05) / 2);
+      for (var i = 0; i <= C; i++) box(T, baseH - 0.07, baseD, M.korpus, x0 + T / 2 + i * RW, 0.07 + (baseH - 0.07) / 2, baseD / 2);
+      box(W, T, baseD, M.korpus, 0, 0.07 + T / 2, baseD / 2);
+      box(W, T, baseD, M.korpus, 0, 0.07 + (baseH - 0.07) / 2, baseD / 2);
+      box(W, baseH - 0.07, 0.008, M.inner, 0, 0.07 + (baseH - 0.07) / 2, 0.004);
+      box(W + 0.01, benchT, benchD, M.bench, 0, baseH + benchT / 2, benchD / 2);
+      var y0 = baseH + benchT, LD = 0.40, H = R * RH;
+      for (i = 0; i <= C; i++) box(T, H, LD, M.korpus, x0 + T / 2 + i * RW, y0 + H / 2, LD / 2);
+      for (var j = 0; j <= R; j++) box(W, T, LD, M.korpus, 0, y0 + j * RH + (j === R ? -T / 2 : T / 2), LD / 2);
+      box(W, H, 0.008, M.inner, 0, y0 + H / 2, 0.004);
+      var dw = RW - T - 0.004, dh = RH - T - 0.006;
+      for (i = 0; i < C; i++) for (j = 0; j < R; j++) {
+        var lock = new THREE.Mesh(new THREE.CylinderGeometry(0.017, 0.017, 0.014, 24), M.lock);
+        lock.rotation.x = Math.PI / 2;
+        var top = (j === 0 && R > 1) || R === 1;
+        lock.position.set(dw - 0.06, top ? dh / 2 - 0.09 : -dh / 2 + 0.09, 0.014);
+        addDoor(x0 + i * RW + T + 0.002, y0 + j * RH + RH / 2, LD + 0.011, dw, dh, false, j === R - 1 && i === Math.min(2, C - 1) && C > 1, 120 + i * 55 + (R - 1 - j) * 90, [lock]);
+      }
+      dims = {w: W, h: y0 + H};
+    }
+
+    function buildHoejskab(){
+      var s = PROD.hoejskab, C = s.c, CW = 0.60, T = 0.019, D = 0.58, SO = 0.10, HT = s.h, HK = HT - SO, W = C * CW + T, x0 = -W / 2;
+      box(W - 0.06, SO, D - 0.06, M.natur, 0, SO / 2, (D - 0.06) / 2);
+      for (var i = 0; i <= C; i++) box(T, HK, D, M.korpus, x0 + T / 2 + i * CW, SO + HK / 2, D / 2);
+      box(W, T, D, M.korpus, 0, SO + T / 2, D / 2);
+      box(W, T, D, M.korpus, 0, HT - T / 2, D / 2);
+      box(W, HK, 0.008, M.inner, 0, SO + HK / 2, 0.004);
+      var nh = Math.max(1, Math.round((HK - 0.3) / 0.42));
+      for (i = 0; i < C; i++) for (var k = 1; k <= nh; k++) box(CW - T - 0.004, T, D - 0.04, M.korpus, x0 + T + i * CW + (CW - T) / 2, SO + k * HK / (nh + 1), (D - 0.04) / 2);
+      var dw = CW - 0.004, dh = HK - 0.004;
+      for (i = 0; i < C; i++) {
+        var right = i % 2 === 1;
+        var hole = new THREE.Mesh(new THREE.CylinderGeometry(0.021, 0.021, 0.004, 28), M.hole);
+        hole.rotation.x = Math.PI / 2;
+        hole.position.set(right ? -dw + 0.045 : dw - 0.045, 0.02, 0.008);
+        var px = right ? x0 + (i + 1) * CW + T / 2 - 0.002 : x0 + i * CW + T / 2 + 0.002;
+        addDoor(px, SO + HK / 2, D + 0.011, dw, dh, right, i === Math.min(1, C - 1) && C > 1, 140 + i * 90, [hole]);
+      }
+      dims = {w: W, h: HT};
+    }
+
+    function rebuild(){
+      if (unit) { scene.remove(unit); dispose(unit); }
+      unit = new THREE.Group(); doors = []; fronts = [];
+      recolor();
+      if (cur === "locker") buildLocker(); else buildHoejskab();
+      scene.add(unit); fit(); kick();
+    }
+
+    var yawAuto = 0, yawUser = 0, lastUser = -1e9, tStart = performance.now(), dist = 5, target = new THREE.Vector3();
+    function fit(){
+      var w = canvas.clientWidth || 600, h = canvas.clientHeight || 420;
+      renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+      var vf = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+      dist = Math.max((dims.h + 0.5) / (2 * vf), (dims.w + 0.7) / (2 * vf * camera.aspect), 2.6) * 1.08;
+      target.set(0, dims.h * 0.5, 0.25);
+    }
+    function placeCam(yaw){ camera.position.set(target.x + Math.sin(yaw) * dist, target.y + dist * 0.13, target.z + Math.cos(yaw) * dist); camera.lookAt(target); }
+
+    var down = null, ray = new THREE.Raycaster(), ptr = new THREE.Vector2();
+    canvas.addEventListener("pointerdown", function(e){ down = {x:e.clientX, yaw:yawUser, moved:false}; });
+    window.addEventListener("pointermove", function(e){ if (!down) return; var dx = e.clientX - down.x; if (Math.abs(dx) > 4) down.moved = true; if (down.moved) { yawUser = Math.max(-0.75, Math.min(0.75, down.yaw + dx * 0.006)); lastUser = performance.now(); kick(); } });
+    window.addEventListener("pointerup", function(e){
+      if (!down) return; var moved = down.moved; down = null; if (moved) return;
+      var r = canvas.getBoundingClientRect(); if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return;
+      ptr.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+      ray.setFromCamera(ptr, camera);
+      var hit = ray.intersectObjects(fronts, false)[0];
+      if (hit) { var d = hit.object.userData.d; d.t = Math.abs(d.t) > 0.2 ? 0 : d.open; d.start = 0; lastUser = performance.now(); kick(); }
+    });
+
+    var running = false, visible = true, yawCur = 0;
+    function frame(now){
+      var settled = true;
+      for (var k = 0; k < doors.length; k++) { var d = doors[k]; if (now < d.start) { settled = false; continue; } var diff = d.t - d.a; if (Math.abs(diff) > 0.0015) { d.a += diff * (reduce ? 1 : 0.11); settled = false; } else d.a = d.t; d.pivot.rotation.y = d.a; }
+      if (!reduce) yawAuto = 0.34 * Math.sin((now - tStart) / 4200);
+      var userActive = now - lastUser < 4000; if (!userActive) yawUser *= 0.97;
+      yawCur += (((userActive ? 0 : yawAuto) + yawUser) - yawCur) * 0.08;
+      placeCam(yawCur); renderer.render(scene, camera);
+      if (visible && !$("p-design").hidden && (!reduce || !settled || userActive)) requestAnimationFrame(frame); else running = false;
+    }
+    function kick(){ if (!running && visible) { running = true; requestAnimationFrame(frame); } }
+    if ("ResizeObserver" in window) new ResizeObserver(function(){ fit(); kick(); }).observe(canvas);
+    if ("IntersectionObserver" in window) new IntersectionObserver(function(es){ visible = es[0].isIntersecting; if (visible) kick(); }).observe(canvas);
+    rebuild();
+    return {rebuild:rebuild, recolor:recolor, wake:function(){ fit(); kick(); }};
+  }
+
+  /* ---------- videoer: spil kun i synsfeltet ---------- */
+  var v3d = $("v3d");
+  v3d.addEventListener("loadedmetadata", function(){ if (v3d.duration > 6) v3d.currentTime = 4; });
+  v3d.addEventListener("timeupdate", function(){ if (v3d.duration > 6 && v3d.currentTime < 3.8) v3d.currentTime = 4; });
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function(es){ es.forEach(function(en){ var v = en.target; if (en.isIntersecting && !reduce) { var p = v.play(); if (p && p.catch) p.catch(function(){}); } else v.pause(); }); }, {threshold:.35});
+    document.querySelectorAll(".st video").forEach(function(v){ io.observe(v); });
+  }
+})();
+</script>

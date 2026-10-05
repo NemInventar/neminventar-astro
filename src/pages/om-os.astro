@@ -1,141 +1,219 @@
 ---
+// Om os (v3, 04-10-2026 — plan: Opus, scratchpad/omos-plan). Milot: ingen videoer i toppen; egenproduktionen i centrum —
+// hvad den betyder for kunden fase for fase, og hvilke muligheder den åbner. Tekst-først top, ét stillfoto, tidslinje,
+// ProcessSteps i det mørke afsnit, holdet, referencer. Intet må afsløre, hvor produktionen ligger (se skill seo).
 import Base from '../layouts/Base.astro';
+import Ticker from '../components/Ticker.astro';
+import ProcessSteps from '../components/ProcessSteps.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import ContactCta from '../components/ContactCta.astro';
+import { getWebCases } from '../lib/supabase';
+import { cdn } from '../lib/img';
+import { morkhoj, PHOTO_PROJECT_SLUG } from '../lib/catalog';
+import { TEAM } from '../lib/team';
 const base = import.meta.env.BASE_URL;
+const cases = await getWebCases();
+const reference = cases.find((c) => c.slug === PHOTO_PROJECT_SLUG) ?? cases[0];
 
-const team = [
-  { name: 'Joachim Skovbogaard', role: 'Administrerende direktør', desc: 'Kontakt og koordinering med entreprenører, arkitekter m.fl.', email: 'js@neminventar.dk', phone: '+45 20 54 14 88', img: 'joachim.png',
-    edu: 'Civilingeniør · kandidat i Construction Management · kandidat i datavidenskab',
-    bio: 'Joachim er civilingeniør med speciale i bærende konstruktioner fra Ingeniørhøjskolen i Aarhus. Han har en kandidat i Construction Management fra Aarhus Universitet og en kandidat i datavidenskab fra Syddansk Universitet. Han har arbejdet i byggebranchen siden 2017 med lean, lokationsbaseret planlægning og byggestyring, bl.a. hos Enemærke & Petersen på store renoveringssager. Hos Nem Inventar står han for kontakten til entreprenører og arkitekter, tilbuddene og de digitale værktøjer, der binder tegning, produktion og levering sammen.' },
-  { name: 'Milot Salihu', role: 'Medejer · salg og leverandører', desc: 'Salg, leverandørkoordinering og proces.', email: 'kontakt@neminventar.dk', phone: '+45 42 42 26 84', img: 'milot.png',
-    edu: 'Proces og Innovation, DTU · Management & Technology, TUM',
-    bio: 'Milot er uddannet i Proces og Innovation fra DTU og har læst Management & Technology ved TUM School of Management. Før Nem Inventar var han projektleder og siden partner inden for automation og robotteknologi hos Novo Nordisk, hvor han satte nye produktionslinjer og udstyr i drift. Han underviser også som gæsteforelæser på DTU. Hos Nem Inventar står han for salget, leverandørerne og koordineringen af produktionen.' },
-  { name: 'Christian Foss', role: 'Produktansvarlig', desc: 'Produktdesign, innovation og kvalitet.', email: 'cf@neminventar.dk', phone: '+45 24 64 97 43', img: 'christian.png',
-    edu: 'Professionsbachelor i Proces og Innovation, DTU',
-    bio: 'Christian er uddannet professionsbachelor i Proces og Innovation fra DTU i 2022. Han har arbejdet som teknisk designer og produktudviklingskonsulent i industrien og som business analyst i finanssektoren. Hos Nem Inventar tegner han produkterne i 3D, laver produktionstegningerne og holder øje med, at kundens krav, kvaliteten og prisen hænger sammen.' },
+// Kæden: det, der sker hos os selv — fra model til pakket emne
+const CHAIN = ['3D-model', 'Værkstedstegning', 'Opskæring', 'Samling', 'Overfladebehandling', 'Pakning'];
+
+// Tidslinjen: fem faser i samarbejdet, hver med "Det kan I" (Milot 04-10: ikke "sene ændringer" — et låst design er en styrke;
+// til gengæld Apple Vision Pro ude hos kunden, så designet er set i rummet, før det låses).
+const FASER = [
+  { n: '01', fase: 'Før tilbud', h: 'Prisen regnes af dem, der skal bygge.', p: 'Tilbuddet bygger på vores egne timer og de materialer, vi selv køber ind, og leveringstiden på vores egen produktionsplan: typisk 8–12 uger fra ordre.',
+    kan: [{ b: 'Bestemme alle mål.', p: 'Bredde, højde og dybde tegnes efter jeres rum.' }, { b: 'Kræve certificeret træ.', p: 'Vi køber selv pladerne og leverer FSC eller PEFC, når udbuddet kræver det.' }] },
+  { n: '02', fase: 'Under tegning', h: 'Designet låses, når I er sikre.', p: 'I godkender 3D-modellen og renderne. Derefter trækker vi værkstedstegninger og styklister ud af samme model, så det, I har sagt ja til, er det, der bliver skåret.',
+    kan: [{ b: 'Se det i rummet.', p: 'Vi tager Apple Vision Pro med ud og viser inventaret i fuld størrelse i det rum, hvor det skal stå.' }, { b: 'Vælge kuløren.', p: 'Vi bruger hårdvoksolie fra Rubio Monocoat og kan få en kulør blandet til jeres byggeri.' }] },
+  { n: '03', fase: 'Under produktion', h: 'Bygget præcis, som I godkendte det.', p: 'Vores egne folk skærer, samler og olierer efter tegningerne, så det er os, der står inde for kvalitet og tidsplan.',
+    kan: [{ b: 'Godkende et prøveemne.', p: 'Ved større leverancer bygger vi ét eksemplar først, og når I har godkendt det i hånden, bygges serien magen til.' }] },
+  { n: '04', fase: 'Ved levering', h: 'Leveret i den rækkefølge, byggeriet skal bruge det.', p: 'Vi pakker selv. Fordi vi også køber materialerne, følger datablade, indeklimadokumentation og de EPD’er, der findes, med i afleveringen.',
+    kan: [{ b: 'Få det i etaper.', p: 'Rum for rum eller etage for etage, i takt med byggeriet.' }, { b: 'Få det monteret.', p: 'Vi monterer også, hvis I ønsker det, så én svarer for inventaret, til det sidste skab sidder fast.' }] },
+  { n: '05', fase: 'Efter aflevering', h: 'Vi kan bygge det samme igen.', p: 'Vi gemmer 3D-modellen. Slid på olien udbedres pletvis, uden at hele fladen skal slibes.',
+    kan: [{ b: 'Bestille reservedele.', p: 'En ny låge eller hylde laves fra den gemte model, i samme kulør.' }, { b: 'Bygge videre.', p: 'Flere enheder i samme mål og kulør, når der bliver brug for dem.' }] },
 ];
-
-// Egenproduktionen: fotos lægges i public/billeder/produktion/ og tilføjes her. Tom liste = ingen fotorække.
-// Intet må afsløre hvor produktionen ligger: ingen skilte, tekst, udsigt eller navne (se skill seo, hårde grænser).
-const prodPhotos: { src: string; alt: string }[] = [];
 ---
 <Base
   title="Om os — Nem Inventar"
-  description="Nem Inventar er ingeniører, der bygger fast inventar i træ til byggeri. Bygget ordentligt, dokumenteret ordentligt og leveret efter byggepladsens tidsplan.">
-  <section class="about-hero"><div class="wrap">
-    <span class="label">Om os</span>
-    <h1>Vi er ingeniører, der bygger i <em>træ.</em></h1>
-    <p class="lead">Nem Inventar laver fast inventar til byggeri — bænke, garderober, akustik og specialløsninger efter tegning. Vi er et ungt værksted med en enkel overbevisning: inventar skal bygges ordentligt, dokumenteres ordentligt, og leveres når byggepladsen er klar til det.</p>
+  description="Nem Inventar tegner fast inventar i 3D og bygger det i egen produktion: frie mål, design set i rummet, før det låses, prøveemner og reservedele fra samme model.">
+
+  <!-- ============ TOPPEN (tekst-først, intet der bevæger sig) ============ -->
+  <header class="about-top" id="top"><div class="wrap">
+    <div class="about-head">
+      <span class="label">Om os</span>
+      <h1>Vi tegner det.<br />Vi bygger det <em>selv.</em></h1>
+      <p class="lede">Fast inventar til skoler, institutioner, idrætshaller og erhverv. Fra 3D-model til færdigt møbel sker det hele hos os — uden mellemled.</p>
+      <div class="about-btns">
+        <a href={`${base}kontakt`} class="btn btn-primary">Send mål eller udbud <span class="arr">→</span></a>
+        <a href="#samarbejdet" class="btn btn-ghost">Sådan arbejder vi sammen <span class="arr">↓</span></a>
+      </div>
+    </div>
+    <aside class="chain" aria-label="Det, der sker hos os selv">
+      <span class="label">Hos os selv</span>
+      <ol>
+        {CHAIN.map((s, i) => (<>{i > 0 && <li class="sep" aria-hidden="true">→</li>}<li>{s}</li></>))}
+      </ol>
+    </aside>
+  </div></header>
+
+  <!-- ============ FOTOBÅND ============ -->
+  <section class="photo-band"><div class="wrap">
+    <figure class="rv">
+      <a class="img" href={`${base}projekter/${reference?.slug ?? PHOTO_PROJECT_SLUG}`} aria-label={`Se projektet ${reference?.name ?? 'Mørkhøj Skole'}`}>
+        <img src={cdn(morkhoj('33_lockere-roede-ved-doer-til-klasserum.jpg'))} alt="Rødbrune lockers med bænk og skohylder ved døren til et klasserum" fetchpriority="high" decoding="async" />
+      </a>
+      <figcaption>Lockers med skohylder til {reference?.name ?? 'Mørkhøj Skole'}. Tegnet af os, bygget i vores egen produktion.</figcaption>
+    </figure>
   </div></section>
 
-  <section class="about"><div class="wrap about-grid">
-    <article>
-      <h2>Håndværk, grebet an som ingeniørarbejde</h2>
-      <p>Vi kommer fra byggeriet, ikke fra møbelbutikken. Det betyder at vi tænker i mål, tolerancer, materialer og montage fra første tegning. Vi bygger i krydsfiner, kompaktlaminat og massivt træ, med samlinger og overflader, der er valgt efter, hvor hårdt rummet bliver brugt.</p>
-      <p>Og vi gør det digitalt: hvert stykke inventar tegnes og renderes i 3D, før vi skærer den første plade. I godkender det, I faktisk får.</p>
-    </article>
-    <article>
-      <h2>Både hele byggerier og den enkelte bænk</h2>
-      <p>Vi leverer til større byggerier — skoler, daginstitutioner, idrætshaller og erhverv — med tilbudslister, materialegodkendelser og delleverancer, der følger byggepladsens tidsplan. Og vi laver også den enkelte bænk.</p>
-      <p>Vi taler arkitekters og entreprenørers sprog, og vi ser os selv som den del af projektet, der gør de andres arbejde nemmere.</p>
-    </article>
-    <article>
-      <h2>Dokumentationen følger med</h2>
-      <p>Bygger I efter Svanemærket eller andre ordninger, leverer vi dokumentationen på de materialer, vi bruger: produktdatablade, indeklimadokumentation og EPD'er, hvor producenten har dem. Kræver udbuddet FSC- eller PEFC-træ, skriver vi i tilbuddet, hvilke plader der kan leveres med certificering fra leverandøren.</p>
-    </article>
+  <!-- ============ TIDSLINJEN: EGENPRODUKTIONEN FASE FOR FASE ============ -->
+  <section class="tl-sec" id="samarbejdet"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">Fra tilbud til aflevering</span>
+        <h2 class="tl-h2">Vi har vores egen <em>produktion.</em></h2>
+        <p class="lede">Vi skærer, samler, olierer og pakker inventaret selv. Vi bestiller det ikke hos andre, og derfor svarer vi for tegningen, kvaliteten og tidsplanen. Sådan mærker I det, fra tilbuddet til årene efter afleveringen.</p>
+      </div>
+    </div>
+    <ol class="tl rv">
+      {FASER.map((f) => (
+        <li class="tl-row">
+          <div class="tl-phase"><b>{f.n}</b><span>{f.fase}</span></div>
+          <div class="tl-body">
+            <h3>{f.h}</h3>
+            <p>{f.p}</p>
+          </div>
+          <div class="tl-cards">
+            {f.kan.map((k) => (<div class="tl-card"><small>Det kan I</small><b>{k.b}</b><p>{k.p}</p></div>))}
+          </div>
+        </li>
+      ))}
+    </ol>
   </div></section>
 
-  <section class="team"><div class="wrap">
-    <div class="sec-head"><div>
-      <span class="label">Holdet</span>
-      <h2>Menneskene bag.</h2>
-    </div></div>
-    <div class="team-grid">
-      {team.map((m) => (
-        <article class="member">
+  <!-- ============ SÅDAN SER DET UD (mørk, med ProcessSteps) ============ -->
+  <section class="sec sec-dark" id="saadan-ser-det-ud"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">Sådan ser det ud</span>
+        <h2>Fra skærm til <em>byggeplads.</em></h2>
+        <p class="lede">Fire trin, vi selv står for — fra modellen, I godkender, til møblet på pladsen.</p>
+      </div>
+    </div>
+    <ProcessSteps />
+  </div></section>
+
+  <!-- ============ HOLDET ============ -->
+  <section class="sec" id="holdet"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">Holdet</span>
+        <h2>Én kontakt hele <em>vejen.</em></h2>
+        <p class="lede">Én af os er jeres kontakt fra første tegning til montage — også mens møblerne er i produktion.</p>
+      </div>
+    </div>
+    <div class="team2 rv">
+      {TEAM.map((m) => (
+        <article class="member2">
           <div class="m-photo"><img src={`${base}team/${m.img}`} alt={m.name} loading="lazy" /></div>
-          <h3>{m.name}</h3>
-          <p class="m-role">{m.role}</p>
-          <p class="m-desc">{m.desc}</p>
-          <p class="m-edu">{m.edu}</p>
-          <details class="m-more">
-            <summary>Uddannelse og baggrund</summary>
-            <p>{m.bio}</p>
-          </details>
-          <p class="m-contact">
-            <a href={`mailto:${m.email}`}>{m.email}</a><br />
-            <a href={`tel:${m.phone.replace(/\s/g, '')}`}>{m.phone}</a>
-          </p>
+          <div class="body">
+            <h3>{m.name}</h3>
+            <p class="m-role">{m.role}</p>
+            <p class="m-desc">{m.desc}</p>
+            <p class="m-edu">{m.edu}</p>
+            <details class="m-more">
+              <summary>Uddannelse og baggrund</summary>
+              <p>{m.bio}</p>
+            </details>
+            <p class="m-contact">
+              <a href={`mailto:${m.email}`}>{m.email}</a><br />
+              <a href={`tel:${m.phone.replace(/\s/g, '')}`}>{m.phone}</a>
+            </p>
+          </div>
         </article>
       ))}
     </div>
   </div></section>
 
-  <section class="production"><div class="wrap">
-    <div class="sec-head"><div>
-      <span class="label">Produktionen</span>
-      <h2>Vores egenproduktion.</h2>
-    </div></div>
-    <div class="prod-text">
-      <p>Vi producerer inventaret i vores egen produktion. Opskæring, samling, overfladebehandling og pakning foregår hos os selv, så vi styrer kvaliteten og tidsplanen fra plade til færdigt emne.</p>
-      <p>Produktionen arbejder ud fra den samme 3D-model og stykliste, som I har godkendt, og hvert produkt følges gennem produktionen med sin egen tjekliste. Olie og farvet olie påføres i produktionen, så inventaret kommer færdigbehandlet ud på pladsen.</p>
-      <p>Vi følger op på arbejdsmiljøet og registrerer nærved-hændelser og ulykker, så vi kan rette årsagen og ikke kun symptomet.</p>
-    </div>
-    {prodPhotos.length > 0 && (
-      <div class="prod-photos">
-        {prodPhotos.map((ph) => (<img src={`${base}${ph.src.replace(/^\//, '')}`} alt={ph.alt} loading="lazy" />))}
+  <!-- ============ REFERENCER ============ -->
+  <Ticker cases={cases} extra={[{ b: '8–12', t: 'uger', c: 'typisk fra ordre til levering' }]} />
+  <section class="sec" id="referencer"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">Referencer</span>
+        <h2>Et helt byggeri eller en enkelt <em>bænk.</em></h2>
+        <p class="lede">{reference?.name ?? 'Mørkhøj Skole'}, med Ason A/S som hovedentreprenør og Rønnow Arkitekter som arkitekt — og alle de andre sager med de arkitekter og entreprenører, vi har bygget sammen med.</p>
       </div>
-    )}
-  </div></section>
-
-  <section class="about-cta"><div class="wrap">
-    <h2>Vil I vide mere?</h2>
-    <p>Se vores arketyper, kig på projekterne, eller skriv til os om det, I står med.</p>
-    <div class="cta-actions">
-      <a href={`${base}#katalog`} class="btn btn-primary">Se arketyperne <span class="arr">→</span></a>
-      <a href={`${base}kontakt`} class="btn btn-ghost">Kontakt os</a>
+      <a href={`${base}projekter`} class="ulink">Alle projekter, arkitekter og entreprenører →</a>
+    </div>
+    <div class="ref-grid rv">
+      <div class="ref-text">
+        <p>Et helt byggeri er den ene vej ind: udbud, tilbudsliste, materialegodkendelser og delleverancer, der følger byggepladsens tidsplan. Den anden vej er mindre: vi laver også den enkelte bænk eller reol.</p>
+        <p>Begge dele tegnes i 3D og bygges i vores egen produktion — med samme kulører, samme dokumentation og samme kontakt hele vejen.</p>
+      </div>
+      {reference && <ProjectCard c={reference} />}
     </div>
   </div></section>
+
+  <ContactCta />
+
+  <style>
+    /* ---- toppen: tekst først, kæden til højre ---- */
+    .about-top{padding:64px 0 36px}
+    .about-top .wrap{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:48px;align-items:end}
+    .about-head h1{font-size:clamp(38px,5.2vw,72px);line-height:1.02;letter-spacing:-.02em;margin-top:22px}
+    .about-head .lede{font-size:clamp(17px,1.5vw,21px);line-height:1.55;color:var(--ink);margin-top:22px;max-width:34em}
+    .about-btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+    .chain{border:1px solid var(--line);border-radius:var(--radius);background:#fff;padding:22px 24px}
+    .chain .label{margin-bottom:14px}
+    .chain ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px 6px;align-items:center}
+    .chain li{font-size:14px;font-weight:600;padding:8px 12px;border-radius:999px;background:var(--soft);color:var(--ink)}
+    .chain li.sep{background:none;padding:0 2px;color:var(--warm);font-weight:700}
+    /* ---- fotobånd ---- */
+    .photo-band{padding:36px 0 0}
+    .photo-band figure{margin:0}
+    /* lavt bånd (Milot 04-10: fotoet var for stort — man kunne ikke se, hvad der gemte sig længere nede) */
+    .photo-band .img{display:block;aspect-ratio:21/8;max-height:380px;border-radius:var(--radius);overflow:hidden;background:var(--soft)}
+    .photo-band img{width:100%;height:100%;object-fit:cover;object-position:50% 62%;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+    .photo-band .img:hover img{transform:scale(1.03)}
+    .photo-band figcaption{margin-top:10px;font-size:14px;color:var(--muted)}
+    /* ---- tidslinjen ---- */
+    .tl-sec{background:var(--soft);padding:88px 0;margin-top:72px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .tl-h2{font-size:clamp(34px,4.4vw,56px);line-height:1.02;letter-spacing:-.02em}
+    .tl-sec .lede{max-width:40em;font-size:17px}
+    .tl{list-style:none;margin:40px 0 0;padding:0}
+    .tl-row{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,6fr) minmax(0,4fr);gap:32px;padding:34px 0;border-top:1px solid var(--line)}
+    .tl-row:last-child{border-bottom:1px solid var(--line)}
+    .tl-phase{display:flex;gap:12px;align-items:baseline;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--warm);font-weight:700}
+    .tl-phase b{font-family:'Archivo',sans-serif;font-size:30px;letter-spacing:-.02em;color:var(--ink);line-height:1}
+    .tl-body h3{font-size:22px;margin:0 0 10px;letter-spacing:-.01em;line-height:1.2}
+    .tl-body p{font-size:16px;line-height:1.7;color:var(--muted);max-width:52ch;margin:0}
+    .tl-cards{display:grid;gap:12px;align-content:start}
+    .tl-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px;transition:transform .35s cubic-bezier(.2,.7,.2,1),border-color .2s}
+    .tl-card:hover{transform:translateY(-2px);border-color:#D8D0BF}
+    .tl-card small{display:block;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--warm);font-weight:700;margin-bottom:6px}
+    .tl-card b{display:block;font-size:16px;margin-bottom:4px}
+    .tl-card p{font-size:14.5px;color:var(--muted);line-height:1.6;margin:0}
+    /* ---- referencer ---- */
+    .ref-grid{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:40px;align-items:start;margin-top:28px}
+    .ref-text p{font-size:16.5px;color:var(--muted);line-height:1.7;max-width:48ch;margin:0 0 14px}
+    @media(max-width:880px){
+      .about-top{padding:40px 0 24px}
+      .about-top .wrap{grid-template-columns:1fr;gap:26px}
+      .about-head h1{font-size:40px}
+      .about-btns .btn{width:100%;justify-content:center}
+      .chain ol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+      .chain li{text-align:center;font-size:13px;padding:10px 8px;border-radius:10px;min-width:0;overflow-wrap:anywhere}
+      .chain li.sep{display:none}
+      .photo-band{padding-top:24px}
+      .photo-band .img{aspect-ratio:4/3}
+      .photo-band img{object-position:50% 55%}
+      .tl-sec{padding:56px 0;margin-top:48px}
+      .tl{margin-top:28px}
+      .tl-row{grid-template-columns:1fr;gap:14px;padding:26px 0 26px 24px;position:relative}
+      .tl-row::before{content:"";position:absolute;left:6px;top:0;bottom:0;width:2px;background:var(--line)}
+      .tl-row::after{content:"";position:absolute;left:1px;top:34px;width:12px;height:12px;border-radius:50%;background:var(--warm)}
+      .ref-grid{grid-template-columns:1fr;gap:22px}
+    }
+  </style>
 </Base>
-
-<style>
-  .about-hero{padding:80px 0 56px;border-bottom:1px solid var(--line)}
-  .about-hero h1{font-size:clamp(40px,5.4vw,72px);margin:24px 0 0;max-width:16ch}
-  .about-hero .lead{font-size:20px;color:var(--muted);max-width:62ch;margin-top:26px;line-height:1.65}
-  .about{padding:88px 0}
-  .about-grid{display:grid;gap:56px;max-width:840px}
-  .about article h2{font-size:clamp(24px,3vw,34px);margin-bottom:18px}
-  .about article p{font-size:17px;color:var(--ink);line-height:1.8;margin-bottom:14px;max-width:64ch}
-  .about-cta{background:var(--dark);color:var(--dark-text);padding:96px 0;text-align:center}
-  .about-cta h2{color:#F4EFE6;font-size:clamp(28px,3.6vw,44px)}
-  .about-cta p{color:#A99D88;font-size:18px;margin:18px auto 34px;max-width:46ch}
-  .about-cta .btn-ghost{color:#F4EFE6;border-color:rgba(244,239,230,.35)}
-  .about-cta .btn-ghost:hover{border-color:#F4EFE6}
-
-  .team{padding:0 0 96px}
-  .team .sec-head{margin-bottom:40px}
-  .team .sec-head h2{font-size:clamp(28px,3.4vw,42px);margin-top:18px}
-  .team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
-  .member .m-photo{aspect-ratio:1/1;border-radius:var(--radius);overflow:hidden;background:var(--soft);border:1px solid var(--line);margin-bottom:18px}
-  .member .m-photo img{width:100%;height:100%;object-fit:cover}
-  .member h3{font-size:21px;margin-bottom:4px}
-  .member .m-role{color:var(--warm);font-weight:600;font-size:14px;letter-spacing:.02em;margin-bottom:10px}
-  .member .m-desc{color:var(--muted);font-size:15px;line-height:1.6;margin-bottom:12px}
-  .member .m-edu{color:var(--ink);font-size:14px;line-height:1.55;margin-bottom:8px}
-  .member .m-more{margin-bottom:14px;font-size:14.5px}
-  .member .m-more summary{cursor:pointer;color:var(--warm);font-weight:600;list-style:none}
-  .member .m-more summary::-webkit-details-marker{display:none}
-  .member .m-more summary::after{content:' +'}
-  .member .m-more[open] summary::after{content:' −'}
-  .member .m-more p{color:var(--muted);line-height:1.65;margin-top:10px}
-  .member .m-contact{font-size:14px;line-height:1.7}
-  .member .m-contact a{color:var(--ink)}
-  .member .m-contact a:hover{color:var(--warm)}
-  .production{padding:0 0 96px}
-  .production .sec-head{margin-bottom:28px}
-  .production .sec-head h2{font-size:clamp(28px,3.4vw,42px);margin-top:18px}
-  .prod-text{max-width:840px}
-  .prod-text p{font-size:17px;color:var(--ink);line-height:1.8;margin-bottom:14px;max-width:64ch}
-  .prod-photos{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px}
-  .prod-photos img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:var(--radius);border:1px solid var(--line)}
-  @media(max-width:780px){.team-grid{grid-template-columns:1fr;gap:36px;max-width:420px}.prod-photos{grid-template-columns:1fr}}
-</style>

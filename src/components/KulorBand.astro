@@ -1,0 +1,38 @@
+---
+// "Syv kulører — eller jeres egen." (forside v3). Kulørerne fra v_web_colors i fast rækkefølge, UDEN sagsmærker
+// (Joachim 05-10: en sag skal ikke stå på hvert foto). Træprøverne i public/billeder/kuloerer/: rødbrun og blå er
+// vores egne låger; natur, røget eg og skovgrøn er Rubio Monocoats prøver på ask (Pure, Cocoa, Fern — vi må bruge
+// Rubios materiale, Joachim 05-10-2026). Rubios kort har i dag ingen sort eller grå — deres "Black" og "Charcoal"
+// er brune toner — så sort og charcoal står som farveflader (rubio-*-ask.jpg er de afviste prøver).
+import type { WebColor } from '../lib/supabase';
+import { cdn } from '../lib/img';
+interface Props { colors: WebColor[] }
+const { colors } = Astro.props;
+const ORDER = ['natur', 'roeget-eg', 'roedbrun', 'skovgroen', 'blaa', 'charcoal', 'sort'];
+const MED_PROEVE = new Set(['natur', 'roeget-eg', 'roedbrun', 'skovgroen', 'blaa']);
+const band = ORDER.map((s) => colors.find((c) => c.slug === s)).filter((c): c is WebColor => !!c);
+const medBillede = (slug: string) => MED_PROEVE.has(slug);
+---
+<div class="kul" role="list" aria-label="Vores syv standardkulører">
+  {band.map((c) => (
+    <div class={`ks${medBillede(c.slug) ? ' img' : ''}${c.slug === 'natur' ? ' lys' : ''}`} role="listitem" style={`--c:${c.swatch_hex}`}>
+      {medBillede(c.slug) && <img src={cdn(`/billeder/kuloerer/${c.slug}.jpg`)} alt={`${c.label} på træ`} loading="lazy" decoding="async" />}
+      <span>{c.label}</span>
+    </div>
+  ))}
+</div>
+<p class="kul-note">Prøverne er olieret træ: rødbrun og blå er låger fra vores leverancer, de øvrige Rubio Monocoats prøver. Sort og charcoal vises som farve. Farverne på skærmen er vejledende.</p>
+<style>
+  .kul{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-radius:18px;overflow:hidden;height:clamp(150px,16vw,200px)}
+  .ks{position:relative;background:var(--c);background-image:radial-gradient(circle at 30% 15%,rgba(255,255,255,.14),rgba(255,255,255,0) 55%),repeating-linear-gradient(100deg,rgba(0,0,0,0) 0 3px,rgba(0,0,0,.05) 3px 4px);display:flex;align-items:flex-end;padding:12px;min-width:0}
+  .ks img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s}
+  .ks.img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(0,0,0,.5))}
+  .ks:hover img{transform:scale(1.06)}
+  .ks span{position:relative;z-index:1;font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.45)}
+  .ks.lys:not(.img) span{color:var(--ink);text-shadow:none}
+  .kul-note{font-size:12.5px;color:var(--muted);margin-top:10px}
+  @media (max-width:760px){
+    .kul{grid-template-columns:1fr;height:auto}
+    .ks{height:46px;align-items:center}
+  }
+</style>

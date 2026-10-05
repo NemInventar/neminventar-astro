@@ -1,43 +1,62 @@
 ---
-// Delt footer. Base-bevidste interne links. Landingssiderne linkes fra hver side (intern linkstruktur).
+// Delt footer i fire spalter: hvem vi er · inventar og materialer · hvem vi leverer til · firmaet.
+// Landingssiderne linkes fra hver side (intern linkstruktur) — grupperet efter type i stedet for én lang linje.
 import { getWebLandingPages } from '../lib/supabase';
 import { PHONE, PHONE_TEL, LINKEDIN } from '../lib/contact';
 const base = import.meta.env.BASE_URL; // slutter med '/'
 const landing = await getWebLandingPages();
+const emner = landing.filter((l) => l.kind === 'emne');
+const segmenter = landing.filter((l) => l.kind === 'segment');
+const guides = landing.filter((l) => l.kind === 'guide');
+const year = new Date().getFullYear();
 ---
-<footer><div class="wrap foot">
-  <div>
-    <div class="brand">NEM<b style="color:var(--warm)">·</b>INVENTAR</div>
-    <p>Snedkerbygget inventar til byggeri.<br>Arketyper på bestilling — og hele projekter.<br>Vi leverer også til private.</p>
-    {landing.length > 0 && (
-      <p class="foot-links foot-topics">
-        {landing.map((l, i) => (<>{i > 0 && ' · '}<a href={`${base}${l.slug}`}>{l.nav_label}</a></>))}
-      </p>
-    )}
-    <p class="foot-links">
-      <a href={`${base}om-os`}>Om os</a> ·
-      <a href={`${base}kontakt`}>Kontakt</a> ·
-      <a href={`${base}nem-inventar-brochure.pdf`}>Brochure (PDF)</a> ·
-      <a href={`${base}handelsbetingelser`}>Handelsbetingelser for private</a> ·
-      <a href={`${base}privatlivspolitik`}>Privatlivspolitik</a> ·
-      <a href={`${base}cookiepolitik`}>Cookiepolitik</a>
-    </p>
+<footer><div class="wrap">
+  <div class="foot2">
+    <div class="foot-brand">
+      <div class="brand">NEM<b style="color:var(--warm)">·</b>INVENTAR</div>
+      <p>Fast inventar til byggeri — tegnet i 3D, bygget i vores egenproduktion. Enkelte møbler fra kataloget og hele projekter. Vi leverer også til private.</p>
+      <p class="foot-tel"><a href={`tel:${PHONE_TEL}`}>{PHONE}</a></p>
+      <p><a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a> · <a href="mailto:tilbud@neminventar.dk">tilbud@neminventar.dk</a></p>
+    </div>
+    <div>
+      <h4>Inventar og materialer</h4>
+      <ul class={emner.length > 9 ? 'cols2' : undefined}>
+        {emner.map((l) => <li><a href={`${base}${l.slug}`}>{l.nav_label}</a></li>)}
+      </ul>
+    </div>
+    <div>
+      <h4>Til</h4>
+      <ul>
+        {segmenter.map((l) => <li><a href={`${base}${l.slug}`}>{l.nav_label}</a></li>)}
+      </ul>
+      {guides.length > 0 && (
+        <>
+          <h4 style="margin-top:26px">Guides</h4>
+          <ul>{guides.map((l) => <li><a href={`${base}${l.slug}`}>{l.nav_label}</a></li>)}</ul>
+        </>
+      )}
+    </div>
+    <div>
+      <h4>Nem Inventar</h4>
+      <ul>
+        <li><a href={`${base}projekter`}>Projekter</a></li>
+        <li><a href={`${base}#katalog`}>Inventar</a></li>
+        <li><a href={`${base}om-os`}>Om os</a></li>
+        <li><a href={`${base}kontakt`}>Kontakt</a></li>
+        <li><a href={`${base}nem-inventar-brochure.pdf`}>Brochure (PDF)</a></li>
+        <li><a href={`${base}en/`} hreflang="en" lang="en">In English</a></li>
+        <li><a href={LINKEDIN} target="_blank" rel="noopener">LinkedIn</a></li>
+      </ul>
+      <h4 style="margin-top:26px">Det juridiske</h4>
+      <ul>
+        <li><a href={`${base}handelsbetingelser`}>Handelsbetingelser for private</a></li>
+        <li><a href={`${base}privatlivspolitik`}>Privatlivspolitik</a></li>
+        <li><a href={`${base}cookiepolitik`}>Cookiepolitik</a></li>
+      </ul>
+    </div>
   </div>
-  <div class="right">
-    <p>Nem Inventar ApS · CVR 45085473</p>
-    <p>Mågevej 73, st. tv. · 2400 København NV</p>
-    <p class="foot-tel"><a href={`tel:${PHONE_TEL}`}>{PHONE}</a></p>
-    <p><a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a></p>
-    <p><a href={LINKEDIN} target="_blank" rel="noopener" class="foot-li">LinkedIn</a></p>
+  <div class="foot-bottom">
+    <span>© {year} Nem Inventar ApS · CVR 45085473</span>
+    <span>Mågevej 73, st. tv. · 2400 København NV</span>
   </div>
 </div></footer>
-
-<style>
-  .foot-links{margin-top:14px;font-size:13.5px}
-  .foot-links a{color:var(--muted);text-decoration:none}
-  .foot-links a:hover{color:var(--ink)}
-  .foot-topics{max-width:62ch;line-height:1.9}
-  .foot-tel a{font-size:22px;font-weight:700;color:var(--ink);text-decoration:none}
-  .foot-tel a:hover{color:var(--warm)}
-  .foot-li{text-decoration:underline}
-</style>

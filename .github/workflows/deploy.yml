@@ -52,6 +52,13 @@ jobs:
           # og public/CNAME sætter domænet på GitHub Pages.
           SITE_URL: https://neminventar.dk
 
+      # Sagsnavne mere end 2 gange på en side (Joachim 05-10-2026, opmærksomhedspunkt). Kun ADVAR i loggen.
+      - name: Sagsnavne pr. side (kun ADVAR)
+        run: python3 scripts/lint-web-copy.py --dist dist
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 

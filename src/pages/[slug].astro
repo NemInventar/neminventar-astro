@@ -1,10 +1,16 @@
 ---
-// Landingssider pr. emne (materiale/produkt) og målgruppe — /kompaktlaminat, /inventar-til-skoler …
+// Landingssider pr. emne (materiale/produkt), målgruppe og guide — /kompaktlaminat, /inventar-til-skoler, /krydsfiner-mdf-eller-spaanplade …
 // Indhold: v_web_landing_pages (landing_web_2026_09_24). Statiske sider (om-os, kontakt …) vinder over denne rute.
+// Guides læses som artikler (ét spor, stort billede, kort fortalt, tekst); emner og målgrupper har galleri + tekst side om side.
 import Base from '../layouts/Base.astro';
 import CallbackForm from '../components/CallbackForm.tsx';
-import { getWebLandingPages, getWebCases, getWebProducts, categoryLabel, type WebLanding, type WebCase, type WebProduct } from '../lib/supabase';
+import ProductCard from '../components/ProductCard.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import ProcessSteps from '../components/ProcessSteps.astro';
+import ContactCta from '../components/ContactCta.astro';
+import { getWebLandingPages, getWebCases, getWebProducts, type WebLanding, type WebCase, type WebProduct } from '../lib/supabase';
 import { cdn } from '../lib/img';
+import { FAM, famOf, productImage, fotoTag, photoProjectName, imgLabel } from '../lib/catalog';
 
 export async function getStaticPaths() {
   const [pages, cases, products] = await Promise.all([getWebLandingPages(), getWebCases(), getWebProducts()]);
@@ -15,6 +21,7 @@ interface Props { page: WebLanding; pages: WebLanding[]; cases: WebCase[]; produ
 const { page, pages, cases, products } = Astro.props;
 const base = import.meta.env.BASE_URL;
 const site = Astro.site!;
+const projectName = photoProjectName(cases);
 
 const paragraphs = (page.body ?? '').split('\n\n').filter(Boolean);
 // Links i brødtekst og FAQ-svar: [tekst](https://…) eller [tekst](/sti). Alt andet vises som ren tekst.
@@ -34,12 +41,17 @@ const plain = (s: string) => s.replace(LINK, '$1');
 const images = (page.images ?? []).filter((im) => im.kind !== 'video');
 const videos = (page.images ?? []).filter((im) => im.kind === 'video');
 const hero = images[0];
+const isGuide = page.kind === 'guide';
+const isSegment = page.kind === 'segment';
 // Bevar rækkefølgen fra tabellen — den er redaktionel.
 const pick = <T extends { slug: string }>(all: T[], slugs: string[]) =>
   slugs.map((s) => all.find((x) => x.slug === s)).filter((x): x is T => Boolean(x));
 const relCases = pick(cases, page.case_slugs ?? []);
 const relProducts = pick(products, page.product_slugs ?? []);
 const related = pick(pages, page.related_slugs ?? []);
+const kontaktHref = `${base}kontakt?emne=${encodeURIComponent(page.nav_label)}`;
+// 3 kort pr. række, undtagen ved præcis 4 (så 2 × 2, ellers står ét kort alene nederst)
+const caseCols = relCases.length === 4 ? 2 : relCases.length >= 3 ? 3 : 2;
 
 const url = new URL(base + page.slug, site).href;
 const jsonLd = [
@@ -52,7 +64,7 @@ const jsonLd = [
     ],
   },
   // Guides er forklarende artikler; de øvrige sider beskriver en ydelse.
-  page.kind === 'guide'
+  isGuide
     ? {
         '@context': 'https://schema.org',
         '@type': 'Article',
@@ -83,110 +95,165 @@ const jsonLd = [
       }]
     : []),
 ];
-const imgLabel = (kind: string) =>
-  kind === 'foto' ? 'Foto fra leverancen' : kind === 'tegning' ? 'Tegning' : kind === 'video' ? 'Video' : 'Visualisering';
 ---
 <Base title={page.seo_title} description={page.seo_description} image={hero ? cdn(hero.src, 1200) : undefined} jsonLd={jsonLd}>
-  <section class="detail"><div class="wrap">
-    <a href={`${base}#ydelser`} class="crumb">← Alt vi laver</a>
-    <div class="detail-grid">
-      <div class="gallery">
-        {hero && (
-          <figure class="main lp-fig">
-            <img id="main-img" class={hero.kind === 'tegning' ? 'contain' : undefined} src={cdn(hero.src, 1000)} alt={hero.alt} fetchpriority="high" />
-            <figcaption id="main-cap"><b>{imgLabel(hero.kind)}</b>{hero.caption}</figcaption>
-          </figure>
-        )}
-        {images.length > 1 && (
-          <div class="thumbs">
-            {images.map((im, i) => (
-              <button class={`thumb${i === 0 ? ' active' : ''}`} data-src={cdn(im.src, 1000)} data-kind={im.kind} data-label={imgLabel(im.kind)} data-cap={im.caption ?? ''} data-alt={im.alt} aria-label={`Vis billede: ${im.alt}`}>
-                <img src={cdn(im.src, 220)} alt="" loading="lazy" />
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-      <div class="detail-body">
-        {page.kicker && <span class="kicker">{page.kicker}</span>}
+  {isGuide ? (
+    <!-- ============ GUIDE: artikel ============ -->
+    <section class="guide"><div class="wrap">
+      <div class="crumbrow"><a href={`${base}#ydelser`} class="crumb">← Alt vi laver</a></div>
+      <div class="guide-head">
+        {page.kicker && <span class="label">{page.kicker}</span>}
         <h1>{page.h1}</h1>
         {page.lead && <p class="lead">{page.lead}</p>}
-        {page.highlights?.length > 0 && (
-          <dl class="lp-facts">
-            {page.highlights.map((h) => (<div><dt>{h.k}</dt><dd>{h.v}</dd></div>))}
-          </dl>
-        )}
-        <div class="detail-cta">
-          <a href={`mailto:tilbud@neminventar.dk?subject=${encodeURIComponent('Forespørgsel: ' + page.nav_label)}`} class="btn btn-primary">Send tegninger eller mål <span class="arr">→</span></a>
-          <a href="tel:+4542422684" class="btn btn-ghost">+45 42 42 26 84</a>
-          <CallbackForm client:load />
+      </div>
+      {hero && (
+        <figure class="guide-hero">
+          <img class={hero.kind === 'tegning' ? 'contain' : undefined} src={cdn(hero.src, 1600)} alt={hero.alt} fetchpriority="high" />
+          <figcaption class="img-tag"><b>{imgLabel(hero.kind)}</b>{hero.caption}</figcaption>
+        </figure>
+      )}
+      {page.highlights?.length > 0 && (
+        <dl class="lp-facts three rv">
+          {page.highlights.map((h) => (<div><dt>{h.k}</dt><dd>{h.v}</dd></div>))}
+        </dl>
+      )}
+      <div class="guide-aside">
+        <div class="prose lp-prose rv">
+          {paragraphs.map((para) => <p>{segs(para).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))}</p>)}
+        </div>
+        <aside class="guide-cta rv">
+          <h3>Står I med et konkret rum?</h3>
+          <p>Send tegninger eller mål, så vælger vi materialet sammen med jer og vender tilbage med pris.</p>
+          <div class="detail-cta" style="flex-direction:column;align-items:stretch">
+            <a href={kontaktHref} class="btn btn-primary" style="justify-content:center">Send tegninger eller mål <span class="arr">→</span></a>
+            <a href="tel:+4542422684" class="btn btn-ghost" style="justify-content:center">+45 42 42 26 84</a>
+            <CallbackForm client:load />
+          </div>
+        </aside>
+      </div>
+      {images.length > 1 && (
+        <div class="cd-gallery rv" style="margin-top:48px">
+          {images.slice(1).map((im) => (
+            <figure class={`gfig${im.kind === 'tegning' ? ' contain' : ''}`} style="cursor:default">
+              <img src={cdn(im.src, 800)} alt={im.alt} loading="lazy" decoding="async" />
+              <figcaption class="img-tag"><b>{imgLabel(im.kind)}</b>{im.caption}</figcaption>
+            </figure>
+          ))}
+        </div>
+      )}
+    </div></section>
+  ) : (
+    <!-- ============ EMNE / MÅLGRUPPE: galleri + tekst ============ -->
+    <section class="detail pd"><div class="wrap">
+      <div class="crumbrow"><a href={`${base}#ydelser`} class="crumb">← Alt vi laver</a></div>
+      <div class="pd-grid">
+        <div class="gallery">
+          {hero && (
+            <figure class="pd-main lp-fig">
+              <img id="main-img" class={hero.kind === 'tegning' ? 'contain' : undefined} src={cdn(hero.src, 1200)} alt={hero.alt} fetchpriority="high" />
+              <span class="ptag" id="main-tag">{imgLabel(hero.kind)}</span>
+              <figcaption id="main-cap" class="img-tag">{hero.caption}</figcaption>
+            </figure>
+          )}
+          {images.length > 1 && (
+            <div class="thumbs">
+              {images.map((im, i) => (
+                <button class={`thumb${i === 0 ? ' active' : ''}`} data-src={cdn(im.src, 1200)} data-kind={im.kind} data-label={imgLabel(im.kind)} data-cap={im.caption ?? ''} data-alt={im.alt} aria-label={`Vis billede: ${im.alt}`}>
+                  <img src={cdn(im.src, 240)} alt="" loading="lazy" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        <div class="detail-body">
+          {page.kicker && <span class="kicker">{page.kicker}</span>}
+          <h1>{page.h1}</h1>
+          {page.lead && <p class="lead">{page.lead}</p>}
+          {page.highlights?.length > 0 && (
+            <dl class="lp-facts">
+              {page.highlights.map((h) => (<div><dt>{h.k}</dt><dd>{h.v}</dd></div>))}
+            </dl>
+          )}
+          <div class="detail-cta">
+            <a href={kontaktHref} class="btn btn-primary">Send tegninger eller mål <span class="arr">→</span></a>
+            <a href="tel:+4542422684" class="btn btn-ghost">+45 42 42 26 84</a>
+            <CallbackForm client:load />
+          </div>
         </div>
       </div>
-    </div>
 
-    {paragraphs.length > 0 && (
-      <div class="prose lp-prose">
-        {paragraphs.map((para) => <p>{segs(para).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))}</p>)}
-      </div>
-    )}
+      {paragraphs.length > 0 && (
+        <div class="prose lp-prose rv">
+          {paragraphs.map((para) => <p>{segs(para).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))}</p>)}
+        </div>
+      )}
 
-    {videos.length > 0 && (
-      <div class="lp-videos">
-        {videos.map((v) => (
-          <figure class="lp-video">
-            <video data-src={cdn(v.src)} poster={v.poster ? cdn(v.poster) : undefined} muted loop playsinline preload="none" aria-label={v.alt}></video>
-            {v.caption && <figcaption><b>Video</b>{v.caption}</figcaption>}
-          </figure>
-        ))}
-      </div>
-    )}
-  </div></section>
+      {videos.length > 0 && (
+        <div class="lp-videos rv">
+          {videos.map((v) => (
+            <figure class="lp-video">
+              <video data-src={cdn(v.src)} poster={v.poster ? cdn(v.poster) : undefined} muted loop playsinline preload="none" aria-label={v.alt}></video>
+              {v.caption && <figcaption><b>Video</b>{v.caption}</figcaption>}
+            </figure>
+          ))}
+        </div>
+      )}
+    </div></section>
+  )}
 
   {relCases.length > 0 && (
-    <section class="cases lp-cases"><div class="wrap">
-      <h2 class="label">Fra vores projekter</h2>
-      <div class="case-grid" style="margin-top:34px">
-        {relCases.map((c) => (
-          <article class="case">
-            <a class="ph" href={`${base}projekter/${c.slug}`} aria-label={c.name}>
-              {c.hero_image_url && <img src={cdn(c.hero_image_url, 840)} alt={c.name} loading="lazy" />}
-            </a>
-            <div class="body">
-              <span class="status">{c.status_live && <span class="dot"></span>}{c.status_label}</span>
-              <h3><a href={`${base}projekter/${c.slug}`}>{c.name}</a></h3>
-              <p class="desc">{c.web_summary}</p>
-              <div style="margin-top:22px"><a href={`${base}projekter/${c.slug}`} class="btn btn-light">Se projektet <span class="arr">→</span></a></div>
-            </div>
-          </article>
-        ))}
+    <section class="sec" id="projekter"><div class="wrap">
+      <div class="sec-head rv">
+        <div>
+          <span class="label">Fra vores projekter</span>
+          <h2>Det har vi <em>bygget.</em></h2>
+          <p class="lede">Sager, hvor inventaret er tegnet til rummet, bygget i vores egenproduktion og leveret efter byggepladsens tidsplan.</p>
+        </div>
+        <a href={`${base}projekter`} class="ulink">Alle projekter →</a>
+      </div>
+      <div class={`pgrid rv${caseCols === 3 ? ' three' : ''}`}>
+        {relCases.map((c) => <ProjectCard c={c} compact={caseCols === 3} />)}
       </div>
     </div></section>
   )}
 
   {relProducts.length > 0 && (
-    <section class="sec" style="padding-bottom:40px"><div class="wrap">
-      <h2 class="label">Arketyper</h2>
-      <div class="grid" style="margin-top:34px">
-        {relProducts.map((p) => (
-          <article class="card">
-            <a class="ph" href={`${base}produkter/${p.slug}`} aria-label={p.name}>
-              {p.primary_image && <img src={cdn(p.primary_image, 760)} alt={p.name} loading="lazy" />}
-            </a>
-            <div class="body">
-              <span class="kicker">{categoryLabel[p.category] ?? p.category}</span>
-              <h3><a href={`${base}produkter/${p.slug}`}>{p.name}</a></h3>
-              <p class="desc">{p.intro ?? p.short_description}</p>
-            </div>
-          </article>
-        ))}
+    <section class="sec inv" id="katalog"><div class="wrap">
+      <div class="sec-head rv">
+        <div>
+          <span class="label">Inventar</span>
+          <h2>Typer fra <em>kataloget.</em></h2>
+          <p class="lede">Konstruktionen er løst. Målene er jeres: I vælger mål, materiale og farve og ser resultatet i 3D med pris, før I bestiller.</p>
+        </div>
+        <a href={`${base}#katalog`} class="ulink">Hele kataloget →</a>
+      </div>
+      <div class="types all rv">
+        {relProducts.map((p) => { const im = productImage(p); return (
+          <ProductCard name={p.name} href={`${base}produkter/${p.slug}`} img={im.img} pos={im.pos} tag={fotoTag(im.foto, projectName)} fam={FAM[famOf(p)]} desc={p.intro ?? p.short_description ?? ''} />
+        ); })}
       </div>
     </div></section>
   )}
 
+  {isSegment && (
+    <section class="sec" id="saadan"><div class="wrap">
+      <div class="sec-head rv">
+        <div>
+          <span class="label">Sådan arbejder vi</span>
+          <h2>Fra 3D-model til <em>færdigt rum.</em></h2>
+          <p class="lede">Holdet er ingeniører. Hvert skab, hver bænk og hver niche bygges først som 3D-model; samme model giver tegningen til jeres godkendelse og styklisten til produktionen.</p>
+        </div>
+        {pages.some((p) => p.slug === 'vaerkstedstegninger-og-3d-model') && <a href={`${base}vaerkstedstegninger-og-3d-model`} class="ulink">Sådan ser tegningerne ud →</a>}
+      </div>
+      <ProcessSteps />
+    </div></section>
+  )}
+
   {page.faq?.length > 0 && (
-    <section class="sec lp-faq"><div class="wrap">
-      <h2>Spørgsmål og svar</h2>
-      <div class="faq-list">
+    <section class="sec lp-faq" style={isSegment || relProducts.length ? 'padding-top:0' : undefined}><div class="wrap">
+      <span class="label">Spørgsmål og svar</span>
+      <h2>Det bliver vi ofte <em>spurgt om.</em></h2>
+      <div class="faq-list rv">
         {page.faq.map((f) => (
           <details>
             <summary>{f.q}</summary>
@@ -199,37 +266,23 @@ const imgLabel = (kind: string) =>
 
   {related.length > 0 && (
     <section class="lp-related"><div class="wrap">
-      <span class="label">Se også</span>
-      <div class="lp-links">
-        {related.map((r) => <a href={`${base}${r.slug}`}>{r.nav_label} <span class="arr">→</span></a>)}
-      </div>
+      <div class="yd-row rv"><span class="lbl">Se også:</span>{related.map((r) => <a class="pill" href={`${base}${r.slug}`}>{r.nav_label}</a>)}</div>
     </div></section>
   )}
 
-  <section class="cta"><div class="wrap">
-    <span class="label">Kontakt</span>
-    <h2>Send os tegningerne. Eller hele <em>udbuddet.</em></h2>
-    <p>Vi læser materialet, stiller de spørgsmål der skal stilles, og vender tilbage med pris og tidsplan.</p>
-    <div class="cta-actions">
-      <a href={`mailto:tilbud@neminventar.dk?subject=${encodeURIComponent('Forespørgsel: ' + page.nav_label)}`} class="btn btn-light">tilbud@neminventar.dk <span class="arr">→</span></a>
-      <a href="tel:+4542422684" class="btn btn-ghost" style="border-color:#443B2A;color:#CFC4B2">+45 42 42 26 84</a>
-    </div>
-  </div></section>
+  <ContactCta subject={page.nav_label} />
 
   <script>
     const main = document.getElementById('main-img') as HTMLImageElement | null;
     const cap = document.getElementById('main-cap');
+    const tag = document.getElementById('main-tag');
     const thumbs = document.querySelectorAll<HTMLButtonElement>('.thumb');
     thumbs.forEach((btn) => {
       btn.addEventListener('click', () => {
         const { src, label, cap: text, alt, kind } = btn.dataset;
-        if (main && src) { main.src = src; main.alt = alt ?? ''; main.classList.toggle('contain', kind === 'tegning'); }
-        if (cap) {
-          cap.replaceChildren();
-          const b = document.createElement('b');
-          b.textContent = label ?? '';
-          cap.append(b, text ?? '');
-        }
+        if (main && src) { main.style.opacity = '0'; main.onload = () => { main.style.opacity = '1'; }; main.src = src; main.alt = alt ?? ''; main.classList.toggle('contain', kind === 'tegning'); if (main.complete) main.style.opacity = '1'; }
+        if (tag) tag.textContent = label ?? '';
+        if (cap) cap.textContent = text ?? '';
         thumbs.forEach((b) => b.classList.toggle('active', b === btn));
       });
     });

@@ -1,0 +1,17 @@
+---
+// Tal-striben: første tal i hver sags leverance ("342 lockers · Mørkhøj Skole") + det, siden selv lægger til.
+import type { WebCase } from '../lib/supabase';
+import { splitTal, leverance } from '../lib/catalog';
+interface Props { cases: WebCase[]; extra?: { b: string; t: string; c: string }[] }
+const { cases, extra = [] } = Astro.props;
+const items = [
+  ...cases.flatMap((c) => { const x = splitTal(leverance(c)[0] ?? ''); return x ? [{ b: x.b, t: x.t, c: c.name }] : []; }),
+  ...extra,
+];
+---
+<div class="ticker" aria-label="Det har vi bygget">
+  <div class="ticker-track">
+    {items.map((x) => <span class="tk"><b>{x.b}</b><i>{x.t}</i>{x.c}</span>)}
+    {items.map((x) => <span class="tk dup" aria-hidden="true"><b>{x.b}</b><i>{x.t}</i>{x.c}</span>)}
+  </div>
+</div>

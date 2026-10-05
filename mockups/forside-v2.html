@@ -1,0 +1,832 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Forside v2 mockup</title>
+<!--
+  MOCKUP af ny forside, version 3 (03-10-2026). Ikke live. Står i mockups/ (ikke public/), så den deployes ikke.
+  Milots rettelser til v2: hero smallere og lavere med to felter der skifter ét ad gangen fra 1. sekund; projekter som
+  tydelige kort i egen sektion; inventar med alle typer fra det gamle katalog (+ filtre); mindre Mørkhøj overalt.
+  Beholdt uændret: tal-stribe, designer-teaser, "Fra 3D-model til færdigt rum", kontakt.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ DESIGNSYSTEM (som site.css) ============ */
+:root{
+  --paper:#FAF8F3;--ink:#17140E;--muted:#6E6759;--soft:#F1EDE3;--line:#E5DFD2;
+  --warm:#A2652A;--warm-soft:#C98A4B;--dark:#1C1812;--dark-2:#221D15;--dark-line:#332C1F;--dark-text:#CFC4B2;--dark-muted:#A99D88;
+  --radius:18px;--ease:cubic-bezier(.2,.7,.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;font-size:16px;overflow-x:clip}
+::selection{background:var(--warm);color:#fff}
+:focus-visible{outline:2px solid var(--warm);outline-offset:2px;border-radius:3px}
+a{color:inherit;text-decoration:none}
+img,video{display:block}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+ul{list-style:none}
+[hidden]{display:none!important}
+.wrap{max-width:1280px;margin:0 auto;padding:0 28px}
+h1,h2,h3{font-family:'Archivo','Inter',sans-serif;font-weight:600;letter-spacing:-.025em;line-height:1.05}
+h1 em,h2 em{font-style:italic;font-weight:400;color:var(--warm)}
+.label{display:inline-flex;align-items:center;gap:10px;font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--warm)}
+.label::before{content:"";width:26px;height:1px;background:var(--warm)}
+.btn{display:inline-flex;align-items:center;gap:10px;border-radius:999px;padding:15px 28px;font-weight:600;font-size:15.5px;line-height:1;transition:background .2s,color .2s,border-color .2s,transform .2s}
+.btn .arr{display:inline-block;transition:transform .25s cubic-bezier(.2,.7,.3,1.2)}
+.btn:hover .arr{transform:translateX(5px)}
+.btn-primary{background:var(--ink);color:var(--paper)}.btn-primary:hover{background:var(--warm)}
+.btn-ghost{border:1px solid var(--line);color:var(--ink)}.btn-ghost:hover{border-color:var(--ink)}
+.btn-light{background:var(--paper);color:var(--ink)}.btn-light:hover{background:var(--warm);color:#fff}
+.btn-dark-ghost{border:1px solid #4A4030;color:var(--dark-text)}.btn-dark-ghost:hover{border-color:#CFC4B2;color:#fff}
+.ulink{position:relative;font-weight:600;font-size:15px;padding-bottom:3px;white-space:nowrap}
+.ulink::after{content:"";position:absolute;left:0;bottom:0;height:1.5px;width:100%;background:currentColor;transform:scaleX(0);transform-origin:right;transition:transform .3s cubic-bezier(.65,0,.35,1)}
+.ulink:hover::after{transform:scaleX(1);transform-origin:left}
+.sec{padding:100px 0}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:32px;margin-bottom:48px;flex-wrap:wrap}
+.sec-head h2{font-size:clamp(32px,3.8vw,52px);margin-top:22px;max-width:20ch;text-wrap:balance}
+.sec-head .lede{color:var(--muted);max-width:52ch;margin-top:14px;font-size:17px;line-height:1.7}
+.dark{background:var(--dark);color:var(--dark-text)}
+.dark .label{color:var(--warm-soft)}.dark .label::before{background:var(--warm-soft)}
+.dark h2,.dark h3{color:#F4EFE6}.dark h2 em{color:var(--warm-soft)}.dark .lede{color:var(--dark-muted)}.dark .ulink{color:#F4EFE6}
+.tag{position:absolute;left:12px;top:12px;z-index:2;background:rgba(250,248,243,.92);backdrop-filter:blur(6px);border-radius:999px;padding:5px 10px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.img-tag{position:absolute;left:12px;bottom:12px;z-index:2;background:rgba(250,248,243,.92);backdrop-filter:blur(6px);border-radius:999px;padding:6px 11px;font-size:12px;color:var(--muted);line-height:1.3;border:1px solid rgba(229,223,210,.7);max-width:calc(100% - 24px)}
+.img-tag b{color:var(--ink);font-weight:600;margin-right:5px}
+.rv{opacity:0;transform:translateY(16px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.rv.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}*{animation:none!important;transition:none!important}}
+@media(max-width:680px){.wrap{padding:0 20px}.sec{padding:72px 0}.sec-head{margin-bottom:32px}}
+
+/* ============ NAV ============ */
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rgba(250,248,243,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:72px}
+.brand{font-weight:700;font-size:19px;letter-spacing:-.03em}
+.brand b{color:var(--warm)}
+.nav-links{display:flex;gap:28px;align-items:center;font-size:15px;font-weight:500;color:var(--muted)}
+.nav-links a:not(.nav-cta){position:relative;padding-bottom:3px;transition:color .2s}
+.nav-links a:not(.nav-cta)::after{content:"";position:absolute;left:0;bottom:0;height:1.5px;width:100%;background:var(--warm);transform:scaleX(0);transform-origin:right;transition:transform .3s cubic-bezier(.65,0,.35,1)}
+.nav-links a:not(.nav-cta):hover{color:var(--ink)}.nav-links a:not(.nav-cta):hover::after{transform:scaleX(1);transform-origin:left}
+.nav-cta{background:var(--ink);color:var(--paper);border-radius:999px;padding:11px 22px;font-weight:600;transition:background .2s;white-space:nowrap}.nav-cta:hover{background:var(--warm)}
+.nav-tel{display:inline-flex;align-items:center;gap:7px;color:var(--ink)!important;font-weight:700;white-space:nowrap}
+.nav-tel svg{color:var(--warm)}
+.soon{display:inline-block;margin-left:6px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--warm);border:1px solid rgba(162,101,42,.4);border-radius:999px;padding:2px 7px;vertical-align:middle}
+@media(max-width:1180px){.nav-links{gap:18px}}
+@media(max-width:960px){.nav-links a:not(.nav-cta):not(.nav-tel){display:none}}
+@media(max-width:680px){.brand{font-size:16px}.nav-links{gap:12px}.nav-cta{padding:9px 14px;font-size:14px}.nav-tel{font-size:14.5px}.nav-tel .cc{display:none}}
+
+/* ============ HERO: overskrift + knapper · to felter, der skifter ét ad gangen · tekst og mærkater under ============ */
+.hero{padding:24px 0 0}
+.hero-grid{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);grid-template-areas:"head cta" "duo duo" "sub facts";column-gap:48px}
+.hero-head{grid-area:head}
+.hero-head h1{font-size:clamp(36px,4.3vw,60px);margin-top:14px;max-width:15ch;text-wrap:balance}
+.hero-cta{grid-area:cta;align-self:end;justify-self:end;display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end;padding-bottom:8px}
+.duo{grid-area:duo;position:relative;display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:12px;height:clamp(380px,46vh,500px);margin-top:22px}
+/* "billederne popper lidt frem" (Milot): rammen løfter sig, billedet zoomer en anelse — samme regel på alle billedfliser */
+.slot{position:relative;border-radius:14px;overflow:hidden;background:var(--soft);border:1px solid var(--line);transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
+.slot:hover{transform:translateY(-4px);box-shadow:0 26px 54px -28px rgba(23,20,14,.45)}
+.slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:var(--pos,50% 50%);opacity:0;transition:opacity .85s ease,transform .8s var(--ease)}
+.slot img.is-on{opacity:1}
+.slot:hover img.is-on{transform:scale(1.04)}
+.slot .img-tag{transition:opacity .3s;border-radius:12px}
+.slot.swapping .img-tag{opacity:0}
+.pausebtn{position:absolute;right:12px;top:12px;z-index:3;width:32px;height:32px;border-radius:50%;border:1px solid rgba(23,20,14,.1);background:rgba(250,248,243,.88);backdrop-filter:blur(6px);display:grid;place-items:center;font-size:11px;color:var(--ink);transition:background .2s}
+.pausebtn:hover{background:#fff}
+/* teksten og mærkaterne under billederne (Milot: "måske under de to billeder i stedet for") */
+.hero-sub{grid-area:sub;margin-top:18px;font-size:16.5px;color:var(--muted);line-height:1.65;max-width:56ch}
+.facts{grid-area:facts;margin-top:18px;display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;align-content:flex-start}
+.fact{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:8px 14px 8px 11px;font-size:13px;font-weight:500;color:var(--muted);background:#fff;white-space:nowrap;transition:border-color .2s,color .2s}
+.fact::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--warm);flex:none}
+.fact:hover{border-color:var(--warm);color:var(--ink)}
+@media(max-width:860px){
+  .hero{padding:24px 0 0}
+  .hero-grid{grid-template-columns:1fr;grid-template-areas:"head" "duo" "sub" "cta" "facts"}
+  .hero-head h1{font-size:clamp(36px,10.5vw,54px);margin-top:16px}
+  .hero-cta{justify-self:start;justify-content:flex-start;padding:0;margin-top:20px}
+  .duo{grid-template-columns:1fr;height:auto;margin-top:20px}
+  .slot.a{display:none}
+  .slot.b{aspect-ratio:4/5}
+  .hero-sub{font-size:16px;margin-top:20px}
+  .facts{justify-content:flex-start;margin-top:20px}
+  .fact{white-space:normal}
+}
+
+/* ============ TAL-STRIBE ============ */
+.ticker{border-block:1px solid var(--line);background:#fff;overflow:hidden;padding:18px 0;margin-top:18px}
+.ticker-track{display:flex;gap:64px;width:max-content;animation:tick 60s linear infinite}
+.ticker:hover .ticker-track{animation-play-state:paused}
+@keyframes tick{to{transform:translateX(-50%)}}
+.tk{display:inline-flex;align-items:baseline;gap:9px;white-space:nowrap;font-size:14.5px;color:var(--muted)}
+.tk b{font-family:'Archivo',sans-serif;font-size:24px;font-weight:600;letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums}
+.tk i{font-style:normal;color:var(--ink);font-weight:500}
+.tk::after{content:"";width:5px;height:5px;border-radius:50%;background:var(--warm);margin-left:52px;align-self:center}
+@media(prefers-reduced-motion:reduce){.ticker-track{animation:none;flex-wrap:wrap;width:auto;gap:18px 40px}.tk::after{display:none}.ticker .dup{display:none}}
+@media(max-width:860px){.ticker{margin-top:24px}}
+
+/* ============ PROJEKTER: fremhævet sag (mørk) ============ */
+.mos2{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.mos2 figure{position:relative;margin:0;border-radius:14px;overflow:hidden;background:var(--dark-2);border:1px solid var(--dark-line);transition:transform .35s var(--ease),box-shadow .35s var(--ease),border-color .35s}
+.mos2 figure:hover{transform:translateY(-4px);box-shadow:0 28px 56px -24px rgba(0,0,0,.75);border-color:#4A4030}
+.mos2 figure img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:var(--pos,50% 50%);transition:transform .9s var(--ease)}
+.mos2 figure:hover img{transform:scale(1.04)}
+.mos2 .w{grid-column:1/4;aspect-ratio:21/9}
+.mos2 .t{grid-column:4/5;grid-row:1/3}
+.mos2 .s{aspect-ratio:4/3}
+.mos2 .img-tag{background:rgba(28,24,18,.78);color:#CFC4B2;border-color:rgba(255,255,255,.08);opacity:0;transform:translateY(6px);transition:opacity .3s,transform .3s}
+.mos2 .img-tag b{color:#F4EFE6}
+.mos2 figure:hover .img-tag{opacity:1;transform:none}
+.talgitter{display:grid;grid-template-columns:repeat(9,1fr);margin-top:36px;border-top:1px solid var(--dark-line);border-bottom:1px solid var(--dark-line)}
+.talgitter div{padding:20px 14px 20px 0;border-right:1px solid var(--dark-line);margin-right:14px}
+.talgitter div:last-child{border-right:0;margin-right:0}
+.talgitter b{display:block;font-family:'Archivo',sans-serif;font-size:clamp(22px,2.1vw,30px);font-weight:600;letter-spacing:-.02em;line-height:1;color:#F4EFE6;font-variant-numeric:tabular-nums;white-space:nowrap}
+.talgitter span{display:block;font-size:12.5px;color:var(--dark-muted);margin-top:8px;line-height:1.4}
+.credit{margin-top:16px;font-size:13.5px;color:#7E7460}
+@media(max-width:1020px){
+  .mos2 .w{grid-column:1/3}.mos2 .t{grid-column:3/5;grid-row:auto;aspect-ratio:4/3}.mos2 .t img{object-position:60% 45%}
+  .talgitter{grid-template-columns:repeat(3,1fr);border-bottom:0}.talgitter div{border-bottom:1px solid var(--dark-line)}.talgitter div:nth-child(3n){border-right:0}
+}
+@media(max-width:680px){
+  .mos2{grid-template-columns:1fr 1fr;gap:10px}.mos2 .w{grid-column:1/3;aspect-ratio:16/10}.mos2 .t{grid-column:auto;aspect-ratio:4/5}.mos2 .t img{object-position:65% 50%}
+  .mos2 .img-tag{opacity:1;transform:none}
+  .talgitter{grid-template-columns:1fr 1fr}.talgitter div:nth-child(3n){border-right:1px solid var(--dark-line)}.talgitter div:nth-child(2n){border-right:0}
+}
+
+/* ============ FLERE PROJEKTER: kort ============ */
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.pcard{border:1px solid var(--line);border-radius:var(--radius);background:#fff;overflow:hidden;display:flex;flex-direction:column;transition:transform .35s var(--ease),box-shadow .35s,border-color .35s}
+.pcard:hover{transform:translateY(-5px);box-shadow:0 26px 54px -26px rgba(23,20,14,.3);border-color:#D8D0BF}
+.pcard .ph{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--soft);display:block}
+.pcard .ph img{width:100%;height:100%;object-fit:cover;object-position:var(--pos,50% 60%);transition:transform .7s var(--ease)}
+.pcard:hover .ph img{transform:scale(1.045)}
+.pcard .body{padding:22px 24px 24px;display:flex;flex-direction:column;gap:8px;flex:1}
+.status{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.status .dotp{width:8px;height:8px;border-radius:99px;background:var(--warm);position:relative}
+.status .dotp::after{content:"";position:absolute;inset:-4px;border-radius:99px;border:1px solid var(--warm);opacity:.6;animation:pulse 2.2s ease-out infinite}
+.pcard h3{font-size:22px}
+.pcard .desc{font-size:14.5px;color:var(--muted);line-height:1.6;flex:1}
+.pcard .meta{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;margin-top:4px}
+.pcard .meta b{color:var(--ink);font-weight:600}
+.pcard.ask{border:1.5px dashed #CDC3AE;background:transparent;justify-content:center;padding:34px 30px;gap:12px}
+.pcard.ask:hover{transform:none;box-shadow:none;border-color:var(--warm)}
+.pcard.ask .kick{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--warm);font-weight:700}
+.pcard.ask p{font-size:15px;color:var(--muted);line-height:1.65}
+.pcard.ask .btn{align-self:flex-start;margin-top:6px}
+@media(max-width:1020px){.pgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.pgrid{grid-template-columns:1fr}}
+
+/* ============ INVENTAR: alle typer + filtre ============ */
+.inv{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:-10px 0 32px}
+.fchip{border:1px solid var(--line);border-radius:999px;padding:9px 16px;font-weight:600;font-size:14px;background:#fff;transition:border-color .2s,background .2s,color .2s}
+.fchip:hover{border-color:var(--ink)}
+.fchip.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.fchip small{font-weight:500;color:var(--muted);margin-left:6px}
+.fchip.on small{color:#CFC4B2}
+/* kort i samme størrelse som det nuværende katalog (3 pr. række, 4:3-billede), men med foto/visualisering-mærke
+   i stedet for nummer, familie som kicker og hover-pop. "Alle" viser 9; "Vis alle" eller et filter viser resten. */
+.types{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.tcard{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;min-width:0;transition:transform .35s var(--ease),box-shadow .35s var(--ease),border-color .35s}
+.tcard:hover{transform:translateY(-6px);box-shadow:0 26px 54px -26px rgba(23,20,14,.3);border-color:#D8D0BF}
+.tcard .ph{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--soft);display:block}
+.tcard .ph img{width:100%;height:100%;object-fit:cover;object-position:var(--pos,50% 55%);transition:transform .7s var(--ease)}
+.tcard:hover .ph img{transform:scale(1.05)}
+.tcard .body{padding:22px 24px 20px;display:flex;flex-direction:column;flex:1}
+.kicker{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--warm);font-weight:700;margin-bottom:8px}
+.tcard h3{font-size:21px;margin-bottom:8px;text-wrap:balance}
+.tcard .desc{font-size:14.5px;color:var(--muted);flex:1;line-height:1.6}
+.tcard .foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.made{font-size:13px;color:var(--muted)}
+.made b{color:var(--ink);font-weight:600}
+.order{display:inline-flex;align-items:center;gap:8px;background:var(--soft);border-radius:999px;padding:9px 17px;font-weight:600;font-size:14px;white-space:nowrap;transition:background .25s,color .25s}
+.order .arr{transition:transform .25s cubic-bezier(.2,.7,.3,1.2)}
+.tcard:hover .order{background:var(--ink);color:var(--paper)}
+.tcard:hover .order .arr{transform:translateX(4px)}
+.types:not(.expanded) .tcard:nth-child(n+10){display:none}
+.showmore{margin:32px auto 0;display:inline-flex}
+.showmore-row{display:flex;justify-content:center}
+.more-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:44px;align-items:center}
+.more-row .pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:10px 18px;font-weight:600;font-size:14px;transition:border-color .2s}
+.more-row .pill:hover{border-color:var(--warm)}
+.more-row .lbl{font-size:13.5px;color:var(--muted);margin-right:6px}
+@media(max-width:1020px){.types{grid-template-columns:1fr 1fr;gap:20px}}
+@media(max-width:600px){
+  .types{grid-template-columns:1fr 1fr;gap:14px 12px}
+  .types:not(.expanded) .tcard:nth-child(n+7){display:none}
+  .tcard .body{padding:14px 14px 12px}
+  .tcard h3{font-size:15.5px}
+  .tcard .desc,.made{display:none}
+  .tcard .foot{margin-top:10px;padding-top:10px;justify-content:flex-end}
+  .order{padding:8px 13px;font-size:13px}
+  .kicker{font-size:10px;letter-spacing:.08em}
+  .tcard .tag{font-size:9.5px;padding:4px 8px;white-space:nowrap;left:10px;top:10px}
+}
+
+/* ============ DESIGNEREN — TEASER ============ */
+.designer{background:var(--soft);border-bottom:1px solid var(--line)}
+.dz{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);border:1px solid var(--line);border-radius:22px;overflow:hidden;background:var(--paper);box-shadow:0 40px 90px -50px rgba(23,20,14,.35)}
+.stage{position:relative;min-height:600px;background:radial-gradient(120% 95% at 42% 34%,#FFFDF8 0%,#F5F0E6 52%,#EAE3D5 100%);display:grid;place-items:center;overflow:hidden;perspective:1700px;perspective-origin:50% 38%}
+.stage .brandbar{position:absolute;left:16px;top:16px;z-index:3;display:flex;align-items:center;gap:12px;padding:8px 14px;border-radius:999px;background:rgba(250,248,243,.8);backdrop-filter:blur(8px);font-size:13px;color:var(--muted)}
+.stage .brandbar .brand{font-size:15px}
+.stage .proto{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8A531F;border:1px solid rgba(162,101,42,.35);border-radius:999px;padding:2px 8px}
+.stage .pills{position:absolute;left:18px;bottom:18px;z-index:3;display:flex;gap:8px}
+.pill-b{height:36px;padding:0 15px;border-radius:999px;border:1px solid rgba(23,20,14,.12);background:rgba(250,248,243,.86);backdrop-filter:blur(8px);font-weight:600;font-size:13px;transition:background .2s,color .2s,border-color .2s}
+.pill-b:hover{border-color:rgba(23,20,14,.35)}
+.pill-b[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chip-size{position:absolute;right:18px;bottom:22px;z-index:3;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;background:rgba(250,248,243,.8);backdrop-filter:blur(6px);padding:7px 13px;border-radius:999px}
+.floor{position:absolute;left:0;right:0;bottom:0;height:38%;background:linear-gradient(to top,rgba(23,20,14,.07),transparent)}
+.cabwrap{position:relative;transform-style:preserve-3d;margin-top:10px}
+.shadow{position:absolute;left:50%;bottom:calc(-26 * var(--k,2.2px));width:140%;height:calc(28 * var(--k,2.2px));transform:translateX(-50%) rotateX(80deg);background:radial-gradient(ellipse at 50% 50%,rgba(23,20,14,.34),rgba(23,20,14,.12) 45%,transparent 72%);filter:blur(5px);pointer-events:none}
+.cab{--k:2.2px;--W:calc(var(--w)*var(--k));--H:calc(var(--h)*var(--k));--D:calc(var(--d)*var(--k));--T:calc(1.8*var(--k));
+  position:relative;width:var(--W);height:var(--H);transform-style:preserve-3d;
+  transform:rotateX(-8deg) rotateY(-32deg);transition:width .45s var(--ease),height .45s var(--ease),transform .8s var(--ease)}
+.cab>*{position:absolute;transform-style:preserve-3d}
+.cab .back{inset:0;transform:translateZ(calc(var(--D)/-2 + 1px));background:var(--inner)}
+.cab .side{top:0;bottom:0;width:var(--D);left:calc(var(--W) - var(--D)/2);transform:rotateY(90deg);background:var(--face);filter:brightness(.80) saturate(.95)}
+.cab .sideL{top:0;bottom:0;width:var(--D);left:calc(var(--D)/-2);transform:rotateY(-90deg);background:var(--face);filter:brightness(.9)}
+.cab .top{left:0;right:0;height:var(--D);top:calc(var(--D)/-2);transform:rotateX(90deg);background:var(--face);filter:brightness(1.07)}
+.cab .bottom{left:0;right:0;height:var(--D);bottom:calc(var(--D)/-2);transform:rotateX(-90deg);background:#2a241c}
+.cab .top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:var(--T);background:var(--edge)}
+.cab .side::after,.cab .sideL::after{content:"";position:absolute;top:0;bottom:0;width:var(--T);background:var(--edge)}
+.cab .side::after{right:0}.cab .sideL::after{left:0}
+.cab .inner{inset:0;pointer-events:none}
+.cab .inner .shelf{position:absolute;left:var(--T);right:var(--T);height:calc(var(--D) - 2px);transform:rotateX(90deg);background:var(--face);filter:brightness(.93)}
+.cab .inner .shelf::after{content:"";position:absolute;left:0;right:0;bottom:0;height:var(--T);background:var(--edge)}
+.cab .doors{inset:0;transform:translateZ(calc(var(--D)/2));display:flex}
+.door{position:relative;flex:1;height:100%;background:var(--face);box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);transform-style:preserve-3d;transition:transform .75s var(--ease)}
+.door.L{transform-origin:left center}
+.door.R{transform-origin:right center;box-shadow:inset 1px 0 0 rgba(0,0,0,.22),inset 0 0 0 1px rgba(0,0,0,.08)}
+.cab.open .door.L{transform:rotateY(-112deg)}
+.cab.open .door.R{transform:rotateY(112deg)}
+.cab.one .door.R{display:none}
+.door::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,rgba(255,255,255,.16),rgba(255,255,255,0) 38%,rgba(0,0,0,.07) 100%);pointer-events:none}
+.door::before{content:"";position:absolute;top:12%;width:3px;height:76%;background:repeating-linear-gradient(to bottom,transparent 0 calc(50% - 10px),#9a9a9a calc(50% - 10px) calc(50% + 10px),transparent calc(50% + 10px) 100%);opacity:.9}
+.door.L::before{left:1px}.door.R::before{right:1px}
+.greb{position:absolute;top:50%;width:0;height:0}
+.door.L .greb{right:9%}.door.R .greb{left:9%}
+.cab[data-greb="std"] .greb{width:4px;height:44px;margin-top:-22px;border-radius:2px;background:linear-gradient(90deg,#e9e9e9,#9a9a9a 60%,#d6d6d6);box-shadow:0 1px 2px rgba(0,0,0,.35)}
+.cab[data-greb="sort"] .greb{width:5px;height:46px;margin-top:-23px;border-radius:3px;background:linear-gradient(90deg,#3a3a3a,#111 60%,#2a2a2a);box-shadow:0 1px 2px rgba(0,0,0,.4)}
+.cab[data-greb="trae"] .greb{width:16px;height:16px;margin-top:-8px;margin-left:-6px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#d7b07c,#a97a44 70%,#7a5530);box-shadow:0 1px 3px rgba(0,0,0,.35)}
+.cab[data-greb="push"] .greb{display:none}
+.sokkel{left:calc(4*var(--k));right:calc(4*var(--k));bottom:calc(-15 * var(--k));height:calc(15 * var(--k));transform:translateZ(calc(var(--D)/2 - 6*var(--k)));background:#241f18}
+.sokkelS{top:auto;bottom:calc(-15 * var(--k));height:calc(15 * var(--k));width:calc(var(--D) - 6*var(--k));left:calc(var(--W) - 4*var(--k) - (var(--D) - 6*var(--k))/2);transform:rotateY(90deg) translateZ(calc(-3*var(--k)));background:#1c1711}
+.cab[data-mat="birk"]{--face:repeating-linear-gradient(97deg,rgba(120,85,45,.11) 0 1.5px,transparent 1.5px 9px),repeating-linear-gradient(92deg,rgba(255,255,255,.22) 0 2px,transparent 2px 19px),linear-gradient(90deg,#EFE2C8,#E6D6B6 45%,#F0E4CB);--edge:repeating-linear-gradient(0deg,#E2CCA6 0 2px,#8E6E47 2px 3px);--inner:#F3E9D6}
+.cab[data-mat="eg"]{--face:repeating-linear-gradient(91deg,rgba(90,55,20,.09) 0 1px,transparent 1px 6px),repeating-radial-gradient(ellipse 220% 90% at 50% 160%,rgba(90,55,20,.07) 0 3px,transparent 3px 26px),linear-gradient(90deg,#D3AA76,#C69A64 50%,#D5AC78);--edge:#A77E4F;--inner:#EAD4B0}
+.cab[data-mat="kryds"]{--face:linear-gradient(0deg,var(--tint,rgba(0,0,0,0)),var(--tint,rgba(0,0,0,0))),repeating-linear-gradient(94deg,rgba(120,80,30,.12) 0 2px,transparent 2px 10px),repeating-linear-gradient(88deg,rgba(255,255,255,.18) 0 3px,transparent 3px 27px),linear-gradient(90deg,#E6C796,#DDB987 50%,#E8CB9C);--edge:repeating-linear-gradient(0deg,#E3C494 0 2px,#8E6E47 2px 3px);--inner:#EEDBB6}
+.cab[data-mat="kompakt"]{--face:linear-gradient(100deg,rgba(255,255,255,.08),rgba(255,255,255,0) 50%),linear-gradient(90deg,var(--flat,#BDBBB6),var(--flat,#BDBBB6));--edge:#1E1D1F;--inner:#D8D6D1}
+.panel{display:flex;flex-direction:column;border-left:1px solid var(--line)}
+.panel .scroll{padding:30px 30px 10px}
+.panel h2{font-size:clamp(26px,2.6vw,34px)}
+.panel .intro{color:var(--muted);font-size:14.5px;margin-top:10px;max-width:40ch;line-height:1.6}
+.steps{margin-top:22px;border-top:1px solid var(--line)}
+.step{border-bottom:1px solid var(--line);padding:16px 0 18px}
+.step-h{display:grid;grid-template-columns:30px 1fr auto;gap:10px;align-items:baseline}
+.step-h .no{font-weight:600;font-size:12px;letter-spacing:.08em;color:#8A531F;font-variant-numeric:tabular-nums}
+.step-h .ttl{font:600 17px/1.1 'Archivo',sans-serif;letter-spacing:-.01em}
+.step-h .sum{font-size:13px;color:var(--muted);text-align:right}
+.sl{margin:14px 0 4px}
+.sl-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;font-size:13.5px;font-weight:600}
+.sl-top output{font:600 17px 'Archivo',sans-serif;font-variant-numeric:tabular-nums}
+.sl-top output small{font:500 12px 'Inter',sans-serif;color:var(--muted);margin-left:3px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:26px;background:transparent;cursor:pointer;--p:50%}
+input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:4px;background:linear-gradient(to right,var(--ink) var(--p),var(--line) var(--p))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;margin-top:-9px;border-radius:50%;background:#fff;border:2px solid var(--ink);box-shadow:0 2px 8px rgba(23,20,14,.18)}
+input[type=range]::-moz-range-track{height:4px;border-radius:4px;background:var(--line)}
+input[type=range]::-moz-range-progress{height:4px;border-radius:4px;background:var(--ink)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:2px solid var(--ink)}
+.mats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.mat{display:grid;grid-template-columns:40px 1fr;gap:10px;align-items:center;padding:8px 10px 8px 8px;border:1px solid var(--line);border-radius:12px;background:#fff;text-align:left;transition:border-color .2s,box-shadow .2s}
+.mat:hover{border-color:#cfc6b4}
+.mat.on{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.mat .sw{width:40px;height:40px;border-radius:9px;background:var(--sw);border:1px solid rgba(0,0,0,.08)}
+.mat b{display:block;font-size:13.5px;font-weight:600;line-height:1.2}
+.mat small{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+.lbl{font-size:13px;font-weight:600;margin:16px 0 8px;display:flex;justify-content:space-between}
+.lbl span{font-weight:500;color:var(--muted)}
+.dots{display:flex;gap:10px;flex-wrap:wrap}
+.dot{width:30px;height:30px;border-radius:50%;background:var(--c);box-shadow:inset 0 0 0 1px rgba(0,0,0,.14);position:relative;transition:transform .15s}
+.dot:hover{transform:scale(1.08)}
+.dot.on::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:2px solid var(--ink)}
+.segc{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;background:var(--soft);padding:4px;border-radius:12px}
+.segc button{border-radius:9px;padding:9px 6px;font-size:13px;font-weight:600;color:var(--muted);line-height:1.2;transition:background .2s,color .2s,box-shadow .2s}
+.segc button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(23,20,14,.12)}
+.note{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.45}
+.pricebar{border-top:1px solid var(--line);padding:18px 30px 22px;background:rgba(250,248,243,.97);margin-top:auto}
+.spec{font-size:13px;color:var(--muted);line-height:1.5;min-height:38px}
+.spec b{color:var(--ink);font-weight:600}
+.pb-main{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;margin-top:10px}
+.amount{display:flex;align-items:center;gap:10px}
+.amount .soon-tag{font:700 11px 'Inter',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#8A531F;background:#F4EADF;border-radius:999px;padding:6px 11px}
+.amount .live{width:8px;height:8px;border-radius:50%;background:var(--warm);position:relative}
+.amount .live::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:1px solid var(--warm);opacity:.6;animation:pulse 2.2s ease-out infinite}
+@keyframes pulse{0%{transform:scale(.6);opacity:.7}80%{transform:scale(1.3);opacity:0}100%{opacity:0}}
+.vat{font-size:12.5px;color:var(--muted);margin-top:8px}
+.delta{display:inline-block;font:600 11.5px 'Inter',sans-serif;color:#8A531F;background:#F4EADF;border-radius:999px;padding:3px 9px;opacity:0;transition:opacity .25s}
+.delta.show{opacity:1}
+.pricebar .btn{padding:14px 20px;font-size:14.5px}
+.dz-foot{display:flex;gap:14px;align-items:center;margin-top:22px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+@media(max-width:960px){.dz{grid-template-columns:1fr}.stage{min-height:420px}.panel{border-left:0;border-top:1px solid var(--line)}.cab{--k:1.3px}.shadow{--k:1.3px}}
+@media(max-width:480px){.mats{grid-template-columns:1fr}.panel .scroll,.pricebar{padding-left:20px;padding-right:20px}.pb-main{flex-direction:column;align-items:stretch}.pricebar .btn{justify-content:center}}
+
+/* ============ SÅDAN ARBEJDER VI: 4 trin ============ */
+.steps4{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.st{position:relative}
+.st .ph{position:relative;aspect-ratio:4/5;border-radius:14px;overflow:hidden;background:#fff;border:1px solid var(--line);transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
+.st:hover .ph{transform:translateY(-4px);box-shadow:0 22px 44px -24px rgba(23,20,14,.4)}
+.st .ph img,.st .ph video{width:100%;height:100%;object-fit:cover;object-position:var(--pos,50% 50%);transition:transform .8s var(--ease)}
+.st:hover .ph img{transform:scale(1.04)}
+.st .n{position:absolute;top:12px;left:12px;z-index:2;width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-size:13px;font-weight:600}
+.st h3{font-size:19px;margin-top:16px}
+.st p{font-size:14.5px;color:var(--muted);margin-top:6px;line-height:1.55}
+.st .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.st .chips span{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 11px;font-size:12px;font-weight:600;color:var(--ink)}
+.st::after{content:"→";position:absolute;right:-16px;top:calc(40% - 10px);color:var(--warm);font-size:22px;z-index:2}
+.st:last-child::after{display:none}
+@media(max-width:1020px){.steps4{grid-template-columns:1fr 1fr;gap:22px 18px}.st:nth-child(2)::after{display:none}}
+@media(max-width:560px){.steps4{grid-template-columns:1fr 1fr;gap:16px 12px}.st::after{display:none}.st h3{font-size:16px}.st p{font-size:13.5px}}
+
+/* ============ KONTAKT (mørk) ============ */
+.cta{padding:110px 0 100px;border-top:1px solid #2B2519}
+.cta .sec-head{align-items:flex-start}
+.cta h2{max-width:16ch}
+.ccards{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:8px}
+.ccard{border:1px solid var(--dark-line);border-radius:var(--radius);background:var(--dark-2);padding:34px 34px 30px;display:flex;flex-direction:column;gap:12px}
+.ccard .kick{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--warm-soft);font-weight:700}
+.ccard h3{font-size:26px}
+.ccard p{font-size:15px;color:var(--dark-muted);line-height:1.65;flex:1}
+.ccard .btn{align-self:flex-start;margin-top:8px}
+.cta .lines{margin-top:40px;display:flex;gap:10px 28px;flex-wrap:wrap;align-items:baseline;font-size:15px;color:var(--dark-muted)}
+.cta .lines a{color:#F4EFE6}
+.cta .lines .tel{font-family:'Archivo',sans-serif;font-size:clamp(24px,2.6vw,32px);font-weight:600;letter-spacing:-.02em}
+.cta .lines .tel:hover{color:var(--warm-soft)}
+@media(max-width:860px){.ccards{grid-template-columns:1fr}.ccard{padding:26px 22px 22px}.cta{padding:72px 0}}
+
+/* ============ FOOTER ============ */
+footer{padding:60px 0;font-size:14.5px;color:var(--muted)}
+.foot{display:flex;justify-content:space-between;gap:36px;flex-wrap:wrap;align-items:flex-start}
+footer .brand{color:var(--ink);font-size:18px;margin-bottom:10px}
+footer .right{text-align:right;line-height:1.8}
+footer .links{margin-top:14px;font-size:13.5px;max-width:62ch;line-height:1.9}
+@media(max-width:680px){footer .right{text-align:left}}
+
+.mock{position:fixed;right:14px;bottom:14px;z-index:60;background:var(--ink);color:var(--paper);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;border-radius:999px;padding:7px 12px;opacity:.85}
+</style>
+</head>
+<body>
+<div class="mock">Mockup v3 · ikke live</div>
+
+<!-- ============ NAV ============ -->
+<nav><div class="wrap nav-in">
+  <a href="#top" class="brand">NEM<b>·</b>INVENTAR</a>
+  <div class="nav-links">
+    <a href="#projekter">Projekter</a>
+    <a href="#inventar">Inventar</a>
+    <a href="#designer">Designeren<span class="soon">snart</span></a>
+    <a href="#saadan">Sådan arbejder vi</a>
+    <a href="#">Om os</a>
+    <a href="#">EN</a>
+    <a href="tel:+4542422684" class="nav-tel"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg><span><span class="cc">+45 </span>42 42 26 84</span></a>
+    <a href="#kontakt" class="nav-cta">Få en pris</a>
+  </div>
+</div></nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div class="hero-head">
+      <span class="label">Fast inventar til byggeri</span>
+      <h1>Møbler til rum med mange <em>mennesker.</em></h1>
+    </div>
+    <div class="hero-cta">
+      <a href="#kontakt" class="btn btn-primary">Få en pris <span class="arr">→</span></a>
+      <a href="#inventar" class="btn btn-ghost">Se, hvad vi bygger <span class="arr">↓</span></a>
+    </div>
+    <div class="duo" id="duo" aria-label="Fotos fra leverancer">
+      <div class="slot a" id="slotA"><span class="img-tag"></span></div>
+      <div class="slot b" id="slotB"><span class="img-tag"></span></div>
+      <button type="button" class="pausebtn" id="heroPause" aria-label="Sæt billedskiftet på pause">❚❚</button>
+    </div>
+    <p class="hero-sub">Garderober, lockers, bænke, højskabe og tekøkkener til skoler, daginstitutioner og idrætshaller. Tegnet i 3D af ingeniører, bygget i vores egenproduktion og leveret efter byggepladsens tidsplan.</p>
+    <div class="facts" aria-label="Sådan arbejder vi">
+      <span class="fact">Bygget til mål</span>
+      <span class="fact">3D-render før produktion</span>
+      <span class="fact">Egen produktion</span>
+      <span class="fact">Leverer til certificeret byggeri</span>
+      <span class="fact">Delleverancer efter tidsplan</span>
+    </div>
+  </div>
+</header>
+
+<!-- ============ TAL-STRIBE ============ -->
+<div class="ticker" aria-label="Det har vi bygget">
+  <div class="ticker-track" id="ticker">
+    <span class="tk"><b>342</b><i>lockers</i>Mørkhøj Skole</span>
+    <span class="tk"><b>230</b><i>badeværelsesskabe</i>Bølholmen, Stenløse</span>
+    <span class="tk"><b>150 m</b><i>bænke i massiv fyr</i>Idrætspark i København</span>
+    <span class="tk"><b>92</b><i>børnegarderober</i>Daginstitution Vinge</span>
+    <span class="tk"><b>68</b><i>glastavler</i>Mørkhøj Skole</span>
+    <span class="tk"><b>ca. 300 m²</b><i>akustik</i>Mørkhøj Skole</span>
+    <span class="tk"><b>43</b><i>skohylder med bænk</i>Idrætshal</span>
+    <span class="tk"><b>16</b><i>omklædningsmøbler</i>Hou Skole</span>
+    <span class="tk"><b>8–12</b><i>uger</i>typisk fra ordre til levering</span>
+  </div>
+</div>
+
+<!-- ============ PROJEKTER: fremhævet sag (mørk) ============ -->
+<section class="sec dark" id="projekter"><div class="wrap">
+  <div class="sec-head rv">
+    <div>
+      <span class="label">Projekter · fremhævet: Mørkhøj Skole</span>
+      <h2>342 lockers, 14 højskabe, 19 nicher. <em>Én skole.</em></h2>
+      <p class="lede">Mørkhøj Skole med Ason A/S som hovedentreprenør og Rønnow Arkitekter. Lockers, skohylder, højskabe, siddenicher, tekøkkener og akustik — hvert rum tegnet i 3D og godkendt, før produktionen starter. Leveres i etaper gennem 2026.</p>
+    </div>
+    <a href="#" class="ulink">Se hele projektet →</a>
+  </div>
+  <div class="mos2 rv">
+    <figure class="w"><img src="https://neminventar.dk/billeder/morkhoj/25_baenke-blaa-med-ryghynder-og-mellemvaeg.jpg" alt="Blå bænke med kileformede ryghynder foran blå fliser" style="--pos:50% 55%"><figcaption class="img-tag"><b>Fællesarealet</b>bænke med ryghynder</figcaption></figure>
+    <figure class="t"><img src="https://neminventar.dk/billeder/morkhoj/23_polstret-niche-roed-afrundet-hjoerne.jpg" alt="Rød polstret siddeniche med afrundet hjørne" style="--pos:72% 50%"><figcaption class="img-tag"><b>Nichen</b>polstret, afrundet hjørne</figcaption></figure>
+    <figure class="s"><img src="https://neminventar.dk/billeder/morkhoj/28_niche-roed-polstret-med-bord.jpg" alt="Rød polstret niche med bord" style="--pos:30% 40%"><figcaption class="img-tag"><b>Gruppenichen</b>med bord og stik</figcaption></figure>
+    <figure class="s"><img src="https://neminventar.dk/billeder/morkhoj/34_niche-med-ryghynde-og-stikkontakt.jpg" alt="Niche med ryghynde og indbygget stikkontakt" style="--pos:60% 50%"><figcaption class="img-tag"><b>Detaljen</b>stikkontakt bygget ind</figcaption></figure>
+    <figure class="s"><img src="https://neminventar.dk/billeder/morkhoj/37_baenk-med-hynde-i-sollys.jpg" alt="Bænk med hynde i sollys" style="--pos:50% 50%"><figcaption class="img-tag"><b>Bænken</b>krydsfiner med hynde</figcaption></figure>
+  </div>
+  <div class="talgitter rv">
+    <div><b>342</b><span>lockers</span></div>
+    <div><b>342</b><span>skohylder</span></div>
+    <div><b>52</b><span>sideafskærmninger</span></div>
+    <div><b>14</b><span>højskabe</span></div>
+    <div><b>19</b><span>nicher og siddemøbler</span></div>
+    <div><b>6</b><span>tekøkkener</span></div>
+    <div><b>68</b><span>glastavler</span></div>
+    <div><b>ca. 300 m²</b><span>akustik</span></div>
+    <div><b>ca. 100 m²</b><span>installationsvægge</span></div>
+  </div>
+  <p class="credit rv">Fotos fra leverancen. Vi har bygget inventaret — stole, borde, fliser og lamper er andres.</p>
+</div></section>
+
+<!-- ============ FLERE PROJEKTER: kort ============ -->
+<section class="sec" id="flere"><div class="wrap">
+  <div class="sec-head rv">
+    <div>
+      <span class="label">Flere projekter</span>
+      <h2>Fra udbud til <em>montage.</em></h2>
+      <p class="lede">Vi tager det faste inventar som én samlet entreprise: tilbud på udbudsmaterialet, tegninger til godkendelse, egen produktion, levering i etaper og montage. Fem sager, der er leveret eller i produktion lige nu.</p>
+    </div>
+  </div>
+  <div class="pgrid rv">
+    <article class="pcard"><a class="ph" href="#"><img src="https://guhbrpektblabndqttgp.supabase.co/storage/v1/render/image/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1790240313887.png?width=840&resize=contain&quality=75" alt="Badeværelsesskabe i kompaktlaminat" style="--pos:50% 70%"><span class="tag">Visualisering</span></a><div class="body"><span class="status">Leveret</span><h3>Bølholmen, Stenløse</h3><p class="desc">230 badeværelsesskabe i kompaktlaminat til 220 boliger. Pladen suger ikke vand, så skabene holder, hvor almindelige skabe svulmer.</p><p class="meta"><b>Enemærke & Petersen</b></p></div></article>
+    <article class="pcard"><a class="ph" href="#"><img src="https://guhbrpektblabndqttgp.supabase.co/storage/v1/render/image/public/quote-renders/f71dd38f-07f8-4049-8481-cd942ec4b352/6f53a613-ec85-4f79-9187-6f8951bad48f_1777807700905.png?width=840&resize=contain&quality=75" alt="Omklædningsbænke i massiv fyr" style="--pos:50% 65%"><span class="tag">Visualisering</span></a><div class="body"><span class="status"><span class="dotp"></span>I produktion · 2026</span><h3>Idrætspark i København</h3><p class="desc">150 m bænke i massiv fyr, locker-banke med 150 rum, 9 vaskeborde i kompaktlaminat og et foreningskøkken til to haller.</p><p class="meta"><b>Hovedentreprenør</b> · omklædning og foreningskøkken</p></div></article>
+    <article class="pcard"><a class="ph" href="#"><img src="https://guhbrpektblabndqttgp.supabase.co/storage/v1/render/image/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1790240546518.png?width=840&resize=contain&quality=75" alt="Børnegarderober i blå og rød olieret fyr" style="--pos:50% 65%"><span class="tag">Visualisering</span></a><div class="body"><span class="status"><span class="dotp"></span>I produktion · 2026</span><h3>Daginstitution Vinge</h3><p class="desc">92 børnegarderober i olieret fyr, toiletbåse i kompaktlaminat, personalelockers og en mobil køkkenø.</p><p class="meta"><b>Hovedentreprenør</b> · garderober, toiletter, personalerum</p></div></article>
+    <article class="pcard"><a class="ph" href="#"><img src="https://guhbrpektblabndqttgp.supabase.co/storage/v1/render/image/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1782848661397.png?width=840&resize=contain&quality=75" alt="Garderobereol med polstrede siddenicher" style="--pos:50% 65%"><span class="tag">Visualisering</span></a><div class="body"><span class="status"><span class="dotp"></span>I produktion · 2026</span><h3>Hou Skole</h3><p class="desc">Garderober med polstrede siddenicher og 16 omklædningsmøbler med laminatflader, bygget så enkeltdele kan skiftes.</p><p class="meta"><b>Hovedentreprenør</b> · garderobe og omklædning</p></div></article>
+    <article class="pcard"><a class="ph" href="#"><img src="https://guhbrpektblabndqttgp.supabase.co/storage/v1/render/image/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1781212868866.png?width=840&resize=contain&quality=75" alt="Skohylder i birkekrydsfiner med bænk på toppen" style="--pos:50% 65%"><span class="tag">Visualisering</span></a><div class="body"><span class="status">Leveret · 2026</span><h3>Skohylder til idrætshal</h3><p class="desc">43 skohylder i birkekrydsfiner med en bænk på toppen, så man kan sidde og kigge ind i hallen. Søjler og bjælke beklædt i samme krydsfiner.</p><p class="meta"><b>Hovedentreprenør</b> · idrætshal</p></div></article>
+    <article class="pcard ask"><span class="kick">Jeres byggeri</span><h3>Send tegninger eller udbud</h3><p>Vi læser materialet og vender tilbage med de spørgsmål, der skal afklares — og et tilbud med 3D og dokumentation, I kan holde op mod udbuddet.</p><a href="#kontakt" class="btn btn-primary">Start et projekt <span class="arr">→</span></a></article>
+  </div>
+</div></section>
+
+<!-- ============ INVENTAR: alle typer ============ -->
+<section class="sec inv" id="inventar"><div class="wrap">
+  <div class="sec-head rv">
+    <div>
+      <span class="label">Inventar</span>
+      <h2>Konstruktionen er løst. Målene er <em>jeres.</em></h2>
+      <p class="lede">Typerne i kataloget er gennemarbejdet fra samling til overflade. I vælger mål, materiale og farve og ser resultatet i 3D med pris, før I bestiller. Mangler I en type, tegner vi den.</p>
+    </div>
+    <a href="#" class="ulink">Hele kataloget · 22 typer →</a>
+  </div>
+  <div class="filters rv" id="filters" role="group" aria-label="Filtrér typer">
+    <button type="button" class="fchip on" data-f="alle">Alle<small>22</small></button>
+    <button type="button" class="fchip" data-f="garderober">Garderober og lockers<small>7</small></button>
+    <button type="button" class="fchip" data-f="skabe">Højskabe og opbevaring<small>4</small></button>
+    <button type="button" class="fchip" data-f="nicher">Nicher og bænke<small>3</small></button>
+    <button type="button" class="fchip" data-f="koekken">Tekøkkener<small>2</small></button>
+    <button type="button" class="fchip" data-f="omklaedning">Omklædning og vådrum<small>1</small></button>
+    <button type="button" class="fchip" data-f="vaegge">Vægge, døre og akustik<small>5</small></button>
+  </div>
+  <div class="types rv" id="types">
+    <!-- de første 9 er et tværsnit af familierne (6 fotos, 3 visualiseringer); resten kommer frem med "Vis alle" eller et filter -->
+    <article class="tcard" data-fam="garderober"><a class="ph" href="#"><img src="https://neminventar.dk/billeder/morkhoj/33_lockere-roede-ved-doer-til-klasserum.jpg" alt="" style="--pos:40% 55%"><span class="tag">Foto · Mørkhøj Skole</span></a><div class="body"><span class="kicker">Garderober og lockers</span><h3><a href="#">Garderobeskabe med perforerede låger</a></h3><p class="desc">Sammenhængende række skabe i krydsfiner med perforerede låger uden greb. Lukket topfrise, åbne skorum og bænk i eg.</p><div class="foot"><span class="made"><b>Til mål</b> · pris efter opmåling</span><a href="#" class="order">Se mere <span class="arr">→</span></a></div></div></article>
+    <article class="tcard" data-fam="garderober"><a class="ph" href="#"><img src="https://neminventar.dk/billeder/morkhoj/20_lockere-roede-perforerede-laager-kodelaase-og-skohylder.jpg" alt="" style="--pos:50% 45%"><span class="tag">Foto · Mørkhøj Skole</span></a><div class="body"><span class="kicker">Garderober og lockers</span><h3><a href="#">Lockers med kodelås og skohylder</a></h3><p class="desc">Aflåselige rum i krydsfiner med kodelås, skohylder under og bænk foran. Til skoler og haller med mange brugere.</p><div class="foot"><span class="made"><b>Til mål</b> · pris efter opmåling</span><a href="#" class="order">Se mere <span class="arr">→</span></a></div></div></article>
+    <article class="tcard" data-fam="skabe"><a class="ph" href="#"><img src="https://neminventar.dk/billeder/morkhoj/32_hoejskabe-blaa-og-siddeplads-ved-vindue.jpg" alt="" style="--pos:40% 45%"><span class="tag">Foto · Mørkhøj Skole</span></a><div class="body"><span class="kicker">Højskabe og opbevaring</span><h3><a href="#">Højskab i krydsfiner</a></h3><p class="desc">Højskab bygget helt i krydsfiner: korpus, hylder, bagplade og låger. Olieret, i farvet olie eller med laminat på lågen.</p><div class="foot"><span class="made"><b>Til mål</b> · pris efter opmåling</span><a href="#" class="order">Se mere <span class="arr">→</span></a></div></div></article>
+    <article class="tcard" data-fam="nicher"><a class="ph" href="#"><img src="https://neminventar.dk/billeder/morkhoj/23_polstret-niche-roed-afrundet-hjoerne.jpg" alt="" style="--pos:70% 40%"><span class="tag">Foto · Mørkhøj Skole</span></a><div class="body"><span class="kicker">Nicher og bænke</span><h3><a href="#">Polstret siddeniche</a></h3><p class="desc">Polstret niche bygget ind i væggen, med afrundede hjørner og plads til bord og stik. Til fællesarealer og gange.</p><div class="foot"><span class="made"><b>Til mål</b> · pris efter opmåling</span><a href="#" class="order">Se mere <span class="arr">→</span></a></div></div></article>
+    <article class="tcard" data-fam="nicher"><a class="ph" href="#"><img src="https://neminventar.dk/billeder/morkhoj/25_baenke-blaa-med-ryghynder-og-mellemvaeg.jpg" alt="" style="--pos:50% 55%"><span class="tag">Foto · Mørkhøj Skole</span></a><div class="body"><span class="kicker">Nicher og bænke</span><h3><a href="#">Bænke med ryghynder</a></h3><p class="desc">Bænke langs væggen i krydsfiner med ryghynder og siddehynder, bygget til fællesarealer med mange brugere.</p><div class="foot"><span class="made"><b>Til mål</b> · pris efter opmåling</span><a href="#" class="order">Se mere <span class="arr">→</span></a></div></div></article>
+    <article class="tcard" data-fam="koekken"><a class="ph" href="#"><img src="https://neminventar.dk/billeder/morkhoj/24_tekoekken-blaa-fronter-staalbordplade.jpg" alt="" style="--pos:40% 55%"><span class="tag">Foto · Mørkhøj Skole</span></a><div class="body"><span class="kicker">Tekøkkener</span><h3><a href="#">Tekøkken i krydsfiner</a></h3><p class="desc">Køkkenvæg med fronter i krydsfiner med farvet olie, synlig åretegning og kant. Bordplade i rustfrit stål eller linoleum.</p><div class="foot"><span class="made"><b>Til mål</b> · pris efter opmåling</span><a href="#" class="order">Se mere <span class="arr">→</span></a></div></div></article>
+    <article class="tcard" data-fam="garderober"><a class="ph" href="#"><img src="https://guhbrpektblabndqttgp.supabase.co/storage/v1/render/image/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1790240546518.png?width=800&resize=contain&quality=72" alt="" style="--pos:50% 60%"><span class="tag">3D-visualisering</span></a><div class="body"><span class="kicker">Garderober og lockers</span><h3><a href="#">Børnegarderober med skorist</a></h3><p class="desc">Ét modul pr. barn med knager foroven og dybere bund med skorist. Olieret i farver, så rækkerne deles op.</p><div class="foot"><span class="made"><b>Til mål</b> · pris efter opmåling</span><a href="#" class="order">Se mere <span class="arr">→</span></a></div></div></article>
+    <article class="tcard" data-fam="omklaedning"><a class="ph" href="#"><img src="https://guhbrpektblabndqttgp.supabase.co/storage/v1/render/image/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1782852625920.png?width=800&resize=contain&quality=72" alt="" style="--pos:50% 60%"><span class="tag">3D-visualisering</span></a><div class="body"><span class="kicker">Omklædning og vådrum</span><h3><a href="#">Omklædningsmøbel med gitterskærm</a></h3><p class="desc">Omklædningsmøbel beklædt med højtrykslaminat, med gitterskærm og siddeplads. Modulerne kan skiftes enkeltvis.</p><div class="foot"><span class="made"><b>Til mål</b> · pris efter opmåling</span><a href="#" class="order">Se mere <span class="arr">→</span></a></div></div></article>
+    <article class="tcard" data-fam="skabe"><a class="ph" href="#"><img src="https://guhbrpektblabndqttgp.supabase.co/storage/v1/render/image/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1790240313887.png?width=800&resize=contain&quality=72" alt="" style="--pos:50% 65%"><span class="tag">3D-visualisering</span></a><div class="body"><span class="kicker">Højskabe og opbevaring</span><h3><a href="#">Højskab i kompaktlaminat</a></h3><p class="desc">Til badeværelse og vådrum: synlige flader i kompaktlaminat, der ikke suger vand. Bygget på mål.</p><div class="foot"><span class="made"><b>Til mål</b> · pris efter opmåling</span><a href="#" class="order">Se mere <span class="arr">→</span></a></div></div></article>
+    <article class="tcard" data-fam="garderober"><a class="ph" href="#"><img src="https://guhbrpektblabndqttgp.supabase.co/storage/v1/render/image/public/quote-renders/d3cbe593-4e8f-4832-947d-19e8a2542ddb/0e373cf8-f303-4038-8879-d5cb3892bb06_1777808302204.png?width=800&resize=contain&quality=72" alt="" style="--pos:50% 60%"><span class="tag">3D-visualisering</span></a><div class="body"><span class="kicker">Garderober og lockers</span><h3><a href="#">Skohylde med locker</a></h3><p class="desc">Modulært locker-system med integreret skohylde. Smalle moduler side om side, med eller uden bænk.</p><div class="foot"><span class="made"><b>Til mål</b> · pris efter opmåling</span><a href="#" class="order">Se mere <span class="arr">→</span></a></div></div></article>
+    <article class="tcard" data-fam="garderober"><a class="ph" href="#"><img src="https://guhbrpektblabndqttgp.supabase.co/storage/v1/render/image/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1782848661397.png?width=800&resize=contain&quality=72" alt="" style="--pos:50% 60%"><span class="tag">3D-visualisering</span></a><div class="body"><span class="kicker">Garderober og lockers</span><h3><a href="#">Garderobereol med siddenicher</a></h3><p class="desc">Åben garderobereol i krydsfiner med polstrede siddenicher, så børnene kan se deres ting og sidde, mens de skifter sko.</p><div class="foot"><span class="made"><b>Til mål</b> · pris efter opmåling</span><a href="#" class="order">Se mere <span class="arr">→</span></a></div></div></article>
+    <article class="tcard" data-fam="garderober"><a class="ph" href="#"><img src="https://guhbrpektblabndqttgp.supabase.co/storage/v1/render/image/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1782850810468.png?width=800&resize=contain&quality=72" alt="" style="--pos:50% 60%"><span class="tag">3D-visualisering</span></a><div class="body"><span class="kicker">Garderober og lockers</span><h3><a href="#">Garderobeskab med aflåselige låger</a></h3><p class="desc">Garderobe i krydsfiner med aflåselige låger og polstret siddeniche. Aflåst opbevaring og siddeplads i ét møbel.</p><div class="foot"><span class="made"><b>Til mål</b> · pris efter opmåling</span><a href="#" class="order">Se mere <span class="arr">→</span></a></div></div></article>
+    <article class="tcard" data-fam="garderober"><a class="ph" href="#"><img src="https://guhbrpektblabndqttgp.supabase.co/storage/v1/render/image/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1782850791066.png?width=800&resize=contain&quality=72" alt="" style="--pos:50% 60%"><span class="tag">3D-visualisering</span></a><div class="body"><span class="kicker">Garderober og lockers</span><h3><a href="#">Åben skohylde med siddeplads</a></h3><p class="desc">Lav, åben skohylde i krydsfiner med integreret siddeplads. Opbevaring og bænk i garderobezoner.</p><div class="foot"><span class="made"><b>Til mål</b> · pris efter opmåling</span><a href="#" class="order">Se mere <span class="arr">→</span></a></div></div></article>
+    <article class="tcard" data-fam="skabe"><a class="ph" href="#"><img src="https://neminventar.dk/billeder/morkhoj/27_hoejskab-blaa-krydsfiner-og-siddepladser.jpg" alt="" style="--pos:50% 50%"><span class="tag">Foto · Mørkhøj Skole</span></a><div class="body"><span class="kicker">Højskabe og opbevaring</span><h3><a href="#">Højskab med farvede låger</a></h3><p class="desc">Højskab med låger i krydsfiner behandlet med farvet olie, så åretegning og kant står frem gennem farven.</p><div class="foot"><span class="made"><b>Til mål</b> · pris efter opmåling</span><a href="#" class="order">Se mere <span class="arr">→</span></a></div></div></article>
+    <article class="tcard" data-fam="skabe"><a class="ph" href="#"><img src="https://guhbrpektblabndqttgp.supabase.co/storage/v1/render/image/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1790256166604.png?width=800&resize=contain&quality=72" alt="" style="--pos:50% 60%"><span class="tag">3D-visualisering</span></a><div class="body"><span class="kicker">Højskabe og opbevaring</span><h3><a href="#">Højskab i laminat</a></h3><p class="desc">Højt opbevarings- og garderobeskab i højtrykslaminat til skoler, institutioner og kontor.</p><div class="foot"><span class="made"><b>Til mål</b> · pris efter opmåling</span><a href="#" class="order">Se mere <span class="arr">→</span></a></div></div></article>
+    <article class="tcard" data-fam="nicher"><a class="ph" href="#"><img src="https://guhbrpektblabndqttgp.supabase.co/storage/v1/render/image/public/quote-renders/f71dd38f-07f8-4049-8481-cd942ec4b352/6f53a613-ec85-4f79-9187-6f8951bad48f_1777807700905.png?width=800&resize=contain&quality=72" alt="" style="--pos:50% 60%"><span class="tag">3D-visualisering</span></a><div class="body"><span class="kicker">Nicher og bænke</span><h3><a href="#">Omklædningsbænk med knagerække</a></h3><p class="desc">Sammenhængende bænk med ryg og knagerække i en stålskinne, bygget som ét element langs væggen.</p><div class="foot"><span class="made"><b>Til mål</b> · pris efter opmåling</span><a href="#" class="order">Se mere <span class="arr">→</span></a></div></div></article>
+    <article class="tcard" data-fam="koekken"><a class="ph" href="#"><img src="https://guhbrpektblabndqttgp.supabase.co/storage/v1/render/image/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1790256256961.png?width=800&resize=contain&quality=72" alt="" style="--pos:50% 60%"><span class="tag">3D-visualisering</span></a><div class="body"><span class="kicker">Tekøkkener</span><h3><a href="#">Køkkenvæg i laminat</a></h3><p class="desc">Komplet køkkenvæg i højtrykslaminat med laminatbordplade. Te- og personalekøkken til skoler, institutioner og kontor.</p><div class="foot"><span class="made"><b>Til mål</b> · pris efter opmåling</span><a href="#" class="order">Se mere <span class="arr">→</span></a></div></div></article>
+    <article class="tcard" data-fam="vaegge"><a class="ph" href="#"><img src="https://guhbrpektblabndqttgp.supabase.co/storage/v1/render/image/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1790257016022.png?width=800&resize=contain&quality=72" alt="" style="--pos:50% 55%"><span class="tag">3D-visualisering</span></a><div class="body"><span class="kicker">Vægge, døre og akustik</span><h3><a href="#">Vægbeklædning i krydsfiner</a></h3><p class="desc">Vægbeklædning i birkekrydsfiner med synlige kanter og farvet olie, også til at lukke installationsvægge.</p><div class="foot"><span class="made"><b>Til mål</b> · pris efter opmåling</span><a href="#" class="order">Se mere <span class="arr">→</span></a></div></div></article>
+    <article class="tcard" data-fam="vaegge"><a class="ph" href="#"><img src="https://guhbrpektblabndqttgp.supabase.co/storage/v1/render/image/public/quote-renders/f71dd38f-07f8-4049-8481-cd942ec4b352/c24f324b-4da6-4a65-bea1-1aa2210da94a_1777808303525.png?width=800&resize=contain&quality=72" alt="" style="--pos:50% 55%"><span class="tag">3D-visualisering</span></a><div class="body"><span class="kicker">Vægge, døre og akustik</span><h3><a href="#">Vægbeklædning i trælister</a></h3><p class="desc">Vertikale, gennemgående trælister med skjult fastgørelse. Giver en træflade og dæmper efterklangen.</p><div class="foot"><span class="made"><b>Til mål</b> · pris efter opmåling</span><a href="#" class="order">Se mere <span class="arr">→</span></a></div></div></article>
+    <article class="tcard" data-fam="vaegge"><a class="ph" href="#"><img src="https://guhbrpektblabndqttgp.supabase.co/storage/v1/render/image/public/quote-renders/f71dd38f-07f8-4049-8481-cd942ec4b352/d5065e1a-92db-4325-bf12-ac333458ff9b_1777808302121.png?width=800&resize=contain&quality=72" alt="" style="--pos:50% 55%"><span class="tag">3D-visualisering</span></a><div class="body"><span class="kicker">Vægge, døre og akustik</span><h3><a href="#">Skydedør i krydsfiner</a></h3><p class="desc">Skydedør i kraftig krydsfiner med skjulte skinner. Glider langs væggen i stedet for at slå ud i rummet.</p><div class="foot"><span class="made"><b>Til mål</b> · pris efter opmåling</span><a href="#" class="order">Se mere <span class="arr">→</span></a></div></div></article>
+    <article class="tcard" data-fam="vaegge"><a class="ph" href="#"><img src="https://guhbrpektblabndqttgp.supabase.co/storage/v1/render/image/public/quote-renders/89ef394e-b6b5-4cd3-8b6b-f5d7a382bc99/27cef1c2-70b7-4c9e-b12a-66de8c95dd00_1779269229668.png?width=800&resize=contain&quality=72" alt="" style="--pos:50% 50%"><span class="tag">3D-visualisering</span></a><div class="body"><span class="kicker">Vægge, døre og akustik</span><h3><a href="#">Polstret akustikpanel</a></h3><p class="desc">Polstret akustikpanel i farvet stof, syet og bygget efter mål og uden minimumsantal. Betrækket kan skiftes.</p><div class="foot"><span class="made"><b>Til mål</b> · pris efter opmåling</span><a href="#" class="order">Se mere <span class="arr">→</span></a></div></div></article>
+    <article class="tcard" data-fam="vaegge"><a class="ph" href="#"><img src="https://neminventar.dk/billeder/morkhoj/03_klasserum-tavlevaeg-og-opslagstavler.jpg" alt="" style="--pos:50% 22%"><span class="tag">Foto · Mørkhøj Skole</span></a><div class="body"><span class="kicker">Vægge, døre og akustik</span><h3><a href="#">Glastavler og opslagstavler</a></h3><p class="desc">Glastavler og opslagstavler planlagt som én samlet tavlevæg i klasserummet, med akustik, hvor der er brug for det.</p><div class="foot"><span class="made"><b>Til mål</b> · pris efter opmåling</span><a href="#" class="order">Se mere <span class="arr">→</span></a></div></div></article>
+  </div>
+  <div class="showmore-row"><button type="button" class="btn btn-ghost showmore" id="showmore">Vis alle 22 typer <span class="arr">↓</span></button></div>
+  <div class="more-row rv">
+    <span class="lbl">Til:</span>
+    <a class="pill" href="#">Skoler</a><a class="pill" href="#">Daginstitutioner</a><a class="pill" href="#">Idrætshaller</a><a class="pill" href="#">Svømmehaller</a><a class="pill" href="#">Klubhuse</a><a class="pill" href="#">Hovedentreprenører</a><a class="pill" href="#">Arkitekter</a>
+  </div>
+  <div class="more-row rv" style="margin-top:12px">
+    <span class="lbl">Træ, hvor det kan. Kompaktlaminat, hvor det skal:</span>
+    <a class="pill" href="#">Krydsfiner</a><a class="pill" href="#">Kompaktlaminat</a><a class="pill" href="#">Rustfrit stål</a><a class="pill" href="#">Perforeret krydsfiner</a><a class="pill" href="#">Toiletbåse</a><a class="pill" href="#">Reoler på mål</a><a class="pill" href="#">Guide: krydsfiner, MDF eller spånplade?</a>
+  </div>
+</div></section>
+
+<!-- ============ DESIGNEREN — TEASER ============ -->
+<section class="sec designer" id="designer"><div class="wrap">
+  <div class="sec-head rv" style="margin-bottom:36px">
+    <div>
+      <span class="label">Designeren · kommer snart</span>
+      <h2>Se prisen, mens skabet tager <em>form.</em></h2>
+      <p class="lede">Sæt bredde, højde og dybde med skyderne, og se skabet i 3D. Vælg materiale, farve, indretning, låge og greb — prisen går op og ned med hvert valg. Prøv, hvordan det kommer til at virke:</p>
+    </div>
+  </div>
+  <div class="dz rv">
+    <div class="stage" id="stage">
+      <div class="brandbar"><span class="brand">NEM<b>·</b>INVENTAR</span><span>Skabe på mål</span><span class="proto">Kommer snart</span></div>
+      <div class="floor"></div>
+      <div class="cabwrap">
+        <div class="cab one" id="cab" data-mat="birk" data-greb="push" style="--w:60;--h:210;--d:60">
+          <div class="back"></div>
+          <div class="sideL"></div>
+          <div class="inner" id="inner"></div>
+          <div class="bottom"></div>
+          <div class="side"></div>
+          <div class="top"></div>
+          <div class="doors"><div class="door L"><span class="greb"></span></div><div class="door R"><span class="greb"></span></div></div>
+          <div class="sokkel"></div>
+          <div class="sokkelS"></div>
+          <div class="shadow"></div>
+        </div>
+      </div>
+      <div class="pills">
+        <button type="button" class="pill-b" id="btnDoors" aria-pressed="false">Åbn låger</button>
+        <button type="button" class="pill-b" id="btnTurn" aria-pressed="false">Drej</button>
+      </div>
+      <div class="chip-size" id="sizeChip">60 × 210 × 60 cm</div>
+    </div>
+    <div class="panel">
+      <div class="scroll">
+        <h2>Byg dit <em>højskab.</em></h2>
+        <p class="intro">Alt det, du vælger her, kan vi bygge. Når designeren åbner, står prisen nedenfor og følger med. Læg skabet i kurven: levering er med, opmåling og montage kan vælges til.</p>
+        <div class="steps">
+          <section class="step">
+            <div class="step-h"><span class="no">01</span><span class="ttl">Mål</span><span class="sum" id="sum1"></span></div>
+            <div class="sl"><div class="sl-top"><label for="in-b">Bredde</label><output id="o-b">60<small>cm</small></output></div><input type="range" id="in-b" min="40" max="120" value="60" step="1"></div>
+            <div class="sl"><div class="sl-top"><label for="in-h">Højde</label><output id="o-h">210<small>cm</small></output></div><input type="range" id="in-h" min="120" max="240" value="210" step="1"></div>
+            <p class="note" id="laagenote">1 låge til og med 65 cm bredde · 2 låger fra 66 cm</p>
+          </section>
+          <section class="step">
+            <div class="step-h"><span class="no">02</span><span class="ttl">Materiale</span><span class="sum" id="sum2"></span></div>
+            <div class="mats" id="mats">
+              <button type="button" class="mat on" data-mat="birk" style="--sw:linear-gradient(90deg,#EFE2C8,#E6D6B6 45%,#F0E4CB)"><span class="sw"></span><span><b>Birkekrydsfiner</b><small>Lys birk med klar olie</small></span></button>
+              <button type="button" class="mat" data-mat="eg" style="--sw:linear-gradient(90deg,#D3AA76,#C69A64 50%,#D5AC78)"><span class="sw"></span><span><b>Egetræsfinér</b><small>Varm, levende åretegning</small></span></button>
+              <button type="button" class="mat" data-mat="kryds" style="--sw:linear-gradient(90deg,#8FA5C4,#6E86A8)"><span class="sw"></span><span><b>Krydsfiner, farvet olie</b><small>Åren skinner igennem farven</small></span></button>
+              <button type="button" class="mat" data-mat="kompakt" style="--sw:linear-gradient(90deg,#BDBBB6,#3B3C3E)"><span class="sw"></span><span><b>Kompaktlaminat</b><small>Tåler vand og slid</small></span></button>
+            </div>
+            <div id="farveRow" hidden>
+              <div class="lbl">Farve <span id="farveNavn"></span></div>
+              <div class="dots" id="farver"></div>
+            </div>
+          </section>
+          <section class="step">
+            <div class="step-h"><span class="no">03</span><span class="ttl">Lågen</span><span class="sum" id="sum3"></span></div>
+            <div class="lbl" style="margin-top:12px">Greb</div>
+            <div class="segc" id="greb">
+              <button type="button" data-v="push" class="on">Uden greb</button>
+              <button type="button" data-v="std">Stål</button>
+              <button type="button" data-v="sort">Sort</button>
+              <button type="button" data-v="trae">Træ</button>
+            </div>
+            <p class="note" id="grebNote">Lågen åbner, når du trykker på den.</p>
+          </section>
+        </div>
+      </div>
+      <div class="pricebar">
+        <p class="spec" id="spec"></p>
+        <div class="pb-main">
+          <div>
+            <div class="amount"><span class="live" aria-hidden="true"></span><span class="soon-tag">Pris · kommer snart</span><span class="delta" id="delta">opdateret</span></div>
+            <div class="vat">Levering er altid med. Montage og opmåling som tilvalg.</div>
+          </div>
+          <a class="btn btn-primary" href="mailto:kontakt@neminventar.dk?subject=Giv%20mig%20besked%2C%20n%C3%A5r%20designeren%20%C3%A5bner">Få besked, når den åbner <span class="arr">→</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="dz-foot rv"><span>Indtil da:</span><a href="#kontakt" class="ulink" style="color:var(--ink)">Send os målene →</a></div>
+</div></section>
+
+<!-- ============ SÅDAN ARBEJDER VI ============ -->
+<section class="sec" id="saadan"><div class="wrap">
+  <div class="sec-head rv">
+    <div>
+      <span class="label">Sådan arbejder vi</span>
+      <h2>Fra 3D-model til <em>færdigt rum.</em></h2>
+      <p class="lede">Holdet er ingeniører. Hvert skab, hver bænk og hver niche bygges først som 3D-model; samme model giver tegningen til jeres godkendelse og styklisten til produktionen. Leveret i etaper efter byggepladsens tidsplan og monteret af os.</p>
+    </div>
+    <a href="#" class="ulink">Sådan ser tegningerne ud →</a>
+  </div>
+  <div class="steps4 rv">
+    <div class="st"><span class="n">1</span><div class="ph"><video src="https://neminventar.dk/video/3d-model-garderobe.mp4" poster="https://neminventar.dk/video/3d-model-garderobe.jpg" muted playsinline preload="metadata" data-inview data-start="4" aria-label="Skærmoptagelse af 3D-modellen af et garderobemodul" style="--pos:40% 50%"></video></div><h3>Tegnet i 3D</h3><p>I ser møblet i 3D og godkender det, før vi skærer den første plade.</p></div>
+    <div class="st"><span class="n">2</span><div class="ph"><img src="https://neminventar.dk/billeder/proces/2d-vaerkstedstegning-skohylde.jpg" alt="Værkstedstegning af et skohyldemodul" style="--pos:12% 50%"></div><h3>Tegningen</h3><p>Tegning til godkendelse og stykliste kommer fra samme model. Det, I godkender, er det, vi bygger.</p></div>
+    <div class="st"><span class="n">3</span><div class="ph"><video src="https://neminventar.dk/video/proeveemne-locker.mp4" poster="https://neminventar.dk/video/proeveemne-locker.jpg" muted playsinline preload="metadata" data-inview aria-label="Prøveemne af en locker"></video></div><h3>Prøveemnet</h3><p>Ved større leverancer bygger vi ét eksemplar først, så låge, lås og overflade kan godkendes i hånden.</p></div>
+    <div class="st"><span class="n">4</span><div class="ph"><img src="https://neminventar.dk/billeder/morkhoj/35_detalje-haengsel-og-perforering-roed-laage.jpg" alt="Olieret låge med perforering og hængsel" style="--pos:30% 50%"></div><h3>Olieret og dokumenteret</h3><p>Hårdvoksolie, ikke lak: slid friskes op på stedet. Datablade, indeklimadokumentation og EPD'er følger med leverancen.</p><div class="chips"><span>Svanemærket</span><span>DGNB</span><span>EPD</span><span>Indeklima</span></div></div>
+  </div>
+</div></section>
+
+<!-- ============ KONTAKT (mørk) ============ -->
+<section class="cta dark" id="kontakt"><div class="wrap">
+  <div class="sec-head rv">
+    <div>
+      <span class="label">Kontakt</span>
+      <h2>Send os målene. Eller hele <em>udbuddet.</em></h2>
+      <p class="lede">En skitse med mål er nok til at komme i gang. Et udbud går vi igennem post for post. Er tegningerne ikke færdige endnu, sparrer vi gerne om konstruktion og materialer.</p>
+    </div>
+  </div>
+  <div class="ccards rv">
+    <div class="ccard">
+      <span class="kick">Udbud og projekter</span>
+      <h3>Send tegninger eller tilbudsliste</h3>
+      <p>Arkitekttegninger, beskrivelse, tilbudsliste eller rumskemaer. Vi vender tilbage med de spørgsmål, der skal afklares, og et tilbud med 3D og dokumentation, I kan holde op mod udbuddet.</p>
+      <a href="mailto:tilbud@neminventar.dk?subject=Udbud" class="btn btn-light">Send udbud <span class="arr">→</span></a>
+    </div>
+    <div class="ccard">
+      <span class="kick">Enkelte møbler</span>
+      <h3>Send mål og antal</h3>
+      <p>Skriv mål, antal og ønsker til materiale og farve. I får tegning og pris, før noget går i produktion. Typisk 8–12 uger fra ordre til levering. Private kan også bestille.</p>
+      <a href="mailto:tilbud@neminventar.dk?subject=M%C3%A5l" class="btn btn-dark-ghost">Send mål <span class="arr">→</span></a>
+    </div>
+  </div>
+  <div class="lines rv">
+    <a href="tel:+4542422684" class="tel">+45 42 42 26 84</a>
+    <span><a href="mailto:tilbud@neminventar.dk">tilbud@neminventar.dk</a></span>
+    <span>Generelle henvendelser: <a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a></span>
+  </div>
+</div></section>
+
+<footer><div class="wrap foot">
+  <div>
+    <div class="brand">NEM<b style="color:var(--warm)">·</b>INVENTAR</div>
+    <p>Fast inventar til byggeri — tegnet i 3D, bygget i vores egenproduktion.<br>Vi leverer også til private.</p>
+    <p class="links">Krydsfiner · Kompaktlaminat · Toiletbåse · Garderober · Lockers · Omklædning · Tekøkkener · Siddenicher · Akustik og tavler · Skohylder · Reoler · Skabe · Skoler · Daginstitutioner · Idrætshaller · Svømmehaller · Klubhuse · Hovedentreprenører · Arkitekter</p>
+    <p class="links">Om os · Kontakt · Brochure (PDF) · Handelsbetingelser for private · Privatlivspolitik · Cookiepolitik</p>
+  </div>
+  <div class="right">
+    <p>Nem Inventar ApS · CVR 45085473</p>
+    <p>Mågevej 73, st. tv. · 2400 København NV</p>
+    <p><a href="tel:+4542422684" style="font-size:22px;font-weight:700;color:var(--ink)">+45 42 42 26 84</a></p>
+    <p><a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a></p>
+  </div>
+</div></footer>
+
+<script>
+// ---------- hero: to felter, der skifter ét ad gangen — første skift efter ca. 1 sekund ----------
+(() => {
+  const M = 'https://neminventar.dk/billeder/morkhoj/';
+  const L = [ // bredt felt: liggende fotos
+    ['33_lockere-roede-ved-doer-til-klasserum.jpg', '50% 55%', 'Garderoben', 'lockers, bænk og skohylder'],
+    ['21_baenk-blaa-krydsfiner-med-hynder-og-roede-lockere.jpg', '50% 55%', 'Garderoben', 'bænk med hynder foran lockers'],
+    ['25_baenke-blaa-med-ryghynder-og-mellemvaeg.jpg', '50% 55%', 'Fællesarealet', 'bænke med ryghynder'],
+    ['22_klasserum-hoejskabe-blaa-og-vindueskarm-med-hynde.jpg', '55% 50%', 'Klasserummet', 'højskabe og siddeplads i vindueskarmen'],
+    ['24_tekoekken-blaa-fronter-staalbordplade.jpg', '40% 55%', 'Tekøkkenet', 'bordplade i rustfrit stål'],
+    ['34_niche-med-ryghynde-og-stikkontakt.jpg', '60% 50%', 'Nichen', 'ryghynde og indbygget stik'],
+  ];
+  const R = [ // smalt felt: højformater
+    ['26_garderobe-lockere-roede-med-baenk-og-skohylder.jpg', '50% 58%', 'Garderoben', '16 lockers over bænk og skohylder'],
+    ['20_lockere-roede-perforerede-laager-kodelaase-og-skohylder.jpg', '50% 50%', 'Lågerne', 'perforeret, med kodelås'],
+    ['32_hoejskabe-blaa-og-siddeplads-ved-vindue.jpg', '50% 45%', 'Klasserummet', 'højskab og siddeplads ved vinduet'],
+    ['27_hoejskab-blaa-krydsfiner-og-siddepladser.jpg', '50% 50%', 'Højskabet', 'krydsfiner i skolens blå'],
+    ['23_polstret-niche-roed-afrundet-hjoerne.jpg', '65% 50%', 'Nichen', 'polstret, afrundet hjørne'],
+    ['30_lockere-roede-i-hjoerne-med-skohylder.jpg', '50% 50%', 'Garderoben', 'lockers i hjørnet'],
+    ['31_tekoekken-blaa-fronter-og-lamper.jpg', '50% 55%', 'Tekøkkenet', 'blå fronter, stålbordplade'],
+  ];
+  const slots = [
+    { el: document.getElementById('slotA'), pool: L, i: 0 },
+    { el: document.getElementById('slotB'), pool: R, i: 0 },
+  ];
+  const duo = document.getElementById('duo'), pauseBtn = document.getElementById('heroPause');
+  const mq = matchMedia('(max-width: 860px)'), reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const FIRST = 1100, STEP = 3200;
+  let timer = null, first = null, turn = 0, userPaused = false, hover = false;
+  slots.forEach((s) => {
+    s.imgs = s.pool.map(([f, pos, , ], k) => { const im = new Image(); im.src = M + f; im.alt = ''; im.style.setProperty('--pos', pos); if (k === 0) im.className = 'is-on'; s.el.prepend(im); return im; });
+    s.tag = s.el.querySelector('.img-tag');
+  });
+  function show(s, k) {
+    s.i = (k + s.pool.length) % s.pool.length;
+    s.el.classList.add('swapping');
+    s.imgs.forEach((im, j) => im.classList.toggle('is-on', j === s.i));
+    setTimeout(() => { s.tag.innerHTML = `<b>${s.pool[s.i][2]}</b>${s.pool[s.i][3]} · Mørkhøj Skole`; s.el.classList.remove('swapping'); }, 300);
+  }
+  const canRun = () => !reduce && !userPaused && !hover;
+  function tick() { if (mq.matches) { show(slots[1], slots[1].i + 1); return; } turn = 1 - turn; show(slots[turn], slots[turn].i + 1); }
+  function stop() { clearTimeout(first); clearInterval(timer); first = timer = null; pauseBtn.textContent = '▶'; pauseBtn.setAttribute('aria-label', 'Start billedskiftet'); }
+  function start(delay) { stop(); if (!canRun()) return; pauseBtn.textContent = '❚❚'; pauseBtn.setAttribute('aria-label', 'Sæt billedskiftet på pause'); first = setTimeout(() => { tick(); timer = setInterval(tick, STEP); }, delay); }
+  slots.forEach((s) => { s.tag.innerHTML = `<b>${s.pool[0][2]}</b>${s.pool[0][3]} · Mørkhøj Skole`; });
+  pauseBtn.addEventListener('click', () => { userPaused = !userPaused; if (userPaused) stop(); else start(300); });
+  duo.addEventListener('mouseenter', () => { hover = true; stop(); });
+  duo.addEventListener('mouseleave', () => { hover = false; start(1200); });
+  slots[1].el.addEventListener('click', () => { if (mq.matches) { show(slots[1], slots[1].i + 1); start(STEP); } });   // telefon: tryk = næste
+  document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start(800)));
+  start(FIRST);   // efter ca. 1 sekund skifter det første felt
+})();
+
+// ---------- tal-stribe: dublér indholdet, så løkken er sømløs ----------
+(() => { const t = document.getElementById('ticker'); const c = t.innerHTML; t.insertAdjacentHTML('beforeend', c.replace(/class="tk"/g, 'class="tk dup" aria-hidden="true"')); })();
+
+// ---------- reveal ----------
+(() => {
+  const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
+  document.querySelectorAll('.rv').forEach((el) => io.observe(el));
+})();
+
+// ---------- video spiller kun, når den er i synsfeltet; data-start springer optagelsens indledning over ----------
+(() => {
+  const vio = new IntersectionObserver((es) => es.forEach((e) => { const v = e.target; if (e.isIntersecting) v.play().catch(() => {}); else v.pause(); }), { threshold: .25 });
+  document.querySelectorAll('video[data-inview]').forEach((v) => {
+    const start = +v.dataset.start || 0;
+    if (start) { v.addEventListener('loadedmetadata', () => { v.currentTime = start; }); v.addEventListener('ended', () => { v.currentTime = start; v.play().catch(() => {}); }); }
+    else v.loop = true;
+    vio.observe(v);
+  });
+})();
+
+// ---------- inventar: filtre + "vis alle" ("Alle" viser 9 på computer, 6 på telefon — et filter viser hele familien) ----------
+(() => {
+  const types = document.getElementById('types'), cards = [...types.querySelectorAll('.tcard')], chips = [...document.querySelectorAll('#filters .fchip')];
+  const more = document.getElementById('showmore');
+  let f = 'alle', expanded = false;
+  function apply() {
+    cards.forEach((t) => { t.hidden = !(f === 'alle' || t.dataset.fam === f); });
+    chips.forEach((c) => c.classList.toggle('on', c.dataset.f === f));
+    types.classList.toggle('expanded', expanded || f !== 'alle');
+    more.parentElement.hidden = expanded || f !== 'alle';
+  }
+  chips.forEach((c) => c.addEventListener('click', () => { f = c.dataset.f; apply(); }));
+  more.addEventListener('click', () => { expanded = true; apply(); });
+  apply();
+})();
+
+// ---------- designer-teaser ----------
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const cab = $('#cab'), inner = $('#inner');
+  const S = { b: 60, h: 210, d: 60, mat: 'birk', farve: { kryds: 'blaa', kompakt: 'lysgraa' }, greb: 'push', open: false, turn: false };
+  const MAT = { birk: 'Birkekrydsfiner, klar olie', eg: 'Egetræsfinér, klar olie', kryds: 'Krydsfiner', kompakt: 'Kompaktlaminat' };
+  const FARVER = {
+    kryds: [{ v: 'natur', l: 'Klar olie', c: '#E1C092', tint: null }, { v: 'blaa', l: 'Blå', c: '#4F6E95', tint: 'rgba(52,86,130,.78)' }, { v: 'roed', l: 'Rød', c: '#7E3237', tint: 'rgba(120,36,44,.82)' }, { v: 'groen', l: 'Skovgrøn', c: '#4C6B5B', tint: 'rgba(58,96,78,.8)' }, { v: 'koks', l: 'Koksgrå', c: '#3C3A37', tint: 'rgba(40,38,36,.86)' }],
+    kompakt: [{ v: 'lysgraa', l: 'Lys grå', c: '#BDBBB6', flat: '#BDBBB6' }, { v: 'antracit', l: 'Antracit', c: '#3B3C3E', flat: '#3B3C3E' }],
+  };
+  const GREB = { push: ['Uden greb', 'Lågen åbner, når du trykker på den.'], std: ['Stålgreb', 'Greb i børstet stål.'], sort: ['Sort greb', 'Sort bøjlegreb.'], trae: ['Trægreb', 'Drejet i massiv eg og olieret som skabet.'] };
+  const fill = (inp) => { const p = (inp.value - inp.min) / (inp.max - inp.min); inp.style.setProperty('--p', `calc(${p * 100}% + ${11 - p * 22}px)`); };
+  let deltaT;
+  function delta() { const d = $('#delta'); d.classList.add('show'); clearTimeout(deltaT); deltaT = setTimeout(() => d.classList.remove('show'), 1100); }
+  function farve() { return (FARVER[S.mat] || []).find((f) => f.v === S.farve[S.mat]); }
+  function render(user) {
+    cab.style.setProperty('--w', S.b); cab.style.setProperty('--h', S.h); cab.style.setProperty('--d', S.d);
+    cab.dataset.mat = S.mat; cab.dataset.greb = S.greb;
+    cab.classList.toggle('one', S.b <= 65); cab.classList.toggle('open', S.open);
+    cab.style.transform = S.turn ? 'rotateX(-8deg) rotateY(30deg)' : 'rotateX(-8deg) rotateY(-32deg)';
+    const f = farve();
+    cab.style.setProperty('--tint', f && f.tint ? f.tint : 'rgba(0,0,0,0)');
+    cab.style.setProperty('--flat', f && f.flat ? f.flat : '#BDBBB6');
+    const n = Math.max(2, Math.min(6, Math.round(S.h / 40)));
+    inner.innerHTML = Array.from({ length: n - 1 }, (_, i) => `<i class="shelf" style="top:calc(${((i + 1) / n) * 100}% - var(--D)/2)"></i>`).join('');
+    $('#sizeChip').textContent = `${S.b} × ${S.h} × ${S.d} cm`;
+    $('#o-b').innerHTML = `${S.b}<small>cm</small>`; $('#o-h').innerHTML = `${S.h}<small>cm</small>`;
+    $('#laagenote').textContent = S.b <= 65 ? '1 låge til og med 65 cm bredde · 2 låger fra 66 cm' : '2 låger, der åbner fra midten';
+    document.querySelectorAll('#mats .mat').forEach((m) => m.classList.toggle('on', m.dataset.mat === S.mat));
+    const fl = FARVER[S.mat]; $('#farveRow').hidden = !fl;
+    if (fl) {
+      if ($('#farver').dataset.mat !== S.mat) { $('#farver').dataset.mat = S.mat; $('#farver').innerHTML = fl.map((c) => `<button type="button" class="dot" data-v="${c.v}" aria-label="${c.l}" title="${c.l}" style="--c:${c.c}"></button>`).join(''); }
+      document.querySelectorAll('#farver .dot').forEach((d) => d.classList.toggle('on', d.dataset.v === S.farve[S.mat]));
+      $('#farveNavn').textContent = f ? f.l : '';
+    }
+    document.querySelectorAll('#greb button').forEach((b) => b.classList.toggle('on', b.dataset.v === S.greb));
+    $('#grebNote').textContent = GREB[S.greb][1];
+    const matT = S.mat === 'kryds' ? `Krydsfiner, ${f.v === 'natur' ? 'klar olie' : f.l.toLowerCase() + ' olie'}` : S.mat === 'kompakt' ? `Kompaktlaminat, ${f.l.toLowerCase()}` : MAT[S.mat];
+    $('#sum1').textContent = `${S.b} × ${S.h} × ${S.d} cm`; $('#sum2').textContent = matT; $('#sum3').textContent = GREB[S.greb][0];
+    $('#spec').innerHTML = `<b>Højskab ${S.b} × ${S.h} × ${S.d} cm</b> · ${S.b <= 65 ? '1 låge' : '2 låger'} · ${n - 1} hylder · ${matT} · ${GREB[S.greb][0].toLowerCase()}`;
+    $('#btnDoors').textContent = S.open ? 'Luk låger' : 'Åbn låger'; $('#btnDoors').setAttribute('aria-pressed', S.open);
+    $('#btnTurn').setAttribute('aria-pressed', S.turn);
+    if (user) delta();
+  }
+  for (const k of ['b', 'h']) { const inp = $(`#in-${k}`); fill(inp); inp.addEventListener('input', () => { S[k] = +inp.value; fill(inp); render(true); }); }
+  $('#mats').addEventListener('click', (e) => { const b = e.target.closest('.mat'); if (!b) return; S.mat = b.dataset.mat; render(true); });
+  $('#farver').addEventListener('click', (e) => { const b = e.target.closest('.dot'); if (!b) return; S.farve[S.mat] = b.dataset.v; render(true); });
+  $('#greb').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; S.greb = b.dataset.v; render(true); });
+  $('#btnDoors').addEventListener('click', () => { S.open = !S.open; render(false); });
+  $('#btnTurn').addEventListener('click', () => { S.turn = !S.turn; render(false); });
+  render(false);
+})();
+</script>
+</body>
+</html>

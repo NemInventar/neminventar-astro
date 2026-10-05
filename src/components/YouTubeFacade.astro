@@ -1,0 +1,46 @@
+---
+// "Klik for at afspille" til YouTube-film — fx Rubio Monocoats påføringsvideoer i overflade-afsnittet.
+// Intet hentes fra YouTube, før brugeren klikker (det lover cookiepolitikken). Ved klik erstattes knappen af en
+// iframe fra youtube-nocookie.com. Plakaten er altid vores egen (foto eller kulørflade) — aldrig YouTubes miniature,
+// for den ville kalde Google allerede ved sidevisning.
+interface Props {
+  id: string;        // YouTube-id
+  title: string;     // vises på plakaten og som iframe-titel
+  kicker?: string;   // lille mærkat over titlen, fx "Trin 1 · Precolor Easy"
+  poster?: string;   // vores eget foto (valgfrit) — ellers en kulørflade i --c
+  pos?: string;      // object-position for plakatfotoet
+  color?: string;    // kulørflade / fallback bag fotoet
+  note?: string;     // lille linje under feltet
+  by?: string;       // link til kilden hos Rubio (valgfrit)
+}
+const {
+  id, title, kicker, poster, pos = '50% 50%', color = '#43687C',
+  note = 'Film fra Rubio Monocoat. Afspilles fra YouTube, når du klikker — intet hentes før.',
+  by,
+} = Astro.props;
+---
+<div class="yt" data-id={id} data-title={title} style={`--c:${color};--pos:${pos}`}>
+  <button type="button" class="yt-btn" aria-label={`Afspil video: ${title}`}>
+    {poster ? <img src={poster} alt="" loading="lazy" decoding="async" /> : <span class="yt-block" aria-hidden="true"></span>}
+    <span class="yt-text">{kicker && <small>{kicker}</small>}<b>{title}</b></span>
+    <span class="yt-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26"><path d="M8 5v14l11-7z" fill="currentColor" /></svg></span>
+  </button>
+  {(note || by) && <p class="yt-note">{note}{by && <> <a href={by} target="_blank" rel="noopener">Se hos Rubio ↗</a></>}</p>}
+</div>
+<script>
+  document.querySelectorAll<HTMLElement>('.yt').forEach((box) => {
+    const btn = box.querySelector<HTMLButtonElement>('.yt-btn');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      const id = box.dataset.id || '', title = box.dataset.title || 'Video';
+      const f = document.createElement('iframe');
+      f.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&modestbranding=1&hl=da`;
+      f.title = title;
+      f.allow = 'autoplay; encrypted-media; picture-in-picture';
+      f.setAttribute('allowfullscreen', '');
+      f.referrerPolicy = 'strict-origin-when-cross-origin';
+      btn.replaceWith(f);
+      box.classList.add('playing');
+    }, { once: true });
+  });
+</script>

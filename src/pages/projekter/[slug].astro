@@ -1,79 +1,202 @@
 ---
+// Projektside. Indhold fra v_web_cases (case_web). Fotos fra leverancen vises først og størst; visualiseringer
+// for sig og mærket. Tal fra leverancen (delivery_label) bliver til et talgitter. Lysboks til fuld størrelse.
 import Base from '../../layouts/Base.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import ContactCta from '../../components/ContactCta.astro';
 import { getWebCases, type WebCase } from '../../lib/supabase';
 import { cdn } from '../../lib/img';
+import { caseMeta, isPhoto, leverance, tal, imgLabel } from '../../lib/catalog';
 
 export async function getStaticPaths() {
   const cases = await getWebCases();
-  return cases.map((c) => ({ params: { slug: c.slug }, props: { project: c } }));
+  return cases.map((c) => ({ params: { slug: c.slug }, props: { project: c, cases } }));
 }
 
-interface Props { project: WebCase }
-const { project } = Astro.props;
+interface Props { project: WebCase; cases: WebCase[] }
+const { project, cases } = Astro.props;
 const paragraphs = (project.web_story ?? '').split('\n\n').filter(Boolean);
 const desc = project.seo_description ?? (project.web_summary ?? '').slice(0, 200);
 const base = import.meta.env.BASE_URL;
-const gallery = project.gallery ?? [];
-// Heroen er et foto hvis den findes i galleriet som 'foto' — ellers en render, og det siger vi.
-const heroIsPhoto = gallery.some((g) => g.kind === 'foto' && g.src === project.hero_image_url);
-const hasRenders = !heroIsPhoto || gallery.some((g) => g.kind === 'visualisering');
-const meta = [
-  { k: 'Leverance', v: project.delivery_label },
-  // Uden tilladelse viser view'et "Hovedentreprenør" — det er en pladsholder, ikke en oplysning.
-  ...(project.contractor_label && project.contractor_label !== 'Hovedentreprenør' ? [{ k: 'Entreprenør', v: project.contractor_label }] : []),
-  ...(project.architect_label ? [{ k: 'Arkitekt', v: project.architect_label }] : []),
-  { k: 'Status', v: project.status_label },
-];
 const site = Astro.site!;
+const gallery = project.gallery ?? [];
+const heroItem = gallery.find((g) => g.src === project.hero_image_url);
+const heroIsPhoto = heroItem ? heroItem.kind === 'foto' : isPhoto(project.hero_image_url);
+const fotos = gallery.filter((g) => g.kind === 'foto' && g.src !== project.hero_image_url);
+const andre = gallery.filter((g) => g.kind !== 'foto' && g.kind !== 'video' && g.src !== project.hero_image_url);
+const meta = caseMeta(project);
+const numbers = tal(project);
+const items = leverance(project);
+const others = cases.filter((c) => c.slug !== project.slug).slice(0, 3);
+// Samarbejdspartnere på sagen (case_web.web_partners) — fx Rubio Monocoat på Mørkhøj Skole
+const partners = project.web_partners && project.web_partners.text ? project.web_partners : null;
+// Lysboksens liste: hero + fotos + andre, i den rækkefølge de står på siden
+const lb = [
+  ...(project.hero_image_url ? [{ src: project.hero_image_url, alt: heroItem?.alt ?? project.name, kind: heroItem?.kind ?? (heroIsPhoto ? 'foto' : 'visualisering'), caption: heroItem?.caption ?? '' }] : []),
+  ...fotos, ...andre,
+].map((g) => ({ src: cdn(g.src, 1800), alt: g.alt, label: imgLabel(g.kind), caption: g.caption ?? '' }));
+
 const jsonLd = [{
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Nem Inventar', item: new URL(base, site).href },
-    { '@type': 'ListItem', position: 2, name: 'Projekter', item: new URL(base + '#projekter', site).href },
+    { '@type': 'ListItem', position: 2, name: 'Projekter', item: new URL(base + 'projekter', site).href },
     { '@type': 'ListItem', position: 3, name: project.name, item: new URL(`${base}projekter/${project.slug}`, site).href },
   ],
 }];
+let lbIndex = 0;
 ---
-<Base title={project.seo_title} description={desc} image={project.hero_image_url ?? undefined} jsonLd={jsonLd}>
-  <section class="case-detail"><div class="wrap">
-    <a href={`${base}#projekter`} class="crumb">← Tilbage til projekter</a>
-    <span class="status" style="color:var(--warm)">{project.status_live && <span class="dot"></span>}{project.status_label}</span>
-    <h1>{project.name}</h1>
-    {project.web_summary && <p class="lead">{project.web_summary}</p>}
+<Base title={project.seo_title} description={desc} image={project.hero_image_url ? cdn(project.hero_image_url, 1200) : undefined} jsonLd={jsonLd}>
+  <section class="cd2"><div class="wrap">
+    <div class="crumbrow">
+      <a href={`${base}projekter`} class="crumb">← Alle projekter</a>
+    </div>
+    <div class="cd-head">
+      <div>
+        <span class="status" style="color:var(--warm)">{project.status_live && <span class="dot"></span>}{project.status_label}</span>
+        <h1>{project.name}</h1>
+        {project.web_summary && <p class="lead">{project.web_summary}</p>}
+      </div>
+      <aside class="cd-facts">
+        {meta.map((m) => <div class="prow"><span class="pk">{m.k}</span><span class="pv">{m.v}</span></div>)}
+        <a href={`${base}kontakt?emne=${encodeURIComponent('Lignende projekt: ' + project.name)}`} class="btn btn-primary">Har I et lignende projekt? <span class="arr">→</span></a>
+      </aside>
+    </div>
 
     {project.hero_image_url && (
-      <div class="case-hero"><img src={cdn(project.hero_image_url, 1200)} alt={`${project.name} — ${heroIsPhoto ? 'foto' : 'visualisering'}`} fetchpriority="high" /></div>
+      <figure class="cd-hero">
+        <button class="hero-btn lbtn" data-i={lbIndex++} aria-label="Se billedet i fuld størrelse">
+          <img src={cdn(project.hero_image_url, 1600)} alt={heroItem?.alt ?? `${project.name} — ${heroIsPhoto ? 'foto' : 'visualisering'}`} fetchpriority="high" />
+        </button>
+        <span class="ptag">{heroIsPhoto ? 'Foto fra leverancen' : 'Visualisering'}</span>
+        {heroItem?.caption && <figcaption class="img-tag"><b>{project.name}</b>{heroItem.caption}</figcaption>}
+      </figure>
     )}
 
-    {paragraphs.length > 0 && (
-      <div class="prose" style="max-width:64ch">
-        {paragraphs.map((para) => <p>{para}</p>)}
+    {numbers.length >= 2 && (
+      <div class="talgitter light rv" style={`--n:${numbers.length}`}>
+        {numbers.map((x) => <div><b>{x.b}</b><span>{x.t}</span></div>)}
       </div>
     )}
 
-    <div class="case-meta" style={`--cols:${meta.length}`}>
-      {meta.map((m) => <div class="cell"><div class="k">{m.k}</div><div class="vv">{m.v}</div></div>)}
+    <div class="cd-body">
+      {paragraphs.length > 0 && (
+        <div class="prose rv">
+          {paragraphs.map((para) => <p>{para}</p>)}
+        </div>
+      )}
+      <aside class="cd-side rv">
+        {items.length > 0 && (
+          <div class="cd-list">
+            <h3>Det leverede vi</h3>
+            <ul>{items.map((it) => <li>{it}</li>)}</ul>
+          </div>
+        )}
+      </aside>
     </div>
 
-    {gallery.length > 0 && (
-      <div class="case-gallery">
-        {gallery.filter((g) => g.src !== project.hero_image_url).map((g) => (
-          <figure>
-            <img src={cdn(g.src, 900)} alt={g.alt} loading="lazy" />
-            <figcaption class="img-tag"><b>{g.kind === 'foto' ? 'Foto fra leverancen' : 'Visualisering'}</b>{g.caption}</figcaption>
-          </figure>
-        ))}
+    {partners && (
+      <div class="cd-partner rv">
+        <div>
+          <span class="label">{partners.title ?? 'Samarbejdspartnere'}</span>
+          <p>{partners.text}</p>
+        </div>
+        <div class="cp-list">
+          {partners.list.map((p) => (
+            <a href={p.url} target="_blank" rel="noopener" class="cp"><b>{p.name}</b>{p.role && <span>{p.role}</span>}<em aria-hidden="true">↗</em></a>
+          ))}
+        </div>
       </div>
     )}
 
-    {hasRenders && (
-      <p class="case-note">Billeder mærket "Visualisering" er 3D-renders — ikke foto af selve leverancen. De udskiftes med projektfotos, når de findes.</p>
+    {fotos.length > 0 && (
+      <>
+        <div class="cd-gal-head rv">
+          <h2>Fra <em>leverancen.</em></h2>
+          <span class="hint">{fotos.length + (heroIsPhoto ? 1 : 0)} fotos · klik for fuld størrelse</span>
+        </div>
+        <div class="cd-gallery rv">
+          {fotos.map((g, i) => (
+            <button class={`gfig lbtn${i % 5 === 0 ? ' big' : ''}`} data-i={lbIndex++} aria-label={`Se billedet i fuld størrelse: ${g.alt}`}>
+              <img src={cdn(g.src, i % 5 === 0 ? 1200 : 800)} alt={g.alt} loading="lazy" decoding="async" />
+              {g.caption && <span class="img-tag"><b>Foto</b>{g.caption}</span>}
+            </button>
+          ))}
+        </div>
+      </>
     )}
 
-    <div class="detail-cta" style="margin-top:38px">
-      <a href="mailto:tilbud@neminventar.dk" class="btn btn-primary">Har I et lignende projekt? <span class="arr">→</span></a>
-      <a href={`${base}#katalog`} class="btn btn-ghost">Se arketyperne</a>
-    </div>
+    {andre.length > 0 && (
+      <div class="cd-vis">
+        <div class="cd-gal-head rv" style="margin-top:48px">
+          {fotos.length || heroIsPhoto ? <h2>Tegninger og <em>visualiseringer.</em></h2> : <h2>Fra <em>tegnesystemet.</em></h2>}
+          <span class="hint">3D fra vores eget tegnesystem</span>
+        </div>
+        <div class="cd-gallery rv">
+          {andre.map((g) => (
+            <button class={`gfig lbtn${g.kind === 'tegning' ? ' contain' : ''}`} data-i={lbIndex++} aria-label={`Se billedet i fuld størrelse: ${g.alt}`}>
+              <img src={cdn(g.src, 800)} alt={g.alt} loading="lazy" decoding="async" />
+              <span class="ptag">{imgLabel(g.kind)}</span>
+            </button>
+          ))}
+        </div>
+        <p class="cd-note rv">Billeder mærket "Visualisering" er 3D fra vores eget tegnesystem — ikke foto af leverancen. De udskiftes med fotos, når vi har dem.</p>
+      </div>
+    )}
+    {!andre.length && !heroIsPhoto && (
+      <p class="cd-note rv">Billedet øverst er en visualisering fra vores eget tegnesystem — ikke foto af leverancen. Det udskiftes med fotos, når vi har dem.</p>
+    )}
+    <p class="cd-note rv" style="margin-top:14px">Vi har bygget inventaret. Stole, borde, fliser og lamper på billederne er andres.</p>
   </div></section>
+
+  {others.length > 0 && (
+    <section class="sec" id="flere"><div class="wrap">
+      <div class="sec-head rv">
+        <div>
+          <span class="label">Flere projekter</span>
+          <h2>Fra udbud til <em>montage.</em></h2>
+        </div>
+        <a href={`${base}projekter`} class="ulink">Alle projekter →</a>
+      </div>
+      <div class="pgrid three rv">
+        {others.map((c) => <ProjectCard c={c} compact />)}
+      </div>
+    </div></section>
+  )}
+
+  <ContactCta subject={'Lignende projekt: ' + project.name} />
+
+  <!-- lysboks -->
+  <dialog class="lightbox" id="lb" aria-label="Billede i fuld størrelse">
+    <span class="lb-count" id="lbCount"></span>
+    <button type="button" class="lb-btn lb-x" id="lbX" aria-label="Luk">✕</button>
+    <button type="button" class="lb-btn lb-prev" id="lbPrev" aria-label="Forrige billede">←</button>
+    <button type="button" class="lb-btn lb-next" id="lbNext" aria-label="Næste billede">→</button>
+    <figure><img id="lbImg" alt="" /><figcaption id="lbCap"></figcaption></figure>
+  </dialog>
+  <script is:inline type="application/json" id="lb-data" set:html={JSON.stringify(lb)} />
+  <script>
+    type Item = { src: string; alt: string; label: string; caption: string };
+    const dlg = document.getElementById('lb') as HTMLDialogElement | null;
+    const data = JSON.parse(document.getElementById('lb-data')?.textContent || '[]') as Item[];
+    if (dlg && data.length && typeof dlg.showModal === 'function') {
+      const img = document.getElementById('lbImg') as HTMLImageElement, cap = document.getElementById('lbCap')!, cnt = document.getElementById('lbCount')!;
+      let i = 0;
+      const show = (k: number) => {
+        i = (k + data.length) % data.length;
+        const it = data[i];
+        img.src = it.src; img.alt = it.alt;
+        cap.innerHTML = `<b>${it.label}</b>${it.caption || it.alt}`;
+        cnt.textContent = `${String(i + 1).padStart(2, '0')} / ${String(data.length).padStart(2, '0')}`;
+        const n = data[(i + 1) % data.length]; if (n) { const pre = new Image(); pre.src = n.src; }
+      };
+      document.querySelectorAll<HTMLButtonElement>('.lbtn').forEach((b) => b.addEventListener('click', () => { show(+(b.dataset.i || 0)); dlg.showModal(); }));
+      document.getElementById('lbX')!.addEventListener('click', () => dlg.close());
+      document.getElementById('lbPrev')!.addEventListener('click', () => show(i - 1));
+      document.getElementById('lbNext')!.addEventListener('click', () => show(i + 1));
+      dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+      dlg.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') show(i + 1); if (e.key === 'ArrowLeft') show(i - 1); });
+    }
+  </script>
 </Base>

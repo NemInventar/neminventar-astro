@@ -1,0 +1,65 @@
+---
+// Kontakt-afsnittet nederst på siderne. `full` (forsiden) har de to kort; `short` (undersider) har to knapper.
+// `subject` forudfylder emnet på kontaktsiden (?emne=…), så vi ved, hvad henvendelsen handler om.
+import { PHONE, PHONE_TEL } from '../lib/contact';
+interface Props { variant?: 'full' | 'short'; subject?: string; lang?: 'da' | 'en' }
+const { variant = 'short', subject, lang = 'da' } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const q = subject ? `?emne=${encodeURIComponent(subject)}` : '';
+const kontakt = `${base}kontakt${q}`;
+---
+{lang === 'en' ? (
+  <section class="sec sec-dark" id="contact"><div class="wrap">
+    <div class="sec-head rv" style="align-items:flex-start">
+      <div>
+        <span class="label">Contact</span>
+        <h2>Send us the drawings. Or the whole <em>tender.</em></h2>
+        <p class="lede">We reply in English. Drawings and tender documents in Danish or English are both fine. We read the material and come back with the questions that need answering, and a price.</p>
+      </div>
+    </div>
+    <div class="cta2-actions rv">
+      <a href="mailto:tilbud@neminventar.dk?subject=Enquiry" class="btn btn-light">Send drawings or tender documents <span class="arr">→</span></a>
+      <a href={`tel:${PHONE_TEL}`} class="btn btn-dark-ghost">{PHONE}</a>
+    </div>
+    <div class="clines rv">
+      <span><a href="mailto:tilbud@neminventar.dk">tilbud@neminventar.dk</a></span>
+      <span>Nem Inventar ApS · Mågevej 73, st. tv. · 2400 Copenhagen NV · Denmark · VAT DK45085473</span>
+    </div>
+  </div></section>
+) : (
+  <section class="sec sec-dark" id="kontakt"><div class="wrap">
+    <div class="sec-head rv" style="align-items:flex-start">
+      <div>
+        <span class="label">Kontakt</span>
+        <h2>Send os målene. Eller hele <em>udbuddet.</em></h2>
+        <p class="lede">En skitse med mål er nok til at komme i gang. Et udbud går vi igennem post for post. Er tegningerne ikke færdige endnu, sparrer vi gerne om konstruktion og materialer.</p>
+      </div>
+    </div>
+    {variant === 'full' ? (
+      <div class="ccards rv">
+        <div class="ccard">
+          <span class="kick">Udbud og projekter</span>
+          <h3>Send tegninger eller tilbudsliste</h3>
+          <p>Arkitekttegninger, beskrivelse, tilbudsliste eller rumskemaer. Vi vender tilbage med de spørgsmål, der skal afklares, og et tilbud med 3D og dokumentation, I kan holde op mod udbuddet.</p>
+          <a href={kontakt} class="btn btn-light">Send udbud <span class="arr">→</span></a>
+        </div>
+        <div class="ccard">
+          <span class="kick">Enkelte møbler</span>
+          <h3>Send mål og antal</h3>
+          <p>Skriv mål, antal og ønsker til materiale og farve. I får tegning og pris, før noget går i produktion. Typisk 8–12 uger fra ordre til levering. Private kan også bestille.</p>
+          <a href={kontakt} class="btn btn-dark-ghost">Send mål <span class="arr">→</span></a>
+        </div>
+      </div>
+    ) : (
+      <div class="cta2-actions rv">
+        <a href={kontakt} class="btn btn-light">Send mål <span class="arr">→</span></a>
+        <a href={kontakt} class="btn btn-dark-ghost">Send udbud <span class="arr">→</span></a>
+      </div>
+    )}
+    <div class="clines rv">
+      <a href={`tel:${PHONE_TEL}`} class="tel">{PHONE}</a>
+      <span><a href="mailto:tilbud@neminventar.dk">tilbud@neminventar.dk</a></span>
+      <span>Generelle henvendelser: <a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a></span>
+    </div>
+  </div></section>
+)}
