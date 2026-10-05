@@ -488,11 +488,12 @@ footer a:hover{color:var(--ink)}
 .form .row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
 .field label{font-size:13.5px;font-weight:600;color:var(--ink)}
-.field input,.field textarea{
+.field input,.field textarea,.field select{
   border:1px solid var(--line);border-radius:10px;padding:12px 14px;font:inherit;font-size:15px;
   background:var(--paper);color:var(--ink);transition:border-color .2s,box-shadow .2s;
 }
-.field input:focus,.field textarea:focus{outline:none;border-color:var(--warm);box-shadow:0 0 0 3px rgba(162,101,42,.12)}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--warm);box-shadow:0 0 0 3px rgba(162,101,42,.12)}
+.field label .valgfrit{font-weight:400;color:var(--muted)}
 .field textarea{resize:vertical;min-height:120px}
 .form .btn{width:100%;justify-content:center;border:none;cursor:pointer}
 .form .btn[disabled]{opacity:.6;cursor:not-allowed}

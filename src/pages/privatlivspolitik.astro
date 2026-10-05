@@ -26,7 +26,7 @@ const base = import.meta.env.BASE_URL;
       <li>Virksomhedsoplysninger (firmanavn)</li>
       <li>Projektoplysninger du oplyser i forbindelse med tilbud og leverancer</li>
     </ul>
-    <p>Skriver du til os gennem kontaktformularen, gemmer vi det, du skriver, sammen med de filer, du eventuelt vedhæfter (fx tegninger, udbudsmateriale eller fotos), hos vores databehandler, så vi kan læse dem og svare dig. Vi bruger dem kun til at behandle din henvendelse og en eventuel aftale.</p>
+    <p>Skriver du til os gennem kontaktformularen, gemmer vi det, du skriver, sammen med de filer, du eventuelt vedhæfter (fx tegninger, udbudsmateriale eller fotos), hos vores databehandler, så vi kan læse dem og svare dig. Vi gemmer også, hvor du fandt os: dit svar på "Hvor fandt I os?", den af vores sider, du skrev fra, og hvilken hjemmeside der eventuelt sendte dig til den (kun navnet, fx google.com). Intet af det gemmes på din enhed. Henvendelsen lægges i vores kundesystem, og vi bruger oplysningerne kun til at behandle din henvendelse og en eventuel aftale.</p>
     <p>Bestiller du et opkald på siden, gemmer vi dit navn og dit telefonnummer og, hvis du skriver det, din virksomhed og hvad det drejer sig om. Vi noterer også, hvilken af vores sider du bestilte fra, og hvilken hjemmeside der eventuelt sendte dig til os, fx en søgemaskine, så vi ved, hvor henvendelsen kom fra. Oplysningerne lægges i vores kundesystem, og vi bruger dem kun til at ringe dig op og følge op på din forespørgsel.</p>
     <p>Vi bruger ikke cookies til analyse, markedsføring eller sporing — se vores <a href={`${base}cookiepolitik`}>cookiepolitik</a>. Når siden vises, kan vores webhost behandle din IP-adresse rent teknisk for at levere siden; vi gemmer ikke selv disse oplysninger.</p>
     <p>Vi tæller besøg med Plausible Analytics, som er hostet i EU og ikke bruger cookies. Vi ser samlede tal, fx hvor mange der har besøgt en side, hvilken side de kom fra, og hvor mange der har klikket på vores mail eller telefonnummer. Din IP-adresse gemmes ikke, og tallene kan ikke føres tilbage til dig.</p>
@@ -70,4 +70,13 @@ const base = import.meta.env.BASE_URL;
   </article>
 </Base>
 
-<!-- Styles: .legal i site.css (fælles for de juridiske sider) -->
+<style>
+  .legal{max-width:760px;margin:0 auto;padding:64px 28px 96px}
+  .legal h1{font-size:clamp(32px,4vw,46px);margin-bottom:10px}
+  .legal .upd{color:var(--muted);font-size:14px;margin-bottom:36px}
+  .legal h2{font-size:22px;margin:38px 0 12px}
+  .legal p{color:var(--ink);line-height:1.75;margin-bottom:14px}
+  .legal ul{margin:0 0 16px 22px;color:var(--ink);line-height:1.75}
+  .legal li{margin-bottom:6px}
+  .legal a{color:var(--warm);text-decoration:underline}
+</style>

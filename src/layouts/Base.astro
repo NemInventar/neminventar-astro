@@ -112,6 +112,11 @@ const ld = [organization, ...jsonLd];
       window.plausible(mail ? 'Mail' : 'Telefon', { props: { side: location.pathname } });
     });
   </script>
+  <script>
+    // Mailto-links får emnet "Forespørgsel fra neminventar.dk – <side>", så en direkte mail viser siden (D1).
+    import { startKilde } from '../lib/kilde';
+    startKilde();
+  </script>
 </head>
 <body>
   <Nav />

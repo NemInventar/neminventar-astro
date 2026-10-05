@@ -54,7 +54,7 @@ Denne session retter **ikke** i `ni-apps/public/prisbog/designer/core/` eller `p
 |---|---|---|
 | `spor` | `skitse` · `udbud` · `designer` · `variant` · `besked`, ud fra hvor formularen er åbnet | `web_henvendelser.spor` (ny kolonne) |
 | `kilde_svar` | "Hvor fandt I os?": Google · ChatGPT eller anden AI · Anbefaling · LinkedIn · Vi har arbejdet sammen før · Andet. Valgfrit | ny kolonne |
-| `referrer_host`, `landingsside`, `utm_*` | Fanges **ved første sidevisning** i besøget, fordi referreren ved afsendelse er intern. Gemmes som hostname, ikke fuld URL, i `sessionStorage` (try/catch) og sendes med. Tabet ved en ny fane eller et senere besøg accepteres, og `kilde_svar` dækker det. Cookiepolitikken får én linje om dette | nye kolonner |
+| `referrer_host`, `landingsside`, `utm_*` | Den eksterne side, der sendte besøgeren **til den side, formularen står på**, som hostname, plus sidens sti og utm_*. **Intet gemmes på enheden**: ingen sessionStorage og ingen cookie. Det er en tidligere bevidst beslutning (intet samtykke-banner), og cookiereglerne gælder også for anden lagring til statistik. Kom besøgeren via en intern side, er kilden tom, og `kilde_svar` er reserven. Forsiden og landingssiderne har formularen på selve siden, så det er tit landingssiden, der giver kilden (rettet 05-10 under implementeringen; Fable foreslog sessionStorage) | nye kolonner |
 | `konfiguration` + `permalink` | Kun når `spor` er `designer` eller `variant`. jsonb, højst 4 KB. Er samme JSON som designerens `?t=` | ny kolonne |
 
 Formularen beholder skiftet **Erhverv/Privat** og linket til handelsbetingelserne fra v2 (B9).
