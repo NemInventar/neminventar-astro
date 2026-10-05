@@ -47,6 +47,12 @@ jobs:
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           SITE_URL: https://neminventar.dk
 
+      - name: Sagsnavne pr. side (kun ADVAR)
+        run: python3 scripts/lint-web-copy.py --dist dist
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
       - name: Skjul forhåndsvisningen for søgemaskiner
         run: |
           printf '/*\n  X-Robots-Tag: noindex, nofollow\n' >> dist/_headers

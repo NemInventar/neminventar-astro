@@ -6,18 +6,57 @@ Læser de samme views som sitet (v_web_landing_pages, v_web_cases, v_web_product
 Kør: python scripts/lint-web-copy.py        (exit 1 ved FEJL)
 Nøglen: SUPABASE_ANON_KEY (eller SUPABASE_SERVICE_ROLE_KEY) i miljøet, ellers --anon-key <nøgle>
 (den offentlige anon-nøgle — Claude henter den med Supabase MCP get_publishable_keys).
+Efter build: python scripts/lint-web-copy.py --dist dist   (kun ADVAR, fejler aldrig): et sagsnavn mere end 2 gange
+i den synlige tekst på en side (Joachim 05-10-2026, opmærksomhedspunkt: "Mørkhøj skal nævnes, men ikke 28 gange").
 
 Reglerne: canon_register "Landingssider pr. søgeord" (Joachim 24-09-2026: ingen underligt
 specifikke tekster, ingen kontekst der ikke hører til på en kundevendt side).
 """
 import json, os, re, sys, urllib.request
+from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 URL = os.environ.get("SUPABASE_URL", "https://guhbrpektblabndqttgp.supabase.co").rstrip("/")
 _arg = sys.argv[sys.argv.index("--anon-key") + 1] if "--anon-key" in sys.argv else None
 KEY = _arg or os.environ.get("SUPABASE_ANON_KEY") or os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
+DIST = sys.argv[sys.argv.index("--dist") + 1] if "--dist" in sys.argv else None
 if not KEY:
     sys.exit("Mangler nøgle: sæt SUPABASE_ANON_KEY eller kør med --anon-key <offentlig anon-nøgle>")
+
+# Sagsnavnets kendeord: første ord, der ikke er en bygningstype ("Daginstitution Vinge" → Vinge).
+GENERISK = {"skole", "daginstitution", "skohylder", "til", "idrætshal", "idrætspark"}
+MAX_SAGSNAVN = 2
+
+def sagsnavne_i_dist(dist, cases):
+    """ADVAR, når et sagsnavn står mere end MAX_SAGSNAVN gange i den synlige tekst på en side.
+    Sagens egen side og /projekter/ er undtaget — dér er navnet emnet. Et projektkort (ProjectCard,
+    <article class="pcard">) tæller som ÉN omtale, selv om navnet står i både titel og resumé."""
+    noegler = {}
+    for c in cases:
+        ord_ = [w for w in re.findall(r"\w+", c["name"]) if w.lower() not in GENERISK]
+        if ord_: noegler[c["slug"]] = ord_[0]
+    n = 0
+    for f in sorted(Path(dist).rglob("index.html")):
+        rel = "/" + f.parent.relative_to(dist).as_posix().strip(".") + "/"
+        rel = rel.replace("//", "/")
+        html = f.read_text(encoding="utf-8", errors="ignore")
+        html = re.sub(r"<script.*?</script>|<style.*?</style>", " ", html, flags=re.S | re.I)
+        kort = re.findall(r'<article class="pcard.*?</article>', html, flags=re.S)
+        tekst = re.sub(r"<[^>]+>", " ", re.sub(r'<article class="pcard.*?</article>', " ", html, flags=re.S))
+        for slug, ord_ in noegler.items():
+            if rel in ("/projekter/", f"/projekter/{slug}/"): continue
+            k = len(re.findall(rf"\b{re.escape(ord_)}\b", tekst)) + sum(f"projekter/{slug}" in a for a in kort)
+            if k > MAX_SAGSNAVN:
+                print(f"ADVAR html{rel} · «{ord_}» står {k} gange (højst {MAX_SAGSNAVN} uden for sagens egen side) — "
+                      "vis produktet, ikke sagen")
+                n += 1
+    return n
+
+if DIST:
+    n = sagsnavne_i_dist(DIST, json.loads(urllib.request.urlopen(urllib.request.Request(
+        f"{URL}/rest/v1/v_web_cases?select=slug,name", headers={"apikey": KEY, "Authorization": "Bearer " + KEY}), timeout=60).read()))
+    print(f"\n0 fejl · {n} advarsler (sagsnavne i {DIST})")
+    sys.exit(0)
 
 FEJL = [
     (r"\bKosovo\b|\bFerizaj\b|Korpus\s+SH", "produktionssted nævnes ikke udadtil — skriv 'egen produktion'"),

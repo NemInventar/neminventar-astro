@@ -5,8 +5,6 @@
 
 // Den offentlige designer (D3a-lite, designer-sessionen). null = ikke åben endnu → knapperne viser "Få pris".
 export const DESIGNER_URL: string | null = null;
-// Rubio Monocoats fem træprøver må først vises med deres skriftlige ok (spec §9). Indtil da: farveflader.
-export const RUBIO_PROEVER_OK = false;
 
 // Typer, designeren kan åbne (produkt-id i designeren).
 export const DESIGNER_AF: Record<string, 'locker' | 'hoejskab'> = {

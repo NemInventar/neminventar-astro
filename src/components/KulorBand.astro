@@ -1,17 +1,17 @@
 ---
 // "Syv kulører — eller jeres egen." (forside v3). Kulørerne fra v_web_colors i fast rækkefølge, UDEN sagsmærker
 // (Joachim 05-10: en sag skal ikke stå på hvert foto). Træprøverne i public/billeder/kuloerer/: rødbrun og blå er
-// vores egne låger; de fem andre er Rubio Monocoats prøver og vises først, når Rubio har givet skriftligt ok
-// (RUBIO_PROEVER_OK i src/lib/forside.ts). Indtil da står de fem som farveflader.
+// vores egne låger; natur, røget eg og skovgrøn er Rubio Monocoats prøver på ask (Pure, Cocoa, Fern — vi må bruge
+// Rubios materiale, Joachim 05-10-2026). Rubios kort har i dag ingen sort eller grå — deres "Black" og "Charcoal"
+// er brune toner — så sort og charcoal står som farveflader (rubio-*-ask.jpg er de afviste prøver).
 import type { WebColor } from '../lib/supabase';
 import { cdn } from '../lib/img';
-import { RUBIO_PROEVER_OK } from '../lib/forside';
 interface Props { colors: WebColor[] }
 const { colors } = Astro.props;
 const ORDER = ['natur', 'roeget-eg', 'roedbrun', 'skovgroen', 'blaa', 'charcoal', 'sort'];
-const EGNE = new Set(['roedbrun', 'blaa']);
+const MED_PROEVE = new Set(['natur', 'roeget-eg', 'roedbrun', 'skovgroen', 'blaa']);
 const band = ORDER.map((s) => colors.find((c) => c.slug === s)).filter((c): c is WebColor => !!c);
-const medBillede = (slug: string) => EGNE.has(slug) || RUBIO_PROEVER_OK;
+const medBillede = (slug: string) => MED_PROEVE.has(slug);
 ---
 <div class="kul" role="list" aria-label="Vores syv standardkulører">
   {band.map((c) => (
@@ -21,7 +21,7 @@ const medBillede = (slug: string) => EGNE.has(slug) || RUBIO_PROEVER_OK;
     </div>
   ))}
 </div>
-<p class="kul-note">{RUBIO_PROEVER_OK ? 'Prøverne er olieret træ.' : 'Rødbrun og blå er olierede låger fra vores leverancer; de øvrige vises som farve.'} Farverne på skærmen er vejledende.</p>
+<p class="kul-note">Prøverne er olieret træ: rødbrun og blå er låger fra vores leverancer, de øvrige Rubio Monocoats prøver. Sort og charcoal vises som farve. Farverne på skærmen er vejledende.</p>
 <style>
   .kul{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-radius:18px;overflow:hidden;height:clamp(150px,16vw,200px)}
   .ks{position:relative;background:var(--c);background-image:radial-gradient(circle at 30% 15%,rgba(255,255,255,.14),rgba(255,255,255,0) 55%),repeating-linear-gradient(100deg,rgba(0,0,0,0) 0 3px,rgba(0,0,0,.05) 3px 4px);display:flex;align-items:flex-end;padding:12px;min-width:0}
