@@ -101,7 +101,7 @@ Mockuppen er facit for rækkefølge, tekst og udseende. Komponenterne fra v2 gen
 - Forsiden har som udgangspunkt kun én navngiven sagshenvisning ud over Projekter-sektionen, nemlig bevisbjælken.
 - **Svarløftet** "Svar inden for én arbejdsdag" står ét sted i toppen og ét sted i formularen, ikke seks. Joachim 05-10-2026: det gælder altid, også i ferier.
 - **Terminologi:** "bejdset" bruges kun om bejdsede låger, mens overfladen generelt hedder "olieret" (overflade-guiden er kilden).
-- `lint-web-copy.py`: ny **ADVAR**-regel, når et sagsnavn fra `case_web.public_title` står mere end 2 gange i den renderede HTML for en side.
+- `lint-web-copy.py --dist`: **ADVAR**, når et sagsnavn står mere end 3 gange i den synlige tekst på en side. Det svarer til projektkortet, én referencelinje og én sætning. Et projektkort tæller én gang, og tekst med `aria-hidden` tæller ikke. Billedtekster og kortmærker bærer ikke sagsnavnet ("Foto fra leverancen").
 - Ingen målangivelser i mm i kundetekst, ingen stednavne fra egenproduktionen, ingen mærkenavne på dele (uændrede regler).
 
 **Fravalg fra v2:** "Fire ting, vi lægger vægt på" · "To veje ind" (erstattes af toppen) · designer-teaseren · det mørke Mørkhøj-opslag · Rubio-videoerne (flytter til overflade-guiden) · tal-tickeren (bliver bevisbjælken).

@@ -6,8 +6,9 @@ Læser de samme views som sitet (v_web_landing_pages, v_web_cases, v_web_product
 Kør: python scripts/lint-web-copy.py        (exit 1 ved FEJL)
 Nøglen: SUPABASE_ANON_KEY (eller SUPABASE_SERVICE_ROLE_KEY) i miljøet, ellers --anon-key <nøgle>
 (den offentlige anon-nøgle — Claude henter den med Supabase MCP get_publishable_keys).
-Efter build: python scripts/lint-web-copy.py --dist dist   (kun ADVAR, fejler aldrig): et sagsnavn mere end 2 gange
+Efter build: python scripts/lint-web-copy.py --dist dist   (kun ADVAR, fejler aldrig): et sagsnavn mere end 3 gange
 i den synlige tekst på en side (Joachim 05-10-2026, opmærksomhedspunkt: "Mørkhøj skal nævnes, men ikke 28 gange").
+3 = projektkortet + én referencelinje + én sætning. Billedtekster og kortmærker skal ikke bære sagsnavnet.
 
 Reglerne: canon_register "Landingssider pr. søgeord" (Joachim 24-09-2026: ingen underligt
 specifikke tekster, ingen kontekst der ikke hører til på en kundevendt side).
@@ -25,12 +26,13 @@ if not KEY:
 
 # Sagsnavnets kendeord: første ord, der ikke er en bygningstype ("Daginstitution Vinge" → Vinge).
 GENERISK = {"skole", "daginstitution", "skohylder", "til", "idrætshal", "idrætspark"}
-MAX_SAGSNAVN = 2
+MAX_SAGSNAVN = 3
 
 def sagsnavne_i_dist(dist, cases):
     """ADVAR, når et sagsnavn står mere end MAX_SAGSNAVN gange i den synlige tekst på en side.
     Sagens egen side og /projekter/ er undtaget — dér er navnet emnet. Et projektkort (ProjectCard,
-    <article class="pcard">) tæller som ÉN omtale, selv om navnet står i både titel og resumé."""
+    <article class="pcard">) tæller som ÉN omtale, selv om navnet står i både titel og resumé. Elementer med
+    aria-hidden="true" tæller ikke (fx tal-stribens kopi, der kun findes for at kunne løbe rundt)."""
     noegler = {}
     for c in cases:
         ord_ = [w for w in re.findall(r"\w+", c["name"]) if w.lower() not in GENERISK]
@@ -41,6 +43,7 @@ def sagsnavne_i_dist(dist, cases):
         rel = rel.replace("//", "/")
         html = f.read_text(encoding="utf-8", errors="ignore")
         html = re.sub(r"<script.*?</script>|<style.*?</style>", " ", html, flags=re.S | re.I)
+        html = re.sub(r'<(\w+)[^>]*aria-hidden="true"[^>]*>.*?</\1>', " ", html, flags=re.S)
         kort = re.findall(r'<article class="pcard.*?</article>', html, flags=re.S)
         tekst = re.sub(r"<[^>]+>", " ", re.sub(r'<article class="pcard.*?</article>', " ", html, flags=re.S))
         for slug, ord_ in noegler.items():

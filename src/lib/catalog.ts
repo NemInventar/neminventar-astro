@@ -41,7 +41,8 @@ export const productImage = (p: WebProduct) => {
   const img = o ? morkhoj(o.file) : (p.primary_image ?? '');
   return { img, pos: o?.pos ?? '50% 60%', foto: isPhoto(img) };
 };
-export const fotoTag = (foto: boolean, projectName: string) => (foto ? `Foto · ${projectName}` : '3D-visualisering');
+// Uden sagsnavn (Joachim 05-10-2026: vis produktet, ikke sagen — navnet står på projektkortet).
+export const fotoTag = (foto: boolean) => (foto ? 'Foto fra leverancen' : '3D-visualisering');
 
 // ---------- Tal fra leverancen ----------
 // "342 lockers" → 342 + lockers; "ca. 300 m² akustik" → "ca. 300 m²" + akustik. Ingen match → null.

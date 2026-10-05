@@ -9,7 +9,7 @@ import ContactCta from '../../components/ContactCta.astro';
 import { getWebProducts, getWebColors, getWebCases, getWebLandingPages, type WebProduct, type WebCase, type WebLanding } from '../../lib/supabase';
 import { cdn } from '../../lib/img';
 import { chipLabels } from '../../lib/labels';
-import { FAM, famOf, productImage, fotoTag, isPhoto, photoProjectName } from '../../lib/catalog';
+import { FAM, famOf, productImage, fotoTag, isPhoto } from '../../lib/catalog';
 
 export async function getStaticPaths() {
   const [products, cases, landing] = await Promise.all([getWebProducts(), getWebCases(), getWebLandingPages()]);
@@ -25,13 +25,12 @@ const finishes = chipLabels(product.finishes);
 const applications = chipLabels(product.applications);
 const paragraphs = (product.story ?? product.short_description ?? '').split('\n\n').filter(Boolean);
 const fam = famOf(product);
-const projectName = photoProjectName(cases);
 
 // Galleri: fotoet fra leverancen først (hvis typen har et), derefter de godkendte billeder
 const pi = productImage(product);
 const rest = (product.images ?? []).filter((u) => u !== pi.img);
 const gallery = [pi.img, ...rest].filter(Boolean);
-const tagOf = (src: string) => fotoTag(isPhoto(src), projectName);
+const tagOf = (src: string) => fotoTag(isPhoto(src));
 
 // Farvevarianter: kun aktiv når produktet har color_order OG billeder tagget med palette-slugs.
 const palette = product.color_order?.length ? await getWebColors() : [];
@@ -144,7 +143,7 @@ const jsonLd = [{
       </div>
       <div class="types all rv">
         {others.map((p) => { const im = productImage(p); return (
-          <ProductCard name={p.name} href={`${base}produkter/${p.slug}`} img={im.img} pos={im.pos} tag={fotoTag(im.foto, projectName)} fam={FAM[famOf(p)]} desc={p.intro ?? p.short_description ?? ''} />
+          <ProductCard name={p.name} href={`${base}produkter/${p.slug}`} img={im.img} pos={im.pos} tag={fotoTag(im.foto)} fam={FAM[famOf(p)]} desc={p.intro ?? p.short_description ?? ''} />
         ); })}
       </div>
       {relLanding.length > 0 && (
