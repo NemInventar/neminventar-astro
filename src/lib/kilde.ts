@@ -1,7 +1,9 @@
-// Hvor kom besøgeren fra? Fanges ved FØRSTE sidevisning i besøget, fordi referreren ved afsendelse af en
-// formular er vores egen side. Kun hostname, landingsside og utm_* — ingen persondata, ingen cookie.
-// Gemmes i sessionStorage (slettes, når fanen lukkes) og sendes kun med, hvis besøgeren selv skriver til os.
-// Uden storage (privat vindue, blokeret) bruges blot den aktuelle side. Ingen Astro-imports: testes med node --test.
+// Hvor kom besøgeren fra? Kun hostname, side og utm_* — ingen persondata.
+// Sitet gemmer BEVIDST intet på besøgerens enhed (ingen cookie, ingen sessionStorage/localStorage → intet
+// samtykke-banner; samme beslutning som i CallbackForm). Browseren kalder derfor foersteBesoeg() UDEN lager:
+// kilden er den eksterne side, der sendte besøgeren til den side, formularen står på. Kom de via en intern
+// side, er den tom, og "Hvor fandt I os?" (KILDE_SVAR) er reserven. Lager-parameteren findes kun til test.
+// Ingen Astro-imports: testes med node --test.
 
 export const KILDE_SVAR = ['Google', 'ChatGPT eller anden AI', 'Anbefaling', 'LinkedIn', 'Vi har arbejdet sammen før', 'Andet'] as const;
 
@@ -35,18 +37,13 @@ export function mailtoMedEmne(href: string, sidenavn: string): string {
   return href + (href.includes('?') ? '&' : '?') + 'subject=' + encodeURIComponent(emne);
 }
 
-function sessionLager(): Store | undefined {
-  try { return window.sessionStorage; } catch { return undefined; }
-}
-
-// Browser: besøgets første side (læses af formularerne ved afsendelse)
+// Browser: kilden for den side, formularen står på (læses ved afsendelse). Intet gemmes.
 export function hentKilde(): Attribution {
-  return foersteBesoeg({ referrer: document.referrer, href: location.href, host: location.hostname }, sessionLager());
+  return foersteBesoeg({ referrer: document.referrer, href: location.href, host: location.hostname });
 }
 
-// Browser: kaldes én gang pr. side fra Base.astro
+// Browser: kaldes én gang pr. side fra Base.astro — giver mailto-links et emne med sidens navn.
 export function startKilde(): void {
-  hentKilde();
   const navn = (document.querySelector('h1')?.textContent || document.title).replace(/\s+/g, ' ').trim().slice(0, 60);
   document.querySelectorAll<HTMLAnchorElement>('a[href^="mailto:"]').forEach((el) => {
     el.setAttribute('href', mailtoMedEmne(el.getAttribute('href') || '', navn));

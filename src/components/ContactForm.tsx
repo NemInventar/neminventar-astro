@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { KILDE_SVAR, hentKilde } from '../lib/kilde';
 
 // Poster til contact-form edge function på ERP-projektet (guhbrpektblabndqttgp).
 // Funktionen sender en notifikation via Microsoft Graph til tilbud@ + kontakt@ med reply-to
@@ -35,8 +36,16 @@ function putFile(url: string, file: File, onProgress: (pct: number) => void): Pr
   });
 }
 
-export default function ContactForm() {
+// spor (05-10-2026, konverteringslaget): hvor formularen er åbnet — følger med i leadet i CRM.
+type Spor = 'besked' | 'skitse' | 'udbud' | 'designer' | 'variant';
+declare global { interface Window { plausible?: (e: string, o?: { props?: Record<string, string> }) => void } }
+
+export default function ContactForm({ spor = 'besked' }: { spor?: Spor }) {
   const [form, setForm] = useState({ name: '', company: '', phone: '', email: '', message: '', website: '' });
+  // "Hvor fandt I os?" — valgfrit. Besøgerens eget svar vinder over referreren i leadets lead_kanal.
+  const [kilde, setKilde] = useState('');
+  // Tidsfælde: en formular udfyldt på under 3 sekunder får ingen lead (edge-funktionen afgør det).
+  const t0 = useRef(Date.now());
   // Privat eller erhverv (Joachim 01-10-2026): virksomhedsfeltet kræves kun for erhverv.
   // Edge-funktionen kræver ikke virksomhed, så private sendes som "Privatkunde" i det felt.
   const [kundetype, setKundetype] = useState<'erhverv' | 'privat'>('erhverv');
@@ -119,12 +128,16 @@ export default function ContactForm() {
       // Trin 3: beskeden
       const res = await fetch(FUNCTION_URL, {
         method: 'POST', headers,
-        body: JSON.stringify({ ...form, company: privat ? 'Privatkunde' : form.company, side: location.pathname, upload_id, files: sent }),
+        body: JSON.stringify({
+          ...form, company: privat ? 'Privatkunde' : form.company, side: location.pathname, upload_id, files: sent,
+          spor, kilde_svar: kilde, ...hentKilde(), ms: Date.now() - t0.current,
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data?.success) {
         setSentFiles(Number(data.files ?? sent.length));
         setStatus('ok');
+        try { window.plausible?.('Henvendelse sendt', { props: { spor, kilde: kilde || 'ikke oplyst' } }); } catch { /* statistik er valgfri */ }
       } else {
         throw new Error(data?.error || 'Kunne ikke sende beskeden.');
       }
@@ -235,6 +248,13 @@ export default function ContactForm() {
             ))}
           </ul>
         )}
+      </div>
+      <div className="field">
+        <label htmlFor="cf-kilde">Hvor fandt I os? <span className="valgfrit">(valgfrit)</span></label>
+        <select id="cf-kilde" name="kilde" value={kilde} onChange={(e) => setKilde(e.target.value)} disabled={sending}>
+          <option value="">Vælg</option>
+          {KILDE_SVAR.map((k) => <option key={k} value={k}>{k}</option>)}
+        </select>
       </div>
       <button type="submit" className="btn btn-primary" disabled={sending}>
         {sendLabel} <span className="arr">→</span>
