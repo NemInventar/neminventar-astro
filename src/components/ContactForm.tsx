@@ -40,7 +40,13 @@ function putFile(url: string, file: File, onProgress: (pct: number) => void): Pr
 type Spor = 'besked' | 'skitse' | 'udbud' | 'designer' | 'variant';
 declare global { interface Window { plausible?: (e: string, o?: { props?: Record<string, string> }) => void } }
 
-export default function ContactForm({ spor = 'besked' }: { spor?: Spor }) {
+// Pladsholder pr. spor (forsidens "Send os materialet"); besked = forudfyldt tekst (fx spec fra designeren).
+const PLACEHOLDER: Partial<Record<Spor, string>> = {
+  skitse: 'Fx 6 højskabe i blå krydsfiner, 210 cm høje, til et personalerum. Et foto af rummet eller en skitse med mål kan vedhæftes herunder.',
+  udbud: 'Fx fast inventar til en ny daginstitution, licitation 14/11. Vedhæft udbuddet herunder, eller skriv linket til Dalux eller iBinder.',
+};
+
+export default function ContactForm({ spor = 'besked', besked = '' }: { spor?: Spor; besked?: string }) {
   const [form, setForm] = useState({ name: '', company: '', phone: '', email: '', message: '', website: '' });
   // "Hvor fandt I os?" — valgfrit. Besøgerens eget svar vinder over referreren i leadets lead_kanal.
   const [kilde, setKilde] = useState('');
@@ -62,8 +68,9 @@ export default function ContactForm({ spor = 'besked' }: { spor?: Spor }) {
   // øverst i beskeden, så vi ved, hvad henvendelsen handler om. Sættes efter mount, så server og klient er ens.
   useEffect(() => {
     const emne = new URLSearchParams(location.search).get('emne');
-    if (emne) setForm((f) => (f.message ? f : { ...f, message: `Vedr. ${emne}\n\n` }));
-  }, []);
+    if (besked) setForm((f) => ({ ...f, message: `${besked}\n\n` }));
+    else if (emne) setForm((f) => (f.message ? f : { ...f, message: `Vedr. ${emne}\n\n` }));
+  }, [besked]);
 
   const update = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
@@ -218,7 +225,7 @@ export default function ContactForm({ spor = 'besked' }: { spor?: Spor }) {
         <textarea id="cf-message" name="message" required rows={5} value={form.message} onChange={update}
           disabled={sending} placeholder={privat
             ? 'Fx en reol på mål til stuen eller skabe til entréen — gerne med mål. Et foto af rummet kan vedhæftes herunder.'
-            : 'Beskriv kort jeres projekt og behov. Tegninger, beskrivelse eller tilbudsliste kan vedhæftes herunder.'} />
+            : PLACEHOLDER[spor] ?? 'Beskriv kort jeres projekt og behov. Tegninger, beskrivelse eller tilbudsliste kan vedhæftes herunder.'} />
       </div>
       <div className="field">
         <label htmlFor="cf-files">{privat ? 'Fotos, skitser eller tegninger (valgfrit)' : 'Tegninger, beskrivelse eller tilbudsliste (valgfrit)'}</label>

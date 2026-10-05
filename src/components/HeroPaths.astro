@@ -1,0 +1,333 @@
+---
+// Forsidens top (forside v3, 05-10-2026): tre veje ind — Design det selv · Vælg fra kataloget · Send os materialet.
+// Mockup: mockups/forside-v3.html · spec §5-6. Fanerne er almindelige links (#design, #katalog, #send); uden JS
+// vises alle tre paneler under hinanden. 3D'en (src/scripts/hero3d.ts) er midlertidig og uden pris/IFC, indtil
+// designerens indlejr.v1.js findes. Stillbilledet er LCP; 3D hentes efter 'load' på computer og ved tryk på telefon.
+import type { WebProduct, WebColor } from '../lib/supabase';
+import { cdn } from '../lib/img';
+import { isPhoto, morkhoj, productImage } from '../lib/catalog';
+import { KATALOG_TOP, DESIGNER_URL, DESIGNER_AF, billedeAf } from '../lib/forside';
+import SendPanel from './SendPanel';
+interface Props { products: WebProduct[]; colors: WebColor[] }
+const { products, colors } = Astro.props;
+const base = import.meta.env.BASE_URL;
+
+const KUL = ['roedbrun', 'blaa', 'skovgroen', 'natur', 'sort'];
+const kul = KUL.map((s) => colors.find((c) => c.slug === s)).filter((c): c is WebColor => !!c);
+
+const hoejskabRender = products.find((p) => p.slug === 'hoejskab-krydsfiner');
+const STILL = {
+  locker: { src: cdn(morkhoj('26_garderobe-lockere-roede-med-baenk-og-skohylder.jpg'), 1400), tag: 'Foto fra en leverance', alt: 'Røde lockers med perforerede låger og kodelås over en bænk med skohylder', pos: '50% 58%' },
+  hoejskab: { src: cdn(hoejskabRender ? billedeAf(hoejskabRender, 'blaa') : '', 1400), tag: 'Visualisering', alt: 'Højskabe i krydsfiner med blå låger, ét skab åbent med hylder', pos: '50% 50%' },
+};
+
+const katalog = KATALOG_TOP.map((k) => {
+  const p = products.find((x) => x.slug === k.slug);
+  if (!p) return null;
+  const img = k.kuloer ? billedeAf(p, k.kuloer) : productImage(p).img;
+  const d = DESIGNER_URL ? DESIGNER_AF[p.slug] : undefined;
+  return {
+    slug: p.slug, name: p.name, img, foto: isPhoto(img),
+    href: `${base}produkter/${p.slug}`,
+    cta: d ? { l: 'Åbn i designeren', href: `${DESIGNER_URL}?p=${d}` } : { l: 'Få pris på denne', href: `${base}kontakt?emne=${encodeURIComponent(p.name)}` },
+  };
+}).filter((x): x is NonNullable<typeof x> => !!x);
+---
+<header class="hp" id="top"><div class="wrap hp-grid">
+  <div class="hp-left">
+    <h1><span class="hp-kick">Fast inventar til byggeri<span class="vh">.</span></span> Se det, før vi <em>bygger</em> det.</h1>
+    <p class="hp-lead">Lockers, garderober, højskabe og bænke til skoler, institutioner, idrætshaller og boliger. Tegnet i 3D af ingeniører og bygget i vores egenproduktion.</p>
+    <nav class="hp-paths" aria-label="Tre veje ind">
+      <a class="hp-path" href="#design" data-p="design" aria-current="true">
+        <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg></span>
+        <span><b>Design det selv</b><small>Lockers og højskabe i 3D. Mål, kulør og antal.</small></span><span class="ar" aria-hidden="true">→</span>
+      </a>
+      <a class="hp-path" href="#katalog" data-p="katalog">
+        <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg></span>
+        <span><b>Vælg fra kataloget</b><small>Typer fra vores leverancer, bygget på mål til jeres rum.</small></span><span class="ar" aria-hidden="true">→</span>
+      </a>
+      <a class="hp-path" href="#send" data-p="send">
+        <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 18v-6M9 15l3-3 3 3"/></svg></span>
+        <span><b>Send os materialet</b><small>En skitse, udbuddet eller bare en mail. Svar inden for én arbejdsdag.</small></span><span class="ar" aria-hidden="true">→</span>
+      </a>
+    </nav>
+    <div class="hp-assure"><span>Monteret af os</span><span>Leveret efter byggepladsens tidsplan</span><span>Leverer til certificeret byggeri</span></div>
+  </div>
+
+  <div class="hp-right">
+    <!-- 1 · Design det selv -->
+    <section class="hp-panel on" id="design" aria-label="Design det selv">
+      <div class="hp-phead">
+        <div class="hp-seg" id="hpProd" role="group" aria-label="Produkt">
+          <button type="button" aria-pressed="true" data-k="locker">Lockers</button>
+          <button type="button" aria-pressed="false" data-k="hoejskab">Højskab</button>
+        </div>
+        <span class="hp-note">Til mål · tegning og pris inden for én arbejdsdag</span>
+      </div>
+      <div class="hp-stage" id="hpStage" data-produkt="locker">
+        <figure class="hp-still" id="hpStill">
+          <img id="hpStillImg" src={STILL.locker.src} alt={STILL.locker.alt} style={`object-position:${STILL.locker.pos}`} fetchpriority="high" decoding="async" />
+          <span class="hp-tag" id="hpStillTag">{STILL.locker.tag}</span>
+        </figure>
+        <div class="hp-canvas" id="hpCanvas" aria-hidden="true"></div>
+        <span class="hp-hint" id="hpHint" hidden><i></i>3D · træk for at dreje · tryk på en låge</span>
+        <button type="button" class="hp-toggle" id="hpToggle">Se i 3D</button>
+      </div>
+      <div class="hp-ctrl">
+        <div>
+          <span class="hp-lbl">Kulør</span>
+          <div class="hp-sw" id="hpSw">{kul.map((c, i) => <button type="button" data-hex={c.swatch_hex} data-slug={c.slug} aria-label={c.label} title={c.label} aria-pressed={i === 0 ? 'true' : 'false'} style={`background:${c.swatch_hex}`}></button>)}</div>
+          <div class="hp-colname" id="hpColname">{kul[0]?.label}</div>
+        </div>
+        <div>
+          <span class="hp-lbl" id="hpDimLbl">Antal rum</span>
+          <div class="hp-steps" data-for="locker">
+            <div class="hp-step"><button type="button" data-d="c,-1" aria-label="Færre søjler">−</button><output data-o="c">6</output><button type="button" data-d="c,1" aria-label="Flere søjler">+</button></div>
+            <span class="x" aria-hidden="true">×</span>
+            <div class="hp-step"><button type="button" data-d="r,-1" aria-label="Færre rum i højden">−</button><output data-o="r">2</output><button type="button" data-d="r,1" aria-label="Flere rum i højden">+</button></div>
+          </div>
+          <div class="hp-steps" data-for="hoejskab" hidden>
+            <div class="hp-step"><button type="button" data-d="c,-1" aria-label="Færre skabe">−</button><output data-o="c">4</output><button type="button" data-d="c,1" aria-label="Flere skabe">+</button></div>
+            <div class="hp-seg sm" id="hpH" role="group" aria-label="Højde i cm">
+              <button type="button" data-h="1.8" aria-pressed="false">180</button><button type="button" data-h="2.1" aria-pressed="true">210</button><button type="button" data-h="2.4" aria-pressed="false">240</button>
+            </div>
+          </div>
+        </div>
+        <div class="hp-read"><span class="hp-spec" id="hpSpec">12 lockers · 182 × 203 cm · med bænk og skohylder</span></div>
+      </div>
+      <div class="hp-acts">
+        <a class="btn btn-primary hp-tilbud" href="#send" id="hpTilbud">Få et tilbud på denne <span class="arr">→</span></a>
+        {DESIGNER_URL && <a class="hp-lnk" href={`${DESIGNER_URL}?p=locker`} id="hpDesigner">Åbn i designeren →</a>}
+      </div>
+    </section>
+
+    <!-- 2 · Vælg fra kataloget -->
+    <section class="hp-panel" id="katalog" aria-label="Vælg fra kataloget">
+      <div class="hp-phead"><b class="hp-ptitle">Kataloget</b><span class="hp-note">Alle typer bygges på mål</span></div>
+      <div class="hp-cgrid">
+        {katalog.map((k) => (
+          <article class="hp-cc">
+            <a class="im" href={k.href} aria-label={k.name}><img src={cdn(k.img, 640)} alt={k.name} loading="lazy" decoding="async" /><span class="hp-tag">{k.foto ? 'Foto' : 'Visualisering'}</span></a>
+            <div class="tx">
+              <h3><a href={k.href}>{k.name}</a></h3>
+              <a class="hp-cta" href={k.cta.href}>{k.cta.l} <span aria-hidden="true">→</span></a>
+            </div>
+          </article>
+        ))}
+      </div>
+      <div class="hp-cfoot"><span>Visualiseringer og fotos af typer, vi bygger.</span><a class="ulink" href="#inventar">Se alle typer og varianter →</a></div>
+    </section>
+
+    <!-- 3 · Send os materialet -->
+    <section class="hp-panel" id="send" aria-label="Send os materialet">
+      <SendPanel client:visible />
+    </section>
+  </div>
+</div></header>
+
+<style>
+  .hp{padding-block:clamp(28px,4.5vw,56px) clamp(32px,4vw,56px)}
+  .hp-grid{display:grid;grid-template-columns:minmax(0,4.6fr) minmax(0,7.4fr);gap:clamp(24px,3.6vw,52px);align-items:start}
+  .hp h1{font-size:clamp(42px,4.9vw,72px);line-height:.95;letter-spacing:-.035em;font-weight:800;text-wrap:balance}
+  .hp h1 em{font-style:italic;font-weight:600;color:var(--warm)}
+  .hp-kick{display:flex;align-items:center;gap:12px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--warm);margin-bottom:18px;line-height:1.3}
+  .hp-kick::before{content:"";width:28px;height:1px;background:var(--warm)}
+  .hp-lead{font-size:17px;color:var(--muted);max-width:42ch;margin:20px 0 0;line-height:1.6}
+  .hp-paths{display:grid;gap:10px;margin-top:28px}
+  .hp-path{display:grid;grid-template-columns:44px 1fr 20px;gap:14px;align-items:center;text-decoration:none;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px;transition:border-color .2s,background .2s,transform .2s}
+  .hp-path:hover{border-color:#cdbfa6;transform:translateX(2px)}
+  .hp-path[aria-current="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .hp-path .ic{width:44px;height:44px;border-radius:12px;background:var(--soft);display:grid;place-items:center;color:var(--warm)}
+  .hp-path[aria-current="true"] .ic{background:#2e2820;color:var(--warm-soft)}
+  .hp-path b{display:block;font-family:'Archivo',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.01em}
+  .hp-path small{display:block;font-size:13.5px;color:var(--muted);margin-top:2px;line-height:1.4}
+  .hp-path[aria-current="true"] small{color:#CFC4B2}
+  .hp-path .ar{font-size:18px;opacity:.5}
+  .hp-assure{display:flex;gap:8px 18px;flex-wrap:wrap;margin-top:18px;font-size:13.5px;color:var(--muted)}
+  .hp-assure span{display:flex;align-items:center;gap:7px}
+  .hp-assure span::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--warm-soft)}
+
+  .hp-right{display:grid;gap:16px}
+  .hp-panel{border:1px solid var(--line);background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 30px 60px -44px rgba(60,40,10,.4);scroll-margin-top:90px}
+  :global(.js) .hp-panel:not(.on){display:none}
+  .hp-phead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid var(--line)}
+  .hp-ptitle{font-family:'Archivo',sans-serif}
+  .hp-note{font-size:12.5px;color:var(--muted)}
+  .hp-seg{display:inline-flex;background:var(--soft);border-radius:999px;padding:3px}
+  .hp-seg button{border:0;background:none;border-radius:999px;padding:7px 14px;font:inherit;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer}
+  .hp-seg button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+  .hp-seg.sm button{padding:6px 10px;font-size:13px}
+
+  .hp-stage{position:relative;aspect-ratio:16/11;max-width:100%;background:linear-gradient(180deg,#EFE8DA 0%,#EAE2D2 72%,#DCD3C3 72.2%,#D6CDBC 100%)}
+  .hp-still{position:absolute;inset:0;margin:0;transition:opacity .6s}
+  .hp-still img{width:100%;height:100%;object-fit:cover}
+  .hp-canvas{position:absolute;inset:0;opacity:0;transition:opacity .6s;pointer-events:none}
+  .hp-canvas :global(canvas){width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab}
+  .hp-stage.is-3d .hp-canvas{opacity:1;pointer-events:auto}
+  .hp-stage.is-3d .hp-still{opacity:0}
+  .hp-tag{position:absolute;left:12px;bottom:12px;font-size:11px;font-weight:600;letter-spacing:.06em;background:rgba(250,248,243,.92);color:var(--ink);border-radius:999px;padding:4px 10px}
+  .hp-hint{position:absolute;left:14px;top:14px;display:flex;gap:8px;align-items:center;background:rgba(250,248,243,.9);border:1px solid var(--line);border-radius:999px;padding:6px 12px 6px 10px;font-size:12px;color:var(--muted)}
+  .hp-hint i{width:8px;height:8px;border-radius:50%;background:#3B8A4F;box-shadow:0 0 0 4px rgba(59,138,79,.18)}
+  .hp-toggle{position:absolute;right:14px;top:14px;background:rgba(23,20,14,.88);color:var(--paper);border:0;border-radius:999px;padding:8px 14px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+  .hp-ctrl{display:grid;grid-template-columns:auto auto 1fr;gap:14px 28px;align-items:end;padding:16px 18px;border-top:1px solid var(--line)}
+  .hp-lbl{display:block;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .hp-sw{display:flex;gap:8px}
+  .hp-sw button{width:28px;height:28px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0;transition:transform .15s}
+  .hp-sw button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--ink);transform:scale(1.06)}
+  .hp-colname{font-size:12.5px;color:var(--muted);margin-top:6px;min-height:1.2em}
+  .hp-steps{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .hp-steps[hidden]{display:none}
+  .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .hp-steps .x{color:var(--muted)}
+  .hp-step{display:flex;align-items:center;border:1px solid var(--line);border-radius:999px;background:var(--paper)}
+  .hp-step button{width:32px;height:32px;border:0;background:none;font-size:18px;cursor:pointer;border-radius:50%;color:var(--ink)}
+  .hp-step button:disabled{opacity:.3;cursor:default}
+  .hp-step output{min-width:22px;text-align:center;font-weight:600;font-variant-numeric:tabular-nums}
+  .hp-read{justify-self:end;text-align:right}
+  .hp-spec{font-size:13.5px;color:var(--ink);font-weight:500;font-variant-numeric:tabular-nums}
+  .hp-acts{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 18px 16px;border-top:1px solid var(--line);background:var(--paper)}
+  .hp-lnk{margin-left:auto;font-size:13.5px;font-weight:600;color:var(--ink);text-decoration-color:var(--warm-soft);text-underline-offset:3px}
+
+  .hp-cgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:16px}
+  .hp-cc{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--paper);display:flex;flex-direction:column}
+  .hp-cc .im{position:relative;display:block;aspect-ratio:4/3;overflow:hidden}
+  .hp-cc .im img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+  .hp-cc:hover .im img{transform:scale(1.04)}
+  .hp-cc .im .hp-tag{left:8px;top:8px;bottom:auto}
+  .hp-cc .tx{padding:10px 12px 12px;display:flex;flex-direction:column;gap:8px;flex:1}
+  .hp-cc h3{font-size:15px;font-weight:700;letter-spacing:-.01em;line-height:1.2;margin:0}
+  .hp-cc h3 a{color:inherit;text-decoration:none}
+  .hp-cta{margin-top:auto;font-size:13px;font-weight:600;color:var(--ink);text-decoration-color:var(--warm-soft);text-underline-offset:3px}
+  .hp-cfoot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:0 18px 18px}
+  .hp-cfoot span{font-size:13px;color:var(--muted)}
+
+  @media (max-width:980px){
+    .hp-grid{grid-template-columns:1fr}
+    .hp h1{font-size:clamp(40px,11vw,60px)}
+    .hp-stage{aspect-ratio:4/5}
+    .hp-toggle{top:auto;bottom:14px}
+    .hp-ctrl{grid-template-columns:1fr;gap:14px}
+    .hp-read{justify-self:stretch;text-align:left;border-top:1px solid var(--line);padding-top:12px}
+    .hp-cgrid{grid-template-columns:1fr 1fr}
+  }
+  @media (prefers-reduced-motion:reduce){.hp-path,.hp-still,.hp-canvas,.hp-cc .im img{transition:none}}
+</style>
+
+<script>
+  import type { Tilstand } from '../scripts/hero3d';
+  const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T | null;
+
+  // ---------- tre veje: fanerne ----------
+  const paths = Array.from(document.querySelectorAll<HTMLAnchorElement>('.hp-path'));
+  const panels = ['design', 'katalog', 'send'];
+  const narrow = () => matchMedia('(max-width: 980px)').matches;
+  function vis(p: string, scroll: boolean) {
+    if (!panels.includes(p)) return;
+    paths.forEach((a) => a.toggleAttribute('aria-current', a.dataset.p === p));
+    paths.forEach((a) => { if (a.dataset.p === p) a.setAttribute('aria-current', 'true'); });
+    panels.forEach((id) => $(id)?.classList.toggle('on', id === p));
+    if (scroll && narrow()) $(p)?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+    if (p === 'design') hero3d?.vaek();
+  }
+  paths.forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); vis(a.dataset.p!, true); history.replaceState(null, '', '#' + a.dataset.p); }));
+  // links andre steder på siden (fx "Få en pris" → #send) åbner den rigtige fane
+  document.querySelectorAll<HTMLAnchorElement>('a[href="#send"],a[href="#katalog"],a[href="#design"]').forEach((a) => {
+    if (a.classList.contains('hp-path')) return;
+    a.addEventListener('click', () => vis(a.getAttribute('href')!.slice(1), false));
+  });
+  if (panels.includes(location.hash.slice(1))) vis(location.hash.slice(1), false);
+
+  // ---------- design selv ----------
+  const stage = $('hpStage'), canvasEl = $('hpCanvas'), toggle = $<HTMLButtonElement>('hpToggle');
+  const stillImg = $<HTMLImageElement>('hpStillImg'), stillTag = $('hpStillTag'), spec = $('hpSpec'), hint = $('hpHint');
+  const sw = Array.from(document.querySelectorAll<HTMLButtonElement>('#hpSw button'));
+  const STILL: Record<string, { src: string; tag: string; alt: string; pos: string }> = JSON.parse(document.getElementById('hp-still')?.textContent || '{}');
+  type Prod = 'locker' | 'hoejskab';
+  const S: Record<Prod, Tilstand> = {
+    locker: { produkt: 'locker', c: 6, r: 2, h: 2.1, kuloer: sw[0]?.dataset.hex || '#84402F' },
+    hoejskab: { produkt: 'hoejskab', c: 4, r: 1, h: 2.1, kuloer: sw[1]?.dataset.hex || '#43687C' },
+  };
+  const LIM = { locker: { c: [1, 10], r: [1, 3] }, hoejskab: { c: [1, 8], r: [1, 1] } } as const;
+  let cur: Prod = 'locker';
+  let hero3d: { saet(t: Partial<Tilstand>): void; vaek(): void; ryd(): void } | null = null;
+  let loading = false;
+
+  function specTekst(): string {
+    const s = S[cur];
+    if (cur === 'locker') {
+      const n = s.c * s.r, w = Math.round((s.c * 0.30 + 0.018) * 100), h = Math.round((0.43 + s.r * 0.80) * 100);
+      return `${n} ${n === 1 ? 'locker' : 'lockers'} · ${w} × ${h} cm · med bænk og skohylder`;
+    }
+    return `${s.c} ${s.c === 1 ? 'højskab' : 'højskabe'} · ${s.c * 60} × ${Math.round(s.h * 100)} × 60 cm`;
+  }
+  function sync() {
+    const s = S[cur];
+    sw.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.hex === s.kuloer)));
+    const navn = sw.find((b) => b.dataset.hex === s.kuloer)?.getAttribute('aria-label') ?? '';
+    $('hpColname')!.textContent = navn;
+    document.querySelectorAll<HTMLElement>('.hp-steps').forEach((el) => { el.hidden = el.dataset.for !== cur; });
+    $('hpDimLbl')!.textContent = cur === 'locker' ? 'Antal rum' : 'Antal og højde';
+    document.querySelectorAll<HTMLElement>(`.hp-steps[data-for="${cur}"] output`).forEach((o) => { o.textContent = String(s[o.dataset.o as 'c' | 'r']); });
+    document.querySelectorAll<HTMLButtonElement>(`.hp-steps[data-for="${cur}"] [data-d]`).forEach((b) => {
+      const [k, d] = b.dataset.d!.split(','); const lim = (LIM[cur] as any)[k] as readonly [number, number];
+      b.disabled = (+d < 0 && s[k as 'c' | 'r'] <= lim[0]) || (+d > 0 && s[k as 'c' | 'r'] >= lim[1]);
+    });
+    document.querySelectorAll<HTMLButtonElement>('#hpH button').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.h! === S.hoejskab.h)));
+    spec!.textContent = specTekst();
+    const st = STILL[cur];
+    if (stillImg && st && stillImg.getAttribute('src') !== st.src) { stillImg.src = st.src; stillImg.alt = st.alt; stillImg.style.objectPosition = st.pos; stillTag!.textContent = st.tag; }
+    const dl = $<HTMLAnchorElement>('hpDesigner'); if (dl) dl.href = dl.href.replace(/p=\w+/, 'p=' + cur);
+  }
+
+  async function load3d() {
+    if (hero3d || loading || !canvasEl || !stage) return;
+    loading = true; toggle && (toggle.textContent = 'Henter 3D …');
+    try {
+      const timeout = new Promise<never>((_, rej) => setTimeout(() => rej(new Error('timeout')), 8000));
+      const mod = await Promise.race([import('../scripts/hero3d'), timeout]);
+      hero3d = mod.start(canvasEl, { ...S[cur] });
+      stage.classList.add('is-3d'); if (hint) hint.hidden = false;
+      toggle && (toggle.textContent = 'Se den i et rum');
+    } catch {
+      toggle && (toggle.hidden = true); // stillbilledet bliver stående
+    } finally { loading = false; }
+  }
+  toggle?.addEventListener('click', () => {
+    if (!hero3d) { load3d(); return; }
+    const on3d = stage!.classList.toggle('is-3d');
+    if (hint) hint.hidden = !on3d;
+    toggle.textContent = on3d ? 'Se den i et rum' : 'Tilbage til 3D';
+    if (on3d) hero3d.vaek();
+  });
+  document.querySelectorAll<HTMLButtonElement>('#hpProd button').forEach((b) => b.addEventListener('click', () => {
+    cur = b.dataset.k as Prod;
+    document.querySelectorAll('#hpProd button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    stage!.dataset.produkt = cur;
+    sync(); hero3d?.saet({ ...S[cur] });
+  }));
+  sw.forEach((b) => b.addEventListener('click', () => { S[cur].kuloer = b.dataset.hex!; sync(); hero3d?.saet({ kuloer: S[cur].kuloer }); }));
+  document.querySelectorAll<HTMLButtonElement>('.hp-steps [data-d]').forEach((b) => b.addEventListener('click', () => {
+    const [k, d] = b.dataset.d!.split(','); const s = S[cur]; const lim = (LIM[cur] as any)[k] as readonly [number, number];
+    (s as any)[k] = Math.max(lim[0], Math.min(lim[1], (s as any)[k] + +d)); sync(); hero3d?.saet({ ...s });
+  }));
+  document.querySelectorAll<HTMLButtonElement>('#hpH button').forEach((b) => b.addEventListener('click', () => { S.hoejskab.h = +b.dataset.h!; sync(); hero3d?.saet({ h: S.hoejskab.h }); }));
+  $('hpTilbud')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    const navn = sw.find((x) => x.dataset.hex === S[cur].kuloer)?.getAttribute('aria-label') ?? '';
+    const detail = `Vedr. ${cur === 'locker' ? 'lockers' : 'højskabe'} fra forsiden: ${specTekst()} · kulør ${navn.toLowerCase()}.`;
+    (window as unknown as { niTilbud?: string }).niTilbud = detail; // læses af SendPanel, hvis det hydreres efter dette klik
+    window.dispatchEvent(new CustomEvent('ni:tilbud', { detail }));
+    vis('send', true);
+  });
+  sync();
+
+  // 3D: computer efter 'load'; telefon og saveData kun ved tryk på "Se i 3D"
+  const saveData = (navigator as any).connection?.saveData === true;
+  const hasGL = (() => { try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch { return false; } })();
+  if (!hasGL) toggle && (toggle.hidden = true);
+  else if (!narrow() && !saveData) {
+    const go = () => ('requestIdleCallback' in window ? (window as any).requestIdleCallback(load3d, { timeout: 1500 }) : setTimeout(load3d, 300));
+    if (document.readyState === 'complete') go(); else window.addEventListener('load', go, { once: true });
+  }
+</script>
+<script is:inline type="application/json" id="hp-still" set:html={JSON.stringify(STILL)} />

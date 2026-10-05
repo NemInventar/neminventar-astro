@@ -1,248 +1,83 @@
 ---
-// Forside v2 (04-10-2026). Mockup og beslutninger: mockups/forside-v2.html + mockups/forside-v2-plan.md.
-// Indholdet kommer fra Supabase-views (v_web_products, v_web_cases, v_web_landing_pages). I koden står kun
-// rækkefølge, hvilke fotos der roterer i toppen, og fem typer der endnu ikke er arketyper (de peger på landingssider).
-// Kortene, tal-striben, proces-trinnene og kontakt-afsnittet er fælles komponenter (bruges også på undersiderne).
+// Forside v3 (05-10-2026): "Se det, før vi bygger det." Godkendt af Joachim ("forsiden er vild, det er præcis sådan
+// det skal være"). Mockup: mockups/forside-v3.html · spec: docs/superpowers/specs/2026-10-05-ny-forside-design.md.
+// Syv afsnit med almindelig scroll: toppen med tre veje → bevisbjælke → inspiration → det laver vi → sådan arbejder vi
+// → projekter → kulører → kontakt. Indhold fra Supabase-views; kun udvalg og rækkefølge står i src/lib/forside.ts.
+// En sag nævnes sparsomt (opmærksomhedspunkt, Joachim 05-10): fotos får en billedtekst om, hvad de viser.
 import Base from '../layouts/Base.astro';
-import DesignerTeaser from '../components/DesignerTeaser.astro';
-import ProductCard from '../components/ProductCard.astro';
-import ProjectCard from '../components/ProjectCard.astro';
+import HeroPaths from '../components/HeroPaths.astro';
+import ProofRow from '../components/ProofRow.astro';
+import InspirationMosaic from '../components/InspirationMosaic.astro';
+import KulorBand from '../components/KulorBand.astro';
 import ProcessSteps from '../components/ProcessSteps.astro';
-import ContactCta from '../components/ContactCta.astro';
-import Ticker from '../components/Ticker.astro';
-import YouTubeFacade from '../components/YouTubeFacade.astro';
+import ProjectCard from '../components/ProjectCard.astro';
 import { getWebProducts, getWebCases, getWebLandingPages, getWebColors } from '../lib/supabase';
 import { cdn } from '../lib/img';
-import { FAM, FAM_ORDER, famOf, productImage, fotoTag, isPhoto, morkhoj, photoProjectName, tal, PHOTO_PROJECT_SLUG } from '../lib/catalog';
+import { morkhoj } from '../lib/catalog';
+import { KATALOG_TOP, PROJEKTER } from '../lib/forside';
+import { TEAM } from '../lib/team';
+import { PHONE, PHONE_TEL } from '../lib/contact';
 
 const products = await getWebProducts();
 const cases = await getWebCases();
 const landing = await getWebLandingPages();
-// Kulørstriben i overflade-afsnittet: vores standardkulører (alle Rubio Monocoat). To af dem sidder på Mørkhøj.
 const colors = await getWebColors();
-const MORKHOJ_COLORS = ['roedbrun', 'blaa'];
-// Kulørbåndets rækkefølge: lys → mørk med Skovgrøn i midten (planen). Ukendte slugs lægges bagerst.
-const BAND_ORDER = ['natur', 'roeget-eg', 'roedbrun', 'skovgroen', 'blaa', 'charcoal', 'sort'];
-// Træprøver i public/billeder/kuloerer/<slug>.jpg: fem er Rubios egne prøver på ask (Pure, Cocoa, Fern, Charcoal, Black —
-// kræver Rubios ok før go-live), rødbrun og blå er udsnit af vores låger på Mørkhøj (kulørerne er blandet til os).
-const SWATCH_IMG = new Set(['natur', 'roeget-eg', 'roedbrun', 'skovgroen', 'blaa', 'charcoal', 'sort']);
-const bandColors = [...colors].sort((a, b) => ((BAND_ORDER.indexOf(a.slug) + 1) || 99) - ((BAND_ORDER.indexOf(b.slug) + 1) || 99));
-const emner = landing.filter((l) => l.kind === 'emne');
-const segmenter = landing.filter((l) => l.kind === 'segment');
-const guides = landing.filter((l) => l.kind === 'guide');
-const base = import.meta.env.BASE_URL; // slutter med '/'
+const base = import.meta.env.BASE_URL;
 const site = Astro.site!;
+const segmenter = landing.filter((l) => l.kind === 'segment');
+const emner = landing.filter((l) => l.kind === 'emne');
+const guides = landing.filter((l) => l.kind === 'guide');
+const hasLanding = (slug: string) => landing.some((l) => l.slug === slug);
+const projekter = PROJEKTER.map((s) => cases.find((c) => c.slug === s)).filter((c): c is NonNullable<typeof c> => !!c);
+const typer = [...products].sort((a, b) => a.name.localeCompare(b.name, 'da'));
 
 const title = 'Fast inventar på mål til byggeri | Nem Inventar';
-const description =
-  'Fast inventar på mål: garderober, lockers, højskabe, siddenicher og tekøkkener til skoler, institutioner og idrætshaller. Tegnet i 3D, bygget i egen produktion.';
-
-// ---------- Fremhævet projekt (Mørkhøj) og de andre ----------
-const featured = cases.find((c) => c.slug === PHOTO_PROJECT_SLUG) ?? cases[0];
-const others = cases.filter((c) => c.slug !== featured?.slug);
-const gallery = featured?.gallery ?? [];
-const altFor = (file: string, fallback: string) => gallery.find((g) => g.src.endsWith('/' + file))?.alt ?? fallback;
-const numbers = tal(featured);
-// overskriftens tre tal: korte mærkater og forskellige tal
-const headTal: { b: string; t: string }[] = [];
-for (const x of numbers) { const t = x.t.replace(' og siddemøbler', ''); if (t.length <= 11 && !headTal.some((h) => h.b === x.b) && headTal.length < 3) headTal.push({ b: x.b, t }); }
-const ONE: Record<string, string> = { 'morkhoj-skole': 'Én skole.' };
-const one = ONE[featured?.slug ?? ''] ?? 'Ét byggeri.';
-const projektNavn = photoProjectName(cases);
-
-// Toppen: to felter, der skifter ét ad gangen. Bredt felt = liggende fotos, smalt = højformater.
-// Venstre felt viser de BLÅ rum, højre de RØDE (Milot 04-10-2026): så står der aldrig to røde skabe ved siden
-// af hinanden, og hvert skift veksler mellem blå og rød. Fotos med røde lockers i baggrunden hører derfor ikke til venstre.
-// Flyttes til data (et hero-flag i case-galleriet), så fotos og tekster kan rettes i /tekster — se planen.
-type HeroItem = { file: string; pos: string; room: string; what: string };
-const HERO_L: HeroItem[] = [
-  { file: '22_klasserum-hoejskabe-blaa-og-vindueskarm-med-hynde.jpg', pos: '55% 50%', room: 'Klasserummet', what: 'højskabe og siddeplads i vindueskarmen' },
-  { file: '25_baenke-blaa-med-ryghynder-og-mellemvaeg.jpg', pos: '50% 55%', room: 'Fællesarealet', what: 'bænke med ryghynder' },
-  { file: '31_tekoekken-blaa-fronter-og-lamper.jpg', pos: '50% 55%', room: 'Tekøkkenet', what: 'blå fronter, stålbordplade' },
-  { file: '34_niche-med-ryghynde-og-stikkontakt.jpg', pos: '60% 50%', room: 'Nichen', what: 'ryghynde og indbygget stik' },
-];
-const HERO_R: HeroItem[] = [
-  { file: '26_garderobe-lockere-roede-med-baenk-og-skohylder.jpg', pos: '50% 58%', room: 'Garderoben', what: '16 lockers over bænk og skohylder' },
-  { file: '23_polstret-niche-roed-afrundet-hjoerne.jpg', pos: '65% 50%', room: 'Nichen', what: 'polstret, afrundet hjørne' },
-  { file: '20_lockere-roede-perforerede-laager-kodelaase-og-skohylder.jpg', pos: '50% 50%', room: 'Lågerne', what: 'perforeret, med kodelås' },
-  { file: '30_lockere-roede-i-hjoerne-med-skohylder.jpg', pos: '50% 50%', room: 'Garderoben', what: 'lockers i hjørnet' },
-];
-const heroData = (pool: HeroItem[]) => pool.map((h) => ({ src: cdn(morkhoj(h.file)), pos: h.pos, alt: altFor(h.file, `${h.room}: ${h.what}`), room: h.room, what: h.what }));
-const heroL = heroData(HERO_L), heroR = heroData(HERO_R);
-
-// Mosaik i den fremhævede sag: fotos, der ikke er i toppen
-const MOSAIK = [
-  { file: '25_baenke-blaa-med-ryghynder-og-mellemvaeg.jpg', pos: '50% 55%', cls: 'w', k: 'Fællesarealet', v: 'bænke med ryghynder' },
-  { file: '23_polstret-niche-roed-afrundet-hjoerne.jpg', pos: '72% 50%', cls: 't', k: 'Nichen', v: 'polstret, afrundet hjørne' },
-  { file: '28_niche-roed-polstret-med-bord.jpg', pos: '30% 40%', cls: 's', k: 'Gruppenichen', v: 'med bord og stik' },
-  { file: '34_niche-med-ryghynde-og-stikkontakt.jpg', pos: '60% 50%', cls: 's', k: 'Detaljen', v: 'stikkontakt bygget ind' },
-  { file: '37_baenk-med-hynde-i-sollys.jpg', pos: '50% 50%', cls: 's', k: 'Bænken', v: 'krydsfiner med hynde' },
-];
-
-// ---------- Inventar: alle arketyper + fem typer, der endnu ikke er arketyper ----------
-type Card = { key: string; name: string; href: string; img: string; pos: string; foto: boolean; fam: string; desc: string };
-const cards: Card[] = products.map((p) => {
-  const im = productImage(p);
-  return { key: p.slug, name: p.name, href: `${base}produkter/${p.slug}`, img: im.img, pos: im.pos, foto: im.foto, fam: famOf(p), desc: p.intro ?? p.short_description ?? '' };
-});
-// Typer uden arketype endnu → deres landingsside. Oprettes som arketyper senere (se planen).
-const vinge = cases.find((c) => c.slug === 'daginstitution-vinge');
-const hasLanding = (slug: string) => landing.some((l) => l.slug === slug);
-const EXTRA: Card[] = [
-  { key: 'x-lockers', name: 'Lockers med kodelås og skohylder', href: `${base}lockers`, img: morkhoj('20_lockere-roede-perforerede-laager-kodelaase-og-skohylder.jpg'), pos: '50% 45%', foto: true, fam: 'garderober', desc: 'Aflåselige rum i krydsfiner med kodelås, skohylder under og bænk foran. Til skoler og haller med mange brugere.' },
-  { key: 'x-boerne', name: 'Børnegarderober med skorist', href: `${base}garderober`, img: vinge?.hero_image_url ?? '', pos: '50% 60%', foto: isPhoto(vinge?.hero_image_url), fam: 'garderober', desc: 'Ét modul pr. barn med knager foroven og dybere bund med skorist. Olieret i farver, så rækkerne deles op.' },
-  { key: 'x-niche', name: 'Polstret siddeniche', href: `${base}siddenicher-og-baenke`, img: morkhoj('23_polstret-niche-roed-afrundet-hjoerne.jpg'), pos: '70% 40%', foto: true, fam: 'nicher', desc: 'Polstret niche bygget ind i væggen, med afrundede hjørner og plads til bord og stik. Til fællesarealer og gange.' },
-  { key: 'x-baenke', name: 'Bænke med ryghynder', href: `${base}siddenicher-og-baenke`, img: morkhoj('25_baenke-blaa-med-ryghynder-og-mellemvaeg.jpg'), pos: '50% 55%', foto: true, fam: 'nicher', desc: 'Bænke langs væggen i krydsfiner med ryghynder og siddehynder, bygget til fællesarealer med mange brugere.' },
-  { key: 'x-tavler', name: 'Glastavler og opslagstavler', href: `${base}akustik-og-glastavler`, img: morkhoj('03_klasserum-tavlevaeg-og-opslagstavler.jpg'), pos: '50% 22%', foto: true, fam: 'vaegge', desc: 'Glastavler og opslagstavler planlagt som én samlet tavlevæg i klasserummet, med akustik, hvor der er brug for det.' },
-].filter((c) => c.img && hasLanding(c.href.slice(base.length)));
-// Rækkefølge: de første ni er et tværsnit af familierne (fotos først); resten grupperet pr. familie
-const FIRST = ['garderobeskab-perforerede-lager', 'x-lockers', 'hoejskab-krydsfiner', 'x-niche', 'x-baenke', 'koekkenvaeg-bejdset-krydsfiner', 'x-boerne', 'omklaedningsmoebel-gitterskaerm', 'hoejskab-kompaktlaminat'];
-const all = [...cards, ...EXTRA];
-const ordered: Card[] = [
-  ...FIRST.map((k) => all.find((c) => c.key === k)).filter((c): c is Card => !!c),
-  ...all.filter((c) => !FIRST.includes(c.key)).sort((a, b) => FAM_ORDER.indexOf(a.fam) - FAM_ORDER.indexOf(b.fam)),
-];
-const famCount = (f: string) => all.filter((c) => c.fam === f).length;
-
+const description = 'Fast inventar på mål til skoler, institutioner, idrætshaller og boliger. Se det i 3D, send en skitse eller et udbud, og få svar inden for én arbejdsdag.';
 const ogImage = new URL(cdn(morkhoj('33_lockere-roede-ved-doer-til-klasserum.jpg')), site).href;
+
+// Katalogpanelets typer som ItemList (søgemaskiner og AI-assistenter kan læse, hvad vi bygger)
+const itemList = {
+  '@context': 'https://schema.org', '@type': 'ItemList', name: 'Fast inventar fra Nem Inventar',
+  itemListElement: KATALOG_TOP.map((k, i) => products.find((p) => p.slug === k.slug)).filter((p) => !!p)
+    .map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p!.name, url: new URL(`${base}produkter/${p!.slug}`, site).href })),
+};
 ---
-<Base title={title} description={description} image={ogImage} alternates={[
+<Base title={title} description={description} image={ogImage} jsonLd={[itemList]} alternates={[
   { hreflang: 'da', href: new URL(base, site).href },
   { hreflang: 'en', href: new URL(base + 'en/', site).href },
   { hreflang: 'x-default', href: new URL(base, site).href },
 ]}>
 
-  <!-- ============ TOPPEN ============ -->
-  <header class="hero2" id="top"><div class="wrap hero2-grid">
-    <div class="hero2-head">
-      <span class="label">Fast inventar til byggeri</span>
-      <h1>Møbler til rum med mange <em>mennesker.</em></h1>
-    </div>
-    <div class="hero2-cta">
-      <a href={`${base}kontakt`} class="btn btn-primary">Få en pris <span class="arr">→</span></a>
-      <a href="#katalog" class="btn btn-ghost">Se, hvad vi bygger <span class="arr">↓</span></a>
-    </div>
-    <div class="duo" id="duo" aria-label={`Fotos fra leverancen på ${projektNavn}`}>
-      <div class="slot a" id="slotA">
-        <img class="is-on" src={heroL[0].src} alt={heroL[0].alt} style={`--pos:${heroL[0].pos}`} fetchpriority="high" decoding="async" />
-        <span class="img-tag"><b>{heroL[0].room}</b>{heroL[0].what} · {projektNavn}</span>
-      </div>
-      <div class="slot b" id="slotB">
-        <img class="is-on" src={heroR[0].src} alt={heroR[0].alt} style={`--pos:${heroR[0].pos}`} fetchpriority="high" decoding="async" />
-        <span class="img-tag"><b>{heroR[0].room}</b>{heroR[0].what} · {projektNavn}</span>
-      </div>
-      <button type="button" class="pausebtn" id="heroPause" aria-label="Sæt billedskiftet på pause">❚❚</button>
-    </div>
-    <p class="hero2-sub">Garderober, lockers, bænke, højskabe og tekøkkener til skoler, daginstitutioner og idrætshaller. Tegnet i 3D af ingeniører, bygget i vores egenproduktion og leveret efter byggepladsens tidsplan.</p>
-    <div class="facts2" aria-label="Sådan arbejder vi">
-      <span class="fact2">Bygget til mål</span>
-      <span class="fact2">3D-render før produktion</span>
-      <span class="fact2">Egen produktion</span>
-      <span class="fact2">Leverer til certificeret byggeri</span>
-      <span class="fact2">Delleverancer efter tidsplan</span>
-    </div>
-  </div></header>
-  <script is:inline type="application/json" id="hero-data" set:html={JSON.stringify({ L: heroL, R: heroR, name: projektNavn })} />
+  <!-- 1 · TOPPEN: tre veje -->
+  <HeroPaths products={products} colors={colors} />
 
-  <!-- ============ TAL-STRIBE ============ -->
-  <Ticker cases={cases} extra={[
-    ...numbers.filter((x) => ['glastavler', 'akustik'].includes(x.t)).map((x) => ({ b: x.b, t: x.t, c: projektNavn })),
-    { b: '8–12', t: 'uger', c: 'typisk fra ordre til levering' },
-  ]} />
+  <!-- 2 · BEVIS: fire tal fra fire sager -->
+  <ProofRow cases={cases} />
 
-  <!-- ============ FREMHÆVET PROJEKT ============ -->
-  {featured && (
-    <section class="sec sec-dark" id="projekter"><div class="wrap">
-      <div class="sec-head rv">
-        <div>
-          <span class="label">Projekter · fremhævet: {featured.name}</span>
-          <h2>{headTal.map((x) => `${x.b} ${x.t}`).join(', ')}. <em>{one}</em></h2>
-          <p class="lede">{featured.web_summary}</p>
-        </div>
-        <a href={`${base}projekter/${featured.slug}`} class="ulink">Se hele projektet →</a>
-      </div>
-      <div class="mos2 rv">
-        {MOSAIK.map((m) => (
-          <figure class={m.cls}>
-            <img src={cdn(morkhoj(m.file), 1200)} alt={altFor(m.file, `${m.k}: ${m.v}`)} style={`--pos:${m.pos}`} loading="lazy" decoding="async" />
-            <figcaption class="img-tag"><b>{m.k}</b>{m.v}</figcaption>
-          </figure>
-        ))}
-      </div>
-      {numbers.length > 0 && (
-        <div class="talgitter rv" style={`--n:${numbers.length}`}>
-          {numbers.map((x) => <div><b>{x.b}</b><span>{x.t}</span></div>)}
-        </div>
-      )}
-      <p class="credit rv">Fotos fra leverancen. Vi har bygget inventaret — stole, borde, fliser og lamper er andres.</p>
-      <div class="feat-actions rv">
-        <a href={`${base}projekter/${featured.slug}`} class="btn btn-light">Se projektet <span class="arr">→</span></a>
-      </div>
-    </div></section>
-  )}
-
-  <!-- ============ FLERE PROJEKTER ============ -->
-  <section class="sec" id="flere-projekter"><div class="wrap">
+  <!-- 3 · INSPIRATION -->
+  <section class="sec" id="inventar"><div class="wrap">
     <div class="sec-head rv">
       <div>
-        <span class="label">Flere projekter</span>
-        <h2>Fra udbud til <em>montage.</em></h2>
-        <p class="lede">Vi tager det faste inventar som én samlet entreprise: tilbud på udbudsmaterialet, tegninger til godkendelse, egen produktion, levering i etaper efter byggepladsens tidsplan og montage.</p>
+        <span class="label">Inspiration</span>
+        <h2>Set i 3D, før det <em>bygges.</em></h2>
+        <p class="lede">Visualiseringer af typer, vi bygger. Hver udgave kan prissættes, som den står, eller bygges om til jeres mål og kulør.</p>
       </div>
+      <a href="#katalog" class="ulink">Til kataloget i toppen ↑</a>
     </div>
-    <div class="pgrid three rv">
-      {others.slice(0, 3).map((c) => <ProjectCard c={c} compact />)}
-    </div>
-    <div class="showmore-row rv"><a href={`${base}projekter`} class="btn btn-ghost">Alle projekter, arkitekter og entreprenører <span class="arr">→</span></a></div>
-  </div></section>
+    <div class="rv"><InspirationMosaic products={products} /></div>
 
-  <!-- ============ INVENTAR (kataloget) ============ -->
-  <section class="sec inv" id="katalog"><div class="wrap">
-    <div class="sec-head rv">
-      <div>
-        <span class="label">Inventar</span>
-        <h2>Konstruktionen er løst. Målene er <em>jeres.</em></h2>
-        <p class="lede">Typerne i kataloget er gennemarbejdet fra samling til overflade. I vælger mål, materiale og farve og ser resultatet i 3D med pris, før I bestiller. Mangler I en type, tegner vi den.</p>
-      </div>
-      <a href={`${base}kontakt`} class="ulink">Mangler I noget særligt? →</a>
-    </div>
-    <div class="filters rv" id="filters" role="group" aria-label="Filtrér typer">
-      <button type="button" class="fchip on" data-f="alle">Alle<small>{all.length}</small></button>
-      {FAM_ORDER.map((f) => <button type="button" class="fchip" data-f={f}>{FAM[f]}<small>{famCount(f)}</small></button>)}
-    </div>
-    <div class="types rv" id="types">
-      {ordered.map((c) => <ProductCard name={c.name} href={c.href} img={c.img} pos={c.pos} tag={fotoTag(c.foto, projektNavn)} fam={FAM[c.fam]} desc={c.desc} dataFam={c.fam} />)}
-    </div>
-    <div class="showmore-row" id="showmoreRow"><button type="button" class="btn btn-ghost" id="showmore">Vis alle {all.length} typer <span class="arr">↓</span></button></div>
-
-    <!-- Det laver vi: landingssider pr. emne, målgruppe og guide (ankeret #ydelser bruges af alle landingssider) -->
+    <!-- 3b · DET LAVER VI: link-hubben til typerne og landingssiderne (ankeret #ydelser bruges af alle landingssider) -->
     <div class="yd-links rv" id="ydelser">
-      {segmenter.length > 0 && (
-        <div class="yd-row"><span class="lbl">Til:</span>{segmenter.map((l) => <a class="pill" href={`${base}${l.slug}`}>{l.nav_label}</a>)}</div>
-      )}
-      {emner.length > 0 && (
-        <div class="yd-row"><span class="lbl">Materialer og inventar:</span>{emner.map((l) => <a class="pill" href={`${base}${l.slug}`}>{l.nav_label}</a>)}</div>
-      )}
-      {guides.length > 0 && (
-        <div class="yd-row"><span class="lbl">Guides:</span>{guides.map((l) => <a class="pill" href={`${base}${l.slug}`}>{l.nav_label}</a>)}</div>
-      )}
+      <h2 class="label yd-h">Det laver vi</h2>
+      <div class="yd-row"><span class="lbl">Typer:</span>{typer.map((p) => <a class="pill" href={`${base}produkter/${p.slug}`}>{p.name}</a>)}</div>
+      {segmenter.length > 0 && <div class="yd-row"><span class="lbl">Til:</span>{segmenter.map((l) => <a class="pill" href={`${base}${l.slug}`}>{l.nav_label}</a>)}</div>}
+      {emner.length > 0 && <div class="yd-row"><span class="lbl">Materialer og inventar:</span>{emner.map((l) => <a class="pill" href={`${base}${l.slug}`}>{l.nav_label}</a>)}</div>}
+      {guides.length > 0 && <div class="yd-row"><span class="lbl">Guides:</span>{guides.map((l) => <a class="pill" href={`${base}${l.slug}`}>{l.nav_label}</a>)}</div>}
     </div>
   </div></section>
 
-  <!-- ============ DESIGNEREN (kommer snart) ============ -->
-  <section class="sec designer" id="designer"><div class="wrap">
-    <div class="sec-head rv" style="margin-bottom:36px">
-      <div>
-        <span class="label">Designeren · kommer snart</span>
-        <h2>Se prisen, mens skabet tager <em>form.</em></h2>
-        <p class="lede">Sæt bredde, højde og dybde med skyderne, og se skabet i 3D. Vælg materiale, farve, indretning, låge og greb — prisen går op og ned med hvert valg. Prøv, hvordan det kommer til at virke:</p>
-      </div>
-    </div>
-    <DesignerTeaser />
-  </div></section>
-
-  <!-- ============ FRA 3D-MODEL TIL FÆRDIGT RUM ============ -->
-  <section class="sec" id="saadan"><div class="wrap">
+  <!-- 4 · SÅDAN ARBEJDER VI -->
+  <section class="sec" id="saadan" style="padding-top:0"><div class="wrap">
     <div class="sec-head rv">
       <div>
         <span class="label">Sådan arbejder vi</span>
@@ -252,321 +87,91 @@ const ogImage = new URL(cdn(morkhoj('33_lockere-roede-ved-doer-til-klasserum.jpg
       {hasLanding('vaerkstedstegninger-og-3d-model') && <a href={`${base}vaerkstedstegninger-og-3d-model`} class="ulink">Sådan ser tegningerne ud →</a>}
     </div>
     <ProcessSteps />
+    <div class="docs rv">
+      <b>Dokumentation og filer:</b>
+      <span class="chip">Svanemærket byggeri</span><span class="chip">DGNB</span><span class="chip">EPD</span><span class="chip">IFC-modeller</span>
+      <a class="chip" href="https://www.dalux.com/da/" target="_blank" rel="noopener">Dalux ↗</a>
+      <a class="chip" href="https://ibinder.com/da/" target="_blank" rel="noopener">iBinder ↗</a>
+    </div>
   </div></section>
 
-  <!-- ============ HVAD VI STÅR FOR ============ -->
-  <section class="sec values" id="staar-for" style="padding-top:0"><div class="wrap">
+  <!-- 5 · PROJEKTER (her nævnes sagerne ved navn) -->
+  <section class="sec projekter-udvalg" id="projekter-udvalg"><div class="wrap">
     <div class="sec-head rv">
       <div>
-        <span class="label">Det, vi står for</span>
-        <h2>Fire ting, vi lægger <em>vægt på.</em></h2>
+        <span class="label">Projekter</span>
+        <h2>Skoler, boliger og <em>idræt.</em></h2>
+        <p class="lede">Et udvalg af de sager, vi har leveret eller har i produktion.</p>
       </div>
+      <a href={`${base}projekter`} class="ulink">Alle projekter, arkitekter og entreprenører →</a>
     </div>
-    <div class="vgrid rv">
-      <div class="v"><span class="n">I.</span><h3>Håndværket</h3><p>Samlinger, kanter og overflader vælges efter, hvor hårdt rummet bliver brugt. Overfladen kan repareres på stedet, så inventaret kan holdes pænt i mange år.</p></div>
-      <div class="v"><span class="n">II.</span><h3>Det digitale</h3><p>Hvert stykke inventar tegnes og renderes i 3D, før produktionen starter. I godkender det, I faktisk får, før vi skærer den første plade.</p></div>
-      <div class="v"><span class="n">III.</span><h3>Dokumentationen</h3><p>Produktdatablade, indeklimadokumentation og EPD'er, hvor producenten har dem, på de materialer vi bruger. Samlet og afleveret sammen med inventaret.</p></div>
-      <div class="v"><span class="n">IV.</span><h3>Samarbejdet</h3><p>Vi taler arkitekters og entreprenørers sprog: tegningslæsning, rumskemaer, tilsyn og delleverancer, der følger byggepladsens tidsplan.</p></div>
-    </div>
+    <div class="pgrid three rv">{projekter.map((c) => <ProjectCard c={c} compact />)}</div>
   </div></section>
 
-  <!-- ============ OVERFLADEN · Nem Inventar × Rubio Monocoat (plan: scratchpad/overfladen-plan.md, Opus 04-10-2026) ============ -->
-  <section class="sec finish" id="overflade"><div class="wrap">
-    <div class="ov-top rv">
-      <div class="ov-head">
-        <span class="label">Overfladen</span>
-        <h2>Olieret med <em>Rubio&nbsp;Monocoat.</em></h2>
-        <p class="ov-lede">Vi har valgt det, fordi det holder inventaret pænt længst: olien binder sig i træet, og slid kan repareres pletvis.</p>
-      </div>
-      <aside class="ov-partner" aria-label="Samarbejde mellem Nem Inventar og Rubio Monocoat">
-        <p class="ov-lockup"><span>Nem Inventar</span><span><i aria-hidden="true">×</i> Rubio Monocoat</span></p>
-        <div class="ov-partner-foot">
-          <p>Rubio Monocoat har blandet de to kulører til {projektNavn} specielt til os.</p>
-          <a href="https://www.rubiomonocoat.dk/" target="_blank" rel="noopener">Rubio Monocoat Denmark ↗</a>
-        </div>
-      </aside>
-    </div>
-
-    <div class="ov-photos rv">
-      <figure class="ov-fig">
-        <a class="rpic" href={`${base}projekter/${PHOTO_PROJECT_SLUG}`} aria-label={`Se projektet ${projektNavn}`}>
-          <img src={cdn(morkhoj('35_detalje-haengsel-og-perforering-roed-laage.jpg'))} alt="Rødbrun locker-låge i krydsfiner med perforering og hængsel" loading="lazy" decoding="async" style="--pos:40% 50%" />
-        </a>
-        <figcaption>Rødbrun på lockerlåger. {projektNavn}.</figcaption>
-      </figure>
-      <figure class="ov-fig">
-        <a class="rpic" href={`${base}projekter/${PHOTO_PROJECT_SLUG}`} aria-label={`Se projektet ${projektNavn}`}>
-          <img src={cdn(morkhoj('27_hoejskab-blaa-krydsfiner-og-siddepladser.jpg'))} alt="Blåt højskab i krydsfiner — låger med synlig åretegning og bøjlegreb" loading="lazy" decoding="async" style="--pos:50% 30%;--zoom:1.55;--origin:69% 38%" />
-        </a>
-        <figcaption>Blå på højskab — åretegningen står igennem kuløren. {projektNavn}.</figcaption>
-      </figure>
-    </div>
-
-    <div class="ov-steps rv">
-      <div class="sec-head">
-        <div>
-          <h3 class="ov-h3">Behandlet i <em>to</em> trin.</h3>
-          <p class="lede">Begge trin lægges på i vores egenproduktion, før inventaret leveres.</p>
-        </div>
-      </div>
-      <div class="ov-cards">
-        <article class="ov-card">
-          <YouTubeFacade id="IJjFtMQniR0" title="Sådan lægges Precolor Easy på" kicker="Film fra Rubio Monocoat · YouTube" color="#43687C" poster={cdn(morkhoj('29_baenk-blaa-afrundet-hjoerne-med-hynde.jpg'))} pos="50% 60%" note="" />
-          <div class="ov-card-body">
-            <span class="ov-n">01</span>
-            <div>
-              <h4>Precolor Easy</h4>
-              <p>Vandbaseret forbehandling, der giver kuløren uden at dække åretegningen. Tørrer natten over.</p>
-              <a href="https://rubiomonocoat.dk/products/precolour" target="_blank" rel="noopener">Precolor Easy hos Rubio Monocoat ↗</a>
-            </div>
-          </div>
-        </article>
-        <article class="ov-card">
-          <!-- Rubios eget klip fra produktsiden (rubiomonocoat.dk/products/oil-plus-2c): olien hældes på en egeplade og poleres ind.
-               Ligger på vores server som lydløst loop (800 px, 1,3 MB) — kræver Rubio Monocoat Denmarks ok, før sitet går online. -->
-          <div class="ov-media">
-            <video src={cdn('/video/rubio-oil-plus-2c.mp4')} poster={cdn('/video/rubio-oil-plus-2c.jpg')} muted loop playsinline preload="metadata" data-inview aria-label="Rubio Monocoat: Oil Plus 2C hældes på en egeplade og poleres ind med en pad" style="--pos:50% 45%"></video>
-            <span class="ov-media-tag"><b>Film · Rubio Monocoat</b>Oil Plus 2C lægges på</span>
-          </div>
-          <div class="ov-card-body">
-            <span class="ov-n">02</span>
-            <div>
-              <h4>Oil Plus 2C</h4>
-              <p>Plantebaseret hårdvoksolie, der binder sig til træets yderste fibre og beskytter i ét lag.</p>
-              <a href="https://rubiomonocoat.dk/products/oil-plus-2c" target="_blank" rel="noopener">Oil Plus 2C hos Rubio Monocoat ↗</a>
-            </div>
-          </div>
-        </article>
-      </div>
-      <p class="ov-consent">Klippet med olien er Rubio Monocoats eget. Filmen om Precolor Easy hentes fra YouTube, først når du klikker på afspil.</p>
-      <div class="ov-points">
-        <div><b>Pletreparation.</b><p>Et slidt hjørne friskes op med olie, uden at hele fladen skal slibes.</p></div>
-        <div><b>0 % VOC.</b><p>Olien indeholder ingen flygtige organiske stoffer — relevant i rum, hvor børn er hele dagen.</p></div>
-        <div><b>Samme kulør igen.</b><p>Alle kulører har en fast betegnelse hos Rubio Monocoat, så olien til en reparation kan efterbestilles.</p></div>
-      </div>
-    </div>
-
-    <div class="ov-colors rv">
-      <div class="sec-head">
-        <div>
-          <h3 class="ov-h3">Syv kulører — eller <em>jeres</em> egen.</h3>
-          <p class="lede">Alle syv er fra Rubio Monocoat. Bagved ligger Rubios farvekort med omkring 40 kulører, og vi kan få blandet en til jer — som til {projektNavn}.</p>
-        </div>
-        <a href="https://rubiomonocoat.dk/pages/colour" target="_blank" rel="noopener" class="ulink">Hele Rubios farvekort ↗</a>
-      </div>
-      <div class="ov-band" role="list" aria-label="Vores syv standardkulører på træ">
-        {bandColors.map((c) => (
-          <div class={`ov-swatch${SWATCH_IMG.has(c.slug) ? ' has-img' : ''}`} role="listitem" style={`--c:${c.swatch_hex}`}>
-            {SWATCH_IMG.has(c.slug) && <img src={cdn(`/billeder/kuloerer/${c.slug}.jpg`)} alt={`${c.label} på træ`} loading="lazy" decoding="async" />}
-            <span class="nm">{c.label}</span>
-            {MORKHOJ_COLORS.includes(c.slug) && <span class="where">{projektNavn}</span>}
-          </div>
-        ))}
-      </div>
-      <p class="ov-note">Prøverne på ask er Rubio Monocoats egne; den rødbrune og den blå er vores låger på {projektNavn}. Farverne på skærmen er vejledende.</p>
-    </div>
-  </div></section>
-
-  <!-- ============ CERTIFICERET BYGGERI ============ -->
-  <section class="certs" id="cert"><div class="wrap cert-grid rv">
-    <div>
-      <span class="label">Certificeret byggeri</span>
-      <h2>Dokumentationen følger med leverancen.</h2>
-      <p class="txt">Bygger I efter Svanemærket, DGNB eller andre ordninger, leverer vi dokumentationen på de materialer, vi bruger, sammen med inventaret. Kræver udbuddet FSC- eller PEFC-træ, skriver vi i tilbuddet, hvilke plader der kan leveres med certificering fra leverandøren.</p>
-    </div>
-    <div>
-      <div class="chip-row">
-        <span class="chip">Svanemærket byggeri</span>
-        <span class="chip">DGNB</span>
-        <span class="chip">EPD</span>
-        <span class="chip">Indeklima</span>
-      </div>
-      <div class="doc-list">
-        <div class="d"><span><b>EPD'er og produktdatablade</b> på de anvendte materialer</span></div>
-        <div class="d"><span><b>Indeklimadokumentation</b> til certificeringsordningens krav</span></div>
-        <div class="d"><span><b>Certificeret træ</b> efter udbuddets krav, med leverandørens dokumentation</span></div>
-      </div>
-      <div class="platforms">
-        <b>Digitalt fra udbud til aflevering.</b> Kører projektet i <a href="https://www.dalux.com/da/" target="_blank" rel="noopener">Dalux</a> eller <a href="https://ibinder.com/da/" target="_blank" rel="noopener">iBinder</a>, arbejder vi derinde fra start: vi henter udbud, tegninger og IFC-modeller, svarer på spørgsmål og afleverer dokumentationen samme sted.
-        <div class="plat-row">
-          <a href="https://www.dalux.com/da/" target="_blank" rel="noopener" class="chip">Dalux ↗</a>
-          <a href="https://ibinder.com/da/" target="_blank" rel="noopener" class="chip">iBinder ↗</a>
-          <span class="chip">IFC-modeller</span>
-        </div>
-      </div>
-    </div>
-  </div></section>
-
-  <!-- ============ TO VEJE IND ============ -->
-  <section class="process" id="proces"><div class="wrap">
+  <!-- 6 · KULØRER -->
+  <section class="sec" id="kulorer"><div class="wrap">
     <div class="sec-head rv">
       <div>
-        <span class="label">Sådan kommer vi i gang</span>
-        <h2>To veje ind. Samme <em>værksted.</em></h2>
+        <span class="label">Overflade</span>
+        <h2>Syv kulører — eller <em>jeres</em> egen.</h2>
+        <p class="lede">Vi olierer med Rubio Monocoat. Bagved ligger et farvekort med omkring 40 kulører, og vi kan få blandet en til jer.</p>
       </div>
+      {hasLanding('bejdset-olieret-eller-lakeret') && <a href={`${base}bejdset-olieret-eller-lakeret`} class="ulink">Bejdset, olieret eller lakeret? →</a>}
     </div>
-    <div class="p-tracks rv">
-      <div class="track">
-        <span class="t-kick">Spor 1 · Kataloget</span>
-        <h3>Et enkelt møbel eller et rum</h3>
-        <div class="step"><span class="sn">1</span><div><b>Vælg typen</b><p>Peg på en type i kataloget og send os jeres mål, antal og ønsker til materiale og farve.</p></div></div>
-        <div class="step"><span class="sn">2</span><div><b>Se den i 3D — med pris</b><p>I får en render af jeres konkrete løsning og en samlet pris. Justér til det sidder rigtigt.</p></div></div>
-        <div class="step"><span class="sn">3</span><div><b>Vi bygger og leverer</b><p>Produktion, dokumentation og levering — montage hvis I vil have det med.</p></div></div>
-        <a href={`${base}kontakt`} class="btn btn-ghost" style="margin-top:18px">Send mål <span class="arr">→</span></a>
-      </div>
-      <div class="track alt">
-        <span class="t-kick">Spor 2 · Projekter</span>
-        <h3>Et helt byggeri</h3>
-        <div class="step"><span class="sn">1</span><div><b>Send tegninger eller udbud</b><p>Arkitekttegninger, snedkerbeskrivelse eller tilbudsliste — vedhæftet, eller som invitation til udbuddet i <a href="https://www.dalux.com/da/" target="_blank" rel="noopener">Dalux</a> eller <a href="https://ibinder.com/da/" target="_blank" rel="noopener">iBinder</a>. Vi læser materialet og stiller de rigtige spørgsmål.</p></div></div>
-        <div class="step"><span class="sn">2</span><div><b>Tilbud med 3D og dokumentation</b><p>Struktureret tilbud, renders af nøgleemner og en plan for materialegodkendelser.</p></div></div>
-        <div class="step"><span class="sn">3</span><div><b>Produktion i delleverancer</b><p>Vi leverer i takt med byggepladsen — ikke som én stor slutlevering, der vælter tidsplanen.</p></div></div>
-        <a href={`${base}kontakt`} class="btn btn-primary" style="margin-top:18px">Send udbud <span class="arr">→</span></a>
-      </div>
+    <div class="rv"><KulorBand colors={colors} /></div>
+    <div class="surf rv">
+      <div><b>Olie, ikke lak</b><span>Ét lag hårdvoksolie, der trænger ind i træet. Der er ingen lakfilm, der kan skalle af.</span></div>
+      <div><b>Slid kan pletrepareres</b><span>En ridse slibes og olieres på stedet uden at skifte lågen.</span></div>
+      <div><b>Samme kulør igen</b><span>Kuløren er en opskrift, så en ekstra låge om tre år får samme farve.</span></div>
     </div>
   </div></section>
 
-  <ContactCta variant="full" />
+  <!-- 7 · KONTAKT -->
+  <section class="sec sec-dark" id="kontakt"><div class="wrap kontakt-grid">
+    <div class="rv">
+      <span class="label">Kontakt</span>
+      <h2 class="kontakt-h">Send os tegningerne. <em>Eller en skitse.</em></h2>
+      <p class="lede">Et udbud, en tegning eller et foto af rummet med mål er nok til en pris. Vi svarer inden for én arbejdsdag.</p>
+      <div class="kontakt-btns">
+        <a href="#send" class="btn btn-light">Send materialet <span class="arr">→</span></a>
+        <a href="#design" class="btn btn-dark-ghost">Design det selv</a>
+      </div>
+      <div class="clines">
+        <a href={`tel:${PHONE_TEL}`} class="tel">{PHONE}</a>
+        <span><a href="mailto:tilbud@neminventar.dk">tilbud@neminventar.dk</a></span>
+        <span>Nem Inventar ApS · Mågevej 73, st. tv. · 2400 København NV · CVR 45085473</span>
+      </div>
+    </div>
+    <div class="team rv">
+      {TEAM.map((m) => (
+        <div class="mem">
+          <img src={`${base}team/${m.img}`} alt={m.name} loading="lazy" decoding="async" />
+          <div><b>{m.name}</b><span>{m.desc}</span><a href={`mailto:${m.email}`}>{m.email}</a></div>
+        </div>
+      ))}
+    </div>
+  </div></section>
 
   <style>
-    /* ---- Overfladen · Nem Inventar × Rubio Monocoat — lyst afsnit, Skovgrøn (#5A6B4E) som signaturflade ---- */
-    .ov-top{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:40px;align-items:stretch}
-    .ov-head h2{font-size:clamp(34px,4.6vw,64px);margin-top:22px;line-height:1.02;letter-spacing:-.02em}
-    .ov-lede{margin-top:22px;font-size:clamp(18px,1.6vw,22px);line-height:1.5;color:var(--ink);max-width:30em}
-    .ov-partner{background:#5A6B4E;color:var(--paper);border-radius:var(--radius);padding:30px 34px;display:flex;flex-direction:column;justify-content:space-between;gap:34px;min-height:320px}
-    .ov-lockup{font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(28px,3vw,40px);line-height:1.05;letter-spacing:-.02em;display:grid;gap:4px;margin:0}
-    .ov-lockup i{font-style:normal;opacity:.55;margin-right:.08em}
-    .ov-partner-foot p{font-size:15px;line-height:1.55;color:rgba(250,248,243,.86);margin:0 0 10px;max-width:34ch}
-    .ov-partner-foot a{color:var(--paper);font-weight:600;text-decoration:none;border-bottom:1px solid rgba(250,248,243,.5)}
-    .ov-partner-foot a:hover{border-bottom-color:var(--paper)}
-    .ov-photos{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:40px}
-    .ov-fig{margin:0}
-    .ov-fig .rpic{aspect-ratio:4/5;background:var(--soft)}
-    .ov-fig figcaption{margin-top:10px;font-size:14px;color:var(--muted)}
-    .rpic{position:relative;display:block;border-radius:var(--radius);overflow:hidden}
-    /* --zoom/--origin: beskær ind i fotoet, så kun kuløren er med (det blå højskab står ved siden af et gardin) */
-    .rpic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:var(--pos,50% 50%);transform:scale(var(--zoom,1));transform-origin:var(--origin,50% 50%);transition:transform .6s cubic-bezier(.2,.7,.2,1)}
-    .rpic:hover img{transform:scale(calc(var(--zoom,1) * 1.04))}
-    .ov-h3{font-size:clamp(26px,3vw,40px);line-height:1.08;letter-spacing:-.02em}
-    .ov-steps,.ov-colors{margin-top:72px}
-    .ov-steps .sec-head,.ov-colors .sec-head{margin-bottom:28px}
-    .ov-cards{display:grid;grid-template-columns:1fr 1fr;gap:28px}
-    .ov-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
-    /* Rubios klip som lydløst loop (spiller kun i synsfeltet via data-inview i Base.astro). Kvadratisk som klippet selv,
-       så intet beskæres — YouTube-feltet i det andet kort gøres kvadratisk i site.css (.ov-card .yt-btn), fordi
-       komponentens elementer ikke rammes af denne fils scopede regler. */
-    .ov-media{position:relative;background:var(--soft);overflow:hidden;aspect-ratio:1/1}
-    .ov-media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:var(--pos,50% 50%);display:block}
-    .ov-media-tag{position:absolute;left:14px;bottom:12px;display:inline-flex;gap:8px;align-items:baseline;padding:7px 12px;border-radius:999px;background:rgba(250,248,243,.92);color:var(--muted);font-size:12.5px;line-height:1;border:1px solid var(--line)}
-    .ov-media-tag b{color:var(--ink);font-weight:600}
-    .ov-card-body{display:grid;grid-template-columns:56px 1fr;gap:14px;padding:22px 26px 24px;align-items:start}
-    .ov-n{font-family:'Archivo',sans-serif;font-weight:700;font-size:30px;line-height:1;color:var(--warm);letter-spacing:-.02em}
-    .ov-card h4{font-size:21px;margin:0 0 8px;font-weight:600}
-    .ov-card p{font-size:15px;color:var(--muted);line-height:1.6;margin:0 0 10px}
-    .ov-card a{font-size:14px;color:var(--ink);text-decoration:underline;text-decoration-color:var(--warm);text-underline-offset:3px}
-    .ov-card a:hover{color:var(--warm)}
-    .ov-consent{margin-top:12px;font-size:12.5px;color:var(--muted)}
-    .ov-points{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:36px;padding-top:32px;border-top:1px solid var(--line)}
-    .ov-points b{display:block;font-size:17px;margin-bottom:6px}
-    .ov-points p{font-size:14.5px;color:var(--muted);line-height:1.6}
-    /* kulørbåndet: syv felter uden mellemrum, som plader set fra kanten; Natur får mørk tekst */
-    .ov-band{display:grid;grid-template-columns:repeat(7,1fr);height:240px;border-radius:var(--radius);overflow:hidden}
-    .ov-swatch{position:relative;background:var(--c);display:flex;flex-direction:column;justify-content:flex-end;padding:16px 14px;color:var(--paper);background-image:radial-gradient(circle at 30% 15%,rgba(255,255,255,.14),rgba(255,255,255,0) 55%),repeating-linear-gradient(100deg,rgba(0,0,0,0) 0 3px,rgba(0,0,0,.05) 3px 4px);transition:filter .25s}
-    .ov-swatch.light{color:var(--ink)}
-    /* træprøve som foto: billedet bag, mørk tone i bunden, så navnet kan læses på alle kulører */
-    .ov-swatch img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
-    .ov-swatch.has-img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(0,0,0,.55))}
-    .ov-swatch.has-img{color:var(--paper)}
-    .ov-swatch .nm,.ov-swatch .where{position:relative;z-index:1;text-shadow:0 1px 2px rgba(0,0,0,.35)}
-    .ov-swatch .nm{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
-    .ov-swatch .where{font-size:12px;opacity:.85;margin-top:4px}
-    .ov-swatch:hover img{transform:scale(1.06)}
-    .ov-note{margin-top:10px;font-size:12.5px;color:var(--muted)}
-    /* links i proces-trinnene (Dalux / iBinder) */
-    .p-tracks .step p a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--warm);text-underline-offset:3px}
-    .p-tracks .step p a:hover{color:var(--warm)}
-    @media(max-width:880px){
-      .ov-top{grid-template-columns:1fr;gap:22px}
-      .ov-partner{min-height:200px;padding:24px 22px;gap:22px}
-      .ov-photos{grid-template-columns:1fr;gap:18px;margin-top:28px}
-      .ov-steps,.ov-colors{margin-top:48px}
-      .ov-cards{grid-template-columns:1fr;gap:18px}
-      .ov-points{grid-template-columns:1fr;gap:20px;margin-top:28px;padding-top:24px}
-      .ov-band{grid-template-columns:1fr;height:auto}
-      .ov-swatch{min-height:56px;flex-direction:row;align-items:center;justify-content:space-between;padding:0 16px}
-      .ov-swatch .where{margin-top:0}
-      .ov-swatch.has-img::after{background:linear-gradient(90deg,rgba(0,0,0,.5),rgba(0,0,0,.15) 55%,rgba(0,0,0,.45))}
-    }
+    .yd-links{margin-top:48px;padding-top:28px;border-top:1px solid var(--line)}
+    .yd-h{margin-bottom:6px}
+    .docs{display:flex;gap:8px 10px;flex-wrap:wrap;align-items:center;margin-top:32px;padding-top:22px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+    .docs b{color:var(--ink);font-weight:600;margin-right:6px}
+    .docs .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 12px;font-size:13px;color:var(--ink);text-decoration:none}
+    .projekter-udvalg{background:var(--soft);border-block:1px solid var(--line)}
+    .surf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 28px;margin-top:28px}
+    .surf div{border-top:1px solid var(--line);padding-top:12px}
+    .surf b{font-family:'Archivo',sans-serif;font-size:17px;display:block}
+    .surf span{font-size:14.5px;color:var(--muted)}
+    .kontakt-grid{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:clamp(28px,5vw,72px);align-items:start}
+    .kontakt-h{font-size:clamp(32px,4.2vw,56px);line-height:1;letter-spacing:-.03em;margin-top:22px}
+    .kontakt-btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+    .team{display:grid;gap:12px}
+    .mem{display:grid;grid-template-columns:64px 1fr;gap:14px;align-items:center;border:1px solid var(--dark-line);border-radius:16px;padding:12px;background:var(--dark-2)}
+    .mem img{width:64px;height:64px;border-radius:12px;object-fit:cover;background:#3a3226}
+    .mem b{display:block;font-family:'Archivo',sans-serif;font-size:16px;color:#F4EFE6}
+    .mem span{display:block;font-size:13.5px;color:var(--dark-muted)}
+    .mem a{font-size:13.5px;color:#F4EFE6;text-decoration-color:#5A4F3C;text-underline-offset:3px}
+    @media (max-width:900px){.kontakt-grid{grid-template-columns:1fr}.surf{grid-template-columns:1fr}}
   </style>
-
-  <script>
-    // ---------- toppen: to felter, der skifter ét ad gangen. Første skift efter ca. 1 sekund ----------
-    (() => {
-      const dataEl = document.getElementById('hero-data');
-      const duo = document.getElementById('duo');
-      const pauseBtn = document.getElementById('heroPause');
-      if (!dataEl || !duo || !pauseBtn) return;
-      type Item = { src: string; pos: string; alt: string; room: string; what: string };
-      const data = JSON.parse(dataEl.textContent || '{}') as { L: Item[]; R: Item[]; name: string };
-      type Slot = { el: HTMLElement; pool: Item[]; i: number; imgs: (HTMLImageElement | null)[]; tag: HTMLElement };
-      const mk = (id: string, pool: Item[]): Slot | null => {
-        const el = document.getElementById(id); if (!el) return null;
-        const first = el.querySelector('img'); const tag = el.querySelector<HTMLElement>('.img-tag');
-        if (!first || !tag) return null;
-        return { el, pool, i: 0, imgs: pool.map((_, k) => (k === 0 ? first : null)), tag };
-      };
-      const slots = [mk('slotA', data.L), mk('slotB', data.R)].filter((s): s is Slot => !!s);
-      if (!slots.length) return;
-      const mq = matchMedia('(max-width: 860px)');
-      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const FIRST = 1100, STEP = 3200;
-      let first: number | undefined, timer: number | undefined, turn = 0, userPaused = false, hover = false;
-      // billederne hentes først, når de skal bruges — det næste gøres klar, så overblændingen aldrig viser et tomt felt
-      const ensure = (s: Slot, k: number) => {
-        k = (k + s.pool.length) % s.pool.length;
-        if (!s.imgs[k]) {
-          const it = s.pool[k], im = new Image();
-          im.src = it.src; im.alt = it.alt; im.decoding = 'async'; im.style.setProperty('--pos', it.pos);
-          s.el.insertBefore(im, s.tag); s.imgs[k] = im;
-        }
-        return s.imgs[k]!;
-      };
-      const show = (s: Slot, k: number) => {
-        s.i = (k + s.pool.length) % s.pool.length;
-        ensure(s, s.i);
-        s.el.classList.add('swapping');
-        s.imgs.forEach((im, j) => im && im.classList.toggle('is-on', j === s.i));
-        window.setTimeout(() => { const it = s.pool[s.i]; s.tag.innerHTML = `<b>${it.room}</b>${it.what} · ${data.name}`; s.el.classList.remove('swapping'); }, 300);
-        ensure(s, s.i + 1);
-      };
-      const canRun = () => !reduce && !userPaused && !hover;
-      const tick = () => { if (mq.matches || slots.length === 1) { const s = slots[slots.length - 1]; show(s, s.i + 1); return; } turn = 1 - turn; show(slots[turn], slots[turn].i + 1); };
-      const stop = () => { clearTimeout(first); clearInterval(timer); first = timer = undefined; pauseBtn.textContent = '▶'; pauseBtn.setAttribute('aria-label', 'Start billedskiftet'); };
-      const start = (delay: number) => { stop(); if (!canRun()) return; pauseBtn.textContent = '❚❚'; pauseBtn.setAttribute('aria-label', 'Sæt billedskiftet på pause'); first = window.setTimeout(() => { tick(); timer = window.setInterval(tick, STEP); }, delay); };
-      pauseBtn.addEventListener('click', () => { userPaused = !userPaused; if (userPaused) stop(); else start(300); });
-      duo.addEventListener('mouseenter', () => { hover = true; stop(); });
-      duo.addEventListener('mouseleave', () => { hover = false; start(1200); });
-      slots[slots.length - 1].el.addEventListener('click', () => { if (mq.matches) { const s = slots[slots.length - 1]; show(s, s.i + 1); start(STEP); } });   // telefon: tryk = næste
-      document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start(800)));
-      window.setTimeout(() => slots.forEach((s) => ensure(s, 1)), 600);
-      start(FIRST);
-    })();
-
-    // ---------- inventar: filtre + "vis alle" ("Alle" viser 9 på computer, 6 på telefon; et filter viser hele familien) ----------
-    (() => {
-      const types = document.getElementById('types'), more = document.getElementById('showmore'), row = document.getElementById('showmoreRow');
-      if (!types || !more || !row) return;
-      const cards = Array.from(types.querySelectorAll<HTMLElement>('.tcard'));
-      const chips = Array.from(document.querySelectorAll<HTMLElement>('#filters .fchip'));
-      let f = 'alle', expanded = false;
-      const apply = () => {
-        cards.forEach((t) => { t.hidden = !(f === 'alle' || t.dataset.fam === f); });
-        chips.forEach((c) => c.classList.toggle('on', c.dataset.f === f));
-        types.classList.toggle('expanded', expanded || f !== 'alle');
-        row.hidden = expanded || f !== 'alle';
-      };
-      chips.forEach((c) => c.addEventListener('click', () => { f = c.dataset.f || 'alle'; apply(); }));
-      more.addEventListener('click', () => { expanded = true; apply(); });
-      apply();
-    })();
-  </script>
 </Base>
