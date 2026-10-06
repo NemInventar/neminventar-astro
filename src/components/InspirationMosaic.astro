@@ -2,7 +2,8 @@
 // Inspiration (forside v3): de bedste renders som varianter — "Set i 3D, før det bygges." Hver flise er en variant
 // (lib/varianter.ts): billedet åbner typesiden med kuløren valgt (#v-<kulør>), og knappen åbner designeren (når den er
 // offentlig og typen findes der) eller "Send os materialet" med varianten udfyldt (data-variant, HeroPaths' script).
-// Uden JS fører knappen til kontaktsiden med ?v=. Udvalget og teksterne står i src/lib/forside.ts (INSPIRATION).
+// Uden JS fører knappen til kontaktsiden med ?v=. Udvalget står i src/lib/forside.ts (INSPIRATION); titlen er typens
+// navn og kuløren, så man lander på det, man klikkede på.
 // Billedteksterne siger, hvad renderen viser — ikke hvilket projekt den er fra.
 import type { WebProduct, WebColor } from '../lib/supabase';
 import { cdn } from '../lib/img';
@@ -16,7 +17,7 @@ const tiles = INSPIRATION.map((t) => {
   const v = p ? varianterAf(p, colors).find((x) => x.kuloer === t.kuloer) : undefined;
   if (!p || !v) return null;
   const d = DESIGNER_URL ? DESIGNER_AF[p.slug] : undefined;
-  return { ...t, img: v.img, href: `${base}produkter/${p.slug}#${v.id}`,
+  return { ...t, img: v.img, navn: v.navn, label: v.label, href: `${base}produkter/${p.slug}#${v.id}`,
     cta: d ? { l: 'Åbn denne i designeren', href: `${DESIGNER_URL}?p=${d}`, variant: undefined }
       : { l: 'Få pris på denne', href: prisHref(base, v), variant: JSON.stringify(variantTilbud(v)) } };
 }).filter((x): x is NonNullable<typeof x> => !!x);
@@ -24,10 +25,10 @@ const tiles = INSPIRATION.map((t) => {
 <div class="mos">
   {tiles.map((t) => (
     <figure class={`mt w${t.w}`}>
-      <a class="mt-img" href={t.href} aria-label={`${t.titel}, ${t.variant}`}><img src={cdn(t.img, t.w === 8 ? 1400 : 800)} alt={`${t.titel}, ${t.variant.toLowerCase()}`} loading="lazy" decoding="async" /></a>
+      <a class="mt-img" href={t.href} aria-label={`${t.navn}, ${t.label.toLowerCase()}`}><img src={cdn(t.img, t.w === 8 ? 1400 : 800)} alt={`${t.navn} i ${t.label.toLowerCase()}`} loading="lazy" decoding="async" /></a>
       <span class="tagv">Visualisering</span>
       <figcaption>
-        <div><b>{t.titel}</b><span>{t.variant}</span></div>
+        <div><b>{t.navn}</b><span>{t.label}</span></div>
         <a class="mt-cta" href={t.cta.href} data-variant={t.cta.variant}>{t.cta.l} <span aria-hidden="true">→</span></a>
       </figcaption>
     </figure>

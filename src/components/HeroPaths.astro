@@ -7,7 +7,7 @@ import type { WebProduct, WebColor } from '../lib/supabase';
 import { cdn } from '../lib/img';
 import { isPhoto, morkhoj, productImage } from '../lib/catalog';
 import { KATALOG_TOP, DESIGNER_URL, DESIGNER_AF, billedeAf } from '../lib/forside';
-import { varianterAf, prisHref, variantTilbud } from '../lib/varianter';
+import { varianterAf, prisHref, variantTilbud, typeTilbud } from '../lib/varianter';
 import SendPanel from './SendPanel';
 interface Props { products: WebProduct[]; colors: WebColor[] }
 const { products, colors } = Astro.props;
@@ -33,7 +33,7 @@ const katalog = KATALOG_TOP.map((k) => {
     slug: p.slug, name: p.name, img, foto: isPhoto(img),
     href: `${base}produkter/${p.slug}${v ? '#' + v.id : ''}`,
     cta: d ? { l: 'Åbn i designeren', href: `${DESIGNER_URL}?p=${d}`, variant: undefined }
-      : { l: 'Få pris på denne', href: prisHref(base, v ?? { slug: p.slug, navn: p.name }), variant: v ? JSON.stringify(variantTilbud(v)) : undefined },
+      : { l: 'Få pris på denne', href: prisHref(base, v ?? { slug: p.slug, navn: p.name }), variant: JSON.stringify(v ? variantTilbud(v) : typeTilbud(p.name)) },
   };
 }).filter((x): x is NonNullable<typeof x> => !!x);
 ---
@@ -119,7 +119,7 @@ const katalog = KATALOG_TOP.map((k) => {
           </article>
         ))}
       </div>
-      <div class="hp-cfoot"><span>Visualiseringer og fotos af typer, vi bygger.</span><a class="ulink" href={`${base}inventar`}>Se alle typer og varianter →</a></div>
+      <div class="hp-cfoot"><span>Visualiseringer og fotos af typer, vi bygger.</span><a class="ulink" href={`${base}inventar`}>Se alle typer →</a></div>
     </section>
 
     <!-- 3 · Send os materialet -->

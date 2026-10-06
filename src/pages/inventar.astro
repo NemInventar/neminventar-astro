@@ -1,35 +1,26 @@
 ---
-// /inventar (D4, spec §7): alle typer i kataloget med filtre pr. familie (fra v2's katalog), plus de typer, der endnu
-// ikke er arketyper og derfor peger på deres landingsside. Varianterne vælges på hver typeside.
+// /inventar (D4, spec §7): alle typer i kataloget med filtre pr. familie (fra v2's katalog). Varianterne vælges på
+// hver typeside. Reglen (Fable 06-10-2026): et kort med billede er altid en type og fører altid til typesiden; noget at
+// læse (landingssider) er piller og tekstlinks, aldrig et kort her. Typer uden arketype findes via "Det laver vi".
 // Uden JS vises alle kort, og filtrene er skjulte.
 import Base from '../layouts/Base.astro';
 import ProductCard from '../components/ProductCard.astro';
 import ContactCta from '../components/ContactCta.astro';
-import { getWebProducts, getWebCases, getWebLandingPages } from '../lib/supabase';
+import { getWebProducts } from '../lib/supabase';
 import { cdn } from '../lib/img';
-import { FAM, FAM_ORDER, famOf, productImage, fotoTag, isPhoto, morkhoj } from '../lib/catalog';
+import { FAM, FAM_ORDER, famOf, productImage, fotoTag } from '../lib/catalog';
 
-const [products, cases, landing] = await Promise.all([getWebProducts(), getWebCases(), getWebLandingPages()]);
+const products = await getWebProducts();
 const base = import.meta.env.BASE_URL;
 const site = Astro.site!;
-const hasLanding = (slug: string) => landing.some((l) => l.slug === slug);
 
 type Card = { name: string; href: string; img: string; pos: string; foto: boolean; fam: string; desc: string };
 const cards: Card[] = products.map((p) => {
   const im = productImage(p);
   return { name: p.name, href: `${base}produkter/${p.slug}`, img: im.img, pos: im.pos, foto: im.foto, fam: famOf(p), desc: p.intro ?? p.short_description ?? '' };
 });
-// Typer uden arketype endnu → deres landingsside (de samme fem som v2's katalog).
-const vinge = cases.find((c) => c.slug === 'daginstitution-vinge');
-const EXTRA: Card[] = [
-  { name: 'Lockers med kodelås og skohylde', href: `${base}lockers`, img: morkhoj('20_lockere-roede-perforerede-laager-kodelaase-og-skohylder.jpg'), pos: '50% 45%', foto: true, fam: 'garderober', desc: 'Aflåselige rum i krydsfiner med kodelås, skohylder under og bænk foran. Til skoler og haller med mange brugere.' },
-  { name: 'Børnegarderober med skorist', href: `${base}garderober`, img: vinge?.hero_image_url ?? '', pos: '50% 60%', foto: isPhoto(vinge?.hero_image_url), fam: 'garderober', desc: 'Ét modul pr. barn med knager foroven og dybere bund med skorist. Olieret i farver, så rækkerne deles op.' },
-  { name: 'Polstret siddeniche', href: `${base}siddenicher-og-baenke`, img: morkhoj('23_polstret-niche-roed-afrundet-hjoerne.jpg'), pos: '70% 40%', foto: true, fam: 'nicher', desc: 'Polstret niche bygget ind i væggen, med afrundede hjørner og plads til bord og stik. Til fællesarealer og gange.' },
-  { name: 'Bænke med ryghynder', href: `${base}siddenicher-og-baenke`, img: morkhoj('25_baenke-blaa-med-ryghynder-og-mellemvaeg.jpg'), pos: '50% 55%', foto: true, fam: 'nicher', desc: 'Bænke langs væggen i krydsfiner med ryghynder og siddehynder, bygget til fællesarealer med mange brugere.' },
-  { name: 'Glastavler og opslagstavler', href: `${base}akustik-og-glastavler`, img: morkhoj('03_klasserum-tavlevaeg-og-opslagstavler.jpg'), pos: '50% 22%', foto: true, fam: 'vaegge', desc: 'Glastavler og opslagstavler planlagt som én samlet tavlevæg i klasserummet, med akustik, hvor der er brug for det.' },
-].filter((c) => c.img && hasLanding(c.href.slice(base.length)));
-// Grupperet pr. familie. Inden for en familie: katalogets rækkefølge (web_display_order), så typerne uden arketype.
-const all = [...cards, ...EXTRA].sort((a, b) => FAM_ORDER.indexOf(a.fam) - FAM_ORDER.indexOf(b.fam));
+// Grupperet pr. familie. Inden for en familie: katalogets rækkefølge (web_display_order).
+const all = cards.sort((a, b) => FAM_ORDER.indexOf(a.fam) - FAM_ORDER.indexOf(b.fam));
 const famCount = (f: string) => all.filter((c) => c.fam === f).length;
 
 const title = 'Fast inventar på mål: alle typer | Nem Inventar';

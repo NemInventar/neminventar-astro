@@ -13,12 +13,13 @@ const MODES: { k: Mode; l: string }[] = [
   { k: 'mail', l: 'Bare en mail' },
 ];
 
-// 'ni:tilbud' bærer enten tekst (toppens designer → spor designer) eller et objekt fra en variant (D4 → spor variant).
-type Tilbud = { besked: string; spor: 'designer' | 'variant'; konfiguration?: Record<string, string> };
+// 'ni:tilbud' bærer enten tekst (toppens designer → spor designer) eller et objekt fra et kort: en variant (D4 → spor
+// variant + konfiguration) eller en type uden kulør (spor skitse, kun emnet).
+type Tilbud = { besked: string; spor: 'designer' | 'variant' | 'skitse'; konfiguration?: Record<string, string> };
 const somTilbud = (d: unknown): Tilbud | null => {
   if (typeof d === 'string') return d ? { besked: d, spor: 'designer' } : null;
   const t = d as Tilbud | null;
-  return t && typeof t === 'object' && typeof t.besked === 'string' && (t.spor === 'variant' || t.spor === 'designer') ? t : null;
+  return t && typeof t === 'object' && typeof t.besked === 'string' && ['variant', 'designer', 'skitse'].includes(t.spor) ? t : null;
 };
 
 export default function SendPanel() {

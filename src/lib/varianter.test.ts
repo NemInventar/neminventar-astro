@@ -1,7 +1,7 @@
 // node --test src/lib/varianter.test.ts
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { varianterAf, variantId, prisHref, variantFraUrl, variantTilbud } from './varianter.ts';
+import { varianterAf, variantId, prisHref, variantFraUrl, variantTilbud, typeTilbud } from './varianter.ts';
 
 const kulorer = [
   { slug: 'natur', label: 'Natur', swatch_hex: '#D9C4A0', sort_order: 1 },
@@ -62,6 +62,10 @@ test('variantFraUrl læser ?v=<slug>~<kulør> og afviser alt andet', () => {
   assert.equal(variantFraUrl('?v=~blaa'), null);
   assert.equal(variantFraUrl('?v=Hoejskab~blaa'), null);
   assert.equal(variantFraUrl('?v=hoejskab-krydsfiner~'), null);
+});
+
+test('typeTilbud: en type uden kulør åbner forsidens formular med typen som emne og uden konfiguration', () => {
+  assert.deepEqual(typeTilbud('Garderobeskabe med perforerede låger'), { besked: 'Vedr. Garderobeskabe med perforerede låger', spor: 'skitse' });
 });
 
 test('variantTilbud: forsidens besked og konfiguration er de samme som kontaktsidens', () => {

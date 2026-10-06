@@ -81,6 +81,11 @@ export function variantFraUrl(search: string): { type: 'variant'; produkt: strin
   return { type: 'variant', produkt, kuloer };
 }
 
+// Forsiden, en type uden valgt kulør (fx et foto fra en leverance): samme formular på forsiden, med typen som emne.
+export function typeTilbud(navn: string) {
+  return { besked: `Vedr. ${navn}`, spor: 'skitse' as const };
+}
+
 // Forsiden: "Få pris på denne" åbner "Send os materialet" med varianten udfyldt (samme felter som ?v= på kontaktsiden).
 export function variantTilbud(v: { slug: string; navn: string; kuloer: string; label: string }) {
   return {
