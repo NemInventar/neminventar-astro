@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { KILDE_SVAR, hentKilde } from '../lib/kilde';
+import { variantFraUrl } from '../lib/varianter';
 
 // Poster til contact-form edge function på ERP-projektet (guhbrpektblabndqttgp).
 // Funktionen sender en notifikation via Microsoft Graph til tilbud@ + kontakt@ med reply-to
@@ -46,8 +47,13 @@ const PLACEHOLDER: Partial<Record<Spor, string>> = {
   udbud: 'Fx fast inventar til en ny daginstitution, licitation 14/11. Vedhæft udbuddet herunder, eller skriv linket til Dalux eller iBinder.',
 };
 
-export default function ContactForm({ spor = 'besked', besked = '' }: { spor?: Spor; besked?: string }) {
+// konfiguration (D4): varianten (eller senere designerens tilstand) følger med henvendelsen (contact-form v6, højst 4 KB).
+// Kommer man fra "Få pris på denne" på en typeside, står varianten i ?v=<slug>~<kulør> → spor 'variant'.
+export default function ContactForm({ spor = 'besked', besked = '', konfiguration }: { spor?: Spor; besked?: string; konfiguration?: Record<string, string> }) {
   const [form, setForm] = useState({ name: '', company: '', phone: '', email: '', message: '', website: '' });
+  const [urlVariant, setUrlVariant] = useState<Record<string, string> | null>(null);
+  const konf = konfiguration ?? urlVariant;
+  const sporNu: Spor = konfiguration ? spor : urlVariant ? 'variant' : spor;
   // "Hvor fandt I os?" — valgfrit. Besøgerens eget svar vinder over referreren i leadets lead_kanal.
   const [kilde, setKilde] = useState('');
   // Tidsfælde: en formular udfyldt på under 3 sekunder får ingen lead (edge-funktionen afgør det).
@@ -70,6 +76,7 @@ export default function ContactForm({ spor = 'besked', besked = '' }: { spor?: S
     const emne = new URLSearchParams(location.search).get('emne');
     if (besked) setForm((f) => ({ ...f, message: `${besked}\n\n` }));
     else if (emne) setForm((f) => (f.message ? f : { ...f, message: `Vedr. ${emne}\n\n` }));
+    setUrlVariant(variantFraUrl(location.search));
   }, [besked]);
 
   const update = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
@@ -137,14 +144,14 @@ export default function ContactForm({ spor = 'besked', besked = '' }: { spor?: S
         method: 'POST', headers,
         body: JSON.stringify({
           ...form, company: privat ? 'Privatkunde' : form.company, side: location.pathname, upload_id, files: sent,
-          spor, kilde_svar: kilde, ...hentKilde(), ms: Date.now() - t0.current,
+          spor: sporNu, ...(konf ? { konfiguration: konf } : {}), kilde_svar: kilde, ...hentKilde(), ms: Date.now() - t0.current,
         }),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data?.success) {
         setSentFiles(Number(data.files ?? sent.length));
         setStatus('ok');
-        try { window.plausible?.('Henvendelse sendt', { props: { spor, kilde: kilde || 'ikke oplyst' } }); } catch { /* statistik er valgfri */ }
+        try { window.plausible?.('Henvendelse sendt', { props: { spor: sporNu, kilde: kilde || 'ikke oplyst' } }); } catch { /* statistik er valgfri */ }
       } else {
         throw new Error(data?.error || 'Kunne ikke sende beskeden.');
       }
@@ -225,7 +232,7 @@ export default function ContactForm({ spor = 'besked', besked = '' }: { spor?: S
         <textarea id="cf-message" name="message" required rows={5} value={form.message} onChange={update}
           disabled={sending} placeholder={privat
             ? 'Fx en reol på mål til stuen eller skabe til entréen — gerne med mål. Et foto af rummet kan vedhæftes herunder.'
-            : PLACEHOLDER[spor] ?? 'Beskriv kort jeres projekt og behov. Tegninger, beskrivelse eller tilbudsliste kan vedhæftes herunder.'} />
+            : PLACEHOLDER[sporNu] ?? 'Beskriv kort jeres projekt og behov. Tegninger, beskrivelse eller tilbudsliste kan vedhæftes herunder.'} />
       </div>
       <div className="field">
         <label htmlFor="cf-files">{privat ? 'Fotos, skitser eller tegninger (valgfrit)' : 'Tegninger, beskrivelse eller tilbudsliste (valgfrit)'}</label>
