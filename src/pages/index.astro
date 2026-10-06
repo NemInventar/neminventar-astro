@@ -14,7 +14,7 @@ import ProjectCard from '../components/ProjectCard.astro';
 import { getWebProducts, getWebCases, getWebLandingPages, getWebColors } from '../lib/supabase';
 import { cdn } from '../lib/img';
 import { morkhoj } from '../lib/catalog';
-import { KATALOG_TOP, PROJEKTER } from '../lib/forside';
+import { KATALOG_TOP, PROJEKTER, emneGruppe } from '../lib/forside';
 import { TEAM } from '../lib/team';
 import { PHONE, PHONE_TEL } from '../lib/contact';
 
@@ -27,6 +27,11 @@ const site = Astro.site!;
 const segmenter = landing.filter((l) => l.kind === 'segment');
 const emner = landing.filter((l) => l.kind === 'emne');
 const guides = landing.filter((l) => l.kind === 'guide');
+const emneRaekker = [
+  { lbl: 'Inventar', sider: emner.filter((l) => emneGruppe(l.slug) === 'inventar') },
+  { lbl: 'Materialer', sider: emner.filter((l) => emneGruppe(l.slug) === 'materialer') },
+];
+const arbejdsform = emner.filter((l) => emneGruppe(l.slug) === 'arbejdsform');
 const hasLanding = (slug: string) => landing.some((l) => l.slug === slug);
 const projekter = PROJEKTER.map((s) => cases.find((c) => c.slug === s)).filter((c): c is NonNullable<typeof c> => !!c);
 const typer = [...products].sort((a, b) => a.name.localeCompare(b.name, 'da'));
@@ -66,12 +71,14 @@ const itemList = {
     </div>
     <div class="rv"><InspirationMosaic products={products} colors={colors} /></div>
 
-    <!-- 3b · DET LAVER VI: link-hubben til typerne og landingssiderne (ankeret #ydelser bruges af alle landingssider) -->
+    <!-- 3b · DET LAVER VI: link-hubben til typerne og landingssiderne (ankeret #ydelser bruges af alle landingssider).
+         Én slags link pr. række: typer → typesider; resten er sider at læse (emneGruppe i lib/forside). -->
     <div class="yd-links rv" id="ydelser">
       <h2 class="label yd-h">Det laver vi</h2>
-      <div class="yd-row"><span class="lbl">Typer:</span>{typer.map((p) => <a class="pill" href={`${base}produkter/${p.slug}`}>{p.name}</a>)}</div>
+      <div class="yd-row"><span class="lbl">Typer:</span>{typer.map((p) => <a class="pill" href={`${base}produkter/${p.slug}`}>{p.name}</a>)}<a class="ulink yd-alle" href={`${base}inventar`}>Alle typer →</a></div>
+      {emneRaekker.filter((r) => r.sider.length > 0).map((r) => <div class="yd-row"><span class="lbl">{r.lbl}:</span>{r.sider.map((l) => <a class="pill" href={`${base}${l.slug}`}>{l.nav_label}</a>)}</div>)}
       {segmenter.length > 0 && <div class="yd-row"><span class="lbl">Til:</span>{segmenter.map((l) => <a class="pill" href={`${base}${l.slug}`}>{l.nav_label}</a>)}</div>}
-      {emner.length > 0 && <div class="yd-row"><span class="lbl">Materialer og inventar:</span>{emner.map((l) => <a class="pill" href={`${base}${l.slug}`}>{l.nav_label}</a>)}</div>}
+      {arbejdsform.length > 0 && <div class="yd-row"><span class="lbl">Sådan arbejder vi:</span>{arbejdsform.map((l) => <a class="pill" href={`${base}${l.slug}`}>{l.nav_label}</a>)}</div>}
       {guides.length > 0 && <div class="yd-row"><span class="lbl">Guides:</span>{guides.map((l) => <a class="pill" href={`${base}${l.slug}`}>{l.nav_label}</a>)}</div>}
     </div>
   </div></section>
@@ -155,6 +162,7 @@ const itemList = {
   <style>
     .yd-links{margin-top:48px;padding-top:28px;border-top:1px solid var(--line)}
     .yd-h{margin-bottom:6px}
+    .yd-alle{font-size:14px;margin-left:4px;white-space:nowrap}
     .docs{display:flex;gap:8px 10px;flex-wrap:wrap;align-items:center;margin-top:32px;padding-top:22px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
     .docs b{color:var(--ink);font-weight:600;margin-right:6px}
     .docs .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 12px;font-size:13px;color:var(--ink);text-decoration:none}

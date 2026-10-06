@@ -58,6 +58,26 @@ try:
         n = pg.locator("#types .tcard:visible").count()
         tjek("uden JS: alle kort vises", n >= 17, n)
         tjek("uden JS: filtrene er skjulte", not pg.locator("#filters").is_visible())
+
+        # 0b · et kort viser det billede, typesiden åbner på (Fable 06-10: et kort fører til det, det viser)
+        def kilde(src):  # samme billede uanset bredde: stien uden render/-led og uden ?width=
+            return (src or "").split("?")[0].replace("/render/image/", "/object/")
+        kort = pg.eval_on_selector_all("#types .tcard", "ks => ks.map(k => [k.querySelector('a.ph').getAttribute('href'), (k.querySelector('img')||{}).getAttribute?.('src')])")
+        skaev = []
+        for href, src in kort:
+            pg.goto(URL.rstrip("/") + href if href.startswith("/") else URL + href, wait_until="domcontentloaded")
+            hoved = pg.locator("#main-img").get_attribute("src") if pg.locator("#main-img").count() else None
+            if kilde(src) != kilde(hoved):
+                skaev.append(href.rsplit("/", 1)[-1])
+        tjek(f"kortbillede = typesidens hovedbillede ({len(kort)} kort)", len(kort) >= 17 and not skaev, skaev)
+
+        # 0c · "Det laver vi": én slags link pr. række
+        pg.goto(URL, wait_until="domcontentloaded")
+        raekker = pg.eval_on_selector_all("#ydelser .yd-row", "rs => rs.map(r => r.querySelector('.lbl').textContent.trim())")
+        tjek("Det laver vi: Typer, Inventar, Materialer, Til, Sådan arbejder vi, Guides",
+             raekker == ["Typer:", "Inventar:", "Materialer:", "Til:", "Sådan arbejder vi:", "Guides:"], raekker)
+        typer_ud = pg.eval_on_selector_all("#ydelser .yd-row:first-of-type a.pill", "as => as.every(a => a.getAttribute('href').includes('/produkter/'))")
+        tjek("Det laver vi: Typer-rækken fører kun til typesider", typer_ud)
         ctx.close()
 
         for vw, vh, tag in [(1440, 900, "pc"), (390, 844, "mob")]:

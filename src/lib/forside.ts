@@ -38,6 +38,14 @@ export const INSPIRATION: { slug: string; kuloer: string; w: 8 | 4 }[] = [
   { slug: 'garderobereol-siddenicher', kuloer: 'blaa', w: 4 },
 ];
 
+// "Det laver vi": én slags link pr. række (Fable 06-10-2026: rækken blandede materialer, produkter, arbejdsform og
+// certificering). Emnesiderne (kind 'emne') deles her. Et nyt emne lander under Inventar, til det står i en af listerne.
+export const EMNE_MATERIALER = ['krydsfiner-inventar', 'akustikvaegge-perforeret-krydsfiner', 'kompaktlaminat', 'rustfri-staal-bordplader'];
+export const EMNE_ARBEJDSFORM = ['vaerkstedstegninger-og-3d-model', 'inventar-til-svanemaerket-byggeri'];
+export function emneGruppe(slug: string): 'inventar' | 'materialer' | 'arbejdsform' {
+  return EMNE_MATERIALER.includes(slug) ? 'materialer' : EMNE_ARBEJDSFORM.includes(slug) ? 'arbejdsform' : 'inventar';
+}
+
 // Bevisbjælken: ét tal fra hver af fire forskellige sager.
 export const BEVIS_SAGER = ['morkhoj-skole', 'bolholmen-stenlose', 'idraetspark-koebenhavn', 'daginstitution-vinge'];
 // Projekter-afsnittet: tre sager af forskellig art (skole · boliger · idræt). Her nævnes Mørkhøj ved navn.

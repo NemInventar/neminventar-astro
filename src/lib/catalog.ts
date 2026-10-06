@@ -1,6 +1,7 @@
 // Fælles regler for, hvordan katalog og projekter vises på sitet (forside, produkt-, projekt- og landingssider).
 // Ét sted, så familier, tal og foto-mærker er ens overalt. Indholdet kommer stadig fra Supabase-views.
-import type { WebCase, WebProduct } from './supabase';
+import type { WebCase, WebColor, WebProduct } from './supabase';
+import { varianterAf } from './varianter';
 
 // ---------- Familier (kataloget grupperes i seks) ----------
 export const FAM: Record<string, string> = {
@@ -40,6 +41,12 @@ export const productImage = (p: WebProduct) => {
   const o = PHOTO[p.slug];
   const img = o ? morkhoj(o.file) : (p.primary_image ?? '');
   return { img, pos: o?.pos ?? '50% 60%', foto: isPhoto(img) };
+};
+// Kortets billede = det billede, typesiden åbner på: første variant, ellers typens eget billede (fotoet, hvis der er et).
+// Et kort fører til det, det viser (Fable 06-10-2026). Fotoet fra leverancen står på typesiden for sig.
+export const typeBillede = (p: WebProduct, colors: WebColor[]) => {
+  const v = varianterAf(p, colors)[0];
+  return v ? { img: v.img, pos: '50% 60%', foto: false } : productImage(p);
 };
 // Uden sagsnavn (Joachim 05-10-2026: vis produktet, ikke sagen — navnet står på projektkortet).
 export const fotoTag = (foto: boolean) => (foto ? 'Foto fra leverancen' : '3D-visualisering');

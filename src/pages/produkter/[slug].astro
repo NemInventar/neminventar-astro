@@ -11,7 +11,7 @@ import ContactCta from '../../components/ContactCta.astro';
 import { getWebProducts, getWebColors, getWebCases, getWebLandingPages, type WebProduct, type WebCase, type WebLanding, type WebColor } from '../../lib/supabase';
 import { cdn } from '../../lib/img';
 import { chipLabels } from '../../lib/labels';
-import { FAM, famOf, productImage, fotoTag } from '../../lib/catalog';
+import { FAM, famOf, productImage, typeBillede, fotoTag } from '../../lib/catalog';
 import { DESIGNER_URL, DESIGNER_AF } from '../../lib/forside';
 import { varianterAf, prisHref } from '../../lib/varianter';
 
@@ -139,7 +139,7 @@ const jsonLd = [{
         <a href={`${base}inventar`} class="ulink">Hele kataloget →</a>
       </div>
       <div class="types all rv">
-        {others.map((p) => { const im = productImage(p); return (
+        {others.map((p) => { const im = typeBillede(p, colors); return (
           <ProductCard name={p.name} href={`${base}produkter/${p.slug}`} img={im.img} pos={im.pos} tag={fotoTag(im.foto)} fam={FAM[famOf(p)]} desc={p.intro ?? p.short_description ?? ''} />
         ); })}
       </div>
