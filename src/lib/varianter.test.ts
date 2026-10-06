@@ -30,10 +30,10 @@ test('varianterAf: color_order først, så farvekortet, én pr. kulør, og ukend
 test('varianterAf: materialefarver får deres eget navn og ingen prøvefarve', () => {
   const p = {
     slug: 'koekkenvaeg-laminat-standard', name: 'Køkkenvæg i laminat', color_order: null,
-    images_meta: [{ url: img('graa'), color: null }, { url: img('duebla'), color: 'duebla' }, { url: img('salvie'), color: 'salviegroen' }],
+    images_meta: [{ url: img('graa'), color: null }, { url: img('shade'), color: 'rosa-shade' }, { url: img('pino'), color: 'verde-pino' }],
   };
   const v = varianterAf(p, kulorer);
-  assert.deepEqual(v.map((x) => x.label), ['Dueblå laminat', 'Salviegrøn laminat']);
+  assert.deepEqual(v.map((x) => x.label), ['Rosa Shade', 'Verde Pino']);
   assert.equal(v[0].hex, null);
 });
 
