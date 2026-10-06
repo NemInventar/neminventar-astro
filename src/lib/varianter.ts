@@ -8,20 +8,25 @@
 // Ingen imports: testes med node --test (src/lib/varianter.test.ts), og bruges af både Astro og React-øerne.
 
 // Farver på materialer, der ikke olieres. Nøglen er images_meta.color, som den står i databasen.
-// Kompaktlaminat = Eggers fire dekorer i designeren (ni-apps core/dekorer.js, 06-10-2026), samme slugs.
+// HPL og laminat = Arpa HPL Bloom fra Riisfort, syv farver (Joachim 06-10-2026: "noget fra Riisfort", "stærke er sjovere").
+// Kompaktlaminat = Sanders lagerfarver; vi køber kompakt hos Sander Kabin (Joachim 06-10-2026).
 export const MATERIALEFARVER: Record<string, string> = {
-  'terrakotta HPL': 'Terrakotta HPL-låger',
-  'alpine-white': 'Alpinhvid kompaktlaminat',
-  'light-grey': 'Lysegrå kompaktlaminat',
-  'chicago-concrete': 'Betongrå kompaktlaminat',
-  black: 'Sort kompaktlaminat',
-  duebla: 'Dueblå laminat',
-  salviegroen: 'Salviegrøn laminat',
-  sand: 'Sandfarvet laminat',
-  stoevgroen: 'Støvgrøn laminat',
-  moerkegroen: 'Mørkegrøn laminat',
-  groenne: 'Stof i grønne farver',
-  varme: 'Stof i varme farver',
+  'rosa-shade': 'Rosa Shade',
+  'rosso-falun': 'Rosso Falun',
+  maggese: 'Maggese',
+  'rosa-bourbon': 'Rosa Bourbon',
+  'verde-celadon': 'Verde Celadon',
+  'verde-pino': 'Verde Pino',
+  'blu-berta': 'Blu Berta',
+  'sander-hvid': 'Hvid',
+  'sander-lysgraa': 'Lys grå',
+  'sander-mellemgraa': 'Mellemgrå',
+  'sander-antracit': 'Antracit',
+  'sander-creme': 'Creme',
+  'sander-trae': 'Trædekor',
+  // Akustikpaneler: farvesammensætninger i Kvadrat Field 2
+  groenne: 'Grønne farver',
+  varme: 'Varme farver',
 };
 
 type Billede = { url: string; color: string | null };
