@@ -8,17 +8,17 @@ import ProductCard from '../components/ProductCard.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import ProcessSteps from '../components/ProcessSteps.astro';
 import ContactCta from '../components/ContactCta.astro';
-import { getWebLandingPages, getWebCases, getWebProducts, type WebLanding, type WebCase, type WebProduct } from '../lib/supabase';
+import { getWebLandingPages, getWebCases, getWebProducts, getWebColors, type WebLanding, type WebCase, type WebProduct, type WebColor } from '../lib/supabase';
 import { cdn } from '../lib/img';
-import { FAM, famOf, productImage, fotoTag, imgLabel } from '../lib/catalog';
+import { FAM, famOf, typeBillede, fotoTag, imgLabel } from '../lib/catalog';
 
 export async function getStaticPaths() {
-  const [pages, cases, products] = await Promise.all([getWebLandingPages(), getWebCases(), getWebProducts()]);
-  return pages.map((page) => ({ params: { slug: page.slug }, props: { page, pages, cases, products } }));
+  const [pages, cases, products, colors] = await Promise.all([getWebLandingPages(), getWebCases(), getWebProducts(), getWebColors()]);
+  return pages.map((page) => ({ params: { slug: page.slug }, props: { page, pages, cases, products, colors } }));
 }
 
-interface Props { page: WebLanding; pages: WebLanding[]; cases: WebCase[]; products: WebProduct[] }
-const { page, pages, cases, products } = Astro.props;
+interface Props { page: WebLanding; pages: WebLanding[]; cases: WebCase[]; products: WebProduct[]; colors: WebColor[] }
+const { page, pages, cases, products, colors } = Astro.props;
 const base = import.meta.env.BASE_URL;
 const site = Astro.site!;
 
@@ -227,7 +227,7 @@ const jsonLd = [
         <a href={`${base}inventar`} class="ulink">Hele kataloget →</a>
       </div>
       <div class="types all rv">
-        {relProducts.map((p) => { const im = productImage(p); return (
+        {relProducts.map((p) => { const im = typeBillede(p, colors); return (
           <ProductCard name={p.name} href={`${base}produkter/${p.slug}`} img={im.img} pos={im.pos} tag={fotoTag(im.foto)} fam={FAM[famOf(p)]} desc={p.intro ?? p.short_description ?? ''} />
         ); })}
       </div>

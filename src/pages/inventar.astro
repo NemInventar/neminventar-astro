@@ -2,21 +2,22 @@
 // /inventar (D4, spec §7): alle typer i kataloget med filtre pr. familie (fra v2's katalog). Varianterne vælges på
 // hver typeside. Reglen (Fable 06-10-2026): et kort med billede er altid en type og fører altid til typesiden; noget at
 // læse (landingssider) er piller og tekstlinks, aldrig et kort her. Typer uden arketype findes via "Det laver vi".
+// Kortet viser det billede, typesiden åbner på (typeBillede), så kort og side ligner hinanden.
 // Uden JS vises alle kort, og filtrene er skjulte.
 import Base from '../layouts/Base.astro';
 import ProductCard from '../components/ProductCard.astro';
 import ContactCta from '../components/ContactCta.astro';
-import { getWebProducts } from '../lib/supabase';
+import { getWebProducts, getWebColors } from '../lib/supabase';
 import { cdn } from '../lib/img';
-import { FAM, FAM_ORDER, famOf, productImage, fotoTag } from '../lib/catalog';
+import { FAM, FAM_ORDER, famOf, typeBillede, fotoTag } from '../lib/catalog';
 
-const products = await getWebProducts();
+const [products, colors] = await Promise.all([getWebProducts(), getWebColors()]);
 const base = import.meta.env.BASE_URL;
 const site = Astro.site!;
 
 type Card = { name: string; href: string; img: string; pos: string; foto: boolean; fam: string; desc: string };
 const cards: Card[] = products.map((p) => {
-  const im = productImage(p);
+  const im = typeBillede(p, colors);
   return { name: p.name, href: `${base}produkter/${p.slug}`, img: im.img, pos: im.pos, foto: im.foto, fam: famOf(p), desc: p.intro ?? p.short_description ?? '' };
 });
 // Grupperet pr. familie. Inden for en familie: katalogets rækkefølge (web_display_order).
