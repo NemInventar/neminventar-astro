@@ -1,7 +1,14 @@
 // node --test src/lib/varianter.test.ts
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { varianterAf, variantId, prisHref, variantFraUrl, variantTilbud, typeTilbud } from './varianter.ts';
+import { varianterAf, variantId, prisHref, variantFraUrl, variantTilbud, typeTilbud, sporAf } from './varianter.ts';
+
+test('sporAf: kompakt, stof, HPL og ellers olie', () => {
+  assert.equal(sporAf('sander-trae'), 'kompakt');
+  assert.equal(sporAf('varme'), 'stof');
+  assert.equal(sporAf('verde-pino'), 'hpl');
+  assert.equal(sporAf('fern'), 'olie');
+});
 
 const kulorer = [
   { slug: 'natur', label: 'Natur', swatch_hex: '#D9C4A0', sort_order: 1 },

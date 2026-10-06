@@ -29,6 +29,19 @@ export const MATERIALEFARVER: Record<string, string> = {
   varme: 'Varme farver',
 };
 
+// Hvilken palet en kulør hører til (oversigten over varianter i ni-apps grupperer efter den).
+export const SPOR: Record<string, string> = {
+  olie: 'Olie (Rubio Monocoat)',
+  hpl: 'HPL og laminat (Arpa HPL Bloom, Riisfort)',
+  kompakt: 'Kompaktlaminat (Sander)',
+  stof: 'Stof (Kvadrat Field 2)',
+};
+export function sporAf(kuloer: string): keyof typeof SPOR {
+  if (kuloer.startsWith('sander-')) return 'kompakt';
+  if (kuloer === 'groenne' || kuloer === 'varme') return 'stof';
+  return kuloer in MATERIALEFARVER ? 'hpl' : 'olie';
+}
+
 type Billede = { url: string; color: string | null };
 type Produkt = { slug: string; name: string; color_order: string[] | null; images_meta: Billede[] | null };
 type Kuloer = { slug: string; label: string; swatch_hex: string; sort_order: number };
