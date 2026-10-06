@@ -1,7 +1,7 @@
 // node --test src/lib/varianter.test.ts
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { varianterAf, galleriAf, variantId, prisHref, variantFraUrl, variantTilbud } from './varianter.ts';
+import { varianterAf, variantId, prisHref, variantFraUrl, variantTilbud } from './varianter.ts';
 
 const kulorer = [
   { slug: 'natur', label: 'Natur', swatch_hex: '#D9C4A0', sort_order: 1 },
@@ -39,23 +39,6 @@ test('varianterAf: materialefarver får deres eget navn og ingen prøvefarve', (
 
 test('varianterAf: ingen billeder giver ingen varianter', () => {
   assert.deepEqual(varianterAf({ slug: 'x', name: 'X', color_order: null, images_meta: null }, kulorer), []);
-});
-
-test('galleriAf: det første billede først, uden dubletter; hvert billede kender sin variant; v kun på variantens eget billede', () => {
-  const foto = 'https://neminventar.dk/billeder/morkhoj/33.jpg';
-  const g = galleriAf(foto, locker.images_meta, varianterAf(locker, kulorer));
-  assert.deepEqual(g.map((b) => b.src), [foto, img('detalje'), img('uden'), img('charcoal2'), img('burgundy'), img('blaa'), img('natur')]);
-  assert.equal(g[0].variant, null);
-  assert.equal(g[1].variant?.kuloer, 'charcoal');
-  assert.equal(g[1].v, 'v-charcoal');
-  assert.equal(g[3].variant?.kuloer, 'charcoal');
-  assert.equal(g[3].v, null);
-  assert.equal(g[4].variant, null);
-  assert.equal(g[2].variant, null);
-  // primærbilledet ligger også i images_meta → kun én gang
-  const g2 = galleriAf(img('detalje'), locker.images_meta, varianterAf(locker, kulorer));
-  assert.equal(g2.length, 6);
-  assert.equal(g2[0].v, 'v-charcoal');
 });
 
 test('variantId er et gyldigt anker, også med æøå og mellemrum', () => {

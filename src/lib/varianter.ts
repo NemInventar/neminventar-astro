@@ -3,8 +3,8 @@
 // v_web_colors (Rubio-kulørerne) eller MATERIALEFARVER (laminat, HPL og stof, som ikke olieres). Billeder uden kulør
 // og kulører, der ikke står nogen af stederne, er ikke varianter. De bliver i galleriet uden at være en variant.
 // Ny variant = ny render med color + approved_for_web (opskriften i repoets CLAUDE.md). V2: tabellen web_varianter.
-// Typesiden har én vælger (Joachim 05-10-2026: "Hvorfor kører vi med 2?"): billederne under hovedbilledet, og
-// "Få pris på denne" følger det viste billede.
+// Typesiden har én vælger (Joachim 05-10-2026: "Hvorfor kører vi med 2?"): varianterne under hovedbilledet, og
+// "Få pris på denne" følger den valgte. Fotoet fra leverancen er ikke et valg og står for sig.
 // Ingen imports: testes med node --test (src/lib/varianter.test.ts), og bruges af både Astro og React-øerne.
 
 // Farver på materialer, der ikke olieres. Nøglen er images_meta.color, som den står i databasen.
@@ -60,20 +60,6 @@ export function varianterAf(p: Produkt, kulorer: Kuloer[]): Variant[] {
     ud.push({ id: variantId(k), slug: p.slug, navn: p.name, kuloer: k, label, hex: r?.swatch_hex ?? null, img: foerste.get(k)! });
   }
   return ud;
-}
-
-// Typesidens vælger: det første billede (foto fra leverancen eller primærbilledet), så de godkendte billeder uden
-// dubletter. Hvert billede kender sin variant (null: foto, render uden kulør eller en kulør, der ikke er en variant).
-// v (ankeret #v-<kulør>) sidder kun på variantens eget billede, så et link fra forsiden vælger netop det.
-export type GalleriBillede = { src: string; variant: Variant | null; v: string | null };
-export function galleriAf(foerste: string, billeder: Billede[], varianter: Variant[]): GalleriBillede[] {
-  const farve = new Map(billeder.map((b) => [b.url, b.color]));
-  const urls = [foerste, ...billeder.map((b) => b.url).filter((u) => u !== foerste)].filter(Boolean);
-  return urls.map((src) => {
-    const k = farve.get(src);
-    const variant = k ? varianter.find((x) => x.kuloer === k) ?? null : null;
-    return { src, variant, v: variant && variant.img === src ? variant.id : null };
-  });
 }
 
 // "Få pris på denne": kontaktsiden med emnet og, for en variant, ?v=<slug>~<kulør> → spor 'variant' i leadet.
