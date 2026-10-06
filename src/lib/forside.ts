@@ -21,7 +21,7 @@ export const KATALOG_TOP: { slug: string; kuloer?: string; foto?: string }[] = [
   { slug: 'garderobeskab-perforerede-lager' },
   { slug: 'hoejskab-krydsfiner', kuloer: 'natur' },
   { slug: 'opbevaringsskab-bejdset-krydsfiner', kuloer: 'roedbrun' },
-  { slug: 'garderobeskab-laager-siddeniche', kuloer: 'skovgroen' },
+  { slug: 'garderobeskab-laager-siddeniche', kuloer: 'fern' },
   { slug: 'omklaedningsbaenk-integreret-knagerakke', kuloer: 'charcoal' },
   { slug: 'koekkenvaeg-bejdset-krydsfiner', kuloer: 'blaa' },
 ];
@@ -31,7 +31,7 @@ export const KATALOG_TOP: { slug: string; kuloer?: string; foto?: string }[] = [
 export const INSPIRATION: { slug: string; kuloer: string; w: 8 | 4 }[] = [
   { slug: 'hoejskab-krydsfiner', kuloer: 'blaa', w: 8 },
   { slug: 'opbevaringsskab-bejdset-krydsfiner', kuloer: 'roedbrun', w: 4 },
-  { slug: 'garderobeskab-laager-siddeniche', kuloer: 'skovgroen', w: 4 },
+  { slug: 'garderobeskab-laager-siddeniche', kuloer: 'fern', w: 4 },
   { slug: 'hoejskab-krydsfiner', kuloer: 'terrakotta HPL', w: 8 },
   { slug: 'skohylde-med-locker', kuloer: 'roedbrun', w: 4 },
   { slug: 'koekkenvaeg-bejdset-krydsfiner', kuloer: 'blaa', w: 4 },
