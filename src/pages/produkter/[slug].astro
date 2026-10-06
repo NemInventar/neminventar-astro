@@ -12,7 +12,7 @@ import { getWebProducts, getWebColors, getWebCases, getWebLandingPages, type Web
 import { cdn } from '../../lib/img';
 import { chipLabels } from '../../lib/labels';
 import { FAM, famOf, productImage, typeBillede, fotoTag } from '../../lib/catalog';
-import { DESIGNER_URL, DESIGNER_AF } from '../../lib/forside';
+import { DESIGNER_AF, designerLink } from '../../lib/forside';
 import { varianterAf, prisHref } from '../../lib/varianter';
 
 export async function getStaticPaths() {
@@ -40,6 +40,9 @@ const altAf = (label?: string) => (label ? `${product.name} i ${label.toLowerCas
 // Fotoet fra leverancen: et rigtigt eksempel, ikke et valg.
 const foto = pi.foto ? pi.img : null;
 const designerProdukt = DESIGNER_AF[product.slug];
+// Designeren og IFC-filen åbner i den valgte kulør (lib/forside designerLink); null for typer uden model i designeren.
+const dLink = (k?: string) => designerLink(product.slug, k) ?? undefined;
+const ifcLink = (k?: string) => designerLink(product.slug, k, 'ifc') ?? undefined;
 
 // Landingssider, der nævner typen, og projekterne de peger på (data, ikke gæt)
 const relLanding = landing.filter((l) => (l.product_slugs ?? []).includes(product.slug));
@@ -82,7 +85,8 @@ const jsonLd = [{
           <div class="vtiles" role="group" aria-label="Vælg kulør">
             {varianter.map((v, i) => (
               <a class={`vtile${i === 0 ? ' active' : ''}`} href={`#${v.id}`} data-v={v.id} data-src={cdn(v.img, 1200)}
-                 data-alt={altAf(v.label)} data-label={v.label} data-pris={prisHref(base, v)} aria-current={i === 0 ? 'true' : undefined}>
+                 data-alt={altAf(v.label)} data-label={v.label} data-pris={prisHref(base, v)} data-designer={dLink(v.kuloer)} data-ifc={ifcLink(v.kuloer)}
+                 aria-current={i === 0 ? 'true' : undefined}>
                 <img src={cdn(v.img, 480)} alt={altAf(v.label)} loading="lazy" decoding="async" />
                 <span>{v.hex && <i style={`background:${v.hex}`}></i>}{v.label}</span>
               </a>
@@ -115,8 +119,9 @@ const jsonLd = [{
           <a href="tel:+4542422684" class="btn btn-ghost">+45 42 42 26 84</a>
           <CallbackForm client:load />
         </div>
-        {designerProdukt && (
-          <p class="pd-designer"><span>Byg {designerProdukt === 'locker' ? 'lockerne' : 'skabene'} selv i 3D: mål, kulør og antal.</span><a href={DESIGNER_URL ? `${DESIGNER_URL}?p=${designerProdukt}` : `${base}#design`}>{DESIGNER_URL ? 'Åbn designeren →' : 'Prøv det på forsiden →'}</a></p>
+        {designerProdukt && dLink(v0?.kuloer) && (
+          <p class="pd-designer"><span>Byg {designerProdukt === 'locker' ? 'lockerne' : 'skabene'} selv i 3D: mål, kulør og antal. Arkitekter kan hente modellen som IFC til Revit og ArchiCAD.</span>
+            <span class="pd-dlinks"><a id="designer-knap" href={dLink(v0?.kuloer)}>Åbn designeren →</a><a id="ifc-knap" href={ifcLink(v0?.kuloer)}>Hent IFC →</a></span></p>
         )}
       </div>
     </div>
@@ -169,6 +174,8 @@ const jsonLd = [{
     .vtile i{width:12px;height:12px;border-radius:50%;flex:none;border:1px solid rgba(23,20,14,.18)}
     .vtile:hover{border-color:var(--warm-soft)}
     .vtile.active{border-color:var(--warm);box-shadow:0 0 0 1px var(--warm);color:var(--ink)}
+    .pd-dlinks{display:flex;flex-direction:column;gap:6px;flex:none}
+    @media (max-width:600px){.pd-designer{flex-direction:column;align-items:flex-start}.pd-dlinks{flex-direction:row;gap:16px}}
     .pd-faq{margin-top:18px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:10px 0}
     .pd-faq summary{cursor:pointer;font-weight:600;font-size:15px}
     .pd-faq p{margin:8px 0 2px;font-size:14.5px;color:var(--muted);max-width:60ch}
@@ -184,8 +191,12 @@ const jsonLd = [{
     const knap = document.getElementById('pris-knap') as HTMLAnchorElement | null;
     const label = document.getElementById('pris-label');
     const tiles = Array.from(document.querySelectorAll<HTMLAnchorElement>('.vtile'));
+    const dKnap = document.getElementById('designer-knap') as HTMLAnchorElement | null;
+    const ifcKnap = document.getElementById('ifc-knap') as HTMLAnchorElement | null;
     const vaelg = (t: HTMLAnchorElement) => {
-      const { src, alt, label: l, pris } = t.dataset;
+      const { src, alt, label: l, pris, designer, ifc } = t.dataset;
+      if (dKnap && designer) dKnap.href = designer;
+      if (ifcKnap && ifc) ifcKnap.href = ifc;
       if (main && src) { main.style.opacity = '0'; main.onload = () => { main.style.opacity = '1'; }; main.src = src; if (alt) main.alt = alt; if (main.complete) main.style.opacity = '1'; }
       if (knap && pris) knap.href = pris;
       if (label) label.textContent = l ? ` · ${l}` : '';

@@ -132,7 +132,7 @@ try:
             # 5 · forsiden: inspirationens knap åbner Send os materialet med varianten
             sendt.clear()
             page.goto(URL, wait_until="networkidle")
-            cta = page.locator("#inventar a.mt-cta[data-variant]").first
+            cta = page.locator("#inventar a.mt-cta[data-variant]:visible").first  # små fliser skjuler knappen på telefon
             cta.scroll_into_view_if_needed()
             cta.hover()
             cta.click()
