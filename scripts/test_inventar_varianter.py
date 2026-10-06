@@ -56,7 +56,7 @@ try:
         pg = ctx.new_page()
         pg.goto(URL + "inventar", wait_until="domcontentloaded")
         n = pg.locator("#types .tcard:visible").count()
-        tjek("uden JS: alle kort vises", n >= 17, n)
+        tjek("uden JS: alle kort vises", n >= 15, n)
         tjek("uden JS: filtrene er skjulte", not pg.locator("#filters").is_visible())
 
         # 0b · et kort viser det billede, typesiden åbner på (Fable 06-10: et kort fører til det, det viser)
@@ -69,7 +69,7 @@ try:
             hoved = pg.locator("#main-img").get_attribute("src") if pg.locator("#main-img").count() else None
             if kilde(src) != kilde(hoved):
                 skaev.append(href.rsplit("/", 1)[-1])
-        tjek(f"kortbillede = typesidens hovedbillede ({len(kort)} kort)", len(kort) >= 17 and not skaev, skaev)
+        tjek(f"kortbillede = typesidens hovedbillede ({len(kort)} kort)", len(kort) >= 15 and not skaev, skaev)
 
         # 0c · "Det laver vi": én slags link pr. række
         pg.goto(URL, wait_until="domcontentloaded")
@@ -92,7 +92,7 @@ try:
             # 1 · /inventar og filtrene
             page.goto(URL + "inventar", wait_until="networkidle")
             n_alle = page.locator("#types .tcard:visible").count()
-            tjek(f"[{tag}] /inventar viser alle typer", n_alle >= 17, n_alle)
+            tjek(f"[{tag}] /inventar viser alle typer", n_alle >= 15, n_alle)
             tjek(f"[{tag}] filtrene er synlige", page.locator("#filters").is_visible())
             page.locator('#filters .fchip[data-f="skabe"]').click()
             n_skabe = page.locator("#types .tcard:visible").count()

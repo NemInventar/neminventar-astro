@@ -13,6 +13,12 @@ export default defineConfig({
 
   integrations: [react(), sitemap()],
 
+  // Typer, der er taget af sitet (Joachim 06-10-2026: ikke noget vi laver), peger videre til det nærmeste.
+  redirects: {
+    '/produkter/vaegbeklaedning-vertikale-traelister': '/produkter/vaegbeklaedning-krydsfiner',
+    '/produkter/skydedoer-massiv-krydsfiner': '/inventar',
+  },
+
   // Build-time secrets. SUPABASE_ANON_KEY er KRÆVET (ingen default => ligger aldrig i koden).
   // Hentes fra .env lokalt (gitignored) og fra GitHub Actions secret i CI.
   env: {
