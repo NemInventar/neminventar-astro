@@ -7,7 +7,7 @@
 // Billedteksterne siger, hvad renderen viser — ikke hvilket projekt den er fra.
 import type { WebProduct, WebColor } from '../lib/supabase';
 import { cdn } from '../lib/img';
-import { INSPIRATION, DESIGNER_URL, DESIGNER_AF } from '../lib/forside';
+import { INSPIRATION, designerLink } from '../lib/forside';
 import { varianterAf, prisHref, variantTilbud } from '../lib/varianter';
 interface Props { products: WebProduct[]; colors: WebColor[] }
 const { products, colors } = Astro.props;
@@ -16,9 +16,9 @@ const tiles = INSPIRATION.map((t) => {
   const p = products.find((x) => x.slug === t.slug);
   const v = p ? varianterAf(p, colors).find((x) => x.kuloer === t.kuloer) : undefined;
   if (!p || !v) return null;
-  const d = DESIGNER_URL ? DESIGNER_AF[p.slug] : undefined;
+  const d = designerLink(p.slug, v.kuloer);
   return { ...t, img: v.img, navn: v.navn, label: v.label, href: `${base}produkter/${p.slug}#${v.id}`,
-    cta: d ? { l: 'Åbn denne i designeren', href: `${DESIGNER_URL}?p=${d}`, variant: undefined }
+    cta: d ? { l: 'Åbn denne i designeren', href: d, variant: undefined }
       : { l: 'Få pris på denne', href: prisHref(base, v), variant: JSON.stringify(variantTilbud(v)) } };
 }).filter((x): x is NonNullable<typeof x> => !!x);
 ---

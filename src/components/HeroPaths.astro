@@ -6,7 +6,7 @@
 import type { WebProduct, WebColor } from '../lib/supabase';
 import { cdn } from '../lib/img';
 import { isPhoto, morkhoj, productImage } from '../lib/catalog';
-import { KATALOG_TOP, DESIGNER_URL, DESIGNER_AF, billedeAf } from '../lib/forside';
+import { KATALOG_TOP, DESIGNER_URL, designerLink, billedeAf } from '../lib/forside';
 import { varianterAf, prisHref, variantTilbud, typeTilbud } from '../lib/varianter';
 import SendPanel from './SendPanel';
 interface Props { products: WebProduct[]; colors: WebColor[] }
@@ -28,11 +28,11 @@ const katalog = KATALOG_TOP.map((k) => {
   if (!p) return null;
   const v = k.kuloer ? varianterAf(p, colors).find((x) => x.kuloer === k.kuloer) : undefined;
   const img = v?.img ?? productImage(p).img;
-  const d = DESIGNER_URL ? DESIGNER_AF[p.slug] : undefined;
+  const d = designerLink(p.slug, v?.kuloer);
   return {
     slug: p.slug, name: p.name, img, foto: isPhoto(img),
     href: `${base}produkter/${p.slug}${v ? '#' + v.id : ''}`,
-    cta: d ? { l: 'Åbn i designeren', href: `${DESIGNER_URL}?p=${d}`, variant: undefined }
+    cta: d ? { l: 'Åbn i designeren', href: d, variant: undefined }
       : { l: 'Få pris på denne', href: prisHref(base, v ?? { slug: p.slug, navn: p.name }), variant: JSON.stringify(v ? variantTilbud(v) : typeTilbud(p.name)) },
   };
 }).filter((x): x is NonNullable<typeof x> => !!x);

@@ -3,8 +3,10 @@
 // Spec: docs/superpowers/specs/2026-10-05-ny-forside-design.md · mockup: mockups/forside-v3.html.
 // Ingen Astro-imports: testes med node --test (src/lib/forside.test.ts).
 
-// Den offentlige designer (D3a-lite, designer-sessionen). null = ikke åben endnu → knapperne viser "Få pris".
-export const DESIGNER_URL: string | null = null;
+// Den offentlige designer (D3a-lite + D3b, live 05-10-2026). Links: ?p=<produkt>&t=<base64url(JSON-tilstand)>, og
+// &hent=ifc henter IFC-filen ved start (ni-apps core/permalink.js). Designeren renser selv tilstanden mod sine valg,
+// så en kulør, den ikke har, falder tilbage til standarden.
+export const DESIGNER_URL: string | null = 'https://ni-designer.pages.dev/designer.html';
 
 // Typer, designeren kan åbne (produkt-id i designeren).
 export const DESIGNER_AF: Record<string, 'locker' | 'hoejskab'> = {
@@ -13,8 +15,33 @@ export const DESIGNER_AF: Record<string, 'locker' | 'hoejskab'> = {
   'hoejskab-krydsfiner': 'hoejskab',
   'opbevaringsskab-bejdset-krydsfiner': 'hoejskab',
   'opbevaringsskab-laminat-standard': 'hoejskab',
+  'hoejskab-hpl-laager': 'hoejskab',
   'hoejskab-kompaktlaminat': 'hoejskab',
 };
+
+// Typen (og den valgte kulør) som tilstand i designeren. Farvede låger på klar korpus = front 'farve' + farve.laage.
+const laager = (k?: string) => (k && k !== 'natur' ? { mat: 'kryds', front: 'farve', farve: { kryds: 'natur', laage: k } } : { mat: 'kryds', farve: { kryds: 'natur' } });
+const TILSTAND: Record<string, (kuloer?: string) => Record<string, unknown>> = {
+  'hoejskab-krydsfiner': laager,
+  'opbevaringsskab-bejdset-krydsfiner': laager,
+  'opbevaringsskab-laminat-standard': () => ({ mat: 'kryds', front: 'laminat' }),
+  'hoejskab-hpl-laager': () => ({ mat: 'kryds', front: 'laminat' }),
+  'hoejskab-kompaktlaminat': () => ({ mat: 'kompakt' }),
+  'garderobeskab-perforerede-lager': (k) => ({ mat: 'kryds', farve: { kryds: k ?? 'natur' } }),
+  'skohylde-med-locker': (k) => ({ mat: 'kryds', farve: { kryds: k ?? 'natur' } }),
+};
+const kod = (st: unknown) => {
+  let s = '';
+  for (const b of new TextEncoder().encode(JSON.stringify(st))) s += String.fromCharCode(b);
+  return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+};
+// Link til designeren for en type, evt. i en kulør og med IFC-download. null, hvis designeren ikke har typen.
+export function designerLink(slug: string, kuloer?: string, hent?: 'ifc' | 'dxf'): string | null {
+  const p = DESIGNER_AF[slug];
+  if (!DESIGNER_URL || !p) return null;
+  const t = TILSTAND[slug];
+  return `${DESIGNER_URL}?p=${p}${t ? `&t=${kod(t(kuloer))}` : ''}${hent ? `&hent=${hent}` : ''}`;
+}
 
 // Katalog-panelet i toppen: seks typer, et tværsnit. kuloer = hvilken render der vises (images_meta.color).
 export const KATALOG_TOP: { slug: string; kuloer?: string; foto?: string }[] = [
