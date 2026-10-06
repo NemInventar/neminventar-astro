@@ -27,6 +27,7 @@ export const GET: APIRoute = async ({ site }) => {
     ...cases.map((c) => `- [${c.name}](${abs('projekter/' + c.slug)}): ${c.web_summary ?? ''}`),
     '',
     '## Arketyper',
+    `- [Alt inventar](${abs('inventar')}): Alle typer i kataloget, grupperet i familier. Hver type kan ses i de kulører, vi har visualiseret.`,
     ...products.map((p) => `- [${p.name}](${abs('produkter/' + p.slug)}): ${p.intro ?? p.short_description ?? ''}`),
     '',
     '## English',

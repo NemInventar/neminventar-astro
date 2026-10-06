@@ -1,0 +1,91 @@
+---
+// /inventar (D4, spec §7): alle typer i kataloget med filtre pr. familie (fra v2's katalog), plus de typer, der endnu
+// ikke er arketyper og derfor peger på deres landingsside. Varianterne vælges på hver typeside.
+// Uden JS vises alle kort, og filtrene er skjulte.
+import Base from '../layouts/Base.astro';
+import ProductCard from '../components/ProductCard.astro';
+import ContactCta from '../components/ContactCta.astro';
+import { getWebProducts, getWebCases, getWebLandingPages } from '../lib/supabase';
+import { cdn } from '../lib/img';
+import { FAM, FAM_ORDER, famOf, productImage, fotoTag, isPhoto, morkhoj } from '../lib/catalog';
+
+const [products, cases, landing] = await Promise.all([getWebProducts(), getWebCases(), getWebLandingPages()]);
+const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
+const hasLanding = (slug: string) => landing.some((l) => l.slug === slug);
+
+type Card = { name: string; href: string; img: string; pos: string; foto: boolean; fam: string; desc: string };
+const cards: Card[] = products.map((p) => {
+  const im = productImage(p);
+  return { name: p.name, href: `${base}produkter/${p.slug}`, img: im.img, pos: im.pos, foto: im.foto, fam: famOf(p), desc: p.intro ?? p.short_description ?? '' };
+});
+// Typer uden arketype endnu → deres landingsside (de samme fem som v2's katalog).
+const vinge = cases.find((c) => c.slug === 'daginstitution-vinge');
+const EXTRA: Card[] = [
+  { name: 'Lockers med kodelås og skohylde', href: `${base}lockers`, img: morkhoj('20_lockere-roede-perforerede-laager-kodelaase-og-skohylder.jpg'), pos: '50% 45%', foto: true, fam: 'garderober', desc: 'Aflåselige rum i krydsfiner med kodelås, skohylder under og bænk foran. Til skoler og haller med mange brugere.' },
+  { name: 'Børnegarderober med skorist', href: `${base}garderober`, img: vinge?.hero_image_url ?? '', pos: '50% 60%', foto: isPhoto(vinge?.hero_image_url), fam: 'garderober', desc: 'Ét modul pr. barn med knager foroven og dybere bund med skorist. Olieret i farver, så rækkerne deles op.' },
+  { name: 'Polstret siddeniche', href: `${base}siddenicher-og-baenke`, img: morkhoj('23_polstret-niche-roed-afrundet-hjoerne.jpg'), pos: '70% 40%', foto: true, fam: 'nicher', desc: 'Polstret niche bygget ind i væggen, med afrundede hjørner og plads til bord og stik. Til fællesarealer og gange.' },
+  { name: 'Bænke med ryghynder', href: `${base}siddenicher-og-baenke`, img: morkhoj('25_baenke-blaa-med-ryghynder-og-mellemvaeg.jpg'), pos: '50% 55%', foto: true, fam: 'nicher', desc: 'Bænke langs væggen i krydsfiner med ryghynder og siddehynder, bygget til fællesarealer med mange brugere.' },
+  { name: 'Glastavler og opslagstavler', href: `${base}akustik-og-glastavler`, img: morkhoj('03_klasserum-tavlevaeg-og-opslagstavler.jpg'), pos: '50% 22%', foto: true, fam: 'vaegge', desc: 'Glastavler og opslagstavler planlagt som én samlet tavlevæg i klasserummet, med akustik, hvor der er brug for det.' },
+].filter((c) => c.img && hasLanding(c.href.slice(base.length)));
+// Grupperet pr. familie. Inden for en familie: katalogets rækkefølge (web_display_order), så typerne uden arketype.
+const all = [...cards, ...EXTRA].sort((a, b) => FAM_ORDER.indexOf(a.fam) - FAM_ORDER.indexOf(b.fam));
+const famCount = (f: string) => all.filter((c) => c.fam === f).length;
+
+const title = 'Fast inventar på mål: alle typer | Nem Inventar';
+const description = 'Garderober, lockers, højskabe, bænke, tekøkkener, omklædning og vægge, bygget på mål til skoler, institutioner, idrætshaller og boliger. Se typerne og deres kulører.';
+const jsonLd = [
+  {
+    '@context': 'https://schema.org', '@type': 'ItemList', name: 'Fast inventar fra Nem Inventar',
+    itemListElement: all.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, url: new URL(c.href, site).href })),
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Nem Inventar', item: new URL(base, site).href },
+      { '@type': 'ListItem', position: 2, name: 'Inventar', item: new URL(base + 'inventar', site).href },
+    ],
+  },
+];
+const ogImage = all[0]?.img ? new URL(cdn(all[0].img, 1200), site).href : undefined;
+---
+<Base title={title} description={description} image={ogImage} jsonLd={jsonLd}>
+  <section class="sec inv" id="katalog"><div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="label">Inventar</span>
+        <h1 class="inv-h1">Fast inventar på mål. <em>Alle typer.</em></h1>
+        <p class="lede">Typerne er gennemarbejdet fra samling til overflade og bygges på mål til jeres rum. Mangler I en type, tegner vi den.</p>
+      </div>
+      <a href={`${base}kontakt`} class="ulink">Mangler I noget særligt? →</a>
+    </div>
+    <div class="filters" id="filters" role="group" aria-label="Filtrér typer" hidden>
+      <button type="button" class="fchip on" data-f="alle" aria-pressed="true">Alle<small>{all.length}</small></button>
+      {FAM_ORDER.filter((f) => famCount(f) > 0).map((f) => <button type="button" class="fchip" data-f={f} aria-pressed="false">{FAM[f]}<small>{famCount(f)}</small></button>)}
+    </div>
+    <div class="types expanded" id="types">
+      {all.map((c) => <ProductCard name={c.name} href={c.href} img={c.img} pos={c.pos} tag={fotoTag(c.foto)} fam={FAM[c.fam]} desc={c.desc} dataFam={c.fam} />)}
+    </div>
+  </div></section>
+
+  <ContactCta />
+
+  <style>
+    .inv-h1{font-size:clamp(36px,4.6vw,64px);margin-top:22px;max-width:20ch}
+  </style>
+  <script>
+    // Filtre pr. familie (fra v2's katalog). Uden JS er filtrene skjulte, og alle kort vises.
+    const types = document.getElementById('types');
+    const bar = document.getElementById('filters');
+    if (types && bar) {
+      bar.hidden = false;
+      const cards = Array.from(types.querySelectorAll<HTMLElement>('.tcard'));
+      const chips = Array.from(bar.querySelectorAll<HTMLButtonElement>('.fchip'));
+      const vis = (f: string) => {
+        cards.forEach((t) => { t.hidden = !(f === 'alle' || t.dataset.fam === f); });
+        chips.forEach((c) => { const on = c.dataset.f === f; c.classList.toggle('on', on); c.setAttribute('aria-pressed', String(on)); });
+      };
+      chips.forEach((c) => c.addEventListener('click', () => vis(c.dataset.f || 'alle')));
+    }
+  </script>
+</Base>

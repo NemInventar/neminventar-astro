@@ -5,11 +5,13 @@
 // Telefonen står synligt i headeren (også på mobil, hvor et tryk ringer op) — Joachim 01-10-2026.
 // På telefon og tablet (≤960 px) ligger menupunkterne bag en menu-knap (<details>, virker uden JS).
 import { PHONE, PHONE_TEL, LINKEDIN } from '../lib/contact';
+import { DESIGNER_URL } from '../lib/forside';
 const base = import.meta.env.BASE_URL; // slutter med '/'
+// "Designeren" fører til forsidens 3D (#design), indtil den offentlige designer findes (DESIGNER_URL).
 const links = [
   { href: `${base}projekter`, t: 'Projekter' },
-  { href: `${base}#katalog`, t: 'Inventar' },
-  { href: `${base}#designer`, t: 'Designeren', soon: true },
+  { href: `${base}inventar`, t: 'Inventar' },
+  { href: DESIGNER_URL ?? `${base}#design`, t: 'Designeren', soon: !DESIGNER_URL },
   { href: `${base}#saadan`, t: 'Sådan arbejder vi' },
   { href: `${base}om-os`, t: 'Om os' },
   { href: `${base}kontakt`, t: 'Kontakt' },

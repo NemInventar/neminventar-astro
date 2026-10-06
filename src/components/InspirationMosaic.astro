@@ -1,22 +1,24 @@
 ---
-// Inspiration (forside v3): de bedste renders som varianter — "Set i 3D, før det bygges." Hver variant fører til
-// designeren (når den er åben og typen findes der) eller til formularen med varianten som emne.
-// Udvalget står i src/lib/forside.ts (INSPIRATION); billederne slås op i v_web_products efter kulør.
+// Inspiration (forside v3): de bedste renders som varianter — "Set i 3D, før det bygges." Hver flise er en variant
+// (lib/varianter.ts): billedet åbner typesiden med kuløren valgt (#v-<kulør>), og knappen åbner designeren (når den er
+// offentlig og typen findes der) eller "Send os materialet" med varianten udfyldt (data-variant, HeroPaths' script).
+// Uden JS fører knappen til kontaktsiden med ?v=. Udvalget og teksterne står i src/lib/forside.ts (INSPIRATION).
 // Billedteksterne siger, hvad renderen viser — ikke hvilket projekt den er fra.
-import type { WebProduct } from '../lib/supabase';
+import type { WebProduct, WebColor } from '../lib/supabase';
 import { cdn } from '../lib/img';
-import { INSPIRATION, DESIGNER_URL, DESIGNER_AF, billedeAf } from '../lib/forside';
-interface Props { products: WebProduct[] }
-const { products } = Astro.props;
+import { INSPIRATION, DESIGNER_URL, DESIGNER_AF } from '../lib/forside';
+import { varianterAf, prisHref, variantTilbud } from '../lib/varianter';
+interface Props { products: WebProduct[]; colors: WebColor[] }
+const { products, colors } = Astro.props;
 const base = import.meta.env.BASE_URL;
-const tiles = INSPIRATION.map((v) => {
-  const p = products.find((x) => x.slug === v.slug);
-  if (!p) return null;
-  const img = billedeAf(p, v.kuloer);
-  if (!img) return null;
+const tiles = INSPIRATION.map((t) => {
+  const p = products.find((x) => x.slug === t.slug);
+  const v = p ? varianterAf(p, colors).find((x) => x.kuloer === t.kuloer) : undefined;
+  if (!p || !v) return null;
   const d = DESIGNER_URL ? DESIGNER_AF[p.slug] : undefined;
-  return { ...v, img, href: `${base}produkter/${p.slug}`,
-    cta: d ? { l: 'Åbn denne i designeren', href: `${DESIGNER_URL}?p=${d}` } : { l: 'Få pris på denne', href: `${base}kontakt?emne=${encodeURIComponent(`${v.titel}, ${v.variant.toLowerCase()}`)}` } };
+  return { ...t, img: v.img, href: `${base}produkter/${p.slug}#${v.id}`,
+    cta: d ? { l: 'Åbn denne i designeren', href: `${DESIGNER_URL}?p=${d}`, variant: undefined }
+      : { l: 'Få pris på denne', href: prisHref(base, v), variant: JSON.stringify(variantTilbud(v)) } };
 }).filter((x): x is NonNullable<typeof x> => !!x);
 ---
 <div class="mos">
@@ -26,7 +28,7 @@ const tiles = INSPIRATION.map((v) => {
       <span class="tagv">Visualisering</span>
       <figcaption>
         <div><b>{t.titel}</b><span>{t.variant}</span></div>
-        <a class="mt-cta" href={t.cta.href}>{t.cta.l} <span aria-hidden="true">→</span></a>
+        <a class="mt-cta" href={t.cta.href} data-variant={t.cta.variant}>{t.cta.l} <span aria-hidden="true">→</span></a>
       </figcaption>
     </figure>
   ))}
