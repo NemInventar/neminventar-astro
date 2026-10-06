@@ -117,13 +117,13 @@ Alt drives af Supabase ved build. Efter en ændring: **kør et build** (push til
 
 ## Web-farvevarianter (opskrift)
 
-Arketyper vises i et fast sæt **standardfarver** — Rubio Monocoat hardwax-olie, **IKKE linolie** (det bruges ikke; for besværligt). Paletten lever i `web_colors_2026_06_11` (`slug`, `label`, `swatch_hex`, `prompt_modifier`, `sort_order`). Pr. 2026-06-11: `natur`, `sort`, `roeget-eg`, `roedbrun`, `blaa`. (`roedbrun`/`blaa` ligner Linolie & Pigmenters "Bilbao"/"Blåvand" i kulør — men er et andet produkt; navnene er kun farve-reference.)
+Arketyper vises i et fast sæt **standardfarver** — Rubio Monocoat hardwax-olie, **IKKE linolie** (det bruges ikke; for besværligt). Paletten lever i `web_colors_2026_06_11` (`slug`, `label`, `swatch_hex`, `prompt_modifier`, `sort_order`, `is_active`); `v_web_colors` viser kun de aktive. Fra 06-10-2026 = designerens 7 lagerfarver med samme slugs (`natur` = Klar olie, `roedbrun`, `blaa`, `cotton-white`, `cocoa`, `dark-roast`, `fern`; ni-apps `scripts/designer/rubio.py` LAGER) + vores `charcoal` (Joachim: "vil dog gerne se charcoal"). Skifter designeren en lagerfarve, skiftes den også her — samme slug begge steder. (`roedbrun`/`blaa`/`charcoal` er vores egne pigmenterede kulører, ikke fra Rubios kort.) Kompaktlaminat og laminat er ikke olie: deres farver står i `MATERIALEFARVER` (`src/lib/varianter.ts`).
 
 Sådan kommer en arketype web-klar med farver — **gør det samme hver gang**:
 
 1. **Render** — kør `render-studio`/`arketype-studio` på arketypen, én render pr. aktiv farve i `web_colors` (brug farvens `prompt_modifier` i prompten). Træ-arketyper bruger hele paletten; akustik/tekstil har egne farver (Kvadrat) og håndteres separat.
-2. **Navngiv + tag** — hvert godkendt billede gemmes i `product_catalog_images_2026_05_03` med `color = <web_colors.slug>` (fx `'sort'`) og `approved_for_web = true`. Slug'en er join-nøglen — derfor navngives varianter ens på tværs af alle produkter.
-3. **Rækkefølge** — sæt `product_web.color_order = ARRAY['natur','sort',...]`.
+2. **Navngiv + tag** — hvert godkendt billede gemmes i `product_catalog_images_2026_05_03` med `color = <web_colors.slug>` (fx `'cocoa'`) og `approved_for_web = true`. Slug'en er join-nøglen — derfor navngives varianter ens på tværs af alle produkter.
+3. **Rækkefølge** — sæt `product_web.color_order = ARRAY['natur','blaa',...]`.
 4. **Beskrivelse** — den gode beskrivelse hører til ARKETYPEN (`product_web.web_story`), ikke pr. farve. En farve er kun et billede + et navn.
 5. **Vis** — typesiden viser én vælger med et billede pr. kulør (navn + hex fra `web_colors`, `src/lib/varianter.ts`); valget skifter hovedbilledet og "Få pris på denne". Renders i samme kulør skal vise samme skab, ellers giver vælgeren ikke mening.
 

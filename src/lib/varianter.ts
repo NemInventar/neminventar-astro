@@ -8,10 +8,13 @@
 // Ingen imports: testes med node --test (src/lib/varianter.test.ts), og bruges af både Astro og React-øerne.
 
 // Farver på materialer, der ikke olieres. Nøglen er images_meta.color, som den står i databasen.
+// Kompaktlaminat = Eggers fire dekorer i designeren (ni-apps core/dekorer.js, 06-10-2026), samme slugs.
 export const MATERIALEFARVER: Record<string, string> = {
   'terrakotta HPL': 'Terrakotta HPL-låger',
-  hvid: 'Hvid kompaktlaminat',
-  'grøn': 'Grøn kompaktlaminat',
+  'alpine-white': 'Alpinhvid kompaktlaminat',
+  'light-grey': 'Lysegrå kompaktlaminat',
+  'chicago-concrete': 'Betongrå kompaktlaminat',
+  black: 'Sort kompaktlaminat',
   duebla: 'Dueblå laminat',
   salviegroen: 'Salviegrøn laminat',
   sand: 'Sandfarvet laminat',
