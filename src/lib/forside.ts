@@ -32,7 +32,7 @@ export const INSPIRATION: { slug: string; kuloer: string; w: 8 | 4 }[] = [
   { slug: 'hoejskab-krydsfiner', kuloer: 'blaa', w: 8 },
   { slug: 'opbevaringsskab-bejdset-krydsfiner', kuloer: 'roedbrun', w: 4 },
   { slug: 'garderobeskab-laager-siddeniche', kuloer: 'fern', w: 4 },
-  { slug: 'hoejskab-krydsfiner', kuloer: 'terrakotta HPL', w: 8 },
+  { slug: 'vaegbeklaedning-krydsfiner', kuloer: 'charcoal', w: 8 },
   { slug: 'skohylde-med-locker', kuloer: 'roedbrun', w: 4 },
   { slug: 'koekkenvaeg-bejdset-krydsfiner', kuloer: 'blaa', w: 4 },
   { slug: 'garderobereol-siddenicher', kuloer: 'blaa', w: 4 },
