@@ -1,23 +1,27 @@
 ---
-// Produktside (arketype). Indhold fra v_web_products; farvevarianter fra images_meta; fotos fra leverancen,
-// hvor de viser typen (lib/catalog PHOTO). Projekter og landingssider, der nævner typen, vises nedenunder.
+// Produktside (arketype). Indhold fra v_web_products. Varianter (D4) fra images_meta: én vælger under hovedbilledet
+// med typen i hver kulør, og "Få pris på denne" følger den valgte (Joachim 05-10-2026: "Hvorfor kører vi med 2?").
+// Fotoet fra leverancen (lib/catalog PHOTO) er ikke en variant og står for sig som et rigtigt eksempel.
+// Projekter og landingssider, der nævner typen, vises nedenunder.
 import Base from '../../layouts/Base.astro';
 import CallbackForm from '../../components/CallbackForm.tsx';
 import ProductCard from '../../components/ProductCard.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
 import ContactCta from '../../components/ContactCta.astro';
-import { getWebProducts, getWebColors, getWebCases, getWebLandingPages, type WebProduct, type WebCase, type WebLanding } from '../../lib/supabase';
+import { getWebProducts, getWebColors, getWebCases, getWebLandingPages, type WebProduct, type WebCase, type WebLanding, type WebColor } from '../../lib/supabase';
 import { cdn } from '../../lib/img';
 import { chipLabels } from '../../lib/labels';
-import { FAM, famOf, productImage, fotoTag, isPhoto } from '../../lib/catalog';
+import { FAM, famOf, productImage, fotoTag } from '../../lib/catalog';
+import { DESIGNER_URL, DESIGNER_AF } from '../../lib/forside';
+import { varianterAf, prisHref } from '../../lib/varianter';
 
 export async function getStaticPaths() {
-  const [products, cases, landing] = await Promise.all([getWebProducts(), getWebCases(), getWebLandingPages()]);
-  return products.map((p) => ({ params: { slug: p.slug }, props: { product: p, products, cases, landing } }));
+  const [products, cases, landing, colors] = await Promise.all([getWebProducts(), getWebCases(), getWebLandingPages(), getWebColors()]);
+  return products.map((p) => ({ params: { slug: p.slug }, props: { product: p, products, cases, landing, colors } }));
 }
 
-interface Props { product: WebProduct; products: WebProduct[]; cases: WebCase[]; landing: WebLanding[] }
-const { product, products, cases, landing } = Astro.props;
+interface Props { product: WebProduct; products: WebProduct[]; cases: WebCase[]; landing: WebLanding[]; colors: WebColor[] }
+const { product, products, cases, landing, colors } = Astro.props;
 const base = import.meta.env.BASE_URL;
 const site = Astro.site!;
 const materials = chipLabels(product.materials);
@@ -26,21 +30,16 @@ const applications = chipLabels(product.applications);
 const paragraphs = (product.story ?? product.short_description ?? '').split('\n\n').filter(Boolean);
 const fam = famOf(product);
 
-// Galleri: fotoet fra leverancen først (hvis typen har et), derefter de godkendte billeder
+// Varianter: typen i hver kulør, vi har en render af. Hovedbilledet starter på den første.
+// Uden varianter (bør ikke ske) vises typens billede som før.
+const varianter = varianterAf(product, colors);
+const v0 = varianter[0] ?? null;
 const pi = productImage(product);
-const rest = (product.images ?? []).filter((u) => u !== pi.img);
-const gallery = [pi.img, ...rest].filter(Boolean);
-const tagOf = (src: string) => fotoTag(isPhoto(src));
-
-// Farvevarianter: kun aktiv når produktet har color_order OG billeder tagget med palette-slugs.
-const palette = product.color_order?.length ? await getWebColors() : [];
-const colorGroups = (product.color_order ?? [])
-  .map((slug) => {
-    const color = palette.find((c) => c.slug === slug);
-    const imgs = (product.images_meta ?? []).filter((m) => m.color === slug).map((m) => m.url);
-    return color && imgs.length ? { ...color, image: imgs[0] } : null;
-  })
-  .filter((g): g is NonNullable<typeof g> => g !== null);
+const mainImg = v0?.img ?? pi.img;
+const altAf = (label?: string) => (label ? `${product.name} i ${label.toLowerCase()}` : product.name);
+// Fotoet fra leverancen: et rigtigt eksempel, ikke et valg.
+const foto = pi.foto ? pi.img : null;
+const designerProdukt = DESIGNER_AF[product.slug];
 
 // Landingssider, der nævner typen, og projekterne de peger på (data, ikke gæt)
 const relLanding = landing.filter((l) => (l.product_slugs ?? []).includes(product.slug));
@@ -48,46 +47,44 @@ const caseSlugs = [...new Set(relLanding.flatMap((l) => l.case_slugs ?? []))];
 const relCases = caseSlugs.map((s) => cases.find((c) => c.slug === s)).filter((c): c is WebCase => !!c).slice(0, 3);
 // Andre typer: samme familie først, derefter resten
 const others = [...products.filter((p) => p.slug !== product.slug && famOf(p) === fam), ...products.filter((p) => p.slug !== product.slug && famOf(p) !== fam)].slice(0, 3);
-const showDesigner = fam === 'skabe' || fam === 'garderober';
 
 const jsonLd = [{
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Nem Inventar', item: new URL(base, site).href },
-    { '@type': 'ListItem', position: 2, name: 'Inventar', item: new URL(base + '#katalog', site).href },
+    { '@type': 'ListItem', position: 2, name: 'Inventar', item: new URL(base + 'inventar', site).href },
     { '@type': 'ListItem', position: 3, name: product.name, item: new URL(`${base}produkter/${product.slug}`, site).href },
   ],
 }];
 ---
-<Base title={product.seo_title} description={product.seo_description} image={gallery[0] ? cdn(gallery[0], 1200) : undefined} jsonLd={jsonLd}>
+<Base title={product.seo_title} description={product.seo_description} image={mainImg ? cdn(mainImg, 1200) : undefined} jsonLd={jsonLd}>
   <section class="pd"><div class="wrap">
-    <div class="crumbrow"><a href={`${base}#katalog`} class="crumb">← Kataloget</a></div>
+    <div class="crumbrow"><a href={`${base}inventar`} class="crumb">← Kataloget</a></div>
     <div class="pd-grid">
-      <div class="gallery">
-        {gallery[0] && (
+      <div class="gallery" id="galleri">
+        {mainImg && (
           <figure class="pd-main">
-            <img id="main-img" src={cdn(gallery[0], 1200)} alt={product.name} style={`--pos:${pi.pos}`} fetchpriority="high" />
-            <span class="ptag" id="main-tag">{tagOf(gallery[0])}</span>
+            <img id="main-img" src={cdn(mainImg, 1200)} alt={altAf(v0?.label)} style={v0 ? undefined : `--pos:${pi.pos}`} fetchpriority="high" />
+            <span class="ptag">{v0 ? fotoTag(false) : fotoTag(pi.foto)}</span>
           </figure>
         )}
-        {colorGroups.length > 1 && (
-          <div class="swatches" role="group" aria-label="Vælg farve">
-            {colorGroups.map((g) => (
-              <button class="swatch" data-src={cdn(g.image, 1200)} data-tag={tagOf(g.image)} aria-label={`Vis farven ${g.label}`}>
-                <span class="sw-dot" style={`background:${g.swatch_hex}`}></span>{g.label}
-              </button>
+        {varianter.length > 1 && (
+          <div class="vtiles" role="group" aria-label="Vælg kulør">
+            {varianter.map((v, i) => (
+              <a class={`vtile${i === 0 ? ' active' : ''}`} href={`#${v.id}`} data-v={v.id} data-src={cdn(v.img, 1200)}
+                 data-alt={altAf(v.label)} data-label={v.label} data-pris={prisHref(base, v)} aria-current={i === 0 ? 'true' : undefined}>
+                <img src={cdn(v.img, 480)} alt={altAf(v.label)} loading="lazy" decoding="async" />
+                <span>{v.hex && <i style={`background:${v.hex}`}></i>}{v.label}</span>
+              </a>
             ))}
           </div>
         )}
-        {gallery.length > 1 && (
-          <div class="thumbs">
-            {gallery.map((src, i) => (
-              <button class={`thumb${i === 0 ? ' active' : ''}`} data-src={cdn(src, 1200)} data-tag={tagOf(src)} aria-label={`Vis billede ${i + 1}`}>
-                <img src={cdn(src, 240)} alt={`${product.name} – billede ${i + 1}`} loading="lazy" />
-              </button>
-            ))}
-          </div>
+        {foto && (
+          <figure class="pd-foto">
+            <img src={cdn(foto, 1000)} alt={`${product.name}, foto fra en leverance`} style={`--pos:${pi.pos}`} loading="lazy" decoding="async" />
+            <figcaption>Fra en leverance: sådan ser typen ud i et rigtigt rum.</figcaption>
+          </figure>
         )}
       </div>
       <div class="detail-body">
@@ -104,12 +101,12 @@ const jsonLd = [{
         </div>
         <p class="pd-made"><b>Til mål</b> · pris efter opmåling · tegnet i 3D til godkendelse, før vi bygger</p>
         <div class="detail-cta">
-          <a href={`${base}kontakt?emne=${encodeURIComponent(product.name)}`} class="btn btn-primary">Få pris på denne <span class="arr">→</span></a>
+          <a id="pris-knap" href={prisHref(base, v0 ?? { slug: product.slug, navn: product.name })} class="btn btn-primary">Få pris på denne<span id="pris-label">{v0 && varianter.length > 1 ? ` · ${v0.label}` : ''}</span> <span class="arr">→</span></a>
           <a href="tel:+4542422684" class="btn btn-ghost">+45 42 42 26 84</a>
           <CallbackForm client:load />
         </div>
-        {showDesigner && (
-          <p class="pd-designer"><span class="soon">Snart</span><span>Byg skabet selv i designeren: mål, materiale, farve og låge — og se prisen følge med.</span><a href={`${base}#designer`}>Se designeren →</a></p>
+        {designerProdukt && (
+          <p class="pd-designer"><span>Byg {designerProdukt === 'locker' ? 'lockerne' : 'skabene'} selv i 3D: mål, kulør og antal.</span><a href={DESIGNER_URL ? `${DESIGNER_URL}?p=${designerProdukt}` : `${base}#design`}>{DESIGNER_URL ? 'Åbn designeren →' : 'Prøv det på forsiden →'}</a></p>
         )}
       </div>
     </div>
@@ -137,9 +134,9 @@ const jsonLd = [{
         <div>
           <span class="label">Inventar</span>
           <h2>Andre typer i <em>kataloget.</em></h2>
-          <p class="lede">Konstruktionen er løst. Målene er jeres: I vælger mål, materiale og farve, og ser resultatet i 3D med pris, før I bestiller.</p>
+          <p class="lede">Konstruktionen er løst. Målene er jeres: I vælger mål, materiale og farve, og vi tegner det i 3D, før vi bygger.</p>
         </div>
-        <a href={`${base}#katalog`} class="ulink">Hele kataloget →</a>
+        <a href={`${base}inventar`} class="ulink">Hele kataloget →</a>
       </div>
       <div class="types all rv">
         {others.map((p) => { const im = productImage(p); return (
@@ -154,17 +151,35 @@ const jsonLd = [{
 
   <ContactCta subject={product.name} />
 
+  <style>
+    .vtiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+    .vtile{display:flex;flex-direction:column;gap:6px;border:1px solid var(--line);border-radius:12px;padding:6px;background:#fff;color:var(--muted);font-size:13.5px;font-weight:500;line-height:1.25;transition:border-color .2s}
+    .vtile img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px}
+    .vtile span{display:flex;align-items:center;gap:6px;padding:0 2px 2px}
+    .vtile i{width:12px;height:12px;border-radius:50%;flex:none;border:1px solid rgba(23,20,14,.18)}
+    .vtile:hover{border-color:var(--warm-soft)}
+    .vtile.active{border-color:var(--warm);box-shadow:0 0 0 1px var(--warm);color:var(--ink)}
+    .pd-foto{margin:22px 0 0;border-top:1px solid var(--line);padding-top:18px}
+    .pd-foto img{width:100%;aspect-ratio:16/9;object-fit:cover;object-position:var(--pos,50% 50%);border-radius:14px}
+    .pd-foto figcaption{font-size:13.5px;color:var(--muted);margin-top:8px}
+    @media (max-width:600px){.vtiles{grid-template-columns:1fr 1fr}}
+  </style>
   <script>
+    // Vælgeren: billedet, alt-teksten og "Få pris på denne" følger den valgte kulør. #v-<kulør> (fra forsiden) vælger.
+    // Billederne bærer data-v, ikke id, så Base.astro's anker-rulning ikke trækker siden ned til vælgeren.
     const main = document.getElementById('main-img') as HTMLImageElement | null;
-    const tag = document.getElementById('main-tag');
-    const pickers = document.querySelectorAll<HTMLButtonElement>('.thumb, .swatch');
-    pickers.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const { src, tag: t } = btn.dataset;
-        if (main && src) { main.style.opacity = '0'; main.onload = () => { main.style.opacity = '1'; }; main.src = src; if (main.complete) main.style.opacity = '1'; }
-        if (tag && t) tag.textContent = t;
-        pickers.forEach((b) => b.classList.toggle('active', b.dataset.src === src));
-      });
-    });
+    const knap = document.getElementById('pris-knap') as HTMLAnchorElement | null;
+    const label = document.getElementById('pris-label');
+    const tiles = Array.from(document.querySelectorAll<HTMLAnchorElement>('.vtile'));
+    const vaelg = (t: HTMLAnchorElement) => {
+      const { src, alt, label: l, pris } = t.dataset;
+      if (main && src) { main.style.opacity = '0'; main.onload = () => { main.style.opacity = '1'; }; main.src = src; if (alt) main.alt = alt; if (main.complete) main.style.opacity = '1'; }
+      if (knap && pris) knap.href = pris;
+      if (label) label.textContent = l ? ` · ${l}` : '';
+      tiles.forEach((x) => { x.classList.toggle('active', x === t); if (x === t) x.setAttribute('aria-current', 'true'); else x.removeAttribute('aria-current'); });
+    };
+    tiles.forEach((t) => t.addEventListener('click', (e) => { e.preventDefault(); vaelg(t); history.replaceState(null, '', '#' + t.dataset.v); }));
+    const fra = tiles.find((t) => '#' + t.dataset.v === location.hash);
+    if (fra) vaelg(fra);
   </script>
 </Base>

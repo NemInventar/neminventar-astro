@@ -27,14 +27,15 @@ export const KATALOG_TOP: { slug: string; kuloer?: string; foto?: string }[] = [
 ];
 
 // Inspiration: syv varianter. w = bredde i 12-kolonne-gitteret (8 = liggende render, 4 = kvadrat).
-export const INSPIRATION: { slug: string; kuloer: string; w: 8 | 4; titel: string; variant: string }[] = [
-  { slug: 'hoejskab-krydsfiner', kuloer: 'blaa', w: 8, titel: 'Højskab i krydsfiner', variant: 'Blå låger, natur korpus' },
-  { slug: 'opbevaringsskab-bejdset-krydsfiner', kuloer: 'roedbrun', w: 4, titel: 'Højskabsvæg til loftet', variant: 'Bejdset rødbrun' },
-  { slug: 'garderobeskab-laager-siddeniche', kuloer: 'skovgroen', w: 4, titel: 'Garderobe med siddeniche', variant: 'Skovgrøn med polstret niche' },
-  { slug: 'hoejskab-krydsfiner', kuloer: 'terrakotta HPL', w: 8, titel: 'Højskab med HPL-låger', variant: 'Terrakotta, gribehuller' },
-  { slug: 'skohylde-med-locker', kuloer: 'roedbrun', w: 4, titel: 'Skohylde med locker', variant: 'Rødbrun' },
-  { slug: 'koekkenvaeg-bejdset-krydsfiner', kuloer: 'blaa', w: 4, titel: 'Køkkenvæg', variant: 'Bejdsede låger, blå' },
-  { slug: 'garderobereol-siddenicher', kuloer: 'blaa', w: 4, titel: 'Garderobereol med nicher', variant: 'Blå' },
+// Fliserne viser typens navn og kuløren — det samme, som man lander på (Fable 06-10: ingen egne titler).
+export const INSPIRATION: { slug: string; kuloer: string; w: 8 | 4 }[] = [
+  { slug: 'hoejskab-krydsfiner', kuloer: 'blaa', w: 8 },
+  { slug: 'opbevaringsskab-bejdset-krydsfiner', kuloer: 'roedbrun', w: 4 },
+  { slug: 'garderobeskab-laager-siddeniche', kuloer: 'skovgroen', w: 4 },
+  { slug: 'hoejskab-krydsfiner', kuloer: 'terrakotta HPL', w: 8 },
+  { slug: 'skohylde-med-locker', kuloer: 'roedbrun', w: 4 },
+  { slug: 'koekkenvaeg-bejdset-krydsfiner', kuloer: 'blaa', w: 4 },
+  { slug: 'garderobereol-siddenicher', kuloer: 'blaa', w: 4 },
 ];
 
 // Bevisbjælken: ét tal fra hver af fire forskellige sager.

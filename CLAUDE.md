@@ -110,6 +110,7 @@ Alt drives af Supabase ved build. Efter en ændring: **kør et build** (push til
 | Vise kundenavn på en case | `case_web.show_customer_name=true` |
 | Rette/tilføje en landingsside (`/kompaktlaminat`, `/inventar-til-skoler` …) | UPDATE/INSERT i `landing_web_2026_09_24` (`is_web_published=true`). Ruten er `src/pages/[slug].astro`; forsidens "Det laver vi", footer og `/llms.txt` følger med. Billeder i `images` har `kind` = `foto`/`visualisering`/`tegning`/`video` (video kræver `poster`). Arbejdsgangen: skill `seo` |
 | Vise entreprenør/arkitekt på en case | `case_web.show_customer_name` / `show_architect_name` = true — KUN efter skriftligt ok |
+| Ny variant på en type (vælgeren på typesiden, forsidens inspiration) | Render i kuløren som samme skab (render-studio farveskift) → billedet får `color` = en slug fra `web_colors` (Rubio) eller en nøgle i `MATERIALEFARVER` (`src/lib/varianter.ts`) og `approved_for_web=true`. Andre kulører og billeder uden kulør vises ikke i vælgeren |
 | Farve-varianter på en arketype | Render i farver via arketype-studio-skillen → sæt billeders `approved_for_web=true` + `color` → sæt `product_web.color_order` |
 
 ---
@@ -124,7 +125,7 @@ Sådan kommer en arketype web-klar med farver — **gør det samme hver gang**:
 2. **Navngiv + tag** — hvert godkendt billede gemmes i `product_catalog_images_2026_05_03` med `color = <web_colors.slug>` (fx `'sort'`) og `approved_for_web = true`. Slug'en er join-nøglen — derfor navngives varianter ens på tværs af alle produkter.
 3. **Rækkefølge** — sæt `product_web.color_order = ARRAY['natur','sort',...]`.
 4. **Beskrivelse** — den gode beskrivelse hører til ARKETYPEN (`product_web.web_story`), ikke pr. farve. En farve er kun et billede + et navn.
-5. **Vis** — detaljesiden grupperer `images` efter `color` og viser en swatch-knap pr. farve (label + hex fra `web_colors`); klik skifter galleriet.
+5. **Vis** — typesiden viser én vælger med et billede pr. kulør (navn + hex fra `web_colors`, `src/lib/varianter.ts`); valget skifter hovedbilledet og "Få pris på denne". Renders i samme kulør skal vise samme skab, ellers giver vælgeren ikke mening.
 
 Tilføj/ret en standardfarve → UPDATE/INSERT i `web_colors_2026_06_11`. Den slår igennem på alle produkter der har en render i den farve. **Ingen separat "upload produkt"-skill** — det er render-pipelinen + denne opskrift.
 

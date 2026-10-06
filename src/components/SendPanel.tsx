@@ -13,16 +13,26 @@ const MODES: { k: Mode; l: string }[] = [
   { k: 'mail', l: 'Bare en mail' },
 ];
 
+// 'ni:tilbud' bærer enten tekst (toppens designer → spor designer) eller et objekt fra et kort: en variant (D4 → spor
+// variant + konfiguration) eller en type uden kulør (spor skitse, kun emnet).
+type Tilbud = { besked: string; spor: 'designer' | 'variant' | 'skitse'; konfiguration?: Record<string, string> };
+const somTilbud = (d: unknown): Tilbud | null => {
+  if (typeof d === 'string') return d ? { besked: d, spor: 'designer' } : null;
+  const t = d as Tilbud | null;
+  return t && typeof t === 'object' && typeof t.besked === 'string' && ['variant', 'designer', 'skitse'].includes(t.spor) ? t : null;
+};
+
 export default function SendPanel() {
   const [mode, setMode] = useState<Mode>('skitse');
-  const [designer, setDesigner] = useState<string>('');
+  const [tilbud, setTilbud] = useState<Tilbud | null>(null);
   const [kopieret, setKopieret] = useState(false);
 
   useEffect(() => {
     // Panelet hydreres først, når det bliver synligt (client:visible) — en besked, der kom før, ligger på window.
-    const w = window as unknown as { niTilbud?: string };
-    if (w.niTilbud) { setDesigner(w.niTilbud); setMode('skitse'); }
-    const on = (e: Event) => { const t = (e as CustomEvent<string>).detail || ''; setDesigner(t); setMode('skitse'); };
+    const w = window as unknown as { niTilbud?: unknown };
+    const t0 = somTilbud(w.niTilbud);
+    if (t0) { setTilbud(t0); setMode('skitse'); }
+    const on = (e: Event) => { const t = somTilbud((e as CustomEvent<unknown>).detail); if (t) { setTilbud(t); setMode('skitse'); } };
     window.addEventListener('ni:tilbud', on);
     return () => window.removeEventListener('ni:tilbud', on);
   }, []);
@@ -48,7 +58,7 @@ export default function SendPanel() {
         </div>
       ) : (
         // key: et nyt spor giver en frisk formular (placeholder og spor følger med)
-        <ContactForm key={mode + (designer ? ':d' : '')} spor={designer ? 'designer' : mode} besked={designer} />
+        <ContactForm key={mode + (tilbud ? ':' + tilbud.spor + ':' + tilbud.besked : '')} spor={tilbud ? tilbud.spor : mode} besked={tilbud?.besked ?? ''} konfiguration={tilbud?.konfiguration} />
       )}
     </div>
   );

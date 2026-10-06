@@ -135,8 +135,7 @@ d.ryd()
 
 En **variant** er en bestemt udgave af en type, som vi har en render af. Titel, kulør og materiale følger allerede af typen (`v_web_products`) og billedets `color`, så de gentages ikke.
 
-**V1 (nu):** en fast liste i `src/lib/catalog.ts`:
-`{ image_url, product_slug, designer_produkt: 'hoejskab' | 'locker' | null, designer_tilstand, featured, order }`.
+**V1 (bygget 06-10-2026, D4):** udledt af `v_web_products.images_meta` i `src/lib/varianter.ts`. Én variant pr. kulør, der er en Rubio-kulør (`v_web_colors`) eller står i `MATERIALEFARVER`. Typesiden har én vælger (større billeder med kulørens navn) under hovedbilledet, og "Få pris på denne" følger valget. Fotoet fra leverancen står for sig. Dybe links: `/produkter/<slug>#v-<kulør>`. Forsidens udvalg (`INSPIRATION`, `KATALOG_TOP`) er slug + kulør og slås op som varianter. Designer og IFC pr. variant venter på designerens `?t=`-format (handoff `6490110a`). Planen: `docs/superpowers/plans/2026-10-05-d4-inventar-varianter.md`.
 
 **V2 (når Marianne skal redigere i /tekster):** en tynd tabel ved siden af, `web_varianter` med `image_id → product_catalog_images`, `designer_produkt`, `designer_tilstand jsonb`, `featured`, `web_display_order`, `is_web_published`, og et view `v_web_varianter` (GRANT SELECT TO anon). `ifc_url`/`dxf_url` til typer uden designer venter på arkitektens svar fra BIM-spiken (designer-planen §12a trin 1b). Ingen eksisterende tabel eller view ændres (databasereglen i repoets CLAUDE.md).
 - Knapper pr. variant: *Åbn denne i designeren* (findes `designer_produkt`, permalink med tilstanden) · *Hent IFC* (designeren laver filen ud fra tilstanden, ellers `ifc_url`, og ellers vises knappen ikke) · *Få pris på denne* (formular med `spor=variant` og konfigurationen udfyldt).

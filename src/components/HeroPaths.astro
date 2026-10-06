@@ -7,6 +7,7 @@ import type { WebProduct, WebColor } from '../lib/supabase';
 import { cdn } from '../lib/img';
 import { isPhoto, morkhoj, productImage } from '../lib/catalog';
 import { KATALOG_TOP, DESIGNER_URL, DESIGNER_AF, billedeAf } from '../lib/forside';
+import { varianterAf, prisHref, variantTilbud, typeTilbud } from '../lib/varianter';
 import SendPanel from './SendPanel';
 interface Props { products: WebProduct[]; colors: WebColor[] }
 const { products, colors } = Astro.props;
@@ -21,15 +22,18 @@ const STILL = {
   hoejskab: { src: cdn(hoejskabRender ? billedeAf(hoejskabRender, 'blaa') : '', 1400), tag: 'Visualisering', alt: 'Højskabe i krydsfiner med blå låger, ét skab åbent med hylder', pos: '50% 50%' },
 };
 
+// Katalogpanelet: en type med kulør er en variant (samme billede, anker og pris som på typesiden).
 const katalog = KATALOG_TOP.map((k) => {
   const p = products.find((x) => x.slug === k.slug);
   if (!p) return null;
-  const img = k.kuloer ? billedeAf(p, k.kuloer) : productImage(p).img;
+  const v = k.kuloer ? varianterAf(p, colors).find((x) => x.kuloer === k.kuloer) : undefined;
+  const img = v?.img ?? productImage(p).img;
   const d = DESIGNER_URL ? DESIGNER_AF[p.slug] : undefined;
   return {
     slug: p.slug, name: p.name, img, foto: isPhoto(img),
-    href: `${base}produkter/${p.slug}`,
-    cta: d ? { l: 'Åbn i designeren', href: `${DESIGNER_URL}?p=${d}` } : { l: 'Få pris på denne', href: `${base}kontakt?emne=${encodeURIComponent(p.name)}` },
+    href: `${base}produkter/${p.slug}${v ? '#' + v.id : ''}`,
+    cta: d ? { l: 'Åbn i designeren', href: `${DESIGNER_URL}?p=${d}`, variant: undefined }
+      : { l: 'Få pris på denne', href: prisHref(base, v ?? { slug: p.slug, navn: p.name }), variant: JSON.stringify(v ? variantTilbud(v) : typeTilbud(p.name)) },
   };
 }).filter((x): x is NonNullable<typeof x> => !!x);
 ---
@@ -110,12 +114,12 @@ const katalog = KATALOG_TOP.map((k) => {
             <a class="im" href={k.href} aria-label={k.name}><img src={cdn(k.img, 640)} alt={k.name} loading="lazy" decoding="async" /><span class="hp-tag">{k.foto ? 'Foto' : 'Visualisering'}</span></a>
             <div class="tx">
               <h3><a href={k.href}>{k.name}</a></h3>
-              <a class="hp-cta" href={k.cta.href}>{k.cta.l} <span aria-hidden="true">→</span></a>
+              <a class="hp-cta" href={k.cta.href} data-variant={k.cta.variant}>{k.cta.l} <span aria-hidden="true">→</span></a>
             </div>
           </article>
         ))}
       </div>
-      <div class="hp-cfoot"><span>Visualiseringer og fotos af typer, vi bygger.</span><a class="ulink" href="#inventar">Se alle typer og varianter →</a></div>
+      <div class="hp-cfoot"><span>Visualiseringer og fotos af typer, vi bygger.</span><a class="ulink" href={`${base}inventar`}>Se alle typer →</a></div>
     </section>
 
     <!-- 3 · Send os materialet -->
@@ -236,6 +240,17 @@ const katalog = KATALOG_TOP.map((k) => {
     a.addEventListener('click', () => vis(a.getAttribute('href')!.slice(1), false));
   });
   if (panels.includes(location.hash.slice(1))) vis(location.hash.slice(1), false);
+  // "Få pris på denne" på en variant (katalogpanelet og inspirationen): bliv på forsiden, så formularen kan se, hvor
+  // besøgeren kom fra (spec §4), og åbn "Send os materialet" med varianten udfyldt. Uden JS: kontaktsiden med ?v=.
+  document.querySelectorAll<HTMLAnchorElement>('a[data-variant]').forEach((a) => a.addEventListener('click', (e) => {
+    let t: unknown;
+    try { t = JSON.parse(a.dataset.variant || ''); } catch { return; } // ugyldigt → linket til kontaktsiden virker
+    e.preventDefault();
+    (window as unknown as { niTilbud?: unknown }).niTilbud = t; // læses af SendPanel, hvis det hydreres efter klikket
+    window.dispatchEvent(new CustomEvent('ni:tilbud', { detail: t }));
+    vis('send', false);
+    $('send')?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+  }));
 
   // ---------- design selv ----------
   const stage = $('hpStage'), canvasEl = $('hpCanvas'), toggle = $<HTMLButtonElement>('hpToggle');
