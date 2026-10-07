@@ -13,7 +13,7 @@ srv = None if REMOTE else subprocess.Popen([sys.executable, "-m", "http.server",
                                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 time.sleep(0 if REMOTE else 1.2)
 URL = REMOTE or "http://127.0.0.1:8774/"
-TYPER = ["hoejskab-krydsfiner", "garderobeskab-perforerede-lager", "hoejskab-kompaktlaminat", "hoejskab-hpl-laager"]
+TYPER = ["hoejskab-krydsfiner", "garderobeskab-perforerede-lager", "hoejskab-kompaktlaminat", "hoejskab-hpl-laager", "lockerbank-omklaedning"]
 ok = fejl = 0
 
 
