@@ -1,8 +1,9 @@
 ---
 // Forsidens top (forside v3, 05-10-2026): tre veje ind — Design det selv · Vælg fra kataloget · Send os materialet.
 // Mockup: mockups/forside-v3.html · spec §5-6. Fanerne er almindelige links (#design, #katalog, #send); uden JS
-// vises alle tre paneler under hinanden. 3D'en (src/scripts/hero3d.ts) er midlertidig og uden pris/IFC, indtil
-// designerens indlejr.v1.js findes. Stillbilledet er LCP; 3D hentes efter 'load' på computer og ved tryk på telefon.
+// vises alle tre paneler under hinanden. 3D'en er designerens indlejring (ni-designer.pages.dev/indlejr.v1.js, API v1;
+// Joachim 07-10-2026: ja til at skifte den midlertidige hero3d.ts ud). Stillbilledet er LCP; 3D hentes efter 'load' på
+// computer og ved tryk på telefon. "Åbn i designeren" og "Hent IFC" følger det, man har sat sammen.
 import type { WebProduct, WebColor } from '../lib/supabase';
 import { cdn } from '../lib/img';
 import { isPhoto, morkhoj, productImage } from '../lib/catalog';
@@ -102,6 +103,7 @@ const katalog = KATALOG_TOP.map((k) => {
       <div class="hp-acts">
         <a class="btn btn-primary hp-tilbud" href="#send" id="hpTilbud">Få et tilbud på denne <span class="arr">→</span></a>
         {DESIGNER_URL && <a class="hp-lnk" href={`${DESIGNER_URL}?p=locker`} id="hpDesigner">Åbn i designeren →</a>}
+        {DESIGNER_URL && <a class="hp-lnk" href={`${DESIGNER_URL}?p=locker&hent=ifc`} id="hpIfc">Hent IFC →</a>}
       </div>
     </section>
 
@@ -218,8 +220,12 @@ const katalog = KATALOG_TOP.map((k) => {
 </style>
 
 <script>
-  import type { Tilstand } from '../scripts/hero3d';
-  const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T | null;
+  // Designerens indlejring (D3b, ni-apps public/prisbog/designer/indlejr.js). API v1 er frosset: saet · on('aendret')
+  // · permalink · ryd. Siden ejer knapperne; designeren ejer scenen, læsefeltet og permalinket (IFC sker dér).
+  const INDLEJR = 'https://ni-designer.pages.dev/indlejr.v1.js';
+  type Indlejring = { saet(t: Record<string, unknown>): void; on(n: 'aendret', fn: (d: { spec: string; titel: string }) => void): () => void; permalink(): string; ryd(): void };
+  type Tilstand = { c: number; r: number; h: number; kuloer: string };
+  const $ =<T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T | null;
 
   // ---------- tre veje: fanerne ----------
   const paths = Array.from(document.querySelectorAll<HTMLAnchorElement>('.hp-path'));
@@ -231,7 +237,6 @@ const katalog = KATALOG_TOP.map((k) => {
     paths.forEach((a) => { if (a.dataset.p === p) a.setAttribute('aria-current', 'true'); });
     panels.forEach((id) => $(id)?.classList.toggle('on', id === p));
     if (scroll && narrow()) $(p)?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
-    if (p === 'design') hero3d?.vaek();
   }
   paths.forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); vis(a.dataset.p!, true); history.replaceState(null, '', '#' + a.dataset.p); }));
   // links andre steder på siden (fx "Få en pris" → #send) åbner den rigtige fane
@@ -258,16 +263,24 @@ const katalog = KATALOG_TOP.map((k) => {
   const sw = Array.from(document.querySelectorAll<HTMLButtonElement>('#hpSw button'));
   const STILL: Record<string, { src: string; tag: string; alt: string; pos: string }> = JSON.parse(document.getElementById('hp-still')?.textContent || '{}');
   type Prod = 'locker' | 'hoejskab';
+  // Kulør = slug fra webpaletten (samme slugs som designerens lagerfarver). h = højskabets højde i meter (knapperne).
   const S: Record<Prod, Tilstand> = {
-    locker: { produkt: 'locker', c: 6, r: 2, h: 2.1, kuloer: sw[0]?.dataset.hex || '#84402F' },
-    hoejskab: { produkt: 'hoejskab', c: 4, r: 1, h: 2.1, kuloer: sw[1]?.dataset.hex || '#43687C' },
+    locker: { c: 6, r: 2, h: 2.1, kuloer: sw[0]?.dataset.slug || 'roedbrun' },
+    hoejskab: { c: 4, r: 1, h: 2.1, kuloer: sw[1]?.dataset.slug || 'blaa' },
   };
   const LIM = { locker: { c: [1, 10], r: [1, 3] }, hoejskab: { c: [1, 8], r: [1, 1] } } as const;
+  // Sidens tilstand → designerens (locker: soejler/raekker · højskab: n skabe, h i cm)
+  const til = (p: Prod) => {
+    const s = S[p], farve = { kryds: s.kuloer };
+    return p === 'locker' ? { mat: 'kryds', soejler: s.c, raekker: s.r, farve } : { mat: 'kryds', n: s.c, h: Math.round(s.h * 100), farve };
+  };
   let cur: Prod = 'locker';
-  let hero3d: { saet(t: Partial<Tilstand>): void; vaek(): void; ryd(): void } | null = null;
-  let loading = false;
+  let d3: Indlejring | null = null;
+  let d3spec = '', loading = false;
 
+  // Læsefeltet: designerens egen spec, når 3D'en kører; ellers et skøn ud fra knapperne
   function specTekst(): string {
+    if (d3 && d3spec) return d3spec;
     const s = S[cur];
     if (cur === 'locker') {
       const n = s.c * s.r, w = Math.round((s.c * 0.30 + 0.018) * 100), h = Math.round((0.43 + s.r * 0.80) * 100);
@@ -275,10 +288,19 @@ const katalog = KATALOG_TOP.map((k) => {
     }
     return `${s.c} ${s.c === 1 ? 'højskab' : 'højskabe'} · ${s.c * 60} × ${Math.round(s.h * 100)} × 60 cm`;
   }
+  // "Åbn i designeren" og "Hent IFC": designerens permalink, når 3D'en kører; ellers produktet med kuløren
+  function links() {
+    const dl = $<HTMLAnchorElement>('hpDesigner'), ifc = $<HTMLAnchorElement>('hpIfc');
+    let url = '';
+    try { url = d3 ? d3.permalink() : ''; } catch { url = ''; }
+    if (!url && dl) url = `${dl.href.split('?')[0]}?p=${cur}&t=${btoa(JSON.stringify(til(cur))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`;
+    if (dl && url) dl.href = url;
+    if (ifc && url) ifc.href = url + (url.includes('?') ? '&' : '?') + 'hent=ifc';
+  }
   function sync() {
     const s = S[cur];
-    sw.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.hex === s.kuloer)));
-    const navn = sw.find((b) => b.dataset.hex === s.kuloer)?.getAttribute('aria-label') ?? '';
+    sw.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.slug === s.kuloer)));
+    const navn = sw.find((b) => b.dataset.slug === s.kuloer)?.getAttribute('aria-label') ?? '';
     $('hpColname')!.textContent = navn;
     document.querySelectorAll<HTMLElement>('.hp-steps').forEach((el) => { el.hidden = el.dataset.for !== cur; });
     $('hpDimLbl')!.textContent = cur === 'locker' ? 'Antal rum' : 'Antal og højde';
@@ -291,45 +313,51 @@ const katalog = KATALOG_TOP.map((k) => {
     spec!.textContent = specTekst();
     const st = STILL[cur];
     if (stillImg && st && stillImg.getAttribute('src') !== st.src) { stillImg.src = st.src; stillImg.alt = st.alt; stillImg.style.objectPosition = st.pos; stillTag!.textContent = st.tag; }
-    const dl = $<HTMLAnchorElement>('hpDesigner'); if (dl) dl.href = dl.href.replace(/p=\w+/, 'p=' + cur);
+    links();
   }
 
+  // Indlejringen hentes med timeout (4 s); fejler den (ingen WebGL, netværk), bliver stillbilledet stående.
   async function load3d() {
-    if (hero3d || loading || !canvasEl || !stage) return;
+    if (d3 || loading || !canvasEl || !stage) return;
     loading = true; toggle && (toggle.textContent = 'Henter 3D …');
     try {
-      const timeout = new Promise<never>((_, rej) => setTimeout(() => rej(new Error('timeout')), 8000));
-      const mod = await Promise.race([import('../scripts/hero3d'), timeout]);
-      hero3d = mod.start(canvasEl, { ...S[cur] });
+      const timeout = new Promise<never>((_, rej) => setTimeout(() => rej(new Error('timeout')), 4000));
+      const mod = await Promise.race([import(/* @vite-ignore */ INDLEJR), timeout]) as { indlejr: (el: HTMLElement, o: object) => Promise<Indlejring> };
+      d3 = await mod.indlejr(canvasEl, { produkt: cur, tilstand: til(cur), luft: { top: 16, bund: 56 } });
+      d3.on('aendret', ({ spec: sp }) => { d3spec = sp; if (spec) spec.textContent = sp; links(); });
       stage.classList.add('is-3d'); if (hint) hint.hidden = false;
       toggle && (toggle.textContent = 'Se den i et rum');
     } catch {
+      d3 = null;
       toggle && (toggle.hidden = true); // stillbilledet bliver stående
     } finally { loading = false; }
   }
   toggle?.addEventListener('click', () => {
-    if (!hero3d) { load3d(); return; }
+    if (!d3) { load3d(); return; }
     const on3d = stage!.classList.toggle('is-3d');
     if (hint) hint.hidden = !on3d;
     toggle.textContent = on3d ? 'Se den i et rum' : 'Tilbage til 3D';
-    if (on3d) hero3d.vaek();
   });
   document.querySelectorAll<HTMLButtonElement>('#hpProd button').forEach((b) => b.addEventListener('click', () => {
+    const fra = cur;
     cur = b.dataset.k as Prod;
     document.querySelectorAll('#hpProd button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
     stage!.dataset.produkt = cur;
-    sync(); hero3d?.saet({ ...S[cur] });
+    // et andet produkt = en ny indlejring (API'et skifter ikke produkt)
+    if (d3 && fra !== cur) { d3.ryd(); d3 = null; d3spec = ''; stage!.classList.remove('is-3d'); load3d(); }
+    sync();
   }));
-  sw.forEach((b) => b.addEventListener('click', () => { S[cur].kuloer = b.dataset.hex!; sync(); hero3d?.saet({ kuloer: S[cur].kuloer }); }));
+  sw.forEach((b) => b.addEventListener('click', () => { S[cur].kuloer = b.dataset.slug!; sync(); d3?.saet(til(cur)); }));
   document.querySelectorAll<HTMLButtonElement>('.hp-steps [data-d]').forEach((b) => b.addEventListener('click', () => {
     const [k, d] = b.dataset.d!.split(','); const s = S[cur]; const lim = (LIM[cur] as any)[k] as readonly [number, number];
-    (s as any)[k] = Math.max(lim[0], Math.min(lim[1], (s as any)[k] + +d)); sync(); hero3d?.saet({ ...s });
+    (s as any)[k] = Math.max(lim[0], Math.min(lim[1], (s as any)[k] + +d)); sync(); d3?.saet(til(cur));
   }));
-  document.querySelectorAll<HTMLButtonElement>('#hpH button').forEach((b) => b.addEventListener('click', () => { S.hoejskab.h = +b.dataset.h!; sync(); hero3d?.saet({ h: S.hoejskab.h }); }));
+  document.querySelectorAll<HTMLButtonElement>('#hpH button').forEach((b) => b.addEventListener('click', () => { S.hoejskab.h = +b.dataset.h!; sync(); d3?.saet(til('hoejskab')); }));
   $('hpTilbud')?.addEventListener('click', (e) => {
     e.preventDefault();
-    const navn = sw.find((x) => x.dataset.hex === S[cur].kuloer)?.getAttribute('aria-label') ?? '';
-    const detail = `Vedr. ${cur === 'locker' ? 'lockers' : 'højskabe'} fra forsiden: ${specTekst()} · kulør ${navn.toLowerCase()}.`;
+    const navn = sw.find((x) => x.dataset.slug === S[cur].kuloer)?.getAttribute('aria-label') ?? '';
+    const link = $<HTMLAnchorElement>('hpDesigner')?.href;
+    const detail = `Vedr. ${cur === 'locker' ? 'lockers' : 'højskabe'} fra forsiden: ${specTekst()} · kulør ${navn.toLowerCase()}.${link ? ` Designer-link: ${link}` : ''}`;
     (window as unknown as { niTilbud?: string }).niTilbud = detail; // læses af SendPanel, hvis det hydreres efter dette klik
     window.dispatchEvent(new CustomEvent('ni:tilbud', { detail }));
     vis('send', true);
