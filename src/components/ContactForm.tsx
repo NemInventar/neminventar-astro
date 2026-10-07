@@ -50,7 +50,7 @@ const PLACEHOLDER: Partial<Record<Spor, string>> = {
 // konfiguration (D4): varianten (eller senere designerens tilstand) følger med henvendelsen (contact-form v6, højst 4 KB).
 // Kommer man fra "Få pris på denne" på en typeside, står varianten i ?v=<slug>~<kulør> → spor 'variant'.
 export default function ContactForm({ spor = 'besked', besked = '', konfiguration }: { spor?: Spor; besked?: string; konfiguration?: Record<string, string> }) {
-  const [form, setForm] = useState({ name: '', company: '', phone: '', email: '', message: '', website: '' });
+  const [form, setForm] = useState({ name: '', company: '', phone: '', email: '', message: '', hp: '' });
   const [urlVariant, setUrlVariant] = useState<Record<string, string> | null>(null);
   const konf = konfiguration ?? urlVariant;
   const sporNu: Spor = konfiguration ? spor : urlVariant ? 'variant' : spor;
@@ -122,7 +122,7 @@ export default function ContactForm({ spor = 'besked', besked = '', konfiguratio
       if (files.length) {
         const r = await fetch(FUNCTION_URL, {
           method: 'POST', headers,
-          body: JSON.stringify({ action: 'upload-urls', website: form.website, files: files.map((f) => ({ name: f.name, size: f.size, type: f.type })) }),
+          body: JSON.stringify({ action: 'upload-urls', hp: form.hp, files: files.map((f) => ({ name: f.name, size: f.size, type: f.type })) }),
         });
         const d = await r.json().catch(() => ({}));
         const urls: UploadUrl[] = Array.isArray(d?.files) ? d.files : [];
@@ -182,8 +182,8 @@ export default function ContactForm({ spor = 'besked', besked = '', konfiguratio
   return (
     <form className="form" onSubmit={submit} noValidate>
       {/* Honeypot — usynligt for mennesker; bots udfylder det og afvises server-side */}
-      <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true"
-        value={form.website} onChange={update}
+      <input type="text" name="hp" tabIndex={-1} autoComplete="off" aria-hidden="true"
+        value={form.hp} onChange={update}
         style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', opacity: 0 }} />
       <div className="kundetype" role="radiogroup" aria-label="Er du privat eller erhverv?">
         {(['erhverv', 'privat'] as const).map((t) => (

@@ -1,12 +1,13 @@
-"""Test af contact-form v6 uden at skrive eller sende noget (dry_run=true).
+"""Test af contact-form v9 uden at skrive eller sende noget (dry_run=true).
 
   python scripts/test_contact_form.py
 
 Kalder den deployede funktion med origin https://neminventar.dk og tjekker:
-  - GET svarer version 6
+  - GET svarer version 9
   - de seks svar på "Hvor fandt I os?" + tomt svar med referrer → lead_kanal efter CHECK-reglen
   - for hurtig udfyldning → mistanke, intet lead
-  - honeypot → success uden noget
+  - honeypot (website og hp) → success uden noget
+  - tre links til udbudsmateriale → ingen mistanke (v9: grænsen er 6)
   - et v5-kald uden de nye felter → kanal Ukendt, ingen mistanke (bagudkompatibelt)
 """
 import json, sys, urllib.request
@@ -31,7 +32,7 @@ def tjek(navn, cond, info=""):
 
 with urllib.request.urlopen(urllib.request.Request(URL, headers={"Origin": "https://neminventar.dk"}), timeout=30) as r:
     g = json.loads(r.read().decode())
-tjek("GET version 6", g.get("version") == 6, g)
+tjek("GET version 9", g.get("version") == 9, g)
 
 CASES = [
     ({"kilde_svar": "Google", "referrer_host": "chatgpt.com"}, "Google"),
@@ -56,8 +57,12 @@ tjek("spor udbud følger med", d.get("spor") == "udbud" and "udbud" in lead.get(
 d = post({**BASE, "ms": 800})
 tjek("hurtig udfyldning → mistanke, intet lead", d.get("mistanke") is True and d.get("lead") is None, d)
 
-d = post({**BASE, "website": "http://spam"})
-tjek("honeypot → success uden dry_run-svar", d.get("success") is True and "dry_run" not in d, d)
+for felt in ("website", "hp"):
+    d = post({**BASE, felt: "http://spam"})
+    tjek(f"honeypot {felt} → success uden dry_run-svar", d.get("success") is True and "dry_run" not in d, d)
+
+d = post({**BASE, "ms": 9000, "message": "Tegninger: https://dalux.com/x https://ibinder.com/y https://byggefakta.dk/z"})
+tjek("tre links → ingen mistanke, lead", d.get("mistanke") is False and d.get("lead") is not None, d)
 
 d = post({k: v for k, v in BASE.items()})
 tjek("v5-kald uden nye felter → Ukendt, ingen mistanke", d.get("kanal") == "Ukendt" and d.get("mistanke") is False and d.get("spor") == "besked", d)

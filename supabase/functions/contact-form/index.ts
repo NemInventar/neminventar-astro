@@ -26,13 +26,15 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 //     ni-apps public/prisbog/designer/core/forespoergsel.js. Ellers uændret.
 //   v8 (07-10-2026): designeren på eget domæne designer.neminventar.dk (firmafiltre blokerer *.pages.dev).
 //     ni-designer.pages.dev må stadig sende (reserve). Ellers uændret.
+//   v9 (07-10-2026): honeypot-træf gemmes i web_henvendelser som kind 'honeypot' (intet lead, ingen mail), så et
+//     menneske kan se dem, og mistanke-grænsen for links er 6 i stedet for 3. Formularerne sender feltet som hp.
 // Beskyttelse: fast modtager + honeypot + input-validering + origin-låst CORS + dedup/rate-limit
 // på opkald og leads + tidsfælde/linktæller før lead + filtype/størrelse/antal på upload.
 // verify_jwt=false (offentligt endpoint, ingen nøgle i klienten).
 // Deployes via Supabase MCP (deploy_edge_function, verify_jwt=false, filer: index.ts + lead.ts). Denne fil er kilden.
 import { byggLead, erMistaenkelig, kanalFraHost, mapKanal } from "./lead.ts";
 
-const VERSION = 8;
+const VERSION = 9;
 const SPOR = new Set(["besked", "skitse", "udbud", "designer", "variant"]);
 
 const TENANT_ID = Deno.env.get("MS_GRAPH_TENANT_ID") || "";
@@ -190,6 +192,26 @@ async function handleUploadUrls(body: any, json: Record<string, string>): Promis
   return new Response(JSON.stringify({ success: true, upload_id: id, files: out }), { headers: json });
 }
 
+// Honeypot-træf gemmes som kind 'honeypot' (best effort, højst 30 i timen, tomme kald springes over). Intet lead, ingen mail.
+async function gemHoneypot(body: any): Promise<void> {
+  const t = (v: unknown, n: number) => String(v ?? "").trim().slice(0, n);
+  const name = t(body?.name, 200), email = t(body?.email, 200), phone = t(body?.phone, 80), message = t(body?.message, 2000);
+  if (body?.dry_run === true || (!name && !email && !phone && !message)) return;
+  try {
+    const sb = admin();
+    const { count } = await sb.from(TABLE).select("id", { count: "exact", head: true })
+      .eq("kind", "honeypot").gte("created_at", new Date(Date.now() - 3600_000).toISOString());
+    if ((count ?? 0) >= 30) return;
+    await sb.from(TABLE).insert({
+      kind: "honeypot", name, company: t(body?.company, 200) || null, email, phone: phone || null, message,
+      side: t(body?.side, 200) || null, spor: t(body?.kind || body?.spor, 20) || null, mail_sent: false,
+      notes: `honeypot: skjult felt = "${t(body?.website || body?.hp, 100)}" · intet lead, ingen mail`,
+    });
+  } catch (e) {
+    console.error("contact-form: honeypot-log fejlede", e);
+  }
+}
+
 async function handleCallback(body: any, json: Record<string, string>): Promise<Response> {
   const name = String(body?.name ?? "").trim().slice(0, 200);
   const company = String(body?.company ?? "").trim().slice(0, 200);
@@ -310,8 +332,12 @@ Deno.serve(async (req: Request) => {
     return new Response(JSON.stringify({ error: "Ugyldig forespørgsel." }), { status: 400, headers: json });
   }
 
-  // Honeypot: bots udfylder skjulte felter. Lad som om det lykkedes, send intet.
-  if (body?.website || body?.hp) return new Response(JSON.stringify({ success: true }), { headers: json });
+  // Honeypot: bots udfylder skjulte felter. Lad som om det lykkedes, send intet — men gem forsøget (v9), så et menneske
+  // kan se det, hvis en password-manager har udfyldt feltet for en rigtig kunde (Fable 07-10-2026). NI Udefra-ind viser dem.
+  if (body?.website || body?.hp) {
+    await gemHoneypot(body);
+    return new Response(JSON.stringify({ success: true }), { headers: json });
+  }
 
   if (body?.action === "upload-urls") return await handleUploadUrls(body, json);
   if (body?.kind === "opkald") return await handleCallback(body, json);
