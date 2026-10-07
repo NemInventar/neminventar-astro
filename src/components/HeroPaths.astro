@@ -365,9 +365,10 @@ const katalog = KATALOG_TOP.map((k) => {
   });
   sync();
 
-  // 3D: computer efter 'load'; telefon og saveData kun ved tryk på "Se i 3D"
+  // 3D: computer efter 'load'; telefon og saveData kun ved tryk på "Se i 3D". Kun med grafikkort: uden hardwareacceleration
+  // tegner browseren 3D på processoren, og det frøs en hel browser (07-10-2026) — så bliver stillbilledet, og 3D hentes ikke.
   const saveData = (navigator as any).connection?.saveData === true;
-  const hasGL = (() => { try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch { return false; } })();
+  const hasGL = (() => { try { const c = document.createElement('canvas'), k = { failIfMajorPerformanceCaveat: true }; return !!(c.getContext('webgl2', k) || c.getContext('webgl', k)); } catch { return false; } })();
   if (!hasGL) toggle && (toggle.hidden = true);
   else if (!narrow() && !saveData) {
     const go = () => ('requestIdleCallback' in window ? (window as any).requestIdleCallback(load3d, { timeout: 1500 }) : setTimeout(load3d, 300));
