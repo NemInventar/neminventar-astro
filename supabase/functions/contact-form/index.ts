@@ -24,13 +24,15 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 //   v7 (05-10-2026, D3b): designeren må sende — den offentlige på ni-designer.pages.dev (rigtige leads, spor
 //     'designer') og den interne på ni-apps.pages.dev (sender altid dry_run). Kilden til designerens formular:
 //     ni-apps public/prisbog/designer/core/forespoergsel.js. Ellers uændret.
+//   v8 (07-10-2026): designeren på eget domæne designer.neminventar.dk (firmafiltre blokerer *.pages.dev).
+//     ni-designer.pages.dev må stadig sende (reserve). Ellers uændret.
 // Beskyttelse: fast modtager + honeypot + input-validering + origin-låst CORS + dedup/rate-limit
 // på opkald og leads + tidsfælde/linktæller før lead + filtype/størrelse/antal på upload.
 // verify_jwt=false (offentligt endpoint, ingen nøgle i klienten).
 // Deployes via Supabase MCP (deploy_edge_function, verify_jwt=false, filer: index.ts + lead.ts). Denne fil er kilden.
 import { byggLead, erMistaenkelig, kanalFraHost, mapKanal } from "./lead.ts";
 
-const VERSION = 7;
+const VERSION = 8;
 const SPOR = new Set(["besked", "skitse", "udbud", "designer", "variant"]);
 
 const TENANT_ID = Deno.env.get("MS_GRAPH_TENANT_ID") || "";
@@ -58,7 +60,8 @@ const ALLOWED_ORIGINS = new Set([
   "https://www.neminventar.dk",
   "http://localhost:4321",
   "http://127.0.0.1:4321",
-  // designeren (v7): offentlig og intern (intern sender kun dry_run) + lokal server under udvikling
+  // designeren (v7/v8): offentlig og intern (intern sender kun dry_run) + lokal server under udvikling
+  "https://designer.neminventar.dk",
   "https://ni-designer.pages.dev",
   "https://ni-apps.pages.dev",
   "http://localhost:4417",

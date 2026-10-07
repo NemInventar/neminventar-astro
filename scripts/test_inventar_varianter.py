@@ -90,7 +90,7 @@ try:
             fang_post(page, sendt)
             # Forsidens 3D (designerens indlejring) har sin egen test (test_forside_designer.py). Her blokeres den, så
             # software-rendering i headless ikke tager CPU'en fra resten; siden falder tilbage til stillbilledet.
-            ctx.route("**/ni-designer.pages.dev/**", lambda r: r.abort())
+            ctx.route("**/designer.neminventar.dk/**", lambda r: r.abort())
 
             # 1 · /inventar og filtrene
             page.goto(URL + "inventar", wait_until="networkidle")

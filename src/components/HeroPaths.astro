@@ -1,7 +1,7 @@
 ---
 // Forsidens top (forside v3, 05-10-2026): tre veje ind — Design det selv · Vælg fra kataloget · Send os materialet.
 // Mockup: mockups/forside-v3.html · spec §5-6. Fanerne er almindelige links (#design, #katalog, #send); uden JS
-// vises alle tre paneler under hinanden. 3D'en er designerens indlejring (ni-designer.pages.dev/indlejr.v1.js, API v1;
+// vises alle tre paneler under hinanden. 3D'en er designerens indlejring (designer.neminventar.dk/indlejr.v1.js, API v1;
 // Joachim 07-10-2026: ja til at skifte den midlertidige hero3d.ts ud). Stillbilledet er LCP; 3D hentes efter 'load' på
 // computer og ved tryk på telefon. "Åbn i designeren" og "Hent IFC" følger det, man har sat sammen.
 import type { WebProduct, WebColor } from '../lib/supabase';
@@ -222,7 +222,8 @@ const katalog = KATALOG_TOP.map((k) => {
 <script>
   // Designerens indlejring (D3b, ni-apps public/prisbog/designer/indlejr.js). API v1 er frosset: saet · on('aendret')
   // · permalink · ryd. Siden ejer knapperne; designeren ejer scenen, læsefeltet og permalinket (IFC sker dér).
-  const INDLEJR = 'https://ni-designer.pages.dev/indlejr.v1.js';
+  // Eget domæne (07-10-2026): firmafiltre blokerer ofte *.pages.dev. ni-designer.pages.dev svarer stadig som reserve.
+  const INDLEJR = 'https://designer.neminventar.dk/indlejr.v1.js';
   type Indlejring = { saet(t: Record<string, unknown>): void; on(n: 'aendret', fn: (d: { spec: string; titel: string }) => void): () => void; permalink(): string; ryd(): void };
   type Tilstand = { c: number; r: number; h: number; kuloer: string };
   const $ =<T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T | null;

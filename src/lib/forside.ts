@@ -5,8 +5,8 @@
 
 // Den offentlige designer (D3a-lite + D3b, live 05-10-2026). Links: ?p=<produkt>&t=<base64url(JSON-tilstand)>, og
 // &hent=ifc henter IFC-filen ved start (ni-apps core/permalink.js). Designeren renser selv tilstanden mod sine valg,
-// så en kulør, den ikke har, falder tilbage til standarden.
-export const DESIGNER_URL: string | null = 'https://ni-designer.pages.dev/designer.html';
+// så en kulør, den ikke har, falder tilbage til standarden. Eget domæne fra 07-10-2026 (firmafiltre blokerer *.pages.dev).
+export const DESIGNER_URL: string | null = 'https://designer.neminventar.dk/designer.html';
 
 // Typer, designeren kan åbne (produkt-id i designeren).
 export const DESIGNER_AF: Record<string, 'locker' | 'hoejskab'> = {

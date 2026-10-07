@@ -47,7 +47,7 @@ try:
         spec = pg.locator("#hpSpec").inner_text()
         tjek("læsefeltet viser designerens spec", "locker" in spec.lower(), spec)
         d0 = pg.locator("#hpDesigner").get_attribute("href")
-        tjek("Åbn i designeren peger på ni-designer med tilstand", "ni-designer.pages.dev" in d0 and "t=" in d0, d0)
+        tjek("Åbn i designeren peger på ni-designer med tilstand", "designer.neminventar.dk" in d0 and "t=" in d0, d0)
         # kulør: anden knap
         pg.locator("#hpSw button").nth(1).click(); pg.wait_for_timeout(500)
         st = tilstand(pg.locator("#hpDesigner").get_attribute("href"))
