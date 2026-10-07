@@ -17,6 +17,8 @@ export default defineConfig({
   redirects: {
     '/produkter/vaegbeklaedning-vertikale-traelister': '/produkter/vaegbeklaedning-krydsfiner',
     '/produkter/skydedoer-massiv-krydsfiner': '/inventar',
+    // Joachim 07-10-2026: "det er bare lockers" — typen hedder nu Lockers i krydsfiner
+    '/produkter/skohylde-med-locker': '/produkter/lockers-krydsfiner',
   },
 
   // Build-time secrets. SUPABASE_ANON_KEY er KRÆVET (ingen default => ligger aldrig i koden).

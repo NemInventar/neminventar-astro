@@ -11,7 +11,9 @@ export const DESIGNER_URL: string | null = 'https://ni-designer.pages.dev/design
 // Typer, designeren kan åbne (produkt-id i designeren).
 export const DESIGNER_AF: Record<string, 'locker' | 'hoejskab'> = {
   'garderobeskab-perforerede-lager': 'locker',
-  'skohylde-med-locker': 'locker',
+  'lockers-krydsfiner': 'locker',
+  'lockerskab-ventilerede-laager': 'locker',
+  'lockerbank-omklaedning': 'locker',
   'hoejskab-krydsfiner': 'hoejskab',
   'opbevaringsskab-bejdset-krydsfiner': 'hoejskab',
   'opbevaringsskab-laminat-standard': 'hoejskab',
@@ -27,8 +29,11 @@ const TILSTAND: Record<string, (kuloer?: string) => Record<string, unknown>> = {
   'opbevaringsskab-laminat-standard': () => ({ mat: 'kryds', front: 'laminat' }),
   'hoejskab-hpl-laager': () => ({ mat: 'kryds', front: 'laminat' }),
   'hoejskab-kompaktlaminat': () => ({ mat: 'kompakt' }),
+  // Lockertyperne (Joachim 07-10-2026: mindst fire forskellige): samme locker i designeren, antal rækker efter typen
   'garderobeskab-perforerede-lager': (k) => ({ mat: 'kryds', farve: { kryds: k ?? 'natur' } }),
-  'skohylde-med-locker': (k) => ({ mat: 'kryds', farve: { kryds: k ?? 'natur' } }),
+  'lockers-krydsfiner': (k) => ({ mat: 'kryds', farve: { kryds: k ?? 'natur' }, raekker: 2 }),
+  'lockerskab-ventilerede-laager': (k) => ({ mat: 'kryds', farve: { kryds: k ?? 'natur' }, raekker: 1 }),
+  'lockerbank-omklaedning': (k) => ({ mat: 'kryds', farve: { kryds: k ?? 'natur' }, raekker: 5 }),
 };
 const kod = (st: unknown) => {
   let s = '';
@@ -60,7 +65,7 @@ export const INSPIRATION: { slug: string; kuloer: string; w: 8 | 4 }[] = [
   { slug: 'opbevaringsskab-bejdset-krydsfiner', kuloer: 'roedbrun', w: 4 },
   { slug: 'garderobeskab-laager-siddeniche', kuloer: 'fern', w: 4 },
   { slug: 'vaegbeklaedning-krydsfiner', kuloer: 'charcoal', w: 8 },
-  { slug: 'skohylde-med-locker', kuloer: 'roedbrun', w: 4 },
+  { slug: 'lockers-krydsfiner', kuloer: 'roedbrun', w: 4 },
   { slug: 'koekkenvaeg-bejdset-krydsfiner', kuloer: 'blaa', w: 4 },
   { slug: 'garderobereol-siddenicher', kuloer: 'blaa', w: 4 },
 ];
