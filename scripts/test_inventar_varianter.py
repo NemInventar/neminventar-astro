@@ -85,9 +85,12 @@ try:
             page = ctx.new_page()
             jsfejl = []
             page.on("pageerror", lambda e: jsfejl.append(str(e)))
-            page.on("console", lambda m: jsfejl.append(m.text) if m.type == "error" and "plausible" not in m.text else None)
+            page.on("console", lambda m: jsfejl.append(m.text) if m.type == "error" and "plausible" not in m.text and "ERR_FAILED" not in m.text else None)
             sendt = []
             fang_post(page, sendt)
+            # Forsidens 3D (designerens indlejring) har sin egen test (test_forside_designer.py). Her blokeres den, så
+            # software-rendering i headless ikke tager CPU'en fra resten; siden falder tilbage til stillbilledet.
+            ctx.route("**/ni-designer.pages.dev/**", lambda r: r.abort())
 
             # 1 · /inventar og filtrene
             page.goto(URL + "inventar", wait_until="networkidle")
