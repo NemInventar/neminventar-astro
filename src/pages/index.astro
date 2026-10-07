@@ -27,10 +27,8 @@ const site = Astro.site!;
 const segmenter = landing.filter((l) => l.kind === 'segment');
 const emner = landing.filter((l) => l.kind === 'emne');
 const guides = landing.filter((l) => l.kind === 'guide');
-const emneRaekker = [
-  { lbl: 'Inventar', sider: emner.filter((l) => emneGruppe(l.slug) === 'inventar') },
-  { lbl: 'Materialer', sider: emner.filter((l) => emneGruppe(l.slug) === 'materialer') },
-];
+// inventar først, så materialerne — én liste (som footerens "Inventar og materialer")
+const inventarMat = [...emner.filter((l) => emneGruppe(l.slug) === 'inventar'), ...emner.filter((l) => emneGruppe(l.slug) === 'materialer')];
 const arbejdsform = emner.filter((l) => emneGruppe(l.slug) === 'arbejdsform');
 const hasLanding = (slug: string) => landing.some((l) => l.slug === slug);
 const projekter = PROJEKTER.map((s) => cases.find((c) => c.slug === s)).filter((c): c is NonNullable<typeof c> => !!c);
@@ -72,15 +70,24 @@ const itemList = {
     <div class="rv"><InspirationMosaic products={products} colors={colors} /></div>
 
     <!-- 3b · DET LAVER VI: link-hubben til typerne og landingssiderne (ankeret #ydelser bruges af alle landingssider).
-         Én slags link pr. række: typer → typesider; resten er sider at læse (emneGruppe i lib/forside). -->
-    <div class="yd-links rv" id="ydelser">
-      <h2 class="label yd-h">Det laver vi</h2>
-      <div class="yd-row"><span class="lbl">Typer:</span>{typer.map((p) => <a class="pill" href={`${base}produkter/${p.slug}`}>{p.name}</a>)}<a class="ulink yd-alle" href={`${base}inventar`}>Alle typer →</a></div>
-      {emneRaekker.filter((r) => r.sider.length > 0).map((r) => <div class="yd-row"><span class="lbl">{r.lbl}:</span>{r.sider.map((l) => <a class="pill" href={`${base}${l.slug}`}>{l.nav_label}</a>)}</div>)}
-      {segmenter.length > 0 && <div class="yd-row"><span class="lbl">Til:</span>{segmenter.map((l) => <a class="pill" href={`${base}${l.slug}`}>{l.nav_label}</a>)}</div>}
-      {arbejdsform.length > 0 && <div class="yd-row"><span class="lbl">Sådan arbejder vi:</span>{arbejdsform.map((l) => <a class="pill" href={`${base}${l.slug}`}>{l.nav_label}</a>)}</div>}
-      {guides.length > 0 && <div class="yd-row"><span class="lbl">Guides:</span>{guides.map((l) => <a class="pill" href={`${base}${l.slug}`}>{l.nav_label}</a>)}</div>}
-    </div>
+         En indholdsfortegnelse i spalter med almindelige links, ikke kasser (07-10-2026: "68 hvide kasser" var en mur).
+         Typer → typesider; resten er sider at læse (emneGruppe i lib/forside) og står også i footeren. -->
+    <nav class="yd-links rv" id="ydelser" aria-labelledby="yd-h">
+      <h2 class="label yd-h" id="yd-h">Det laver vi</h2>
+      <div class="yd-idx">
+        <div class="yd-grp yd-2">
+          <h3>Typer</h3>
+          <ul>{typer.map((p) => <li><a href={`${base}produkter/${p.slug}`}>{p.name}</a></li>)}</ul>
+          <a class="ulink yd-alle" href={`${base}inventar`}>Alle typer →</a>
+        </div>
+        {inventarMat.length > 0 && <div class="yd-grp yd-2"><h3>Inventar og materialer</h3><ul>{inventarMat.map((l) => <li><a href={`${base}${l.slug}`}>{l.nav_label}</a></li>)}</ul></div>}
+        <div class="yd-grp">
+          {segmenter.length > 0 && <><h3>Til</h3><ul>{segmenter.map((l) => <li><a href={`${base}${l.slug}`}>{l.nav_label}</a></li>)}</ul></>}
+          {arbejdsform.length > 0 && <><h3>Sådan arbejder vi</h3><ul>{arbejdsform.map((l) => <li><a href={`${base}${l.slug}`}>{l.nav_label}</a></li>)}</ul></>}
+        </div>
+        {guides.length > 0 && <div class="yd-grp"><h3>Guides</h3><ul>{guides.map((l) => <li><a href={`${base}${l.slug}`}>{l.nav_label}</a></li>)}</ul></div>}
+      </div>
+    </nav>
   </div></section>
 
   <!-- 4 · SÅDAN ARBEJDER VI -->
@@ -162,7 +169,19 @@ const itemList = {
   <style>
     .yd-links{margin-top:48px;padding-top:28px;border-top:1px solid var(--line)}
     .yd-h{margin-bottom:6px}
-    .yd-alle{font-size:14px;margin-left:4px;white-space:nowrap}
+    .yd-alle{display:inline-block;font-size:14px;margin-top:10px;white-space:nowrap}
+    /* indholdsfortegnelsen: 6 spor — typer og inventar to spor hver (to spalter), "Til" og guides ét hver */
+    .yd-idx{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:24px 28px;margin-top:18px}
+    .yd-grp.yd-2{grid-column:span 2}
+    .yd-grp.yd-2 ul{columns:2;column-gap:28px}
+    .yd-grp h3{font-family:'Inter',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+    .yd-grp h3:not(:first-child){margin-top:22px}
+    .yd-grp ul{list-style:none;margin:0;padding:0}
+    .yd-grp li{break-inside:avoid;margin:0 0 7px;font-size:14.5px;line-height:1.35}
+    .yd-grp li a{color:var(--ink);text-decoration:none}
+    .yd-grp li a:hover{color:var(--warm);text-decoration:underline;text-underline-offset:3px}
+    @media (max-width:1020px){.yd-idx{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media (max-width:520px){.yd-grp.yd-2 ul{column-gap:18px}.yd-grp li{font-size:14px}}
     .docs{display:flex;gap:8px 10px;flex-wrap:wrap;align-items:center;margin-top:32px;padding-top:22px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
     .docs b{color:var(--ink);font-weight:600;margin-right:6px}
     .docs .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 12px;font-size:13px;color:var(--ink);text-decoration:none}
