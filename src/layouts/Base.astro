@@ -14,6 +14,7 @@ import '../styles/site.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import { LINKEDIN } from '../lib/contact';
+import { API_AKTIV, plausibleViaApi } from '../lib/api';
 
 interface Props {
   title: string;
@@ -101,7 +102,10 @@ const ld = [organization, ...jsonLd];
   <!-- Besøgsstatistik uden cookies (Plausible, EU). Tæller sider, kilder (Google, Bing, chatgpt.com) og
        leads: klik på mail- og telefonlinks + download af brochuren. Ingen personoplysninger, intet banner. -->
   <!-- Site-specifikt script fra Plausible-kontoen (js@). Downloads/udgående links slås til i Plausible → Site settings. -->
-  <script async src="https://plausible.io/js/pa-HNaluSTt8ee5v0U7h3J8z.js"></script>
+  {/* API_AKTIV (src/lib/api.ts): scriptet og events via api.neminventar.dk, med plausible.io som fallback. */}
+  {API_AKTIV
+    ? <script is:inline set:html={plausibleViaApi()} />
+    : <script async src="https://plausible.io/js/pa-HNaluSTt8ee5v0U7h3J8z.js"></script>}
   <script is:inline>
     window.plausible = window.plausible || function () { (plausible.q = plausible.q || []).push(arguments); }, plausible.init = plausible.init || function (i) { plausible.o = i || {}; };
     plausible.init();

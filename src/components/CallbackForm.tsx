@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { hentKilde } from '../lib/kilde';
+import { formularFetch } from '../lib/api';
 
 // "Bestil et opkald" — poster til contact-form edge function med kind='opkald'.
 // Funktionen opretter et lead i CRM, lægger en opgave på Milots huskeliste og giver ham besked
@@ -8,7 +9,7 @@ import { hentKilde } from '../lib/kilde';
 // ref = den eksterne side, der sendte besøgeren hertil (document.referrer) → leadets lead_kanal.
 // Bevidst INGEN sessionStorage/localStorage: sitet gemmer intet på besøgerens enhed (ingen cookie-banner).
 // Kom de via en intern side, er ref tom → 'Ukendt', og Milot spørger i opkaldet.
-const FUNCTION_URL = 'https://guhbrpektblabndqttgp.supabase.co/functions/v1/contact-form';
+// Adressen vælges i src/lib/api.ts: supabase.co direkte, eller api.neminventar.dk, når API_AKTIV er sat.
 
 type Status = 'idle' | 'sending' | 'ok' | 'error';
 
@@ -34,7 +35,7 @@ export default function CallbackForm({ defaultOpen = false, label = 'Bestil et o
     setErrMsg('');
     const ref = hentKilde().referrer_host;
     try {
-      const res = await fetch(FUNCTION_URL, {
+      const { res } = await formularFetch({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...form, kind: 'opkald', side: location.pathname, ref }),

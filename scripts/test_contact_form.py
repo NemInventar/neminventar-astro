@@ -1,6 +1,9 @@
 """Test af contact-form v9 uden at skrive eller sende noget (dry_run=true).
 
-  python scripts/test_contact_form.py
+  python scripts/test_contact_form.py [URL]
+
+URL er valgfri: standard er funktionen direkte på supabase.co. Proxyen testes med fx
+  python scripts/test_contact_form.py https://neminventar-api.pages.dev/contact-form
 
 Kalder den deployede funktion med origin https://neminventar.dk og tjekker:
   - GET svarer version 9
@@ -13,8 +16,11 @@ Kalder den deployede funktion med origin https://neminventar.dk og tjekker:
 import json, sys, urllib.request
 
 sys.stdout.reconfigure(encoding="utf-8")
-URL = "https://guhbrpektblabndqttgp.supabase.co/functions/v1/contact-form"
-HDR = {"Content-Type": "application/json", "Origin": "https://neminventar.dk"}
+URL = sys.argv[1] if len(sys.argv) > 1 else "https://guhbrpektblabndqttgp.supabase.co/functions/v1/contact-form"
+print("Tester", URL)
+# Browser-agtig User-Agent: Cloudflare (pages.dev, api.neminventar.dk) afviser "Python-urllib" med fejl 1010.
+UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) test_contact_form.py"}
+HDR = {"Content-Type": "application/json", "Origin": "https://neminventar.dk", **UA}
 BASE = {"name": "Test Testesen", "company": "Testfirma", "email": "test@example.com", "message": "Test af kilde (dry_run)", "side": "/kontakt/", "dry_run": True}
 
 
@@ -30,7 +36,7 @@ def tjek(navn, cond, info=""):
     if cond: ok += 1; print("ok  ", navn)
     else: fejl += 1; print("FEJL", navn, info)
 
-with urllib.request.urlopen(urllib.request.Request(URL, headers={"Origin": "https://neminventar.dk"}), timeout=30) as r:
+with urllib.request.urlopen(urllib.request.Request(URL, headers={"Origin": "https://neminventar.dk", **UA}), timeout=30) as r:
     g = json.loads(r.read().decode())
 tjek("GET version 9", g.get("version") == 9, g)
 

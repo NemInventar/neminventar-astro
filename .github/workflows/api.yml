@@ -1,0 +1,55 @@
+# Proxyen bag api.neminventar.dk (api/public/_worker.js) → Cloudflare Pages-projektet neminventar-api.
+# Formularen og Plausible går via vores eget domæne, så firmafiltre ikke blokerer dem (supabase.co, plausible.io).
+#   main   → produktion: https://neminventar-api.pages.dev (og api.neminventar.dk, når CNAME'en er lagt i M365 DNS)
+#   branch → forhåndsvisning: https://<branch>.neminventar-api.pages.dev (adressen står i kørslens Summary)
+# Kør manuelt: gh workflow run api.yml --repo NemInventar/neminventar-astro
+# Eget domæne: api-domaene.yml. Test lokalt: node --test api/test/*.test.mjs
+name: API-proxy
+
+on:
+  push:
+    paths:
+      - "api/**"
+      - ".github/workflows/api.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: api-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Test rutningen
+        run: node --test api/test/*.test.mjs
+
+      - name: Udgiv (Cloudflare Pages)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then echo "Ingen Cloudflare-nøgle i repoet."; exit 1; fi
+          npx --yes wrangler@4 pages project create neminventar-api --production-branch main >/dev/null 2>&1 || true
+          npx --yes wrangler@4 pages deploy api/public --project-name neminventar-api --branch "$GITHUB_REF_NAME" --commit-dirty=true | tee deploy.log
+          SUB=$(curl -sS "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/neminventar-api" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" | jq -r '.result.subdomain // empty')
+          ALIAS=$(grep -oE 'https://[a-z0-9-]+\.[a-z0-9-]+\.pages\.dev' deploy.log | tail -1)
+          {
+            echo "### API-proxy (\`$GITHUB_REF_NAME\`)"
+            echo "- Projekt: https://$SUB"
+            echo "- Denne udgivelse: $ALIAS"
+            echo "- CNAME i M365 DNS: \`api\` → \`$SUB\`"
+          } >> "$GITHUB_STEP_SUMMARY"
