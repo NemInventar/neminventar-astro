@@ -5,7 +5,7 @@
 // API_AKTIV = false: sitet opfører sig præcis som før (supabase.co og plausible.io direkte).
 // Sæt den til true, når CNAME api → neminventar-api.pages.dev ligger i M365 DNS, og domænet står som active
 // (gh workflow run api-domaene.yml). Formularen falder tilbage til supabase.co ved netværksfejl, Plausible til plausible.io.
-export const API_AKTIV = false;
+export const API_AKTIV = true;
 export const API_BASE = 'https://api.neminventar.dk';
 
 const SUPABASE = 'https://guhbrpektblabndqttgp.supabase.co';
