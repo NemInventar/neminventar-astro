@@ -1,0 +1,45 @@
+# Eget domæne på proxyen: api.neminventar.dk → Pages-projektet neminventar-api (udgives af api.yml).
+# Samme mønster som ni-apps/.github/workflows/designer-domaene.yml. Kør manuelt:
+#   gh workflow run api-domaene.yml --repo NemInventar/neminventar-astro
+# Idempotent: findes domænet allerede, svarer POST med en fejl, og status vises alligevel.
+# DNS ligger i Microsoft 365, ikke Cloudflare. Domænet bliver først aktivt, når CNAME api → <projektets subdomæne>
+# (står i Summary, normalt neminventar-api.pages.dev) er oprettet i admin.microsoft.com. Kør igen for at se status
+# (pending → active). Derefter: API_AKTIV = true i src/lib/api.ts.
+name: API-domæne
+
+on:
+  workflow_dispatch:
+    inputs:
+      domain:
+        description: Domæne der skal pege på neminventar-api
+        default: api.neminventar.dk
+
+permissions:
+  contents: read
+
+jobs:
+  domain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Tilføj domænet og vis status
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          DOMAIN: ${{ inputs.domain }}
+        run: |
+          project="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/neminventar-api"
+          auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+          SUB=$(curl -sS "$project" -H "$auth" | jq -r '.result.subdomain // empty')
+          echo "== Projektets subdomæne (CNAME-værdien): $SUB"
+          echo "== POST $DOMAIN"
+          curl -sS -X POST "$project/domains" -H "$auth" -H "Content-Type: application/json" --data "{\"name\":\"$DOMAIN\"}" \
+            | jq '{success, errors: [.errors[]?.message]}'
+          echo "== Status"
+          curl -sS "$project/domains/$DOMAIN" -H "$auth" | tee status.json \
+            | jq '{success, errors: [.errors[]?.message], name: .result.name, status: .result.status, verification: .result.verification_data, validation: .result.validation_data}'
+          {
+            echo "### $DOMAIN"
+            echo "- Status: \`$(jq -r '.result.status // "ukendt"' status.json)\`"
+            echo "- CNAME i M365 DNS: navn \`${DOMAIN%%.neminventar.dk}\` → værdi \`$SUB\`"
+          } >> "$GITHUB_STEP_SUMMARY"
