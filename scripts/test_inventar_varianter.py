@@ -117,7 +117,7 @@ try:
             tjek(f"[{tag}] knappen siger den valgte kulør", (label or "") in knap.inner_text(), (label, knap.inner_text()))
             tjek(f"[{tag}] knappen bærer varianten", f"v={TYPE}~" in (knap.get_attribute("href") or ""), knap.get_attribute("href"))
             tjek(f"[{tag}] foto fra leverancen står for sig", page.locator(".pd-foto").count() == 1)
-            tjek(f"[{tag}] brødkrummen peger på /inventar", page.locator('.crumbrow a[href$="inventar"]').count() == 1)
+            tjek(f"[{tag}] brødkrummen peger på /inventar", page.locator('.crumbrow a[href$="/inventar/"]').count() == 1)
             tjek(f"[{tag}] typesiden: ingen vandret scroll", page.evaluate("document.documentElement.scrollWidth <= innerWidth"))
 
             # 3 · dybt link vælger varianten
