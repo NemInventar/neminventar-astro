@@ -73,13 +73,13 @@ try:
                 skaev.append(href.rsplit("/", 1)[-1])
         tjek(f"kortbillede = typesidens hovedbillede ({len(kort)} kort)", len(kort) >= 15 and not skaev, skaev)
 
-        # 0c · "Det laver vi": én slags link pr. række
+        # 0c · "Det laver vi": indholdsfortegnelse i spalter (ba0a652, 07-10-2026), én overskrift pr. gruppe
         pg.goto(URL, wait_until="domcontentloaded")
-        raekker = pg.eval_on_selector_all("#ydelser .yd-row", "rs => rs.map(r => r.querySelector('.lbl').textContent.trim())")
-        tjek("Det laver vi: Typer, Inventar, Materialer, Til, Sådan arbejder vi, Guides",
-             raekker == ["Typer:", "Inventar:", "Materialer:", "Til:", "Sådan arbejder vi:", "Guides:"], raekker)
-        typer_ud = pg.eval_on_selector_all("#ydelser .yd-row:first-of-type a.pill", "as => as.every(a => a.getAttribute('href').includes('/produkter/'))")
-        tjek("Det laver vi: Typer-rækken fører kun til typesider", typer_ud)
+        grupper = pg.eval_on_selector_all("#ydelser .yd-grp h3", "hs => hs.map(h => h.textContent.trim())")
+        tjek("Det laver vi: Typer, Inventar og materialer, Til, Sådan arbejder vi, Guides",
+             grupper == ["Typer", "Inventar og materialer", "Til", "Sådan arbejder vi", "Guides"], grupper)
+        typer_ud = pg.eval_on_selector_all("#ydelser .yd-grp:first-of-type ul a", "as => as.length > 0 && as.every(a => a.getAttribute('href').includes('/produkter/'))")
+        tjek("Det laver vi: Typer-gruppen fører kun til typesider", typer_ud)
         ctx.close()
 
         for vw, vh, tag in [(1440, 900, "pc"), (390, 844, "mob")]:
