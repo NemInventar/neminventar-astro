@@ -178,8 +178,11 @@ src/
 │   └── projekter/[slug].astro # case-detalje, getStaticPaths fra v_web_cases
 ├── lib/supabase.ts            # build-time Supabase-klient + getWebProducts/getWebCases + typer
 ├── integrations/lokale-billeder.mjs # efter build: Supabase-billeder → dist/_b på eget domæne
+├── lib/api.ts                 # API_AKTIV-flaget: formular + Plausible via api.neminventar.dk (med fallback)
 └── styles/site.css            # designsystem (porteret fra C2-mockup)
+api/public/_worker.js          # proxyen bag api.neminventar.dk (Cloudflare Pages neminventar-api), test: api/test/
 .github/workflows/deploy.yml   # Pages-deploy
+.github/workflows/api.yml      # udgiver proxyen (push med ændringer i api/) · api-domaene.yml lægger domænet på
 ```
 
 ---
@@ -198,4 +201,5 @@ Fælder, der gælder kode-ændringer her:
 - Nye `kind`-værdier på billeder skal med i `WebImage` (`src/lib/supabase.ts`) og `imgLabel` i `src/pages/[slug].astro`.
 - Filer i `public/` kommer først med ved push. Et billede, der kun ligger lokalt, er brudt på sitet.
 - Billeder fra Supabase serveres fra neminventar.dk (firmafiltre vurderer hvert domæne for sig). `cdn()` returnerer stadig Supabase-URL'en; efter build henter `src/integrations/lokale-billeder.mjs` hvert billede ned i `dist/_b/` og skriver URL'en om. Fejler en hentning, bliver den fjerne URL stående med en ADVAR i loggen. Buildet fejler aldrig på et billede. Test: `node --test src/integrations/lokale-billeder.test.mjs`.
+- Formularen og Plausible kan gå via vores eget domæne `api.neminventar.dk` (proxy i `api/`). Det styres af ét flag, `API_AKTIV` i `src/lib/api.ts`. Formularen prøver supabase.co én gang ved netværksfejl, aldrig ved et HTTP-svar. Ny formular eller nyt statistikkald → brug `formularFetch`/`plausible` derfra, aldrig en hardkodet supabase.co- eller plausible.io-adresse.
 - Sitet serverer `neminventar.dk` siden cutover 2026-06-22. `../NeminventarHomepage` er udfaset.

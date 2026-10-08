@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { KILDE_SVAR, hentKilde } from '../lib/kilde';
 import { variantFraUrl } from '../lib/varianter';
+import { formularFetch, uploadAdresse, type Via } from '../lib/api';
 
 // Poster til contact-form edge function på ERP-projektet (guhbrpektblabndqttgp).
+// Adressen vælges i src/lib/api.ts: supabase.co direkte, eller api.neminventar.dk, når API_AKTIV er sat.
 // Funktionen sender en notifikation via Microsoft Graph til tilbud@ + kontakt@ med reply-to
 // = afsenderen. verify_jwt=false → ingen nøgle i klient-bundtet (fast modtager + honeypot beskytter).
 //
@@ -11,7 +13,6 @@ import { variantFraUrl } from '../lib/varianter';
 //   2) browseren PUT'er hver fil direkte til Storage (bucket web-henvendelser, privat) — ingen nøgle, ingen omvej
 //   3) beskeden sendes med upload_id + fil-stierne; mailen får links, og henvendelsen gemmes i Supabase.
 // Grænserne (10 filer, 50 MB, filtyper) er de samme som i funktionen — tjekkes her for hurtig besked til brugeren.
-const FUNCTION_URL = 'https://guhbrpektblabndqttgp.supabase.co/functions/v1/contact-form';
 const MAX_FILES = 10;
 const MAX_MB = 50;
 const EXT = ['pdf', 'dwg', 'dxf', 'ifc', 'rvt', 'skp', 'step', 'stp', 'zip', '7z', 'rar', 'jpg', 'jpeg', 'png', 'heic', 'heif', 'webp', 'gif', 'doc', 'docx', 'xls', 'xlsx', 'csv', 'txt', 'pptx', 'odt', 'ods'];
@@ -35,6 +36,19 @@ function putFile(url: string, file: File, onProgress: (pct: number) => void): Pr
     xhr.onerror = () => reject(new Error('upload network'));
     xhr.send(file);
   });
+}
+
+// Gik kaldet via api.neminventar.dk, går filen også den vej. Netværksfejl dér → én gang direkte til supabase.co.
+// Et HTTP-svar (fx 400) prøves ikke igen.
+async function putFil(url: string, via: Via, file: File, onProgress: (pct: number) => void): Promise<void> {
+  const adr = uploadAdresse(url, via);
+  try {
+    await putFile(adr, file, onProgress);
+  } catch (e) {
+    if (adr === url || !(e instanceof Error && e.message === 'upload network')) throw e;
+    onProgress(0);
+    await putFile(url, file, onProgress);
+  }
 }
 
 // spor (05-10-2026, konverteringslaget): hvor formularen er åbnet — følger med i leadet i CRM.
@@ -120,7 +134,7 @@ export default function ContactForm({ spor = 'besked', besked = '', konfiguratio
       let upload_id: string | undefined;
       const sent: { name: string; size: number; path: string }[] = [];
       if (files.length) {
-        const r = await fetch(FUNCTION_URL, {
+        const { res: r, via } = await formularFetch({
           method: 'POST', headers,
           body: JSON.stringify({ action: 'upload-urls', hp: form.hp, files: files.map((f) => ({ name: f.name, size: f.size, type: f.type })) }),
         });
@@ -131,7 +145,7 @@ export default function ContactForm({ spor = 'besked', besked = '', konfiguratio
         for (let i = 0; i < files.length; i++) {
           setProgress({ i, pct: 0 });
           try {
-            await putFile(urls[i].url, files[i], (pct) => setProgress({ i, pct }));
+            await putFil(urls[i].url, via, files[i], (pct) => setProgress({ i, pct }));
           } catch {
             throw new Error(`${files[i].name} kunne ikke sendes. Prøv igen — eller send filerne i en mail til tilbud@neminventar.dk.`);
           }
@@ -140,7 +154,7 @@ export default function ContactForm({ spor = 'besked', besked = '', konfiguratio
         setProgress(null);
       }
       // Trin 3: beskeden
-      const res = await fetch(FUNCTION_URL, {
+      const { res } = await formularFetch({
         method: 'POST', headers,
         body: JSON.stringify({
           ...form, company: privat ? 'Privatkunde' : form.company, side: location.pathname, upload_id, files: sent,
