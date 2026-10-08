@@ -42,6 +42,15 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
 
+      # Billeder på eget domæne (src/integrations/lokale-billeder.mjs): buildet henter Supabase-billederne ned i dist/_b.
+      # Cachen genbruger dem mellem builds; hvert billede genvalideres med ETag (304), så et udskiftet billede kommer med.
+      - name: Cache for billeder fra Supabase
+        uses: actions/cache@v4
+        with:
+          path: .cache/lokale-billeder
+          key: lokale-billeder-${{ github.run_id }}
+          restore-keys: lokale-billeder-
+
       - name: Build
         run: npm run build
         env:

@@ -5,6 +5,7 @@ import { getWebProducts, getWebColors } from '../lib/supabase';
 import { varianterAf, MATERIALEFARVER, SPOR, sporAf } from '../lib/varianter';
 import { designerLink } from '../lib/forside';
 import { FAM, famOf } from '../lib/catalog';
+import { cdn } from '../lib/img';
 
 export const GET: APIRoute = async ({ site }) => {
   const base = import.meta.env.BASE_URL;
@@ -19,7 +20,8 @@ export const GET: APIRoute = async ({ site }) => {
       slug: p.slug, navn: p.name, familie: FAM[famOf(p)], url: abs(`produkter/${p.slug}`),
       spor: v[0] ? sporAf(v[0].kuloer) : null,
       designer: designerLink(p.slug), billeder_uden_kuloer: (p.images_meta ?? []).filter((m) => !m.color).length,
-      varianter: v.map((x) => ({ kuloer: x.kuloer, label: x.label, img: x.img, url: abs(`produkter/${p.slug}#${x.id}`), ifc: designerLink(p.slug, x.kuloer, 'ifc') })),
+      // img = samme 480-version som vælgeren på typesiden; buildet skriver den om til neminventar.dk/_b/… (lokale-billeder)
+      varianter: v.map((x) => ({ kuloer: x.kuloer, label: x.label, img: cdn(x.img, 480), url: abs(`produkter/${p.slug}#${x.id}`), ifc: designerLink(p.slug, x.kuloer, 'ifc') })),
     };
   });
   return new Response(JSON.stringify({ genereret: new Date().toISOString(), spor: SPOR, paletter, typer }, null, 1), {
