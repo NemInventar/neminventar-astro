@@ -4,6 +4,7 @@ import { defineConfig, envField } from 'astro/config';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
+import lokaleBilleder from './src/integrations/lokale-billeder.mjs';
 
 // site + base sættes via env i CI (GitHub Pages projekt-side vs. custom domain).
 // Lokalt: base '/', site neminventar.dk.
@@ -11,7 +12,9 @@ export default defineConfig({
   site: process.env.SITE_URL || 'https://neminventar.dk',
   base: process.env.BASE_PATH || '/',
 
-  integrations: [react(), sitemap()],
+  // lokaleBilleder: Supabase-billederne hentes ned i dist/_b efter build, så alt kundevendt kommer fra neminventar.dk
+  // (firmafiltre vurderer hvert domæne for sig). Se src/integrations/lokale-billeder.mjs.
+  integrations: [react(), sitemap(), lokaleBilleder()],
 
   // Typer, der er taget af sitet (Joachim 06-10-2026: ikke noget vi laver), peger videre til det nærmeste.
   redirects: {

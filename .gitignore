@@ -2,6 +2,8 @@
 dist/
 # generated types
 .astro/
+# billeder hentet fra Supabase ved build (lokale-billeder), genbruges mellem builds
+.cache/
 
 # dependencies
 node_modules/

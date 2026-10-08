@@ -40,6 +40,14 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
 
+      # Samme billed-cache som deploy.yml (lokale-billeder). En branch læser main's cache, men gemmer sin egen.
+      - name: Cache for billeder fra Supabase
+        uses: actions/cache@v4
+        with:
+          path: .cache/lokale-billeder
+          key: lokale-billeder-${{ github.run_id }}
+          restore-keys: lokale-billeder-
+
       - name: Build
         run: npm run build
         env:

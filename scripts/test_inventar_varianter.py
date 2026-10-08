@@ -61,7 +61,9 @@ try:
 
         # 0b · et kort viser det billede, typesiden åbner på (Fable 06-10: et kort fører til det, det viser)
         def kilde(src):  # samme billede uanset bredde: stien uden render/-led og uden ?width=
-            return (src or "").split("?")[0].replace("/render/image/", "/object/")
+            s = (src or "").split("?")[0].replace("/render/image/", "/object/")
+            # lokale kopier (lokale-billeder): /_b/<navn>-<kilde-id>-w800.webp → /_b/<navn>-<kilde-id>
+            return re.sub(r"-(?:w\d+|x|orig)(?:-[0-9a-f]{6})?\.[a-z0-9]+$", "", s) if "/_b/" in s else s
         kort = pg.eval_on_selector_all("#types .tcard", "ks => ks.map(k => [k.querySelector('a.ph').getAttribute('href'), (k.querySelector('img')||{}).getAttribute?.('src')])")
         skaev = []
         for href, src in kort:
