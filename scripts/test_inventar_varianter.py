@@ -35,7 +35,7 @@ def fang_post(page, sendt):
             route.fulfill(status=200, content_type="application/json", body='{"success":true,"files":0}')
         else:
             route.continue_()
-    page.route("**/functions/v1/contact-form", h)
+    page.route("**/contact-form", h)  # supabase.co/functions/v1/… og api.neminventar.dk/… (API_AKTIV)
 
 
 def udfyld_og_send(page, scope):
