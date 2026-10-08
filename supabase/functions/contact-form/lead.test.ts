@@ -54,7 +54,9 @@ test('privatkunde får navnet i titlen', () => {
 
 test('mistanke: for hurtig udfyldning eller mange links', () => {
   assert.equal(erMistaenkelig({ ms: 1200, message: 'hej' }), true);
-  assert.equal(erMistaenkelig({ ms: 9000, message: 'se http://a.ru http://b.ru https://c.ru' }), true);
+  assert.equal(erMistaenkelig({ ms: 9000, message: 'se http://a.ru http://b.ru https://c.ru http://d.ru http://e.ru http://f.ru' }), true);
+  // tre links til udbudsmaterialet er en rigtig kunde, ikke spam (v9)
+  assert.equal(erMistaenkelig({ ms: 9000, message: 'Tegninger: https://dalux.com/x https://ibinder.com/y https://byggefakta.dk/z' }), false);
   assert.equal(erMistaenkelig({ ms: 9000, message: 'Vi skal bruge 12 lockers' }), false);
   assert.equal(erMistaenkelig({ ms: undefined, message: 'gammelt v5-kald' }), false);
 });

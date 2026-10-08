@@ -58,9 +58,11 @@ export function byggLead(i: LeadInput) {
   };
 }
 
-// Uden Turnstile: udfyldt på under 3 sekunder eller 3+ links i beskeden → mailen sendes, men intet lead.
-// ms mangler i gamle v5-kald → ikke mistænkt.
+// Uden Turnstile: udfyldt på under 3 sekunder eller 6+ links i beskeden → mailen sendes, men intet lead.
+// ms mangler i gamle v5-kald → ikke mistænkt. Grænsen var 3 links indtil v9: en entreprenør, der indsætter links til
+// Dalux, iBinder og Byggefakta, er tre links og en rigtig kunde (Fable 07-10-2026).
+export const MAX_LINKS = 6;
 export function erMistaenkelig(x: { ms?: number; message: string }): boolean {
   if (typeof x.ms === 'number' && x.ms < 3000) return true;
-  return (String(x.message).match(/https?:\/\//g) ?? []).length >= 3;
+  return (String(x.message).match(/https?:\/\//g) ?? []).length >= MAX_LINKS;
 }

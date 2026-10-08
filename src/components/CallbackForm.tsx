@@ -16,7 +16,7 @@ interface Props { defaultOpen?: boolean; label?: string }
 
 export default function CallbackForm({ defaultOpen = false, label = 'Bestil et opkald' }: Props) {
   const [open, setOpen] = useState(defaultOpen);
-  const [form, setForm] = useState({ name: '', company: '', phone: '', message: '', website: '' });
+  const [form, setForm] = useState({ name: '', company: '', phone: '', message: '', hp: '' });
   const [status, setStatus] = useState<Status>('idle');
   const [errMsg, setErrMsg] = useState('');
 
@@ -78,8 +78,8 @@ export default function CallbackForm({ defaultOpen = false, label = 'Bestil et o
       <h3 className="callback-title">Bestil et opkald</h3>
       <p className="callback-lead">Skriv dit nummer, så ringer vi dig op og tager en snak om projektet.</p>
       {/* Honeypot — usynligt for mennesker; bots udfylder det og afvises server-side */}
-      <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true"
-        value={form.website} onChange={update}
+      <input type="text" name="hp" tabIndex={-1} autoComplete="off" aria-hidden="true"
+        value={form.hp} onChange={update}
         style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', opacity: 0 }} />
       <div className="row">
         <div className="field">
