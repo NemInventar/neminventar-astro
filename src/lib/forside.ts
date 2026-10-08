@@ -14,6 +14,7 @@ export const DESIGNER_AF: Record<string, 'locker' | 'hoejskab'> = {
   'lockers-krydsfiner': 'locker',
   'lockerskab-ventilerede-laager': 'locker',
   'lockerbank-omklaedning': 'locker',
+  'mobil-lockers-krydsfiner': 'locker',
   'hoejskab-krydsfiner': 'hoejskab',
   'opbevaringsskab-bejdset-krydsfiner': 'hoejskab',
   'opbevaringsskab-laminat-standard': 'hoejskab',
@@ -34,6 +35,8 @@ const TILSTAND: Record<string, (kuloer?: string) => Record<string, unknown>> = {
   'lockers-krydsfiner': (k) => ({ mat: 'kryds', farve: { kryds: k ?? 'natur' }, raekker: 2 }),
   'lockerskab-ventilerede-laager': (k) => ({ mat: 'kryds', farve: { kryds: k ?? 'natur' }, raekker: 1 }),
   'lockerbank-omklaedning': (k) => ({ mat: 'kryds', farve: { kryds: k ?? 'natur' }, raekker: 5 }),
+  // Mobil-lockers (Sundby-modellen, 08-10-2026): 3 × 10 små rum, uden sokkel, hængelås — som designerens valg siden 1e074a6
+  'mobil-lockers-krydsfiner': (k) => ({ mat: 'kryds', farve: { kryds: k ?? 'natur' }, soejler: 3, raekker: 10, b: 26, h: 16, d: 28, sokkel: 'uden', laas: 'haengelaas' }),
 };
 const kod = (st: unknown) => {
   let s = '';
