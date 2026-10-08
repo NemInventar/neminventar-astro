@@ -46,7 +46,7 @@ export const productImage = (p: WebProduct) => {
 // Et kort fører til det, det viser (Fable 06-10-2026). Fotoet fra leverancen står på typesiden for sig.
 export const typeBillede = (p: WebProduct, colors: WebColor[]) => {
   const v = varianterAf(p, colors)[0];
-  return v ? { img: v.img, pos: '50% 60%', foto: false } : productImage(p);
+  return v ? { img: v.img, pos: '50% 60%', foto: isPhoto(v.img) } : productImage(p);   // en variant kan være et foto (mobil-lockers)
 };
 // Uden sagsnavn (Joachim 05-10-2026: vis produktet, ikke sagen — navnet står på projektkortet).
 export const fotoTag = (foto: boolean) => (foto ? 'Foto fra leverancen' : '3D-visualisering');

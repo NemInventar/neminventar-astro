@@ -11,7 +11,7 @@ import ContactCta from '../../components/ContactCta.astro';
 import { getWebProducts, getWebColors, getWebCases, getWebLandingPages, type WebProduct, type WebCase, type WebLanding, type WebColor } from '../../lib/supabase';
 import { cdn } from '../../lib/img';
 import { chipLabels } from '../../lib/labels';
-import { FAM, famOf, productImage, typeBillede, fotoTag } from '../../lib/catalog';
+import { FAM, famOf, productImage, typeBillede, fotoTag, isPhoto } from '../../lib/catalog';
 import { DESIGNER_AF, designerLink } from '../../lib/forside';
 import { varianterAf, prisHref } from '../../lib/varianter';
 
@@ -37,8 +37,12 @@ const v0 = varianter[0] ?? null;
 const pi = productImage(product);
 const mainImg = v0?.img ?? pi.img;
 const altAf = (label?: string) => (label ? `${product.name} i ${label.toLowerCase()}` : product.name);
-// Fotoet fra leverancen: et rigtigt eksempel, ikke et valg.
-const foto = pi.foto ? pi.img : null;
+// Fotoet fra leverancen: et rigtigt eksempel, ikke et valg. Er typens foto selv en variant (mobil-lockers 08-10-2026:
+// fotoet er klar olie), vises i stedet et foto uden kulør (en detalje) — aldrig det samme billede to gange.
+const iVariant = (src: string) => varianter.some((v) => v.img === src);
+const ekstraFoto = (product.images_meta ?? []).find((m) => !m.color && isPhoto(m.url))?.url ?? null;
+const foto = pi.foto && !iVariant(pi.img) ? pi.img : ekstraFoto;
+const fotoTekst = foto && foto === ekstraFoto ? 'Fra en leverance, tæt på.' : 'Fra en leverance: sådan ser typen ud i et rigtigt rum.';
 const designerProdukt = DESIGNER_AF[product.slug];
 // Designeren og IFC-filen åbner i den valgte kulør (lib/forside designerLink); null for typer uden model i designeren.
 const dLink = (k?: string) => designerLink(product.slug, k) ?? undefined;
@@ -78,13 +82,13 @@ const jsonLd = [{
         {mainImg && (
           <figure class="pd-main">
             <img id="main-img" src={cdn(mainImg, 1200)} alt={altAf(v0?.label)} style={v0 ? undefined : `--pos:${pi.pos}`} fetchpriority="high" />
-            <span class="ptag">{v0 ? fotoTag(false) : fotoTag(pi.foto)}</span>
+            <span class="ptag" id="main-tag">{fotoTag(v0 ? isPhoto(v0.img) : pi.foto)}</span>
           </figure>
         )}
         {varianter.length > 1 && (
           <div class="vtiles" role="group" aria-label="Vælg kulør">
             {varianter.map((v, i) => (
-              <a class={`vtile${i === 0 ? ' active' : ''}`} href={`#${v.id}`} data-v={v.id} data-src={cdn(v.img, 1200)}
+              <a class={`vtile${i === 0 ? ' active' : ''}`} href={`#${v.id}`} data-v={v.id} data-src={cdn(v.img, 1200)} data-tag={fotoTag(isPhoto(v.img))}
                  data-alt={altAf(v.label)} data-label={v.label} data-pris={prisHref(base, v)} data-designer={dLink(v.kuloer)} data-ifc={ifcLink(v.kuloer)}
                  aria-current={i === 0 ? 'true' : undefined}>
                 <img src={cdn(v.img, 480)} alt={altAf(v.label)} loading="lazy" decoding="async" />
@@ -95,8 +99,8 @@ const jsonLd = [{
         )}
         {foto && (
           <figure class="pd-foto">
-            <img src={cdn(foto, 1000)} alt={`${product.name}, foto fra en leverance`} style={`--pos:${pi.pos}`} loading="lazy" decoding="async" />
-            <figcaption>Fra en leverance: sådan ser typen ud i et rigtigt rum.</figcaption>
+            <img src={cdn(foto, 1000)} alt={`${product.name}, foto fra en leverance`} style={`--pos:${foto === ekstraFoto ? '50% 50%' : pi.pos}`} loading="lazy" decoding="async" />
+            <figcaption>{fotoTekst}</figcaption>
           </figure>
         )}
       </div>
@@ -193,8 +197,10 @@ const jsonLd = [{
     const tiles = Array.from(document.querySelectorAll<HTMLAnchorElement>('.vtile'));
     const dKnap = document.getElementById('designer-knap') as HTMLAnchorElement | null;
     const ifcKnap = document.getElementById('ifc-knap') as HTMLAnchorElement | null;
+    const tag = document.getElementById('main-tag');
     const vaelg = (t: HTMLAnchorElement) => {
-      const { src, alt, label: l, pris, designer, ifc } = t.dataset;
+      const { src, alt, label: l, pris, designer, ifc, tag: mærke } = t.dataset;
+      if (tag && mærke) tag.textContent = mærke;   // foto eller visualisering følger det valgte billede
       if (dKnap && designer) dKnap.href = designer;
       if (ifcKnap && ifc) ifcKnap.href = ifc;
       if (main && src) { main.style.opacity = '0'; main.onload = () => { main.style.opacity = '1'; }; main.src = src; if (alt) main.alt = alt; if (main.complete) main.style.opacity = '1'; }
