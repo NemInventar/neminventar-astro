@@ -923,7 +923,7 @@ footer a:hover{color:var(--ink)}
 .cd-facts .pk{color:var(--muted);font-weight:500}
 .cd-facts .pv{color:var(--ink);font-weight:500;line-height:1.5}
 .cd-facts .btn{margin-top:18px}
-.cd-hero{position:relative;margin:36px 0 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);background:var(--soft);aspect-ratio:21/9}
+.cd-hero{position:relative;margin:36px 0 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);background:var(--soft);aspect-ratio:16/9}
 .cd-hero .hero-btn{position:absolute;inset:0;border:0;padding:0;background:transparent;cursor:zoom-in;display:block;width:100%}
 .cd-hero img{width:100%;height:100%;object-fit:cover;object-position:50% 60%;transition:transform .9s var(--ease)}
 .cd-hero:hover img{transform:scale(1.025)}
