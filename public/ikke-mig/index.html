@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Tæl ikke mine besøg — Nem Inventar</title>
+<!-- Intern side: sætter Plausibles eget fravalg (localStorage plausible_ignore) i denne browser,
+     så vores egne besøg ikke tæller i statistikken. Virker uanset IP. Ikke i sitemap, noindex. -->
+<style>
+  :root{--paper:#FAF8F3;--ink:#17140E;--mute:#6b665c;--line:#e3ded3;--ok:#2f6b3a}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.5}
+  main{max-width:520px;margin:0 auto;padding:64px 16px}
+  h1{font-size:28px;letter-spacing:-0.02em;margin:0 0 12px}
+  p{margin:0 0 16px;color:var(--mute)}
+  .status{border:1px solid var(--line);border-radius:10px;padding:16px;margin:24px 0;background:#fff}
+  .status strong{display:block;font-size:18px;color:var(--ink)}
+  .on strong{color:var(--ok)}
+  button{font:inherit;border:0;border-radius:999px;padding:12px 22px;cursor:pointer;background:var(--ink);color:var(--paper)}
+  button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+  a{color:var(--ink)}
+</style>
+</head>
+<body>
+<main>
+  <h1>Tæl ikke mine besøg</h1>
+  <p>For Nem Inventars eget hold. Tryk én gang på hver enhed og i hver browser, du bruger (computer, telefon, Chrome, Edge …). Så tæller dine besøg på neminventar.dk ikke med i besøgsstatistikken, også selvom din IP-adresse skifter.</p>
+  <div class="status" id="status"></div>
+  <button id="knap"></button>
+  <p style="margin-top:32px;font-size:14px">Valget gemmes i browseren. Rydder du browserdata eller bruger et privat vindue, skal du trykke igen. <a href="/">Til forsiden</a></p>
+</main>
+<script>
+  var KEY = 'plausible_ignore';
+  function laes(){ try { return localStorage.getItem(KEY) === 'true'; } catch (e) { return null; } }
+  function vis(){
+    var on = laes(), s = document.getElementById('status'), b = document.getElementById('knap');
+    if (on === null) {
+      s.className = 'status';
+      s.innerHTML = '<strong>Browseren tillader ikke at gemme valget</strong>Prøv et almindeligt (ikke privat) vindue.';
+      b.style.display = 'none'; return;
+    }
+    s.className = 'status' + (on ? ' on' : '');
+    s.innerHTML = on
+      ? '<strong>✓ Dine besøg tælles ikke</strong>Gælder denne browser på denne enhed.'
+      : '<strong>Dine besøg tælles med</strong>Tryk på knappen for at slå det fra i denne browser.';
+    b.textContent = on ? 'Tæl mine besøg igen' : 'Tæl ikke mine besøg';
+    b.className = on ? 'ghost' : '';
+  }
+  document.getElementById('knap').addEventListener('click', function(){
+    try { laes() ? localStorage.removeItem(KEY) : localStorage.setItem(KEY, 'true'); } catch (e) {}
+    vis();
+  });
+  vis();
+</script>
+</body>
+</html>
