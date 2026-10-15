@@ -21,6 +21,8 @@ const hoejskabRender = products.find((p) => p.slug === 'hoejskab-krydsfiner');
 const STILL = {
   locker: { src: cdn(morkhoj('26_garderobe-lockere-roede-med-baenk-og-skohylder.jpg'), 1400), tag: 'Foto fra en leverance', alt: 'Røde lockers med perforerede låger og kodelås over en bænk med skohylder', pos: '50% 58%' },
   hoejskab: { src: cdn(hoejskabRender ? billedeAf(hoejskabRender, 'blaa') : '', 1400), tag: 'Visualisering', alt: 'Højskabe i krydsfiner med blå låger, ét skab åbent med hylder', pos: '50% 50%' },
+  // samme visualisering som landingssiden /akustikvaegge-perforeret-krydsfiner (landing_web_2026_09_24)
+  akustik: { src: cdn('https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1790250138590.png', 1400), tag: 'Visualisering', alt: 'Akustikvæg i perforeret birkekrydsfiner i et musiklokale', pos: '50% 40%' },
 };
 
 // Katalogpanelet: en type med kulør er en variant (samme billede, anker og pris som på typesiden).
@@ -45,7 +47,7 @@ const katalog = KATALOG_TOP.map((k) => {
     <nav class="hp-paths" aria-label="Tre veje ind">
       <a class="hp-path" href="#design" data-p="design" aria-current="true">
         <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg></span>
-        <span><b>Design det selv</b><small>Lockers og højskabe i 3D. Mål, kulør og antal.</small></span><span class="ar" aria-hidden="true">→</span>
+        <span><b>Design det selv</b><small>Lockers, højskabe og akustikvægge i 3D. Mål, kulør og antal.</small></span><span class="ar" aria-hidden="true">→</span>
       </a>
       <a class="hp-path" href="#katalog" data-p="katalog">
         <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg></span>
@@ -66,6 +68,7 @@ const katalog = KATALOG_TOP.map((k) => {
         <div class="hp-seg" id="hpProd" role="group" aria-label="Produkt">
           <button type="button" aria-pressed="true" data-k="locker">Lockers</button>
           <button type="button" aria-pressed="false" data-k="hoejskab">Højskab</button>
+          <button type="button" aria-pressed="false" data-k="akustik">Akustik</button>
         </div>
         <span class="hp-note">Til mål · tegning og pris inden for én arbejdsdag</span>
       </div>
@@ -95,6 +98,15 @@ const katalog = KATALOG_TOP.map((k) => {
             <div class="hp-step"><button type="button" data-d="c,-1" aria-label="Færre skabe">−</button><output data-o="c">4</output><button type="button" data-d="c,1" aria-label="Flere skabe">+</button></div>
             <div class="hp-seg sm" id="hpH" role="group" aria-label="Højde i cm">
               <button type="button" data-h="1.8" aria-pressed="false">180</button><button type="button" data-h="2.1" aria-pressed="true">210</button><button type="button" data-h="2.4" aria-pressed="false">240</button>
+            </div>
+          </div>
+          <!-- akustik: bredder, der går op i hele paneler à 60 cm med 5 mm fuge (3, 5, 7 og 9 paneler), og de fire hulmønstre -->
+          <div class="hp-steps stak" data-for="akustik" hidden>
+            <div class="hp-seg sm" id="hpB" role="group" aria-label="Bredde i cm">
+              <button type="button" data-b="181" aria-pressed="false">181</button><button type="button" data-b="302" aria-pressed="true">302</button><button type="button" data-b="423" aria-pressed="false">423</button><button type="button" data-b="544" aria-pressed="false">544</button>
+            </div>
+            <div class="hp-seg sm" id="hpHul" role="group" aria-label="Hulmønster">
+              <button type="button" data-t="spredt" aria-pressed="false">Spredt</button><button type="button" data-t="standard" aria-pressed="true">Standard</button><button type="button" data-t="taet" aria-pressed="false">Tæt</button><button type="button" data-t="fint" aria-pressed="false">Fint</button>
             </div>
           </div>
         </div>
@@ -183,6 +195,7 @@ const katalog = KATALOG_TOP.map((k) => {
   .hp-colname{font-size:12.5px;color:var(--muted);margin-top:6px;min-height:1.2em}
   .hp-steps{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   .hp-steps[hidden]{display:none}
+  .hp-steps.stak{flex-direction:column;align-items:flex-start;gap:8px}
   .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   .hp-steps .x{color:var(--muted)}
   .hp-step{display:flex;align-items:center;border:1px solid var(--line);border-radius:999px;background:var(--paper)}
@@ -224,8 +237,8 @@ const katalog = KATALOG_TOP.map((k) => {
   // · permalink · ryd. Siden ejer knapperne; designeren ejer scenen, læsefeltet og permalinket (IFC sker dér).
   // Eget domæne (07-10-2026): firmafiltre blokerer ofte *.pages.dev. ni-designer.pages.dev svarer stadig som reserve.
   const INDLEJR = 'https://designer.neminventar.dk/indlejr.v1.js';
-  type Indlejring = { saet(t: Record<string, unknown>): void; on(n: 'aendret', fn: (d: { spec: string; titel: string }) => void): () => void; permalink(): string; ryd(): void };
-  type Tilstand = { c: number; r: number; h: number; kuloer: string };
+  type Indlejring = { saet(t: Record<string, unknown>): void; on(n: 'aendret', fn: (d: { spec: string; titel: string; linjer?: [string, string][] }) => void): () => void; permalink(): string; ryd(): void };
+  type Tilstand = { c: number; r: number; h: number; kuloer: string; t?: string };
   const $ =<T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T | null;
 
   // ---------- tre veje: fanerne ----------
@@ -263,18 +276,31 @@ const katalog = KATALOG_TOP.map((k) => {
   const stillImg = $<HTMLImageElement>('hpStillImg'), stillTag = $('hpStillTag'), spec = $('hpSpec'), hint = $('hpHint');
   const sw = Array.from(document.querySelectorAll<HTMLButtonElement>('#hpSw button'));
   const STILL: Record<string, { src: string; tag: string; alt: string; pos: string }> = JSON.parse(document.getElementById('hp-still')?.textContent || '{}');
-  type Prod = 'locker' | 'hoejskab';
+  type Prod = 'locker' | 'hoejskab' | 'akustik';
   // Kulør = slug fra webpaletten (samme slugs som designerens lagerfarver). h = højskabets højde i meter (knapperne).
+  // Akustik (Joachim 15-10-2026): c = feltets bredde i cm, t = hulmønstret; højden er designerens standard (240 cm).
   const S: Record<Prod, Tilstand> = {
     locker: { c: 6, r: 2, h: 2.1, kuloer: sw[0]?.dataset.slug || 'roedbrun' },
     hoejskab: { c: 4, r: 1, h: 2.1, kuloer: sw[1]?.dataset.slug || 'blaa' },
+    akustik: { c: 302, r: 1, h: 2.4, kuloer: 'natur', t: 'standard' },
   };
-  const LIM = { locker: { c: [1, 10], r: [1, 3] }, hoejskab: { c: [1, 8], r: [1, 1] } } as const;
-  // Sidens tilstand → designerens (locker: soejler/raekker · højskab: n skabe, h i cm)
+  const LIM = { locker: { c: [1, 10], r: [1, 3] }, hoejskab: { c: [1, 8], r: [1, 1] }, akustik: { c: [181, 544], r: [1, 1] } } as const;
+  // Hulmønstrene som i designeren (ni-apps produkter/akustik/produkt.js, TAETHED): designeren udleder mønstret af hul,
+  // afstand og mønster, så alle tre sendes — ellers bliver det "Tilpasset"
+  const HUL: Record<string, { hul: number; cc: number; moenster: string; navn: string }> = {
+    spredt: { hul: 8, cc: 32, moenster: 'lige', navn: 'Spredt' },
+    standard: { hul: 8, cc: 16, moenster: 'lige', navn: 'Standard' },
+    taet: { hul: 6, cc: 12, moenster: 'taet', navn: 'Tæt' },
+    fint: { hul: 4, cc: 8, moenster: 'lige', navn: 'Fint' },
+  };
+  // Sidens tilstand → designerens (locker: soejler/raekker · højskab: n skabe, h i cm · akustik: bredde, huller, birk)
   const til = (p: Prod) => {
-    const s = S[p], farve = { kryds: s.kuloer };
+    const s = S[p];
+    if (p === 'akustik') { const { navn, ...hul } = HUL[s.t || 'standard']; return { mat: 'birk', b: s.c, ...hul, farve: { birk: s.kuloer } }; }
+    const farve = { kryds: s.kuloer };
     return p === 'locker' ? { mat: 'kryds', soejler: s.c, raekker: s.r, farve } : { mat: 'kryds', n: s.c, h: Math.round(s.h * 100), farve };
   };
+  const PRODUKTNAVN: Record<Prod, string> = { locker: 'lockers', hoejskab: 'højskabe', akustik: 'akustikpaneler' };
   let cur: Prod = 'locker';
   let d3: Indlejring | null = null;
   let d3spec = '', loading = false;
@@ -287,7 +313,16 @@ const katalog = KATALOG_TOP.map((k) => {
       const n = s.c * s.r, w = Math.round((s.c * 0.30 + 0.018) * 100), h = Math.round((0.43 + s.r * 0.80) * 100);
       return `${n} ${n === 1 ? 'locker' : 'lockers'} · ${w} × ${h} cm · med bænk og skohylder`;
     }
+    if (cur === 'akustik') return `Akustikpaneler · ${s.c} × 240 cm · ${Math.round((s.c + 0.5) / 60.5)} paneler · huller ${HUL[s.t || 'standard'].navn.toLowerCase()}`;
     return `${s.c} ${s.c === 1 ? 'højskab' : 'højskabe'} · ${s.c * 60} × ${Math.round(s.h * 100)} × 60 cm`;
+  }
+  // Akustik: titlen har allerede målene, så "Samlet" skrives uden sit første led (målene og højden over gulvet) —
+  // "Akustikfelt 302 × 240 cm · 7,25 m² · 5 paneler · perforering 19,6 %" — og tal og enhed knækker ikke fra hinanden
+  function kortSpec(sp: string, titel: string, linjer?: [string, string][]): string {
+    if (cur !== 'akustik') return sp;
+    const samlet = linjer?.find(([k]) => /samlet/i.test(k))?.[1];
+    const kort = samlet && samlet.includes('·') ? `${titel} · ${samlet.slice(samlet.indexOf('·') + 1).trim()}` : sp;
+    return kort.replace(/ (m²|%|cm)/g, ' $1');
   }
   // "Åbn i designeren" og "Hent IFC": designerens permalink, når 3D'en kører; ellers produktet med kuløren
   function links() {
@@ -304,13 +339,16 @@ const katalog = KATALOG_TOP.map((k) => {
     const navn = sw.find((b) => b.dataset.slug === s.kuloer)?.getAttribute('aria-label') ?? '';
     $('hpColname')!.textContent = navn;
     document.querySelectorAll<HTMLElement>('.hp-steps').forEach((el) => { el.hidden = el.dataset.for !== cur; });
-    $('hpDimLbl')!.textContent = cur === 'locker' ? 'Antal rum' : 'Antal og højde';
+    $('hpDimLbl')!.textContent = cur === 'locker' ? 'Antal rum' : cur === 'akustik' ? 'Bredde (cm) og huller' : 'Antal og højde';
+    if (hint) hint.lastChild!.textContent = cur === 'akustik' ? '3D · træk for at dreje' : '3D · træk for at dreje · tryk på en låge';
     document.querySelectorAll<HTMLElement>(`.hp-steps[data-for="${cur}"] output`).forEach((o) => { o.textContent = String(s[o.dataset.o as 'c' | 'r']); });
     document.querySelectorAll<HTMLButtonElement>(`.hp-steps[data-for="${cur}"] [data-d]`).forEach((b) => {
       const [k, d] = b.dataset.d!.split(','); const lim = (LIM[cur] as any)[k] as readonly [number, number];
       b.disabled = (+d < 0 && s[k as 'c' | 'r'] <= lim[0]) || (+d > 0 && s[k as 'c' | 'r'] >= lim[1]);
     });
     document.querySelectorAll<HTMLButtonElement>('#hpH button').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.h! === S.hoejskab.h)));
+    document.querySelectorAll<HTMLButtonElement>('#hpB button').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.b! === S.akustik.c)));
+    document.querySelectorAll<HTMLButtonElement>('#hpHul button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.t === S.akustik.t)));
     spec!.textContent = specTekst();
     const st = STILL[cur];
     if (stillImg && st && stillImg.getAttribute('src') !== st.src) { stillImg.src = st.src; stillImg.alt = st.alt; stillImg.style.objectPosition = st.pos; stillTag!.textContent = st.tag; }
@@ -325,7 +363,7 @@ const katalog = KATALOG_TOP.map((k) => {
       const timeout = new Promise<never>((_, rej) => setTimeout(() => rej(new Error('timeout')), 4000));
       const mod = await Promise.race([import(/* @vite-ignore */ INDLEJR), timeout]) as { indlejr: (el: HTMLElement, o: object) => Promise<Indlejring> };
       d3 = await mod.indlejr(canvasEl, { produkt: cur, tilstand: til(cur), luft: { top: 16, bund: 56 } });
-      d3.on('aendret', ({ spec: sp }) => { d3spec = sp; if (spec) spec.textContent = sp; links(); });
+      d3.on('aendret', ({ spec: sp, titel, linjer }) => { d3spec = kortSpec(sp, titel, linjer); if (spec) spec.textContent = d3spec; links(); });
       stage.classList.add('is-3d'); if (hint) hint.hidden = false;
       toggle && (toggle.textContent = 'Se den i et rum');
     } catch {
@@ -354,11 +392,13 @@ const katalog = KATALOG_TOP.map((k) => {
     (s as any)[k] = Math.max(lim[0], Math.min(lim[1], (s as any)[k] + +d)); sync(); d3?.saet(til(cur));
   }));
   document.querySelectorAll<HTMLButtonElement>('#hpH button').forEach((b) => b.addEventListener('click', () => { S.hoejskab.h = +b.dataset.h!; sync(); d3?.saet(til('hoejskab')); }));
+  document.querySelectorAll<HTMLButtonElement>('#hpB button').forEach((b) => b.addEventListener('click', () => { S.akustik.c = +b.dataset.b!; sync(); d3?.saet(til('akustik')); }));
+  document.querySelectorAll<HTMLButtonElement>('#hpHul button').forEach((b) => b.addEventListener('click', () => { S.akustik.t = b.dataset.t!; sync(); d3?.saet(til('akustik')); }));
   $('hpTilbud')?.addEventListener('click', (e) => {
     e.preventDefault();
     const navn = sw.find((x) => x.dataset.slug === S[cur].kuloer)?.getAttribute('aria-label') ?? '';
     const link = $<HTMLAnchorElement>('hpDesigner')?.href;
-    const detail = `Vedr. ${cur === 'locker' ? 'lockers' : 'højskabe'} fra forsiden: ${specTekst()} · kulør ${navn.toLowerCase()}.${link ? ` Designer-link: ${link}` : ''}`;
+    const detail = `Vedr. ${PRODUKTNAVN[cur]} fra forsiden: ${specTekst()} · kulør ${navn.toLowerCase()}.${link ? ` Designer-link: ${link}` : ''}`;
     (window as unknown as { niTilbud?: string }).niTilbud = detail; // læses af SendPanel, hvis det hydreres efter dette klik
     window.dispatchEvent(new CustomEvent('ni:tilbud', { detail }));
     vis('send', true);

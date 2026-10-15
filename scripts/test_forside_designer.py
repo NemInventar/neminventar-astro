@@ -66,6 +66,18 @@ try:
         h = pg.locator("#hpDesigner").get_attribute("href")
         tjek("højskab: permalink med p=hoejskab", "p=hoejskab" in h, h)
         tjek("højskab: læsefeltet skifter", "højskab" in pg.locator("#hpSpec").inner_text().lower() or "skab" in pg.locator("#hpSpec").inner_text().lower(), pg.locator("#hpSpec").inner_text())
+        # akustik (15-10-2026): bredde i hele paneler, hulmønster og kulør på birk
+        pg.locator('#hpProd button[data-k="akustik"]').click()
+        pg.wait_for_selector("#hpStage.is-3d", timeout=20000)
+        pg.wait_for_timeout(800)
+        a = pg.locator("#hpDesigner").get_attribute("href")
+        tjek("akustik: permalink med p=akustik", "p=akustik" in a, a)
+        tjek("akustik: læsefeltet skifter", "302 × 240" in pg.locator("#hpSpec").inner_text(), pg.locator("#hpSpec").inner_text())
+        tjek("akustik: knapperne for bredde og huller vises", pg.locator('.hp-steps[data-for="akustik"]').is_visible() and not pg.locator('.hp-steps[data-for="locker"]').is_visible())
+        pg.locator('#hpB button[data-b="423"]').click(); pg.locator('#hpHul button[data-t="taet"]').click(); pg.wait_for_timeout(600)
+        sa = tilstand(pg.locator("#hpDesigner").get_attribute("href"))
+        tjek("akustik: bredde og hulmønster følger med", sa.get("b") == 423 and sa.get("hul") == 6 and sa.get("cc") == 12 and sa.get("taethed") == "taet", sa)
+        tjek("akustik: læsefeltet følger bredden", "423 × 240" in pg.locator("#hpSpec").inner_text(), pg.locator("#hpSpec").inner_text())
         tjek("ingen JS-fejl", not jsfejl, jsfejl[:3])
         # uden WebGL: stillbilledet bliver
         ctx = b.new_context(viewport={"width": 1440, "height": 900})
