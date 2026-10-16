@@ -2,8 +2,9 @@
 // Forsidens top (forside v3, 05-10-2026): tre veje ind — Design det selv · Vælg fra kataloget · Send os materialet.
 // Mockup: mockups/forside-v3.html · spec §5-6. Fanerne er almindelige links (#design, #katalog, #send); uden JS
 // vises alle tre paneler under hinanden. 3D'en er designerens indlejring (designer.neminventar.dk/indlejr.v1.js, API v1;
-// Joachim 07-10-2026: ja til at skifte den midlertidige hero3d.ts ud). Stillbilledet er LCP; 3D hentes efter 'load' på
-// computer og ved tryk på telefon. "Åbn i designeren" og "Hent IFC" følger det, man har sat sammen.
+// Joachim 07-10-2026: ja til at skifte den midlertidige hero3d.ts ud). Stillbilledet er LCP; 3D hentes af sig selv efter 'load'
+// — på telefon et par sekunder efter (Joachim 16-10-2026: "Det var bedre da det skiftede til 3d designeren efter et par sekunder
+// så man kunne se der skede noget"). "Byg selv i designeren" og "Hent IFC" følger det, man har sat sammen.
 import type { WebProduct, WebColor } from '../lib/supabase';
 import { cdn } from '../lib/img';
 import { isPhoto, morkhoj, productImage } from '../lib/catalog';
@@ -113,8 +114,9 @@ const katalog = KATALOG_TOP.map((k) => {
         <div class="hp-read"><span class="hp-spec" id="hpSpec">12 lockers · 182 × 203 cm · med bænk og skohylder</span></div>
       </div>
       <div class="hp-acts">
-        <a class="btn btn-primary hp-tilbud" href="#send" id="hpTilbud">Få et tilbud på denne <span class="arr">→</span></a>
-        {DESIGNER_URL && <a class="hp-lnk" href={`${DESIGNER_URL}?p=locker`} id="hpDesigner">Åbn i designeren →</a>}
+        {/* designeren er hovedknappen (Joachim 16-10-2026: "Åbn i designeren skal måske være større end få et tilbud … byg selv") */}
+        {DESIGNER_URL && <a class="btn btn-primary" href={`${DESIGNER_URL}?p=locker`} id="hpDesigner">Byg selv i designeren <span class="arr">→</span></a>}
+        <a class={DESIGNER_URL ? 'btn btn-ghost hp-tilbud' : 'btn btn-primary hp-tilbud'} href="#send" id="hpTilbud">Få et tilbud på denne <span class="arr">→</span></a>
         {DESIGNER_URL && <a class="hp-lnk" href={`${DESIGNER_URL}?p=locker&hent=ifc`} id="hpIfc">Hent IFC →</a>}
       </div>
     </section>
@@ -355,12 +357,13 @@ const katalog = KATALOG_TOP.map((k) => {
     links();
   }
 
-  // Indlejringen hentes med timeout (4 s); fejler den (ingen WebGL, netværk), bliver stillbilledet stående.
+  // Indlejringen hentes med timeout (8 s — en telefon på mobilnet er langsommere); fejler den (ingen WebGL, netværk), bliver
+  // stillbilledet stående.
   async function load3d() {
     if (d3 || loading || !canvasEl || !stage) return;
     loading = true; toggle && (toggle.textContent = 'Henter 3D …');
     try {
-      const timeout = new Promise<never>((_, rej) => setTimeout(() => rej(new Error('timeout')), 4000));
+      const timeout = new Promise<never>((_, rej) => setTimeout(() => rej(new Error('timeout')), 8000));
       const mod = await Promise.race([import(/* @vite-ignore */ INDLEJR), timeout]) as { indlejr: (el: HTMLElement, o: object) => Promise<Indlejring> };
       d3 = await mod.indlejr(canvasEl, { produkt: cur, tilstand: til(cur), luft: { top: 16, bund: 56 } });
       d3.on('aendret', ({ spec: sp, titel, linjer }) => { d3spec = kortSpec(sp, titel, linjer); if (spec) spec.textContent = d3spec; links(); });
@@ -405,13 +408,15 @@ const katalog = KATALOG_TOP.map((k) => {
   });
   sync();
 
-  // 3D: computer efter 'load'; telefon og saveData kun ved tryk på "Se i 3D". Kun med grafikkort: uden hardwareacceleration
-  // tegner browseren 3D på processoren, og det frøs en hel browser (07-10-2026) — så bliver stillbilledet, og 3D hentes ikke.
+  // 3D: computer efter 'load', telefon 2,5 s efter (så man ser stillbilledet først og så noget, der sker); saveData kun ved
+  // tryk på "Se i 3D". Kun med grafikkort: uden hardwareacceleration tegner browseren 3D på processoren, og det frøs en hel
+  // browser (07-10-2026) — så bliver stillbilledet, og 3D hentes ikke.
   const saveData = (navigator as any).connection?.saveData === true;
   const hasGL = (() => { try { const c = document.createElement('canvas'), k = { failIfMajorPerformanceCaveat: true }; return !!(c.getContext('webgl2', k) || c.getContext('webgl', k)); } catch { return false; } })();
   if (!hasGL) toggle && (toggle.hidden = true);
-  else if (!narrow() && !saveData) {
-    const go = () => ('requestIdleCallback' in window ? (window as any).requestIdleCallback(load3d, { timeout: 1500 }) : setTimeout(load3d, 300));
+  else if (!saveData) {
+    const go = () => (narrow() ? setTimeout(load3d, 2500)
+      : 'requestIdleCallback' in window ? (window as any).requestIdleCallback(load3d, { timeout: 1500 }) : setTimeout(load3d, 300));
     if (document.readyState === 'complete') go(); else window.addEventListener('load', go, { once: true });
   }
 </script>
