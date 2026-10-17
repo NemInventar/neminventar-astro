@@ -1,0 +1,71 @@
+---
+// Design det selv: eksempler fra designeren (Joachim 16-10-2026: "måske skal vi også have en side hvor alle mulighederne kan
+// ses. Eller i hvert fald eksempler med hvad man kan lave med designeren og så arbejde videre derfra"). Hvert eksempel åbner
+// designeren med præcis den konfiguration (permalinket ?t=), og billedet er designerens egen 3D af samme konfiguration
+// (scripts/designer_eksempler.py). Eksemplerne står i src/data/designer-eksempler.json. Et klik tælles i Plausible som
+// "Eksempel valgt" (eksempel, produkt) — sammen med designerens egen tunnel (fn_plausible_tunnel) viser det, hvad folk vil have.
+import Base from '../layouts/Base.astro';
+import ContactCta from '../components/ContactCta.astro';
+import EKS from '../data/designer-eksempler.json';
+import { DESIGNER_URL, kod } from '../lib/forside';
+const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
+const title = 'Design det selv: eksempler fra designeren — Nem Inventar';
+const description = 'Otte eksempler på skabe, bænke, lockers og akustikpaneler fra vores designer. Åbn et eksempel, ret mål og materiale, og send det til os.';
+const NAVN: Record<string, string> = { hoejskab: 'Højskab', baenk: 'Bænk', locker: 'Lockers', akustik: 'Akustik' };
+const link = (e: { produkt: string; st: unknown }) => `${DESIGNER_URL}?p=${e.produkt}&t=${kod(e.st)}`;
+const billede = (id: string) => `${base}billeder/designer-eksempler/${id}.jpg`;
+const ogImage = new URL(billede('garderobe-med-baenk'), site).href;
+---
+<Base title={title} description={description} image={ogImage}>
+  <section class="sec dds"><div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="label">Design det selv</span>
+        <h1 class="dds-h1">Start fra et eksempel. <em>Ret resten selv.</em></h1>
+        <p class="lede">Alt herunder er bygget i vores designer. Åbn et eksempel, ret mål, materiale og indretning, og send det til os. Du får tilbud og tegning på dine mål.</p>
+      </div>
+    </div>
+    {DESIGNER_URL && (
+      <div class="dds-grid">
+        {EKS.map((e) => (
+          <article class="dds-kort">
+            <a class="dds-img" href={link(e)} data-eks={e.id} data-produkt={e.produkt} tabindex="-1" aria-hidden="true">
+              <img src={billede(e.id)} alt="" width="1200" height="800" loading="lazy" decoding="async" />
+            </a>
+            <span class="dds-tag">{NAVN[e.produkt]}</span>
+            <h2>{e.titel}</h2>
+            <p>{e.tekst}</p>
+            <a class="dds-cta" href={link(e)} data-eks={e.id} data-produkt={e.produkt}>Byg videre på den <span aria-hidden="true">→</span></a>
+          </article>
+        ))}
+      </div>
+    )}
+    {DESIGNER_URL && (
+      <p class="dds-forfra">Vil du hellere starte forfra? {Object.entries(NAVN).map(([p, n], i) => <>{i ? ' · ' : ''}<a href={`${DESIGNER_URL}?p=${p}`}>{n}</a></>)}</p>
+    )}
+  </div></section>
+
+  <ContactCta />
+
+  <style>
+    .dds-h1{font-size:clamp(34px,4.4vw,60px);margin-top:22px;max-width:20ch}
+    .dds-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:34px 26px;margin-top:34px}
+    .dds-kort{display:flex;flex-direction:column;gap:8px}
+    .dds-img{display:block;border-radius:var(--radius);overflow:hidden;background:var(--soft);aspect-ratio:3/2}
+    .dds-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s ease}
+    .dds-img:hover img{transform:scale(1.02)}
+    .dds-tag{margin-top:6px;font-size:12.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--warm)}
+    .dds-kort h2{font-size:21px;line-height:1.25;margin:0}
+    .dds-kort p{margin:0;color:var(--muted);font-size:15px;line-height:1.5}
+    .dds-cta{margin-top:auto;padding-top:6px;font-weight:600;color:var(--ink);text-decoration-color:var(--warm-soft);text-underline-offset:3px}
+    .dds-forfra{margin-top:40px;color:var(--muted)}
+    .dds-forfra a{color:var(--ink);font-weight:600;text-decoration-color:var(--warm-soft);text-underline-offset:3px}
+  </style>
+  <script>
+    // et klik på et eksempel tælles (Plausible, ingen persondata) — hvad folk vil bygge videre på
+    document.querySelectorAll<HTMLAnchorElement>('a[data-eks]').forEach((a) => a.addEventListener('click', () => {
+      (window as unknown as { plausible?: (n: string, o: object) => void }).plausible?.('Eksempel valgt', { props: { eksempel: a.dataset.eks, produkt: a.dataset.produkt } });
+    }));
+  </script>
+</Base>

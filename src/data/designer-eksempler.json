@@ -1,0 +1,66 @@
+[
+  {
+    "id": "et-skab",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Ét højskab i egefinér",
+    "tekst": "60 × 210 × 60 cm med fire løse hylder og klar olie. Det enkleste skab, og det, de fleste starter med.",
+    "st": { "n": 1, "b": 60, "h": 210, "d": 60, "mat": "eg", "inde": "hylder", "hy": 4 }
+  },
+  {
+    "id": "garderobe-med-baenk",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Garderobevæg med bænk",
+    "tekst": "To garderobeskabe på 60 cm og imellem dem en bænk på 100 cm med to skuffer, hynde og overskab. Over bænken er der plads til jakkerne.",
+    "st": { "n": 3, "b": 60, "h": 210, "d": 60, "mat": "eg", "inde": "garderobe", "m": [{ "i": 1, "t": "baenk", "b": 100 }] }
+  },
+  {
+    "id": "aaben-sektion",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Skabsvæg med en åben sektion",
+    "tekst": "Fire skabe i fyrrekrydsfiner med fjordgrønne laminatlåger uden greb. Det tredje skab er 40 cm bredt og åbent til bøger og kurve.",
+    "st": { "n": 4, "b": 60, "h": 210, "d": 60, "mat": "kryds", "front": "laminat", "farve": { "kryds": "natur", "laminat": "fjord-green" }, "greb": "push", "m": [{ "i": 2, "t": "aaben", "b": 40 }] }
+  },
+  {
+    "id": "massive-laager",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Indeliggende låger i massiv eg",
+    "tekst": "To garderobeskabe i egefinér. Lågerne er i massiv eg, sidder plant i skabet og har fingergreb fræset i kanten. Skufferne er fingertappede.",
+    "st": { "n": 2, "b": 50, "h": 210, "d": 60, "mat": "eg", "front": "massiv", "fmat": "eg", "indl": 1, "greb": "finger", "inde": "garderobe_skuffer", "skuffe": "fingertap" }
+  },
+  {
+    "id": "roedbrun-olie",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Krydsfiner med rødbrun olie",
+    "tekst": "Tre skabe i fyrrekrydsfiner, olieret i en af vores otte lagerfarver. Åren ses gennem farven, og kanten viser lagene.",
+    "st": { "n": 3, "b": 60, "h": 210, "d": 60, "mat": "kryds", "farve": { "kryds": "roedbrun" }, "inde": "hylder", "hy": 4 }
+  },
+  {
+    "id": "baenk",
+    "produkt": "baenk",
+    "gruppe": "Bænke",
+    "titel": "Bænk med tre skuffer",
+    "tekst": "120 cm bred bænk i egefinér med tre skuffer side om side under sædet og en hynde i gråt møbelstof.",
+    "st": { "b": 120, "d": 40, "bsk": 3, "hynde": 1, "mat": "eg" }
+  },
+  {
+    "id": "lockers",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Lockers i krydsfiner",
+    "tekst": "12 rum i fyrrekrydsfiner med blå olie på lågerne, på sokkel og med nøglelås.",
+    "st": { "soejler": 6, "raekker": 2, "mat": "kryds", "front": "farve", "farve": { "kryds": "natur", "laage": "blaa" } }
+  },
+  {
+    "id": "akustikvaeg",
+    "produkt": "akustik",
+    "gruppe": "Akustik",
+    "titel": "Akustikvæg i birkekrydsfiner",
+    "tekst": "302 × 240 cm perforerede paneler. Hullerne dæmper efterklangen i fx et klasselokale eller et mødelokale.",
+    "st": { "b": 302, "h": 240 }
+  }
+]

@@ -38,7 +38,7 @@ const TILSTAND: Record<string, (kuloer?: string) => Record<string, unknown>> = {
   // Mobil-lockers (Sundby-modellen, 08-10-2026): 3 × 10 små rum, uden sokkel, hængelås — som designerens valg siden 1e074a6
   'mobil-lockers-krydsfiner': (k) => ({ mat: 'kryds', farve: { kryds: k ?? 'natur' }, soejler: 3, raekker: 10, b: 26, h: 16, d: 28, sokkel: 'uden', laas: 'haengelaas' }),
 };
-const kod = (st: unknown) => {
+export const kod = (st: unknown) => {
   let s = '';
   for (const b of new TextEncoder().encode(JSON.stringify(st))) s += String.fromCharCode(b);
   return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');

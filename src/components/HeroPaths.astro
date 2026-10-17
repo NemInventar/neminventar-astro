@@ -117,7 +117,8 @@ const katalog = KATALOG_TOP.map((k) => {
         {/* designeren er hovedknappen (Joachim 16-10-2026: "Åbn i designeren skal måske være større end få et tilbud … byg selv") */}
         {DESIGNER_URL && <a class="btn btn-primary" href={`${DESIGNER_URL}?p=locker`} id="hpDesigner">Byg selv i designeren <span class="arr">→</span></a>}
         <a class={DESIGNER_URL ? 'btn btn-ghost hp-tilbud' : 'btn btn-primary hp-tilbud'} href="#send" id="hpTilbud">Få et tilbud på denne <span class="arr">→</span></a>
-        {DESIGNER_URL && <a class="hp-lnk" href={`${DESIGNER_URL}?p=locker&hent=ifc`} id="hpIfc">Hent IFC →</a>}
+        {DESIGNER_URL && <a class="hp-lnk" href="/design-det-selv/">Se eksempler →</a>}
+        {DESIGNER_URL && <a class="hp-lnk hp-lnk2" href={`${DESIGNER_URL}?p=locker&hent=ifc`} id="hpIfc">Hent IFC →</a>}
       </div>
     </section>
 
@@ -207,6 +208,7 @@ const katalog = KATALOG_TOP.map((k) => {
   .hp-read{justify-self:end;text-align:right}
   .hp-spec{font-size:13.5px;color:var(--ink);font-weight:500;font-variant-numeric:tabular-nums}
   .hp-acts{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 18px 16px;border-top:1px solid var(--line);background:var(--paper)}
+  .hp-lnk2{margin-left:14px !important}
   .hp-lnk{margin-left:auto;font-size:13.5px;font-weight:600;color:var(--ink);text-decoration-color:var(--warm-soft);text-underline-offset:3px}
 
   .hp-cgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:16px}
