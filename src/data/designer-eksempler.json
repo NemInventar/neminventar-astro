@@ -221,6 +221,30 @@
     }
   },
   {
+    "id": "to-skabe-et-aabent",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "To skabe med låger og ét åbent i krydsfiner",
+    "tekst": "Tre skabe på 50 cm i fyrrekrydsfiner med klar olie og fire løse hylder i hvert. De to har låger og standardgreb i børstet stål, det tredje er åbent, så lagene ses i hyldernes kant. 150 cm bred, 200 cm høj og 55 cm dyb.",
+    "st": {
+      "n": 3,
+      "b": 50,
+      "h": 200,
+      "d": 55,
+      "mat": "kryds",
+      "inde": "hylder",
+      "hy": 4,
+      "greb": "std",
+      "haengsel": "v",
+      "m": [
+        {
+          "i": 2,
+          "t": "aaben"
+        }
+      ]
+    }
+  },
+  {
     "id": "aaben-reol-birk",
     "produkt": "hoejskab",
     "gruppe": "Højskabe",
