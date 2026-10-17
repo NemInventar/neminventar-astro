@@ -105,7 +105,7 @@ def texts(row, fields):
             for i, x in enumerate(v):
                 if isinstance(x, dict):
                     for k, s in x.items():
-                        if isinstance(s, str) and k not in ("src", "kind"): yield f"{f}[{i}].{k}", s, mm_allowed(row, f, x)
+                        if isinstance(s, str) and k not in ("src", "kind", "eks"): yield f"{f}[{i}].{k}", s, mm_allowed(row, f, x)
                 elif isinstance(x, str) and f != "keywords": yield f"{f}[{i}]", x, False
 
 SOURCES = [
