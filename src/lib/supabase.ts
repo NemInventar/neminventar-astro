@@ -74,6 +74,7 @@ export interface WebImage {
   kind: 'foto' | 'visualisering' | 'tegning' | 'video';
   caption?: string | null;
   poster?: string | null;
+  eks?: string | null; // eksempel-id i src/data/designer-eksempler.json: billedet kan åbnes i designeren
 }
 
 // Landingsside pr. emne (materiale/produkt), målgruppe eller guide (forklarende artikel) — v_web_landing_pages.

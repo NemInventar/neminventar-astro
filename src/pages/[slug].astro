@@ -55,6 +55,15 @@ const kontaktHref = `${base}kontakt?emne=${encodeURIComponent(page.nav_label)}`;
 // Eksempler fra designeren (landing_web.designer_eksempler): det første er hovedknappen øverst, alle vises som kort under teksten.
 const eks = DESIGNER_URL ? (page.designer_eksempler ?? []).filter((id) => EKS.some((e) => e.id === id)) : [];
 const eks0 = EKS.find((e) => e.id === eks[0]);
+// Et billede fra designeren kan åbnes i designeren ("Byg videre på denne"): images[].eks, ellers et eksempelbillede
+// fra /billeder/designer-eksempler/<id>.jpg. Knappen under hovedbilledet følger med, når man skifter billede.
+const eksAf = (im?: { src: string; eks?: string | null }) => {
+  const id = im ? im.eks ?? im.src.match(/\/billeder\/designer-eksempler\/([a-z0-9-]+)\.jpg$/)?.[1] : undefined;
+  const e = DESIGNER_URL && id ? EKS.find((x) => x.id === id) : undefined;
+  return e ? { id: e.id, produkt: e.produkt, href: eksempelLink(e) } : null;
+};
+const heroEks = eksAf(hero);
+const galleriEks = images.some((im) => eksAf(im));
 // 3 kort pr. række, undtagen ved præcis 4 (så 2 × 2, ellers står ét kort alene nederst)
 const caseCols = relCases.length === 4 ? 2 : relCases.length >= 3 ? 3 : 2;
 
@@ -160,13 +169,16 @@ const jsonLd = [
               <figcaption id="main-cap" class="img-tag">{hero.caption}</figcaption>
             </figure>
           )}
+          {galleriEks && (
+            <a id="main-eks" class="btn btn-ghost lp-eks" href={heroEks?.href ?? '#'} hidden={!heroEks} data-geks={heroEks?.id} data-produkt={heroEks?.produkt} data-side={page.slug}>Byg videre på denne i designeren <span class="arr">→</span></a>
+          )}
           {images.length > 1 && (
             <div class="thumbs">
-              {images.map((im, i) => (
-                <button class={`thumb${i === 0 ? ' active' : ''}`} data-src={cdn(im.src, 1200)} data-kind={im.kind} data-label={imgLabel(im.kind)} data-cap={im.caption ?? ''} data-alt={im.alt} aria-label={`Vis billede: ${im.alt}`}>
+              {images.map((im, i) => { const ex = eksAf(im); return (
+                <button class={`thumb${i === 0 ? ' active' : ''}`} data-src={cdn(im.src, 1200)} data-kind={im.kind} data-label={imgLabel(im.kind)} data-cap={im.caption ?? ''} data-alt={im.alt} data-eks-href={ex?.href} data-eks-id={ex?.id} data-eks-produkt={ex?.produkt} aria-label={`Vis billede: ${im.alt}`}>
                   <img src={cdn(im.src, 240)} alt="" loading="lazy" />
                 </button>
-              ))}
+              ); })}
             </div>
           )}
         </div>
@@ -297,14 +309,21 @@ const jsonLd = [
     const cap = document.getElementById('main-cap');
     const tag = document.getElementById('main-tag');
     const thumbs = document.querySelectorAll<HTMLButtonElement>('.thumb');
+    const eksBtn = document.getElementById('main-eks') as HTMLAnchorElement | null;
     thumbs.forEach((btn) => {
       btn.addEventListener('click', () => {
-        const { src, label, cap: text, alt, kind } = btn.dataset;
+        const { src, label, cap: text, alt, kind, eksHref, eksId, eksProdukt } = btn.dataset;
+        if (eksBtn) { eksBtn.hidden = !eksHref; if (eksHref) { eksBtn.href = eksHref; eksBtn.dataset.geks = eksId; eksBtn.dataset.produkt = eksProdukt; } }
         if (main && src) { main.style.opacity = '0'; main.onload = () => { main.style.opacity = '1'; }; main.src = src; main.alt = alt ?? ''; main.classList.toggle('contain', kind === 'tegning'); if (main.complete) main.style.opacity = '1'; }
         if (tag) tag.textContent = label ?? '';
         if (cap) cap.textContent = text ?? '';
         thumbs.forEach((b) => b.classList.toggle('active', b === btn));
       });
+    });
+
+    // "Byg videre på denne" under hovedbilledet tælles som "Eksempel valgt" (kilde galleri), ligesom kortene længere nede.
+    eksBtn?.addEventListener('click', () => {
+      (window as unknown as { plausible?: (n: string, o: object) => void }).plausible?.('Eksempel valgt', { props: { eksempel: eksBtn.dataset.geks ?? '', produkt: eksBtn.dataset.produkt ?? '', side: eksBtn.dataset.side ?? '', kilde: 'galleri' } });
     });
 
     // Videoerne hentes først, når de kommer i syne, og afspilles uden lyd i løkke.
@@ -320,4 +339,8 @@ const jsonLd = [
     }, { rootMargin: '200px' });
     vids.forEach((v) => io.observe(v));
   </script>
+  <style>
+    .lp-eks{margin-top:12px}
+    .lp-eks[hidden]{display:none}
+  </style>
 </Base>
