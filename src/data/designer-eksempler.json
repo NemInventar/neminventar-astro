@@ -74,12 +74,13 @@
     "produkt": "hoejskab",
     "gruppe": "Højskabe",
     "titel": "Garderobevæg i Shinnoki",
-    "tekst": "4,5 meter garderobevæg i Shinnoki Natural Oak: tre skabe på 100 cm og ét på 50 med hylder og bøjlestang, og en bænk med tre skuffer, hynde og overskab. Lavet efter en garderobe, vi har bygget til en bolig i København.",
+    "tekst": "5 meter garderobevæg i Shinnoki Natural Oak: tre skabe på 100 cm og ét på 50 med overskab ovenpå, og en bænk på 150 cm med tre skuffer, hynde og overskabe. Dækplade og ramme samler overskabene. Lavet efter en garderobe, vi har bygget til en bolig i København.",
     "st": {
-      "n": 5,
+      "n": 6,
       "b": 100,
-      "h": 240,
+      "h": 200,
       "d": 62,
+      "top": 40,
       "mat": "shinnoki",
       "farve": {
         "shinnoki": "natural-oak"
@@ -98,8 +99,13 @@
         },
         {
           "i": 4,
+          "t": "baenk"
+        },
+        {
+          "i": 5,
           "t": "baenk",
-          "bsk": 3
+          "b": 50,
+          "bsk": 1
         }
       ]
     }
@@ -180,6 +186,21 @@
       "b": 120,
       "d": 40,
       "bsk": 3,
+      "hynde": 1,
+      "mat": "eg"
+    }
+  },
+  {
+    "id": "skobaenk",
+    "produkt": "baenk",
+    "gruppe": "Bænke",
+    "titel": "Skobænk med hynde",
+    "tekst": "100 cm skobænk i egefinér, åben under sædet med en skohylde: to etager til sko og en hynde i gråt møbelstof på toppen.",
+    "st": {
+      "b": 100,
+      "d": 35,
+      "bsk": 0,
+      "sh": 1,
       "hynde": 1,
       "mat": "eg"
     }
