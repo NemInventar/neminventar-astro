@@ -12,12 +12,14 @@ const links = [
   { href: `${base}projekter`, t: 'Projekter' },
   { href: `${base}inventar`, t: 'Inventar' },
   { href: DESIGNER_URL ?? `${base}#design`, t: 'Designeren', soon: !DESIGNER_URL },
+  // eksemplerne fra designeren (Joachim 17-10-2026: "Hvor er den produktside også henne så man kan blive inspireret? Den havde jeg nok regnet med at se i menuen")
+  { href: `${base}design-det-selv/`, t: 'Inspiration' },
   { href: `${base}#saadan`, t: 'Sådan arbejder vi' },
   { href: `${base}om-os`, t: 'Om os' },
   { href: `${base}kontakt`, t: 'Kontakt' },
 ];
 ---
-<nav><div class="wrap nav-in">
+<nav class="topnav"><div class="wrap nav-in">
   <a href={base} class="brand">NEM<b>·</b>INVENTAR</a>
   <div class="nav-links">
     {links.filter((l) => l.t !== 'Kontakt').map((l) => <a href={l.href}>{l.t}{l.soon && <span class="soon">snart</span>}</a>)}

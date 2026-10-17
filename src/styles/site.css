@@ -64,7 +64,8 @@ h2.label{font-family:'Inter',sans-serif;line-height:inherit;margin:0}
 .ulink:hover::after{transform:scaleX(1);transform-origin:left}
 
 /* ============ NAV ============ */
-nav{
+/* kun topmenuen (Nav.astro) — et bart nav{} gjorde også forsidens kort og ydelseslisten klæbende i lag 50, så de lagde sig over den åbne menu på telefon (Joachim 17-10-2026) */
+nav.topnav{
   position:sticky;top:0;z-index:50;
   background:rgba(250,248,243,.88);backdrop-filter:blur(12px);
   border-bottom:1px solid var(--line);
@@ -92,8 +93,10 @@ nav{
 .nav-links .nav-icon{display:inline-flex;align-items:center;color:var(--muted)}
 .nav-links .nav-icon:hover{color:var(--ink)}
 .nav-links .nav-icon::after{display:none}
-@media(max-width:1180px){.nav-links{gap:20px}}
-@media(max-width:960px){.nav-links a:not(.nav-cta):not(.nav-tel){display:none}}
+@media(max-width:1300px){.nav-links{gap:20px}}
+.nav-links a{white-space:nowrap}
+/* menuknappen op til 1180 px: med "Inspiration" (17-10-2026) var der ikke plads til hele linjen ved 1024 */
+@media(max-width:1180px){.nav-links a:not(.nav-cta):not(.nav-tel){display:none}}
 @media(max-width:680px){
   .brand{font-size:16px}
   .nav-links{gap:14px}
@@ -853,7 +856,7 @@ footer a:hover{color:var(--ink)}
 /* knappen øverst i menuen: .nav-panel>a sætter blæk-farve og bundlinje — knappen skal have sit eget udtryk */
 .nav-panel>a.np-cta{display:none;margin:10px 0 4px;justify-content:center;gap:10px;border-bottom:0;color:var(--paper);font-family:'Inter',system-ui,sans-serif;font-size:15.5px;letter-spacing:0;padding:15px 28px}
 .nav-panel>a.np-cta .arr{margin-left:0;color:inherit}
-@media(max-width:960px){.nav-menu{display:block}}
+@media(max-width:1180px){.nav-menu{display:block}}
 /* telefon: brand + nummer + menu. "Få en pris" flytter ind øverst i menuen, så alt kan stå på én linje ved 390 px */
 @media(max-width:680px){.nav-in{gap:10px}.nav-links .nav-cta{display:none}.nav-panel>a.np-cta{display:flex}}
 
