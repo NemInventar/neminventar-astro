@@ -16,6 +16,50 @@
     }
   },
   {
+    "id": "skabsvaeg-moerk-eg",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Skabsvæg i mørk eg med bænk",
+    "tekst": "Seks skabe på 60 cm i egefinér olieret i Dark Roast: to lukkede skabe med indeliggende låger, et åbent garderobeskab med hattehylde, bøjlestang og to skuffer, og en bænk over tre skabes bredde med en skuffe pr. skab og hynde. 360 cm bred og 200 cm høj.",
+    "st": {
+      "n": 6,
+      "b": 60,
+      "h": 200,
+      "d": 60,
+      "mat": "eg",
+      "farve": {
+        "eg": "dark-roast"
+      },
+      "greb": "std",
+      "indl": 1,
+      "m": [
+        {
+          "i": 2,
+          "t": "aaben",
+          "inde": "garderobe_skuffer"
+        },
+        {
+          "i": 3,
+          "t": "baenk",
+          "bsk": 1,
+          "ob": 0
+        },
+        {
+          "i": 4,
+          "t": "baenk",
+          "bsk": 1,
+          "ob": 0
+        },
+        {
+          "i": 5,
+          "t": "baenk",
+          "bsk": 1,
+          "ob": 0
+        }
+      ]
+    }
+  },
+  {
     "id": "entre-med-baenk",
     "produkt": "hoejskab",
     "gruppe": "Højskabe",
