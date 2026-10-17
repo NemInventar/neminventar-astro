@@ -8,6 +8,9 @@ import ProductCard from '../components/ProductCard.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import ProcessSteps from '../components/ProcessSteps.astro';
 import ContactCta from '../components/ContactCta.astro';
+import DesignerEksempler from '../components/DesignerEksempler.astro';
+import EKS from '../data/designer-eksempler.json';
+import { DESIGNER_URL, eksempelLink } from '../lib/forside';
 import { getWebLandingPages, getWebCases, getWebProducts, getWebColors, type WebLanding, type WebCase, type WebProduct, type WebColor } from '../lib/supabase';
 import { cdn } from '../lib/img';
 import { FAM, famOf, typeBillede, fotoTag, imgLabel } from '../lib/catalog';
@@ -49,6 +52,9 @@ const relCases = pick(cases, page.case_slugs ?? []);
 const relProducts = pick(products, page.product_slugs ?? []);
 const related = pick(pages, page.related_slugs ?? []);
 const kontaktHref = `${base}kontakt?emne=${encodeURIComponent(page.nav_label)}`;
+// Eksempler fra designeren (landing_web.designer_eksempler): det første er hovedknappen øverst, alle vises som kort under teksten.
+const eks = DESIGNER_URL ? (page.designer_eksempler ?? []).filter((id) => EKS.some((e) => e.id === id)) : [];
+const eks0 = EKS.find((e) => e.id === eks[0]);
 // 3 kort pr. række, undtagen ved præcis 4 (så 2 × 2, ellers står ét kort alene nederst)
 const caseCols = relCases.length === 4 ? 2 : relCases.length >= 3 ? 3 : 2;
 
@@ -174,7 +180,8 @@ const jsonLd = [
             </dl>
           )}
           <div class="detail-cta">
-            <a href={kontaktHref} class="btn btn-primary">Send tegninger eller mål <span class="arr">→</span></a>
+            {eks0 && <a href={eksempelLink(eks0)} class="btn btn-primary" data-eks={eks0.id} data-produkt={eks0.produkt} data-side={page.slug}>Byg den selv i designeren <span class="arr">→</span></a>}
+            <a href={kontaktHref} class={`btn ${eks0 ? 'btn-ghost' : 'btn-primary'}`}>Send tegninger eller mål <span class="arr">→</span></a>
             <a href="tel:+4542422684" class="btn btn-ghost">+45 42 42 26 84</a>
             <CallbackForm client:load />
           </div>
@@ -197,6 +204,20 @@ const jsonLd = [
           ))}
         </div>
       )}
+    </div></section>
+  )}
+
+  {eks.length > 0 && (
+    <section class="sec" id="designer"><div class="wrap">
+      <div class="sec-head rv">
+        <div>
+          <span class="label">Design det selv</span>
+          <h2>Byg den selv i <em>designeren.</em></h2>
+          <p class="lede">Start fra et eksempel, og ret mål, materiale og indretning. Send det til os, så får du tilbud og tegning på dine mål.</p>
+        </div>
+        <a href={`${base}design-det-selv`} class="ulink">Alle eksempler →</a>
+      </div>
+      <DesignerEksempler ids={eks} side={page.slug} overskrift="h3" />
     </div></section>
   )}
 

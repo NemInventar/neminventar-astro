@@ -43,6 +43,8 @@ export const kod = (st: unknown) => {
   for (const b of new TextEncoder().encode(JSON.stringify(st))) s += String.fromCharCode(b);
   return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 };
+// Link til designeren med et eksempels konfiguration (src/data/designer-eksempler.json).
+export const eksempelLink = (e: { produkt: string; st: unknown }) => `${DESIGNER_URL}?p=${e.produkt}&t=${kod(e.st)}`;
 // Link til designeren for en type, evt. i en kulør og med IFC-download. null, hvis designeren ikke har typen.
 export function designerLink(slug: string, kuloer?: string, hent?: 'ifc' | 'dxf'): string | null {
   const p = DESIGNER_AF[slug];

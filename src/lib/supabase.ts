@@ -96,6 +96,7 @@ export interface WebLanding {
   seo_description: string;
   web_display_order: number | null;
   updated_at: string;
+  designer_eksempler?: string[]; // id'er fra src/data/designer-eksempler.json; første = hovedknappen
 }
 
 // Memoiseret: footeren henter listen på hver side under build.
