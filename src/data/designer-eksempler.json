@@ -221,6 +221,83 @@
     }
   },
   {
+    "id": "aaben-reol-birk",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Åben reol i birkekrydsfiner",
+    "tekst": "Fire åbne sektioner på 80 cm i birkekrydsfiner med klar olie og fem løse hylder i hver. Uden låger går hylderne helt frem, og kanten viser lagene.",
+    "st": {
+      "n": 4,
+      "b": 80,
+      "h": 210,
+      "d": 40,
+      "mat": "birk",
+      "t": "aaben",
+      "inde": "hylder",
+      "hy": 5
+    }
+  },
+  {
+    "id": "kompakt-skabe",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Skabe i kompaktlaminat til omklædning",
+    "tekst": "Tre garderobeskabe i kompaktlaminat i lys beton med hattehylde, bøjlestang og greb i børstet stål. Kompaktlaminat tåler vand og slid, så skabene kan stå i omklædningsrum og vaskerum.",
+    "st": {
+      "n": 3,
+      "b": 60,
+      "h": 210,
+      "d": 60,
+      "mat": "kompakt",
+      "farve": {
+        "kompakt": "chicago-concrete"
+      },
+      "inde": "garderobe",
+      "greb": "std"
+    }
+  },
+  {
+    "id": "ask-sorte-greb",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Lys ask med sorte greb og overskab",
+    "tekst": "To garderobeskabe på 50 cm i askefinér olieret i Cotton White med sorte bøjlegreb. Garderobe med to skuffer forneden og et overskab på 40 cm ovenpå.",
+    "st": {
+      "n": 2,
+      "b": 50,
+      "h": 210,
+      "d": 60,
+      "mat": "ask",
+      "farve": {
+        "ask": "cotton-white"
+      },
+      "inde": "garderobe_skuffer",
+      "greb": "sort",
+      "top": 40
+    }
+  },
+  {
+    "id": "birk-hvide-laager",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Birk med hvide laminatlåger og trægreb",
+    "tekst": "Tre skabe i birkekrydsfiner med låger i alpinhvid laminat og trægreb i massiv eg. Birkekanten ses i lågernes kant.",
+    "st": {
+      "n": 3,
+      "b": 60,
+      "h": 210,
+      "d": 60,
+      "mat": "birk",
+      "front": "laminat",
+      "farve": {
+        "laminat": "alpine-white"
+      },
+      "greb": "trae",
+      "inde": "hylder",
+      "hy": 4
+    }
+  },
+  {
     "id": "baenk",
     "produkt": "baenk",
     "gruppe": "Bænke",
@@ -250,6 +327,23 @@
     }
   },
   {
+    "id": "omklaedningsbaenk-kompakt",
+    "produkt": "baenk",
+    "gruppe": "Bænke",
+    "titel": "Omklædningsbænk i kompaktlaminat",
+    "tekst": "160 cm bænk i kompaktlaminat i lys grå, åben under sædet og uden hynde, så den kan tørres af efter hver brug.",
+    "st": {
+      "b": 160,
+      "d": 40,
+      "mat": "kompakt",
+      "farve": {
+        "kompakt": "light-grey"
+      },
+      "bsk": 0,
+      "hynde": 0
+    }
+  },
+  {
     "id": "lockers",
     "produkt": "locker",
     "gruppe": "Lockers",
@@ -267,6 +361,66 @@
     }
   },
   {
+    "id": "lockers-kompakt",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Lockers i kompaktlaminat til omklædning",
+    "tekst": "15 rum i kompaktlaminat i lys grå, fem søjler og tre rækker, med institutionshængsler og beslag til brugerens egen hængelås.",
+    "st": {
+      "soejler": 5,
+      "raekker": 3,
+      "b": 30,
+      "h": 50,
+      "d": 50,
+      "mat": "kompakt",
+      "farve": {
+        "kompakt": "light-grey"
+      },
+      "haengsel": "institution",
+      "laas": "haengelaas"
+    }
+  },
+  {
+    "id": "mobil-lockers",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Mobil-lockers til telefoner",
+    "tekst": "30 små rum i fyrrekrydsfiner, tre søjler og ti rækker, uden sokkel og med hængelås. De hænger på væggen, fx ved indgangen til klassen.",
+    "st": {
+      "soejler": 3,
+      "raekker": 10,
+      "b": 26,
+      "h": 16,
+      "d": 28,
+      "mat": "kryds",
+      "sokkel": "uden",
+      "laas": "haengelaas"
+    }
+  },
+  {
+    "id": "lockers-kontor",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Kontorlockers med elektronisk lås",
+    "tekst": "Otte høje rum i birkekrydsfiner med låger olieret i Charcoal, designgreb i bronze, frakkekrog i hvert rum og elektronisk lås, der åbnes med brik eller kort.",
+    "st": {
+      "soejler": 4,
+      "raekker": 2,
+      "b": 40,
+      "h": 90,
+      "d": 50,
+      "mat": "birk",
+      "front": "farve",
+      "farve": {
+        "laage": "charcoal"
+      },
+      "greb": "luksus",
+      "haengsel": "luksus",
+      "laas": "elektronisk",
+      "krog": "krog"
+    }
+  },
+  {
     "id": "akustikvaeg",
     "produkt": "akustik",
     "gruppe": "Akustik",
@@ -275,6 +429,44 @@
     "st": {
       "b": 302,
       "h": 240
+    }
+  },
+  {
+    "id": "akustik-moedelokale",
+    "produkt": "akustik",
+    "gruppe": "Akustik",
+    "titel": "Akustikpaneler i mørk olie til mødelokalet",
+    "tekst": "Fire paneler på 60 × 120 cm i krydsfiner olieret i Charcoal med et tæt hulmønster, sat kant i kant over mødebordet.",
+    "st": {
+      "b": 240,
+      "h": 120,
+      "over": 90,
+      "format": "60x120",
+      "fuge": "0",
+      "mat": "kryds",
+      "farve": {
+        "kryds": "charcoal"
+      },
+      "hul": 6,
+      "cc": 12,
+      "moenster": "taet",
+      "rum": "kontor"
+    }
+  },
+  {
+    "id": "akustik-boelger",
+    "produkt": "akustik",
+    "gruppe": "Akustik",
+    "titel": "Akustikvæg med bølgemotiv",
+    "tekst": "Seks paneler på 60 × 240 cm i birkekrydsfiner med klar olie, hvor hullerne danner bølger. Til fx en daginstitution, hvor væggen også skal være pæn at se på.",
+    "st": {
+      "b": 365,
+      "h": 240,
+      "motiv": "boelger",
+      "skala": 60,
+      "mat": "birk",
+      "rum": "daginstitution",
+      "fuge": "10"
     }
   }
 ]
