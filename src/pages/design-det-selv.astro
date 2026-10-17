@@ -11,7 +11,7 @@ import { DESIGNER_URL, kod } from '../lib/forside';
 const base = import.meta.env.BASE_URL;
 const site = Astro.site!;
 const title = 'Design det selv: eksempler fra designeren — Nem Inventar';
-const description = 'Otte eksempler på skabe, bænke, lockers og akustikpaneler fra vores designer. Åbn et eksempel, ret mål og materiale, og send det til os.';
+const description = `${EKS.length} eksempler på skabe, bænke, lockers og akustikpaneler fra vores designer. Åbn et eksempel, ret mål og materiale, og send det til os.`;
 const NAVN: Record<string, string> = { hoejskab: 'Højskab', baenk: 'Bænk', locker: 'Lockers', akustik: 'Akustik' };
 const link = (e: { produkt: string; st: unknown }) => `${DESIGNER_URL}?p=${e.produkt}&t=${kod(e.st)}`;
 const billede = (id: string) => `${base}billeder/designer-eksempler/${id}.jpg`;

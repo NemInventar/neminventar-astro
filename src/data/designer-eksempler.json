@@ -5,7 +5,47 @@
     "gruppe": "Højskabe",
     "titel": "Ét højskab i egefinér",
     "tekst": "60 × 210 × 60 cm med fire løse hylder og klar olie. Det enkleste skab, og det, de fleste starter med.",
-    "st": { "n": 1, "b": 60, "h": 210, "d": 60, "mat": "eg", "inde": "hylder", "hy": 4 }
+    "st": {
+      "n": 1,
+      "b": 60,
+      "h": 210,
+      "d": 60,
+      "mat": "eg",
+      "inde": "hylder",
+      "hy": 4
+    }
+  },
+  {
+    "id": "entre-med-baenk",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Entré med bænk, åben garderobe og skab",
+    "tekst": "En bænk på 100 cm med to skuffer og hynde, et åbent garderobeskab med hattehylde, bøjlestang og skuffer forneden og et lukket skab med låge uden greb. Egefinér olieret i Cocoa.",
+    "st": {
+      "n": 3,
+      "b": 60,
+      "h": 210,
+      "d": 60,
+      "mat": "eg",
+      "farve": {
+        "eg": "cocoa"
+      },
+      "inde": "garderobe",
+      "greb": "push",
+      "m": [
+        {
+          "i": 0,
+          "t": "baenk",
+          "b": 100,
+          "ob": 0
+        },
+        {
+          "i": 1,
+          "t": "aaben",
+          "inde": "garderobe_skuffer"
+        }
+      ]
+    }
   },
   {
     "id": "garderobe-med-baenk",
@@ -13,7 +53,56 @@
     "gruppe": "Højskabe",
     "titel": "Garderobevæg med bænk",
     "tekst": "To garderobeskabe på 60 cm og imellem dem en bænk på 100 cm med to skuffer, hynde og overskab. Over bænken er der plads til jakkerne.",
-    "st": { "n": 3, "b": 60, "h": 210, "d": 60, "mat": "eg", "inde": "garderobe", "m": [{ "i": 1, "t": "baenk", "b": 100 }] }
+    "st": {
+      "n": 3,
+      "b": 60,
+      "h": 210,
+      "d": 60,
+      "mat": "eg",
+      "inde": "garderobe",
+      "m": [
+        {
+          "i": 1,
+          "t": "baenk",
+          "b": 100
+        }
+      ]
+    }
+  },
+  {
+    "id": "garderobevaeg-shinnoki",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Garderobevæg i Shinnoki",
+    "tekst": "4,5 meter garderobevæg i Shinnoki Natural Oak: tre skabe på 100 cm og ét på 50 med hylder og bøjlestang, og en bænk med tre skuffer, hynde og overskab. Lavet efter en garderobe, vi har bygget til en bolig i København.",
+    "st": {
+      "n": 5,
+      "b": 100,
+      "h": 240,
+      "d": 62,
+      "mat": "shinnoki",
+      "farve": {
+        "shinnoki": "natural-oak"
+      },
+      "inde": "hylder",
+      "hy": 4,
+      "m": [
+        {
+          "i": 2,
+          "inde": "garderobe"
+        },
+        {
+          "i": 3,
+          "b": 50,
+          "hy": 3
+        },
+        {
+          "i": 4,
+          "t": "baenk",
+          "bsk": 3
+        }
+      ]
+    }
   },
   {
     "id": "aaben-sektion",
@@ -21,7 +110,26 @@
     "gruppe": "Højskabe",
     "titel": "Skabsvæg med en åben sektion",
     "tekst": "Fire skabe i fyrrekrydsfiner med fjordgrønne laminatlåger uden greb. Det tredje skab er 40 cm bredt og åbent til bøger og kurve.",
-    "st": { "n": 4, "b": 60, "h": 210, "d": 60, "mat": "kryds", "front": "laminat", "farve": { "kryds": "natur", "laminat": "fjord-green" }, "greb": "push", "m": [{ "i": 2, "t": "aaben", "b": 40 }] }
+    "st": {
+      "n": 4,
+      "b": 60,
+      "h": 210,
+      "d": 60,
+      "mat": "kryds",
+      "front": "laminat",
+      "farve": {
+        "kryds": "natur",
+        "laminat": "fjord-green"
+      },
+      "greb": "push",
+      "m": [
+        {
+          "i": 2,
+          "t": "aaben",
+          "b": 40
+        }
+      ]
+    }
   },
   {
     "id": "massive-laager",
@@ -29,7 +137,19 @@
     "gruppe": "Højskabe",
     "titel": "Indeliggende låger i massiv eg",
     "tekst": "To garderobeskabe i egefinér. Lågerne er i massiv eg, sidder plant i skabet og har fingergreb fræset i kanten. Skufferne er fingertappede.",
-    "st": { "n": 2, "b": 50, "h": 210, "d": 60, "mat": "eg", "front": "massiv", "fmat": "eg", "indl": 1, "greb": "finger", "inde": "garderobe_skuffer", "skuffe": "fingertap" }
+    "st": {
+      "n": 2,
+      "b": 50,
+      "h": 210,
+      "d": 60,
+      "mat": "eg",
+      "front": "massiv",
+      "fmat": "eg",
+      "indl": 1,
+      "greb": "finger",
+      "inde": "garderobe_skuffer",
+      "skuffe": "fingertap"
+    }
   },
   {
     "id": "roedbrun-olie",
@@ -37,7 +157,18 @@
     "gruppe": "Højskabe",
     "titel": "Krydsfiner med rødbrun olie",
     "tekst": "Tre skabe i fyrrekrydsfiner, olieret i en af vores otte lagerfarver. Åren ses gennem farven, og kanten viser lagene.",
-    "st": { "n": 3, "b": 60, "h": 210, "d": 60, "mat": "kryds", "farve": { "kryds": "roedbrun" }, "inde": "hylder", "hy": 4 }
+    "st": {
+      "n": 3,
+      "b": 60,
+      "h": 210,
+      "d": 60,
+      "mat": "kryds",
+      "farve": {
+        "kryds": "roedbrun"
+      },
+      "inde": "hylder",
+      "hy": 4
+    }
   },
   {
     "id": "baenk",
@@ -45,7 +176,13 @@
     "gruppe": "Bænke",
     "titel": "Bænk med tre skuffer",
     "tekst": "120 cm bred bænk i egefinér med tre skuffer side om side under sædet og en hynde i gråt møbelstof.",
-    "st": { "b": 120, "d": 40, "bsk": 3, "hynde": 1, "mat": "eg" }
+    "st": {
+      "b": 120,
+      "d": 40,
+      "bsk": 3,
+      "hynde": 1,
+      "mat": "eg"
+    }
   },
   {
     "id": "lockers",
@@ -53,7 +190,16 @@
     "gruppe": "Lockers",
     "titel": "Lockers i krydsfiner",
     "tekst": "12 rum i fyrrekrydsfiner med blå olie på lågerne, på sokkel og med nøglelås.",
-    "st": { "soejler": 6, "raekker": 2, "mat": "kryds", "front": "farve", "farve": { "kryds": "natur", "laage": "blaa" } }
+    "st": {
+      "soejler": 6,
+      "raekker": 2,
+      "mat": "kryds",
+      "front": "farve",
+      "farve": {
+        "kryds": "natur",
+        "laage": "blaa"
+      }
+    }
   },
   {
     "id": "akustikvaeg",
@@ -61,6 +207,9 @@
     "gruppe": "Akustik",
     "titel": "Akustikvæg i birkekrydsfiner",
     "tekst": "302 × 240 cm perforerede paneler. Hullerne dæmper efterklangen i fx et klasselokale eller et mødelokale.",
-    "st": { "b": 302, "h": 240 }
+    "st": {
+      "b": 302,
+      "h": 240
+    }
   }
 ]

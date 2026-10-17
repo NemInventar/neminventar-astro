@@ -14,6 +14,8 @@ from PIL import Image
 sys.stdout.reconfigure(encoding="utf-8")
 ROD = Path(__file__).resolve().parent.parent
 EKS = json.loads((ROD / "src" / "data" / "designer-eksempler.json").read_text(encoding="utf-8"))
+VALGT = set(sys.argv[1:])   # kun disse eksempler (id), ellers alle
+EKS = [e for e in EKS if not VALGT or e["id"] in VALGT]
 UD = ROD / "public" / "billeder" / "designer-eksempler"
 UD.mkdir(parents=True, exist_ok=True)
 DESIGNER = "https://designer.neminventar.dk/designer.html"
