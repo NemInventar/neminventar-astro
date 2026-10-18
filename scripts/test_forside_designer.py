@@ -3,7 +3,7 @@
   python scripts/test_forside_designer.py https://neminventar.dk/
 Tjekker: indlejringen indlæses (lærred i #hpCanvas), læsefeltet får designerens spec, kulør og antal ændrer permalinket,
 produktskift giver en ny indlejring, "Hent IFC" har &hent=ifc — og uden WebGL bliver stillbilledet stående."""
-import base64, json, subprocess, sys, time
+import base64, json, subprocess, sys, tempfile, time
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs
 from playwright.sync_api import sync_playwright
@@ -84,6 +84,30 @@ try:
         ctx.add_init_script("HTMLCanvasElement.prototype.getContext = function() { return null; };")
         q = ctx.new_page(); q.goto(URL, wait_until="load"); q.wait_for_timeout(2500)
         tjek("uden WebGL: stillbilledet står, ingen 3D", q.locator("#hpStill img").is_visible() and q.locator("#hpStage.is-3d").count() == 0)
+        # telefon (18-10-2026): højskab + rumbillede først, ingen 3D før tryk, knappen bygger 3D'en
+        t = b.new_context(**p.devices["iPhone 13"]).new_page()
+        tfejl = []
+        t.on("pageerror", lambda e: tfejl.append(str(e)))
+        t.goto(URL, wait_until="load"); t.wait_for_timeout(4000)
+        t.screenshot(path=str(Path(tempfile.gettempdir()) / "forside-telefon-1.png"))
+        tjek("telefon: starter på højskab", t.locator('#hpStage[data-produkt="hoejskab"].wow').count() == 1)
+        tjek("telefon: rumbilledet vises", "skabsvaeg-aften-telefon" in (t.evaluate("document.getElementById('hpStillImg').currentSrc") or ""))
+        tjek("telefon: ingen 3D af sig selv", t.locator("#hpStage.is-3d").count() == 0)
+        tjek("telefon: 3D-hint skjult på billedet", not t.locator("#hpHint").is_visible())
+        tjek("telefon: billedet står over de tre veje", t.locator("#hpStage").bounding_box()["y"] < t.locator(".hp-paths").bounding_box()["y"])
+        tjek("telefon: knappen ind i 3D", "3D" in t.locator("#hpToggle").inner_text(), t.locator("#hpToggle").inner_text())
+        t.locator("#hpToggle").click()
+        try:
+            t.wait_for_selector("#hpStage.is-3d", timeout=20000); tjek("telefon: tryk giver 3D", True)
+        except Exception as e:
+            tjek("telefon: tryk giver 3D", False, str(e)[:120])
+        tjek("telefon: permalink med p=hoejskab", "p=hoejskab" in t.locator("#hpDesigner").get_attribute("href"))
+        tm = tilstand(t.locator("#hpDesigner").get_attribute("href"))
+        tjek("telefon: 3D'en er billedets skabsvæg (6 skabe i mørk eg)", tm.get("mat") == "eg" and tm.get("n") == 6, tm)
+        tjek("telefon: hint skjult på billedet, vist i 3D", t.locator("#hpHint").is_visible())
+        t.wait_for_timeout(1500)
+        t.screenshot(path=str(Path(tempfile.gettempdir()) / "forside-telefon-2.png"))
+        tjek("telefon: ingen JS-fejl", not tfejl, tfejl[:3])
         b.close()
 finally:
     if srv:

@@ -25,6 +25,17 @@ const STILL = {
   // samme visualisering som landingssiden /akustikvaegge-perforeret-krydsfiner (landing_web_2026_09_24)
   akustik: { src: cdn('https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1790250138590.png', 1400), tag: 'Visualisering', alt: 'Akustikvæg i perforeret birkekrydsfiner i et musiklokale', pos: '50% 40%' },
 };
+// Telefon (Joachim 18-10-2026: "man skal wowes"): start på højskabet med et rumbillede, der står med det samme, og én
+// knap ind i 3D — 3D'en hentes ikke af sig selv på telefon. Billedet er designerens "Billede i et rum" (designer_renders
+// d39ed37a, lavet af Milot), beskåret uden de indbrændte mærkater. t = billedets konfiguration (designer_renders.konfiguration),
+// så "Prøv det selv i 3D" åbner den samme skabsvæg, man lige har set — til man selv ændrer kulør eller antal.
+const STILL_M = {
+  hoejskab: {
+    src: `${base}forside/skabsvaeg-aften-telefon.jpg`, tag: 'AI-illustration', alt: 'Skabsvæg i mørk eg med garderobe og bænk i en entré om aftenen', pos: '50% 50%',
+    t: { n: 6, b: 60, h: 200, d: 60, montering: 'fri', mat: 'eg', fmat: 'eg', front: 'som', farve: { eg: 'dark-roast', kryds: 'natur' }, t: 'skab', inde: 'hylder', hy: 4, so: 1, haengsel: 'v', greb: 'std', hng: 0, skuffe: 'standard', indl: 0, bsk: 2, hynde: 1, ob: 1, top: 0,
+      m: [{ i: 2, t: 'aaben', inde: 'garderobe_skuffer' }, { i: 3, t: 'baenk', bsk: 1, ob: 0 }, { i: 4, t: 'baenk', bsk: 1, ob: 0 }, { i: 5, t: 'baenk', bsk: 1, ob: 0 }] },
+  },
+};
 
 // Katalogpanelet: en type med kulør er en variant (samme billede, anker og pris som på typesiden).
 const katalog = KATALOG_TOP.map((k) => {
@@ -75,7 +86,10 @@ const katalog = KATALOG_TOP.map((k) => {
       </div>
       <div class="hp-stage" id="hpStage" data-produkt="locker">
         <figure class="hp-still" id="hpStill">
-          <img id="hpStillImg" src={STILL.locker.src} alt={STILL.locker.alt} style={`object-position:${STILL.locker.pos}`} fetchpriority="high" decoding="async" />
+          <picture>
+            <source id="hpStillSrc" media="(max-width: 980px)" srcset={STILL_M.hoejskab.src} />
+            <img id="hpStillImg" src={STILL.locker.src} alt={STILL.locker.alt} style={`object-position:${STILL.locker.pos}`} fetchpriority="high" decoding="async" />
+          </picture>
           <span class="hp-tag" id="hpStillTag">{STILL.locker.tag}</span>
         </figure>
         <div class="hp-canvas" id="hpCanvas" aria-hidden="true"></div>
@@ -188,6 +202,7 @@ const katalog = KATALOG_TOP.map((k) => {
   .hp-stage.is-3d .hp-still{opacity:0}
   .hp-tag{position:absolute;left:12px;bottom:12px;font-size:11px;font-weight:600;letter-spacing:.06em;background:rgba(250,248,243,.92);color:var(--ink);border-radius:999px;padding:4px 10px}
   .hp-hint{position:absolute;left:14px;top:14px;display:flex;gap:8px;align-items:center;background:rgba(250,248,243,.9);border:1px solid var(--line);border-radius:999px;padding:6px 12px 6px 10px;font-size:12px;color:var(--muted)}
+  .hp-hint[hidden]{display:none}
   .hp-hint i{width:8px;height:8px;border-radius:50%;background:#3B8A4F;box-shadow:0 0 0 4px rgba(59,138,79,.18)}
   .hp-toggle{position:absolute;right:14px;top:14px;background:rgba(23,20,14,.88);color:var(--paper);border:0;border-radius:999px;padding:8px 14px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
   .hp-ctrl{display:grid;grid-template-columns:auto auto 1fr;gap:14px 28px;align-items:end;padding:16px 18px;border-top:1px solid var(--line)}
@@ -224,8 +239,20 @@ const katalog = KATALOG_TOP.map((k) => {
   .hp-cfoot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:0 18px 18px}
   .hp-cfoot span{font-size:13px;color:var(--muted)}
 
+  .hp-still picture{display:contents}
   @media (max-width:980px){
     .hp-grid{grid-template-columns:1fr}
+    /* telefon: billedet lige under overskriften, før teksten og de tre veje */
+    .hp-left{display:contents}
+    .hp h1{order:1}
+    .hp-right{order:2}
+    .hp-lead{order:3;margin-top:0}
+    .hp-paths{order:4;margin-top:0}
+    .hp-assure{order:5;margin-top:0}
+    .hp-stage.wow:not(.is-3d){aspect-ratio:4/3}
+    .hp-stage.wow .hp-tag{top:12px;bottom:auto}
+    .hp-stage.wow:not(.is-3d) .hp-toggle{left:50%;right:auto;bottom:16px;transform:translateX(-50%);padding:13px 22px;font-size:15px;background:var(--ink);box-shadow:0 12px 28px -10px rgba(0,0,0,.55);white-space:nowrap}
+    .hp-panel:has(.hp-stage.wow:not(.is-3d)) .hp-ctrl{display:none}
     .hp h1{font-size:clamp(40px,11vw,60px)}
     .hp-stage{aspect-ratio:4/5}
     .hp-toggle{top:auto;bottom:14px}
@@ -279,8 +306,13 @@ const katalog = KATALOG_TOP.map((k) => {
   const stage = $('hpStage'), canvasEl = $('hpCanvas'), toggle = $<HTMLButtonElement>('hpToggle');
   const stillImg = $<HTMLImageElement>('hpStillImg'), stillTag = $('hpStillTag'), spec = $('hpSpec'), hint = $('hpHint');
   const sw = Array.from(document.querySelectorAll<HTMLButtonElement>('#hpSw button'));
-  const STILL: Record<string, { src: string; tag: string; alt: string; pos: string }> = JSON.parse(document.getElementById('hp-still')?.textContent || '{}');
+  type Still = { src: string; tag: string; alt: string; pos: string; t?: Record<string, unknown> };
+  const { d: STILL = {}, m: STILL_M = {} }: { d?: Record<string, Still>; m?: Record<string, Still> } = JSON.parse(document.getElementById('hp-still')?.textContent || '{}');
+  const stillSrc = document.getElementById('hpStillSrc') as HTMLSourceElement | null;
   type Prod = 'locker' | 'hoejskab' | 'akustik';
+  // Telefon: rumbilledet først, 3D først når man trykker (vis3d). Computer: 3D'en kommer af sig selv som før.
+  const mobil = matchMedia('(max-width: 980px)').matches;
+  let vis3d = !mobil;
   // Kulør = slug fra webpaletten (samme slugs som designerens lagerfarver). h = højskabets højde i meter (knapperne).
   // Akustik (Joachim 15-10-2026): c = feltets bredde i cm, t = hulmønstret; højden er designerens standard (240 cm).
   const S: Record<Prod, Tilstand> = {
@@ -298,14 +330,16 @@ const katalog = KATALOG_TOP.map((k) => {
     fint: { hul: 4, cc: 8, moenster: 'lige', navn: 'Fint' },
   };
   // Sidens tilstand → designerens (locker: soejler/raekker · højskab: n skabe, h i cm · akustik: bredde, huller, birk)
+  let roert = false; // telefon: billedets skabsvæg, indtil man selv ændrer kulør eller antal
   const til = (p: Prod) => {
+    if (mobil && !roert && STILL_M[p]?.t) return STILL_M[p].t!;
     const s = S[p];
     if (p === 'akustik') { const { navn, ...hul } = HUL[s.t || 'standard']; return { mat: 'birk', b: s.c, ...hul, farve: { birk: s.kuloer } }; }
     const farve = { kryds: s.kuloer };
     return p === 'locker' ? { mat: 'kryds', soejler: s.c, raekker: s.r, farve } : { mat: 'kryds', n: s.c, h: Math.round(s.h * 100), farve };
   };
   const PRODUKTNAVN: Record<Prod, string> = { locker: 'lockers', hoejskab: 'højskabe', akustik: 'akustikpaneler' };
-  let cur: Prod = 'locker';
+  let cur: Prod = mobil ? 'hoejskab' : 'locker';
   let d3: Indlejring | null = null;
   let d3spec = '', loading = false;
 
@@ -354,30 +388,41 @@ const katalog = KATALOG_TOP.map((k) => {
     document.querySelectorAll<HTMLButtonElement>('#hpB button').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.b! === S.akustik.c)));
     document.querySelectorAll<HTMLButtonElement>('#hpHul button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.t === S.akustik.t)));
     spec!.textContent = specTekst();
-    const st = STILL[cur];
-    if (stillImg && st && stillImg.getAttribute('src') !== st.src) { stillImg.src = st.src; stillImg.alt = st.alt; stillImg.style.objectPosition = st.pos; stillTag!.textContent = st.tag; }
+    const st = STILL[cur], sm = (mobil && STILL_M[cur]) || st;
+    // <source> vinder over img.src på telefon, så den følger produktet
+    if (stillSrc && stillSrc.srcset !== (STILL_M[cur] ?? st)?.src) stillSrc.srcset = (STILL_M[cur] ?? st).src;
+    if (stillImg && st && stillImg.getAttribute('src') !== st.src) { stillImg.src = st.src; stillImg.style.objectPosition = st.pos; }
+    if (stillImg && sm) { stillImg.alt = sm.alt; stillTag!.textContent = sm.tag; }
+    stage?.classList.toggle('wow', mobil && !!STILL_M[cur]);
     links();
   }
 
   // Indlejringen hentes med timeout (8 s — en telefon på mobilnet er langsommere); fejler den (ingen WebGL, netværk), bliver
   // stillbilledet stående.
+  type Modul = { indlejr: (el: HTMLElement, o: object) => Promise<Indlejring> };
+  let modP: Promise<Modul> | null = null;
+  const hent = () => modP ??= Promise.race([
+    import(/* @vite-ignore */ INDLEJR) as Promise<Modul>,
+    new Promise<never>((_, rej) => setTimeout(() => rej(new Error('timeout')), 8000)),
+  ]).catch((e) => { modP = null; throw e; });
+  const KNAP_3D = 'Prøv det selv i 3D →';
   async function load3d() {
     if (d3 || loading || !canvasEl || !stage) return;
     loading = true; toggle && (toggle.textContent = 'Henter 3D …');
     try {
-      const timeout = new Promise<never>((_, rej) => setTimeout(() => rej(new Error('timeout')), 8000));
-      const mod = await Promise.race([import(/* @vite-ignore */ INDLEJR), timeout]) as { indlejr: (el: HTMLElement, o: object) => Promise<Indlejring> };
+      const mod = await hent();
       d3 = await mod.indlejr(canvasEl, { produkt: cur, tilstand: til(cur), luft: { top: 16, bund: 56 } });
       d3.on('aendret', ({ spec: sp, titel, linjer }) => { d3spec = kortSpec(sp, titel, linjer); if (spec) spec.textContent = d3spec; links(); });
-      stage.classList.add('is-3d'); if (hint) hint.hidden = false;
-      toggle && (toggle.textContent = 'Se den i et rum');
+      if (vis3d) { stage.classList.add('is-3d'); if (hint) hint.hidden = false; }
+      toggle && (toggle.textContent = vis3d ? 'Se den i et rum' : KNAP_3D);
     } catch {
       d3 = null;
       toggle && (toggle.hidden = true); // stillbilledet bliver stående
     } finally { loading = false; }
   }
   toggle?.addEventListener('click', () => {
-    if (!d3) { load3d(); return; }
+    if (!d3) { vis3d = true; load3d(); return; }
+    vis3d = true;
     const on3d = stage!.classList.toggle('is-3d');
     if (hint) hint.hidden = !on3d;
     toggle.textContent = on3d ? 'Se den i et rum' : 'Tilbage til 3D';
@@ -391,12 +436,19 @@ const katalog = KATALOG_TOP.map((k) => {
     if (d3 && fra !== cur) { d3.ryd(); d3 = null; d3spec = ''; stage!.classList.remove('is-3d'); load3d(); }
     sync();
   }));
-  sw.forEach((b) => b.addEventListener('click', () => { S[cur].kuloer = b.dataset.slug!; sync(); d3?.saet(til(cur)); }));
+  if (mobil) {
+    document.querySelectorAll('#hpProd button').forEach((x) => x.setAttribute('aria-pressed', String((x as HTMLElement).dataset.k === cur)));
+    stage!.dataset.produkt = cur;
+    S.hoejskab.c = 6; // som billedets skabsvæg
+    toggle && (toggle.textContent = KNAP_3D);
+  }
+  sw.forEach((b) => b.addEventListener('click', () => { roert = true; S[cur].kuloer = b.dataset.slug!; sync(); d3?.saet(til(cur)); }));
   document.querySelectorAll<HTMLButtonElement>('.hp-steps [data-d]').forEach((b) => b.addEventListener('click', () => {
+    roert = true;
     const [k, d] = b.dataset.d!.split(','); const s = S[cur]; const lim = (LIM[cur] as any)[k] as readonly [number, number];
     (s as any)[k] = Math.max(lim[0], Math.min(lim[1], (s as any)[k] + +d)); sync(); d3?.saet(til(cur));
   }));
-  document.querySelectorAll<HTMLButtonElement>('#hpH button').forEach((b) => b.addEventListener('click', () => { S.hoejskab.h = +b.dataset.h!; sync(); d3?.saet(til('hoejskab')); }));
+  document.querySelectorAll<HTMLButtonElement>('#hpH button').forEach((b) => b.addEventListener('click', () => { roert = true; S.hoejskab.h = +b.dataset.h!; sync(); d3?.saet(til('hoejskab')); }));
   document.querySelectorAll<HTMLButtonElement>('#hpB button').forEach((b) => b.addEventListener('click', () => { S.akustik.c = +b.dataset.b!; sync(); d3?.saet(til('akustik')); }));
   document.querySelectorAll<HTMLButtonElement>('#hpHul button').forEach((b) => b.addEventListener('click', () => { S.akustik.t = b.dataset.t!; sync(); d3?.saet(til('akustik')); }));
   $('hpTilbud')?.addEventListener('click', (e) => {
@@ -410,16 +462,17 @@ const katalog = KATALOG_TOP.map((k) => {
   });
   sync();
 
-  // 3D: computer efter 'load', telefon 2,5 s efter (så man ser stillbilledet først og så noget, der sker); saveData kun ved
-  // tryk på "Se i 3D". Kun med grafikkort: uden hardwareacceleration tegner browseren 3D på processoren, og det frøs en hel
-  // browser (07-10-2026) — så bliver stillbilledet, og 3D hentes ikke.
+  // 3D: computer efter 'load'. Telefon (18-10-2026): rumbilledet bliver stående, og designerens kode hentes i baggrunden,
+  // så "Prøv det selv i 3D" svarer med det samme — scenen bygges først ved tryk (ingen skjult 3D, der æder telefonen,
+  // mens man scroller). saveData kun ved tryk. Kun med grafikkort: uden hardwareacceleration tegner browseren 3D på
+  // processoren, og det frøs en hel browser (07-10-2026) — så bliver stillbilledet, og 3D hentes ikke.
   const saveData = (navigator as any).connection?.saveData === true;
   const hasGL = (() => { try { const c = document.createElement('canvas'), k = { failIfMajorPerformanceCaveat: true }; return !!(c.getContext('webgl2', k) || c.getContext('webgl', k)); } catch { return false; } })();
   if (!hasGL) toggle && (toggle.hidden = true);
   else if (!saveData) {
-    const go = () => (narrow() ? setTimeout(load3d, 2500)
-      : 'requestIdleCallback' in window ? (window as any).requestIdleCallback(load3d, { timeout: 1500 }) : setTimeout(load3d, 300));
+    const start = mobil ? () => { hent().catch(() => {}); } : load3d;
+    const go = () => ('requestIdleCallback' in window ? (window as any).requestIdleCallback(start, { timeout: 1500 }) : setTimeout(start, 300));
     if (document.readyState === 'complete') go(); else window.addEventListener('load', go, { once: true });
   }
 </script>
-<script is:inline type="application/json" id="hp-still" set:html={JSON.stringify(STILL)} />
+<script is:inline type="application/json" id="hp-still" set:html={JSON.stringify({ d: STILL, m: STILL_M })} />
