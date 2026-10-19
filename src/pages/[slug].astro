@@ -40,6 +40,14 @@ const segs = (s: string) => {
   return out;
 };
 const plain = (s: string) => s.replace(LINK, '$1');
+// Tabeller i brødtekst: et afsnit, hvor hver linje starter og slutter med |, bliver en tabel. Første linje er overskriften,
+// og en linje med kun - og | springes over (markdown-formen). Til prisguiden (Joachim 19-10-2026): AI-motorerne citerer tal i tabeller.
+const tabel = (s: string) => {
+  const linjer = s.split('\n').map((l) => l.trim());
+  if (linjer.length < 2 || !linjer.every((l) => l.length > 1 && l.startsWith('|') && l.endsWith('|'))) return null;
+  const rk = linjer.filter((l) => !/^\|[\s:|-]+\|$/.test(l)).map((l) => l.slice(1, -1).split('|').map((c) => c.trim()));
+  return { hoved: rk[0], rk: rk.slice(1) };
+};
 const images = (page.images ?? []).filter((im) => im.kind !== 'video');
 const videos = (page.images ?? []).filter((im) => im.kind === 'video');
 const hero = images[0];
@@ -133,7 +141,15 @@ const jsonLd = [
       )}
       <div class="guide-aside">
         <div class="prose lp-prose rv">
-          {paragraphs.map((para) => <p>{segs(para).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))}</p>)}
+          {paragraphs.map((para) => {
+            const t = tabel(para);
+            return t ? (
+              <div class="lp-tabel"><table>
+                <thead><tr>{t.hoved.map((c) => <th>{c}</th>)}</tr></thead>
+                <tbody>{t.rk.map((r) => <tr>{r.map((c) => <td>{segs(c).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))}</td>)}</tr>)}</tbody>
+              </table></div>
+            ) : <p>{segs(para).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))}</p>;
+          })}
         </div>
         <aside class="guide-cta rv">
           <h3>Står I med et konkret rum?</h3>
@@ -202,7 +218,15 @@ const jsonLd = [
 
       {paragraphs.length > 0 && (
         <div class="prose lp-prose rv">
-          {paragraphs.map((para) => <p>{segs(para).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))}</p>)}
+          {paragraphs.map((para) => {
+            const t = tabel(para);
+            return t ? (
+              <div class="lp-tabel"><table>
+                <thead><tr>{t.hoved.map((c) => <th>{c}</th>)}</tr></thead>
+                <tbody>{t.rk.map((r) => <tr>{r.map((c) => <td>{segs(c).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))}</td>)}</tr>)}</tbody>
+              </table></div>
+            ) : <p>{segs(para).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))}</p>;
+          })}
         </div>
       )}
 
