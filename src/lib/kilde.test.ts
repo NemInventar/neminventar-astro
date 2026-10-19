@@ -29,7 +29,7 @@ test('virker uden storage (privat vindue)', () => {
   assert.deepEqual(a, { referrer_host: '', landingsside: '/', utm: {} });
 });
 
-test('klik-id\'er fra annoncer fanges sammen med utm_*, øvrige parametre ignoreres, værdier skæres til 100 tegn', () => {
+test('klik-id\'er fra annoncer fanges sammen med utm_*, øvrige parametre ignoreres, utm skæres til 100 tegn og klik-id\'er til 200', () => {
   const lang = 'x'.repeat(150);
   const a = foersteBesoeg({
     referrer: 'https://www.google.com/',
@@ -37,8 +37,9 @@ test('klik-id\'er fra annoncer fanges sammen med utm_*, øvrige parametre ignore
     host: 'neminventar.dk',
   }, lager());
   assert.deepEqual(a.utm, { utm_source: 'google_ads', utm_medium: 'cpc', gclid: 'EAIaIQ', gbraid: '0AAA', wbraid: 'CjkB', fbclid: 'IwAR' });
-  const b = foersteBesoeg({ referrer: '', href: `https://neminventar.dk/?gclid=${lang}&utm_campaign=${lang}`, host: 'neminventar.dk' });
-  assert.equal(b.utm.gclid.length, 100);
+  const b = foersteBesoeg({ referrer: '', href: `https://neminventar.dk/?gclid=${'x'.repeat(250)}&fbclid=${lang}&utm_campaign=${lang}`, host: 'neminventar.dk' });
+  assert.equal(b.utm.gclid.length, 200);
+  assert.equal(b.utm.fbclid.length, 150, 'et klik-id under 200 tegn skæres ikke');
   assert.equal(b.utm.utm_campaign.length, 100);
   // utm-objektet med klik-id'er skal stadig kunne gemmes af contact-form (JSON ≤ 1000 tegn): et realistisk annoncebesøg er langt under
   const typisk = foersteBesoeg({ referrer: '', host: 'neminventar.dk',

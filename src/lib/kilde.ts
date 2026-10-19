@@ -17,11 +17,15 @@ const KEY = 'ni_foerste_besoeg';
 export const KLIK_ID = ['gclid', 'gbraid', 'wbraid', 'fbclid'] as const;
 export const DESIGNER_HOST = 'designer.neminventar.dk';
 
-// utm_* og klik-id'er fra en query-streng, hver værdi skåret til 100 tegn. Ét sted, så formularen (foersteBesoeg)
-// og linket til designeren (medKilde) samler det samme.
+// utm_* og klik-id'er fra en query-streng: utm-værdier skæres til 100 tegn, klik-id'er til 200 (et afkortet gclid kan
+// ikke bruges, hvis vi senere melder et salg tilbage til Google). Ét sted, så formularen (foersteBesoeg) og linket til
+// designeren (medKilde) samler det samme.
 export function kildeParametre(params: URLSearchParams): Record<string, string> {
   const ud: Record<string, string> = {};
-  params.forEach((v, k) => { if (k.startsWith('utm_') || (KLIK_ID as readonly string[]).includes(k)) ud[k] = v.slice(0, 100); });
+  params.forEach((v, k) => {
+    if (k.startsWith('utm_')) ud[k] = v.slice(0, 100);
+    else if ((KLIK_ID as readonly string[]).includes(k)) ud[k] = v.slice(0, 200);
+  });
   return ud;
 }
 
