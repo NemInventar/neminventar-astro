@@ -993,8 +993,8 @@ footer a:hover{color:var(--ink)}
 /* Tabeller i brødteksten (prisguiden): ruller vandret på telefonen i stedet for at sprænge siden */
 .lp-tabel{overflow-x:auto;margin:22px 0 26px;border:1px solid var(--line);border-radius:12px;background:#fff}
 .lp-tabel table{width:100%;border-collapse:collapse;font-size:15px;font-variant-numeric:tabular-nums}
-.lp-tabel th,.lp-tabel td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
-.lp-tabel th{font-weight:600;background:var(--soft)}
+.lp-tabel th,.lp-tabel td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+.lp-tabel th{font-weight:600;background:var(--soft);white-space:normal;vertical-align:bottom}
 .lp-tabel th:not(:first-child),.lp-tabel td:not(:first-child){text-align:right}
 .lp-tabel tr:last-child td{border-bottom:0}
 .guide .cd-gallery{grid-template-columns:1fr 1fr}
