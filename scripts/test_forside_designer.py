@@ -44,6 +44,14 @@ try:
         except Exception as e:
             tjek("indlejringen er indlæst (is-3d)", False, str(e)[:120])
         tjek("lærred i #hpCanvas", pg.locator("#hpCanvas canvas").count() >= 1)
+        # computer (19-10-2026): starter på højskab som telefonen
+        tjek("computer: starter på højskab", pg.locator('#hpStage[data-produkt="hoejskab"]').count() == 1
+             and pg.locator('#hpProd button[data-k="hoejskab"]').get_attribute("aria-pressed") == "true")
+        tjek("computer: permalink med p=hoejskab", "p=hoejskab" in pg.locator("#hpDesigner").get_attribute("href"))
+        tjek("computer: læsefeltet viser højskabe", "skab" in pg.locator("#hpSpec").inner_text().lower(), pg.locator("#hpSpec").inner_text())
+        # resten af lockertjekket: skift til lockers
+        pg.locator('#hpProd button[data-k="locker"]').click()
+        pg.wait_for_selector("#hpStage.is-3d", timeout=20000); pg.wait_for_timeout(800)
         spec = pg.locator("#hpSpec").inner_text()
         tjek("læsefeltet viser designerens spec", "locker" in spec.lower(), spec)
         d0 = pg.locator("#hpDesigner").get_attribute("href")

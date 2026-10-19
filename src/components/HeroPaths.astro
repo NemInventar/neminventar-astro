@@ -78,19 +78,20 @@ const katalog = KATALOG_TOP.map((k) => {
     <section class="hp-panel on" id="design" aria-label="Design det selv">
       <div class="hp-phead">
         <div class="hp-seg" id="hpProd" role="group" aria-label="Produkt">
-          <button type="button" aria-pressed="true" data-k="locker">Lockers</button>
-          <button type="button" aria-pressed="false" data-k="hoejskab">Højskab</button>
+          <button type="button" aria-pressed="false" data-k="locker">Lockers</button>
+          <button type="button" aria-pressed="true" data-k="hoejskab">Højskab</button>
           <button type="button" aria-pressed="false" data-k="akustik">Akustik</button>
         </div>
         <span class="hp-note">Til mål · tegning og pris inden for én arbejdsdag</span>
       </div>
-      <div class="hp-stage" id="hpStage" data-produkt="locker">
+      {/* Højskabet er udgangspunktet på både telefon og computer (Joachim 19-10-2026) */}
+      <div class="hp-stage" id="hpStage" data-produkt="hoejskab">
         <figure class="hp-still" id="hpStill">
           <picture>
             <source id="hpStillSrc" media="(max-width: 980px)" srcset={STILL_M.hoejskab.src} />
-            <img id="hpStillImg" src={STILL.locker.src} alt={STILL.locker.alt} style={`object-position:${STILL.locker.pos}`} fetchpriority="high" decoding="async" />
+            <img id="hpStillImg" src={STILL.hoejskab.src} alt={STILL.hoejskab.alt} style={`object-position:${STILL.hoejskab.pos}`} fetchpriority="high" decoding="async" />
           </picture>
-          <span class="hp-tag" id="hpStillTag">{STILL.locker.tag}</span>
+          <span class="hp-tag" id="hpStillTag">{STILL.hoejskab.tag}</span>
         </figure>
         <div class="hp-canvas" id="hpCanvas" aria-hidden="true"></div>
         <span class="hp-hint" id="hpHint" hidden><i></i>3D · træk for at dreje · tryk på en låge</span>
@@ -103,13 +104,13 @@ const katalog = KATALOG_TOP.map((k) => {
           <div class="hp-colname" id="hpColname">{kul[0]?.label}</div>
         </div>
         <div>
-          <span class="hp-lbl" id="hpDimLbl">Antal rum</span>
-          <div class="hp-steps" data-for="locker">
+          <span class="hp-lbl" id="hpDimLbl">Antal og højde</span>
+          <div class="hp-steps" data-for="locker" hidden>
             <div class="hp-step"><button type="button" data-d="c,-1" aria-label="Færre søjler">−</button><output data-o="c">6</output><button type="button" data-d="c,1" aria-label="Flere søjler">+</button></div>
             <span class="x" aria-hidden="true">×</span>
             <div class="hp-step"><button type="button" data-d="r,-1" aria-label="Færre rum i højden">−</button><output data-o="r">2</output><button type="button" data-d="r,1" aria-label="Flere rum i højden">+</button></div>
           </div>
-          <div class="hp-steps" data-for="hoejskab" hidden>
+          <div class="hp-steps" data-for="hoejskab">
             <div class="hp-step"><button type="button" data-d="c,-1" aria-label="Færre skabe">−</button><output data-o="c">4</output><button type="button" data-d="c,1" aria-label="Flere skabe">+</button></div>
             <div class="hp-seg sm" id="hpH" role="group" aria-label="Højde i cm">
               <button type="button" data-h="1.8" aria-pressed="false">180</button><button type="button" data-h="2.1" aria-pressed="true">210</button><button type="button" data-h="2.4" aria-pressed="false">240</button>
@@ -125,14 +126,14 @@ const katalog = KATALOG_TOP.map((k) => {
             </div>
           </div>
         </div>
-        <div class="hp-read"><span class="hp-spec" id="hpSpec">12 lockers · 182 × 203 cm · med bænk og skohylder</span></div>
+        <div class="hp-read"><span class="hp-spec" id="hpSpec">4 højskabe · 240 × 210 × 60 cm</span></div>
       </div>
       <div class="hp-acts">
         {/* designeren er hovedknappen (Joachim 16-10-2026: "Åbn i designeren skal måske være større end få et tilbud … byg selv") */}
-        {DESIGNER_URL && <a class="btn btn-primary" href={`${DESIGNER_URL}?p=locker`} id="hpDesigner">Byg selv i designeren <span class="arr">→</span></a>}
+        {DESIGNER_URL && <a class="btn btn-primary" href={`${DESIGNER_URL}?p=hoejskab`} id="hpDesigner">Byg selv i designeren <span class="arr">→</span></a>}
         <a class={DESIGNER_URL ? 'btn btn-ghost hp-tilbud' : 'btn btn-primary hp-tilbud'} href="#send" id="hpTilbud">Få et tilbud på denne <span class="arr">→</span></a>
         {DESIGNER_URL && <a class="hp-lnk" href="/design-det-selv/">Se eksempler →</a>}
-        {DESIGNER_URL && <a class="hp-lnk hp-lnk2" href={`${DESIGNER_URL}?p=locker&hent=ifc`} id="hpIfc">Hent IFC →</a>}
+        {DESIGNER_URL && <a class="hp-lnk hp-lnk2" href={`${DESIGNER_URL}?p=hoejskab&hent=ifc`} id="hpIfc">Hent IFC →</a>}
       </div>
     </section>
 
@@ -339,7 +340,7 @@ const katalog = KATALOG_TOP.map((k) => {
     return p === 'locker' ? { mat: 'kryds', soejler: s.c, raekker: s.r, farve } : { mat: 'kryds', n: s.c, h: Math.round(s.h * 100), farve };
   };
   const PRODUKTNAVN: Record<Prod, string> = { locker: 'lockers', hoejskab: 'højskabe', akustik: 'akustikpaneler' };
-  let cur: Prod = mobil ? 'hoejskab' : 'locker';
+  let cur: Prod = 'hoejskab';
   let d3: Indlejring | null = null;
   let d3spec = '', loading = false;
 
@@ -437,8 +438,6 @@ const katalog = KATALOG_TOP.map((k) => {
     sync();
   }));
   if (mobil) {
-    document.querySelectorAll('#hpProd button').forEach((x) => x.setAttribute('aria-pressed', String((x as HTMLElement).dataset.k === cur)));
-    stage!.dataset.produkt = cur;
     S.hoejskab.c = 6; // som billedets skabsvæg
     toggle && (toggle.textContent = KNAP_3D);
   }
