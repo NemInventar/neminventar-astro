@@ -1005,7 +1005,7 @@ footer a:hover{color:var(--ink)}
 .guide-cta h3{font-size:20px;margin-bottom:8px}
 .guide-cta p{font-size:14.5px;color:var(--muted);line-height:1.6;margin-bottom:16px}
 .guide-cta .detail-cta{margin-top:0}
-@media(max-width:1020px){.guide-aside{grid-template-columns:1fr;gap:30px}.guide-cta{position:static}}
+@media(max-width:1020px){.guide-aside{grid-template-columns:minmax(0,1fr);gap:30px}.guide-cta{position:static}}
 @media(max-width:680px){.guide-hero{aspect-ratio:4/3}.lp-facts.three{grid-template-columns:1fr}.lp-facts.three div{border-right:0!important}.lp-facts.three div:nth-last-child(-n+3){border-bottom:1px solid var(--line)}.lp-facts.three div:last-child{border-bottom:0}}
 
 /* ---------- om os ---------- */
