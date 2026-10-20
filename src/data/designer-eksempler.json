@@ -188,6 +188,92 @@
     }
   },
   {
+    "id": "skabsvaeg-sovevaerelse-eg-indeliggende",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Skabsvæg til soveværelset i eg med indeliggende låger",
+    "tekst": "Fire skabe på 60 cm i egefinér med klar olie. Lågerne sidder plant i skabene og har fingergreb fræset i kanten. To med bøjlestang, ét med fire hylder og ét med bøjlestang og skuffer. 240 cm bred og 240 cm høj.",
+    "st": {
+      "n": 4,
+      "b": 60,
+      "h": 240,
+      "d": 60,
+      "mat": "eg",
+      "inde": "garderobe",
+      "indl": 1,
+      "greb": "finger",
+      "m": [
+        {
+          "i": 2,
+          "inde": "hylder"
+        },
+        {
+          "i": 3,
+          "inde": "garderobe_skuffer"
+        }
+      ]
+    }
+  },
+  {
+    "id": "skabsvaeg-sovevaerelse-boeg-fern",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Skabsvæg til soveværelset i bøg med grønne låger",
+    "tekst": "Fire skabe på 60 cm i bøgefinér med klar olie. Lågerne er olieret i Fern, sidder plant i skabene og åbner med et tryk. To med bøjlestang, ét med fire hylder og ét med bøjlestang og skuffer. 240 cm bred og 240 cm høj.",
+    "st": {
+      "n": 4,
+      "b": 60,
+      "h": 240,
+      "d": 60,
+      "mat": "boeg",
+      "inde": "garderobe",
+      "indl": 1,
+      "front": "farve",
+      "farve": {
+        "laage": "fern"
+      },
+      "greb": "push",
+      "m": [
+        {
+          "i": 2,
+          "inde": "hylder"
+        },
+        {
+          "i": 3,
+          "inde": "garderobe_skuffer"
+        }
+      ]
+    }
+  },
+  {
+    "id": "skabsvaeg-180-fjordgroen",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Skabsvæg på 180 cm i krydsfiner med fjordgrønne låger",
+    "tekst": "Tre skabe på 60 cm i fyrrekrydsfiner med klar olie. Lågerne er fjordgrøn laminat, sidder plant i skabene og åbner med et tryk. To med bøjlestang og ét med bøjlestang og skuffer. 180 cm bred og 220 cm høj.",
+    "st": {
+      "n": 3,
+      "b": 60,
+      "h": 220,
+      "d": 60,
+      "mat": "kryds",
+      "inde": "garderobe",
+      "indl": 1,
+      "front": "laminat",
+      "farve": {
+        "kryds": "natur",
+        "laminat": "fjord-green"
+      },
+      "greb": "push",
+      "m": [
+        {
+          "i": 2,
+          "inde": "garderobe_skuffer"
+        }
+      ]
+    }
+  },
+  {
     "id": "skabsvaeg-moerk-eg",
     "produkt": "hoejskab",
     "gruppe": "Højskabe",

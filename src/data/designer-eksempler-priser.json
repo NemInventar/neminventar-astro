@@ -1,5 +1,5 @@
 {
- "regnet": "2026-10-20T18:02:53+00:00",
+ "regnet": "2026-10-20T18:10:13+00:00",
  "kilde": "https://designer.neminventar.dk/designer.html",
  "note": "privat, inkl. moms, ekskl. levering — designerens egen prismodel (scripts/designer_eksempler.py)",
  "priser": {
@@ -218,6 +218,11 @@
    "ex": 31800,
    "gitter": "2026-10-20T10:43:37+00:00"
   },
+  "skabsvaeg-180-fjordgroen": {
+   "inkl": 38575,
+   "ex": 30860,
+   "gitter": "2026-10-20T10:43:37+00:00"
+  },
   "skabsvaeg-groen": {
    "inkl": 60500,
    "ex": 48400,
@@ -236,6 +241,16 @@
   "skabsvaeg-sovevaerelse": {
    "inkl": 53025,
    "ex": 42420,
+   "gitter": "2026-10-20T10:43:37+00:00"
+  },
+  "skabsvaeg-sovevaerelse-boeg-fern": {
+   "inkl": 50100,
+   "ex": 40080,
+   "gitter": "2026-10-20T10:43:37+00:00"
+  },
+  "skabsvaeg-sovevaerelse-eg-indeliggende": {
+   "inkl": 41225,
+   "ex": 32980,
    "gitter": "2026-10-20T10:43:37+00:00"
   },
   "skobaenk": {
