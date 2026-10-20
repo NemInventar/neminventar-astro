@@ -404,6 +404,8 @@ footer a:hover{color:var(--ink)}
 .lp-facts dd{font-size:14.5px;color:var(--ink);font-weight:500;line-height:1.45}
 .lp-prose{max-width:68ch;margin-top:56px}
 .lp-prose p{font-size:17px}
+.lp-prose .lp-h2{font-size:clamp(22px,2.2vw,28px);line-height:1.2;margin:44px 0 14px}
+.lp-prose .lp-h2:first-child{margin-top:0}
 .lp-prose a,.faq-list details p a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--warm);text-underline-offset:3px}
 /* Tegninger vises hele (ikke beskåret) på hvid baggrund */
 .gallery .main img.contain{object-fit:contain;background:#fff}
