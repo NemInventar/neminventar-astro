@@ -3,6 +3,7 @@
 // ses. Eller i hvert fald eksempler med hvad man kan lave med designeren og så arbejde videre derfra"). Kortene (komponenten
 // DesignerEksempler) åbner designeren med præcis den konfiguration og tælles i Plausible som "Eksempel valgt". Eksemplerne
 // står i src/data/designer-eksempler.json; landingssider viser et udvalg af dem (landing_web.designer_eksempler).
+// Fra 20-10-2026 (Joachim): pris på hvert eksempel (designer-eksempler-priser.json) og filter pr. produkt.
 import Base from '../layouts/Base.astro';
 import ContactCta from '../components/ContactCta.astro';
 import DesignerEksempler from '../components/DesignerEksempler.astro';
@@ -22,9 +23,10 @@ const ogImage = new URL(`${base}billeder/designer-eksempler/garderobe-med-baenk.
         <span class="label">Design det selv</span>
         <h1 class="dds-h1">Start fra et eksempel. <em>Ret resten selv.</em></h1>
         <p class="lede">Alt herunder er bygget i vores designer. Åbn et eksempel, ret mål, materiale og indretning, og send det til os. Du får tilbud og tegning på dine mål.</p>
+        <p class="dds-prisnote">Prisen under et eksempel er designerens pris for netop den udgave, inkl. moms. Levering og montage vælger du i designerens kurv.</p>
       </div>
     </div>
-    {DESIGNER_URL && <DesignerEksempler side="design-det-selv" />}
+    {DESIGNER_URL && <DesignerEksempler side="design-det-selv" filter />}
     {DESIGNER_URL && (
       <p class="dds-forfra">Vil du hellere starte forfra? {Object.entries(NAVN).map(([p, n], i) => <>{i ? ' · ' : ''}<a href={`${DESIGNER_URL}?p=${p}`}>{n}</a></>)}</p>
     )}
@@ -34,6 +36,7 @@ const ogImage = new URL(`${base}billeder/designer-eksempler/garderobe-med-baenk.
 
   <style>
     .dds-h1{font-size:clamp(34px,4.4vw,60px);margin-top:22px;max-width:20ch}
+    .dds-prisnote{margin-top:14px;color:var(--muted);font-size:15px;max-width:62ch}
     .dds-forfra{margin-top:40px;color:var(--muted)}
     .dds-forfra a{color:var(--ink);font-weight:600;text-decoration-color:var(--warm-soft);text-underline-offset:3px}
   </style>

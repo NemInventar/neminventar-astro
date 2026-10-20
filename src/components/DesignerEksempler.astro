@@ -3,26 +3,48 @@
 // Hvert kort åbner designeren med præcis den konfiguration (permalinket ?t=), og billedet er designerens egen 3D af samme
 // konfiguration (scripts/designer_eksempler.py). Et klik tælles i Plausible som "Eksempel valgt" (eksempel, produkt, side) —
 // sammen med designerens egen tunnel (fn_plausible_tunnel) viser det, hvad folk vil have, og hvilken side de kom fra.
+// Prisen (Joachim 20-10-2026: "der må der gerne stå pris på") er designerens egen for netop den konfiguration — privat, inkl.
+// moms, ekskl. levering — regnet af samme script (src/data/designer-eksempler-priser.json). Et produkt uden pris i designeren
+// (endnu) får ingen prislinje. filter = knapper over kortene, der viser ét produkt ad gangen (Joachim 20-10-2026: "så man kan
+// filtrere på lockers, osv."); valget står i adressen (#lockers), så et link kan pege direkte på fx lockerne.
 import EKS from '../data/designer-eksempler.json';
+import PRISER from '../data/designer-eksempler-priser.json';
 import { eksempelLink } from '../lib/forside';
 
-interface Props { ids?: string[]; side?: string; overskrift?: 'h2' | 'h3' }
-const { ids, side, overskrift = 'h2' } = Astro.props;
+interface Props { ids?: string[]; side?: string; overskrift?: 'h2' | 'h3'; filter?: boolean }
+const { ids, side, overskrift = 'h2', filter = false } = Astro.props;
 const H = overskrift;
 const base = import.meta.env.BASE_URL;
 const NAVN: Record<string, string> = { hoejskab: 'Højskab', baenk: 'Bænk', locker: 'Lockers', akustik: 'Akustik' };
+// filterknapperne: produkt-id → knaptekst og ankeret i adressen
+const FILTRE: { p: string; titel: string; anker: string }[] = [
+  { p: 'hoejskab', titel: 'Højskabe', anker: 'hoejskabe' }, { p: 'baenk', titel: 'Bænke', anker: 'baenke' },
+  { p: 'locker', titel: 'Lockers', anker: 'lockers' }, { p: 'akustik', titel: 'Akustik', anker: 'akustik' },
+];
 // Udvalgte i den rækkefølge, siden angiver (redaktionel); ukendte id'er springes over.
 const liste = ids ? ids.map((id) => EKS.find((e) => e.id === id)).filter((e): e is (typeof EKS)[number] => Boolean(e)) : EKS;
 const billede = (id: string) => `${base}billeder/designer-eksempler/${id}.jpg`;
+const PRIS = PRISER.priser as Record<string, { inkl: number } | undefined>;
+const kr = new Intl.NumberFormat('da-DK', { maximumFractionDigits: 0 });
+const antal = (p: string) => liste.filter((e) => e.produkt === p).length;
 ---
+{filter && (
+  <div class="dds-filter" role="group" aria-label="Vis eksempler">
+    <button type="button" data-filter="" data-anker="" aria-pressed="true">Alle <span>{liste.length}</span></button>
+    {FILTRE.filter((f) => antal(f.p)).map((f) => (
+      <button type="button" data-filter={f.p} data-anker={f.anker} aria-pressed="false">{f.titel} <span>{antal(f.p)}</span></button>
+    ))}
+  </div>
+)}
 <div class="dds-grid">
   {liste.map((e) => (
-    <article class="dds-kort">
+    <article class="dds-kort" data-produkt={e.produkt}>
       <a class="dds-img" href={eksempelLink(e)} data-eks={e.id} data-produkt={e.produkt} data-side={side} tabindex="-1" aria-hidden="true">
         <img src={billede(e.id)} alt="" width="1200" height="800" loading="lazy" decoding="async" />
       </a>
       <span class="dds-tag">{NAVN[e.produkt]}</span>
       <H>{e.titel}</H>
+      {PRIS[e.id] && <p class="dds-pris"><strong>{kr.format(PRIS[e.id]!.inkl)} kr.</strong> inkl. moms, ekskl. levering</p>}
       <p>{e.tekst}</p>
       <a class="dds-cta" href={eksempelLink(e)} data-eks={e.id} data-produkt={e.produkt} data-side={side}>Byg videre på den <span aria-hidden="true">→</span></a>
     </article>
@@ -30,22 +52,49 @@ const billede = (id: string) => `${base}billeder/designer-eksempler/${id}.jpg`;
 </div>
 
 <style>
+  .dds-filter{display:flex;flex-wrap:wrap;gap:8px;margin-top:34px}
+  .dds-filter button{font:inherit;font-size:15px;font-weight:600;padding:9px 16px;border-radius:999px;border:1px solid var(--line, #d9d4cc);background:transparent;color:var(--ink);cursor:pointer}
+  .dds-filter button span{font-weight:400;color:var(--muted);margin-left:5px}
+  .dds-filter button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper, #fff)}
+  .dds-filter button[aria-pressed="true"] span{color:inherit;opacity:.75}
   .dds-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:34px 26px;margin-top:34px}
+  .dds-filter + .dds-grid{margin-top:26px}
   .dds-kort{display:flex;flex-direction:column;gap:8px}
+  .dds-kort[hidden]{display:none}
   .dds-img{display:block;border-radius:var(--radius);overflow:hidden;background:var(--soft);aspect-ratio:3/2}
   .dds-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s ease}
   .dds-img:hover img{transform:scale(1.02)}
   .dds-tag{margin-top:6px;font-size:12.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--warm)}
   .dds-kort :is(h2,h3){font-size:21px;line-height:1.25;margin:0}
   .dds-kort p{margin:0;color:var(--muted);font-size:15px;line-height:1.5}
+  .dds-kort p.dds-pris{color:var(--muted);font-size:14px}
+  .dds-pris strong{color:var(--ink);font-size:17px;font-weight:700;margin-right:4px}
   .dds-cta{margin-top:auto;padding-top:6px;font-weight:600;color:var(--ink);text-decoration-color:var(--warm-soft);text-underline-offset:3px}
 </style>
 <script>
+  const plausible = (n: string, props: Record<string, string>) => (window as unknown as { plausible?: (n: string, o: object) => void }).plausible?.(n, { props });
   // et klik på et eksempel tælles (Plausible, ingen persondata) — hvad folk vil bygge videre på, og fra hvilken side.
   // Gælder alle links med data-eks på siden, også landingssidens "Byg den selv i designeren".
   document.querySelectorAll<HTMLAnchorElement>('a[data-eks]').forEach((a) => a.addEventListener('click', () => {
     const props: Record<string, string> = { eksempel: a.dataset.eks ?? '', produkt: a.dataset.produkt ?? '' };
     if (a.dataset.side) props.side = a.dataset.side;
-    (window as unknown as { plausible?: (n: string, o: object) => void }).plausible?.('Eksempel valgt', { props });
+    plausible('Eksempel valgt', props);
   }));
+  // filteret: ét produkt ad gangen (eller alle); valget står i adressen (#lockers), så et link kan pege direkte på det
+  const knapper = [...document.querySelectorAll<HTMLButtonElement>('.dds-filter button')];
+  if (knapper.length) {
+    const kort = [...document.querySelectorAll<HTMLElement>('.dds-kort')];
+    const vis = (b: HTMLButtonElement, spor: boolean) => {
+      const p = b.dataset.filter ?? '';
+      knapper.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      kort.forEach((k) => { k.hidden = !!p && k.dataset.produkt !== p; });
+      history.replaceState(null, '', b.dataset.anker ? `#${b.dataset.anker}` : location.pathname + location.search);
+      if (spor) plausible('Eksempler filtreret', { produkt: p || 'alle' });
+    };
+    knapper.forEach((b) => b.addEventListener('click', () => vis(b, true)));
+    // et link med #lockers (også fra samme side): vis det produkt
+    const fraAdressen = () => { const b = knapper.find((x) => x.dataset.anker && x.dataset.anker === location.hash.slice(1)); if (b) vis(b, false); };
+    fraAdressen();
+    window.addEventListener('hashchange', fraAdressen);
+  }
 </script>

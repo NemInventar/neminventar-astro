@@ -16,6 +16,71 @@
     }
   },
   {
+    "id": "garderobeskab-eg-120",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Garderobeskab i eg, 120 cm",
+    "tekst": "To skabe på 60 cm i egefinér med klar olie og fingergreb fræset i lågen. Hattehylde og bøjlestang i begge. 120 cm bred og 210 cm høj.",
+    "st": {
+      "n": 2,
+      "b": 60,
+      "h": 210,
+      "d": 60,
+      "mat": "eg",
+      "inde": "garderobe",
+      "greb": "finger"
+    }
+  },
+  {
+    "id": "garderobeskab-hvide-laager",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Garderobeskab med hvide låger",
+    "tekst": "To skabe på 50 cm i birkekrydsfiner med låger i alpinhvid laminat uden greb. Hattehylde, bøjlestang og to skuffer i hvert skab. 100 cm bred.",
+    "st": {
+      "n": 2,
+      "b": 50,
+      "h": 210,
+      "d": 60,
+      "mat": "birk",
+      "front": "laminat",
+      "farve": {
+        "laminat": "alpine-white"
+      },
+      "greb": "push",
+      "inde": "garderobe_skuffer"
+    }
+  },
+  {
+    "id": "skabsvaeg-sovevaerelse",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Skabsvæg til soveværelset",
+    "tekst": "Fire skabe på 60 cm i askefinér olieret i Cotton White med slidsede greb. To med bøjlestang, ét med fire hylder og ét med bøjlestang og skuffer. 240 cm bred og 240 cm høj.",
+    "st": {
+      "n": 4,
+      "b": 60,
+      "h": 240,
+      "d": 60,
+      "mat": "ask",
+      "farve": {
+        "ask": "cotton-white"
+      },
+      "inde": "garderobe",
+      "greb": "slids",
+      "m": [
+        {
+          "i": 2,
+          "inde": "hylder"
+        },
+        {
+          "i": 3,
+          "inde": "garderobe_skuffer"
+        }
+      ]
+    }
+  },
+  {
     "id": "skabsvaeg-moerk-eg",
     "produkt": "hoejskab",
     "gruppe": "Højskabe",
@@ -57,6 +122,23 @@
           "ob": 0
         }
       ]
+    }
+  },
+  {
+    "id": "skabsvaeg-overskabe",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Skabsvæg med overskabe",
+    "tekst": "Fire skabe på 60 cm i fyrrekrydsfiner med klar olie og et overskab på 40 cm oven på hvert. Overskabene tager det, man sjældent bruger. 240 cm bred og 250 cm høj.",
+    "st": {
+      "n": 4,
+      "b": 60,
+      "h": 210,
+      "d": 60,
+      "top": 40,
+      "mat": "kryds",
+      "inde": "garderobe",
+      "greb": "std"
     }
   },
   {
@@ -109,6 +191,74 @@
           "i": 1,
           "t": "baenk",
           "b": 100
+        }
+      ]
+    }
+  },
+  {
+    "id": "entre-smal",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Skabe til en smal entré",
+    "tekst": "Tre skabe på 50 cm, der kun er 40 cm dybe. De to yderste har låger, fingergreb og seks hylder, det midterste er åbent. Egefinér med klar olie.",
+    "st": {
+      "n": 3,
+      "b": 50,
+      "h": 210,
+      "d": 40,
+      "mat": "eg",
+      "inde": "hylder",
+      "hy": 6,
+      "greb": "finger",
+      "m": [
+        {
+          "i": 1,
+          "t": "aaben"
+        }
+      ]
+    }
+  },
+  {
+    "id": "garderobe-boernevaerelse",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Garderobe til børneværelset",
+    "tekst": "To skabe på 50 cm og 180 cm høje i birkekrydsfiner. Lågerne er olieret i blå og har trægreb i eg. Hattehylde, bøjlestang og to skuffer i hvert skab.",
+    "st": {
+      "n": 2,
+      "b": 50,
+      "h": 180,
+      "d": 60,
+      "mat": "birk",
+      "front": "farve",
+      "farve": {
+        "laage": "blaa"
+      },
+      "inde": "garderobe_skuffer",
+      "greb": "trae"
+    }
+  },
+  {
+    "id": "skabsvaeg-groen",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Skabsvæg i grøn olie",
+    "tekst": "Fem skabe på 60 cm i fyrrekrydsfiner olieret i Fern, uden greb. Fire med hattehylde og bøjlestang, ét med fire hylder. 300 cm bred.",
+    "st": {
+      "n": 5,
+      "b": 60,
+      "h": 210,
+      "d": 60,
+      "mat": "kryds",
+      "farve": {
+        "kryds": "fern"
+      },
+      "inde": "garderobe",
+      "greb": "push",
+      "m": [
+        {
+          "i": 4,
+          "inde": "hylder"
         }
       ]
     }
@@ -182,23 +332,20 @@
     }
   },
   {
-    "id": "massive-laager",
+    "id": "indeliggende-eg",
     "produkt": "hoejskab",
     "gruppe": "Højskabe",
-    "titel": "Indeliggende låger i massiv eg",
-    "tekst": "To garderobeskabe i egefinér. Lågerne er i massiv eg, sidder plant i skabet og har fingergreb fræset i kanten. Skufferne er fingertappede.",
+    "titel": "Indeliggende låger i egefinér",
+    "tekst": "To garderobeskabe på 50 cm i egefinér. Lågerne sidder plant i skabet og har fingergreb fræset i kanten. Hattehylde, bøjlestang og to skuffer i hvert.",
     "st": {
       "n": 2,
       "b": 50,
       "h": 210,
       "d": 60,
       "mat": "eg",
-      "front": "massiv",
-      "fmat": "eg",
       "indl": 1,
       "greb": "finger",
-      "inde": "garderobe_skuffer",
-      "skuffe": "fingertap"
+      "inde": "garderobe_skuffer"
     }
   },
   {
@@ -218,6 +365,26 @@
       },
       "inde": "hylder",
       "hy": 4
+    }
+  },
+  {
+    "id": "hoejskabe-cocoa",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "To højskabe i eg med Cocoa-olie",
+    "tekst": "To skabe på 60 cm i egefinér olieret i Cocoa med sorte bøjlegreb og fire løse hylder i hvert. 120 cm bred og 210 cm høj.",
+    "st": {
+      "n": 2,
+      "b": 60,
+      "h": 210,
+      "d": 60,
+      "mat": "eg",
+      "farve": {
+        "eg": "cocoa"
+      },
+      "inde": "hylder",
+      "hy": 4,
+      "greb": "sort"
     }
   },
   {
@@ -242,6 +409,23 @@
           "t": "aaben"
         }
       ]
+    }
+  },
+  {
+    "id": "hoejskab-hylder-birk",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Højskab med hylder i birk",
+    "tekst": "Ét skab på 60 cm i birkekrydsfiner, kun 40 cm dybt, med fem løse hylder og trægreb i eg. Til bøger, service eller ringbind.",
+    "st": {
+      "n": 1,
+      "b": 60,
+      "h": 210,
+      "d": 40,
+      "mat": "birk",
+      "inde": "hylder",
+      "hy": 5,
+      "greb": "trae"
     }
   },
   {
@@ -322,6 +506,51 @@
     }
   },
   {
+    "id": "skobaenk",
+    "produkt": "baenk",
+    "gruppe": "Bænke",
+    "titel": "Skobænk med hynde",
+    "tekst": "100 cm skobænk i egefinér, åben under sædet med en skohylde: to etager til sko og en hynde i gråt møbelstof på toppen.",
+    "st": {
+      "b": 100,
+      "d": 35,
+      "bsk": 0,
+      "sh": 1,
+      "hynde": 1,
+      "mat": "eg"
+    }
+  },
+  {
+    "id": "skobaenk-smal",
+    "produkt": "baenk",
+    "gruppe": "Bænke",
+    "titel": "Smal skobænk i krydsfiner",
+    "tekst": "80 cm bred og 30 cm dyb, så den passer i en smal entré. Skohylde under sædet og hynde i gråt møbelstof.",
+    "st": {
+      "b": 80,
+      "d": 30,
+      "sh": 1,
+      "bsk": 0,
+      "hynde": 1,
+      "mat": "kryds"
+    }
+  },
+  {
+    "id": "opbevaringsbaenk-to-skuffer",
+    "produkt": "baenk",
+    "gruppe": "Bænke",
+    "titel": "Opbevaringsbænk med to skuffer",
+    "tekst": "100 cm bænk i birkekrydsfiner med to skuffer side om side under sædet, slidsede greb og hynde i gråt møbelstof.",
+    "st": {
+      "b": 100,
+      "d": 40,
+      "bsk": 2,
+      "hynde": 1,
+      "mat": "birk",
+      "greb": "slids"
+    }
+  },
+  {
     "id": "baenk",
     "produkt": "baenk",
     "gruppe": "Bænke",
@@ -336,18 +565,39 @@
     }
   },
   {
-    "id": "skobaenk",
+    "id": "skobaenk-hvid-ask",
     "produkt": "baenk",
     "gruppe": "Bænke",
-    "titel": "Skobænk med hynde",
-    "tekst": "100 cm skobænk i egefinér, åben under sædet med en skohylde: to etager til sko og en hynde i gråt møbelstof på toppen.",
+    "titel": "Skobænk i hvid ask",
+    "tekst": "120 cm skobænk i askefinér olieret i Cotton White med skohylde under sædet og hynde ovenpå.",
     "st": {
-      "b": 100,
+      "b": 120,
       "d": 35,
-      "bsk": 0,
       "sh": 1,
+      "bsk": 0,
       "hynde": 1,
-      "mat": "eg"
+      "mat": "ask",
+      "farve": {
+        "ask": "cotton-white"
+      }
+    }
+  },
+  {
+    "id": "baenk-lang-moerk-eg",
+    "produkt": "baenk",
+    "gruppe": "Bænke",
+    "titel": "Lang bænk med tre skuffer i mørk eg",
+    "tekst": "160 cm bænk i egefinér olieret i Dark Roast med tre skuffer uden greb og hynde i gråt møbelstof.",
+    "st": {
+      "b": 160,
+      "d": 40,
+      "bsk": 3,
+      "hynde": 1,
+      "mat": "eg",
+      "farve": {
+        "eg": "dark-roast"
+      },
+      "greb": "push"
     }
   },
   {
@@ -385,6 +635,67 @@
     }
   },
   {
+    "id": "elevskabe",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Elevskabe til skolen",
+    "tekst": "24 rum på 30 × 40 cm i fyrrekrydsfiner med grønne låger, institutionshængsler og nøglelås. Væggen er ca. 130 cm høj, så de mindste elever kan nå.",
+    "st": {
+      "soejler": 8,
+      "raekker": 3,
+      "b": 30,
+      "h": 40,
+      "d": 40,
+      "mat": "kryds",
+      "front": "farve",
+      "farve": {
+        "kryds": "natur",
+        "laage": "fern"
+      },
+      "haengsel": "institution",
+      "laas": "noegle"
+    }
+  },
+  {
+    "id": "personaleskabe",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Personaleskabe med kodelås",
+    "tekst": "Otte skabe på 40 × 90 cm i birkekrydsfiner med kodelås, rustfrie greb og en krog til jakken i hvert.",
+    "st": {
+      "soejler": 4,
+      "raekker": 2,
+      "b": 40,
+      "h": 90,
+      "d": 50,
+      "mat": "birk",
+      "laas": "kode",
+      "greb": "rustfri",
+      "krog": "krog"
+    }
+  },
+  {
+    "id": "lockers-cocoa-laager",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Kontorlockers i birk med brune låger",
+    "tekst": "Ti rum på 35 × 45 cm i birkekrydsfiner med låger olieret i Cocoa, institutionshængsler og nøglelås.",
+    "st": {
+      "soejler": 5,
+      "raekker": 2,
+      "b": 35,
+      "h": 45,
+      "d": 45,
+      "mat": "birk",
+      "front": "farve",
+      "farve": {
+        "laage": "cocoa"
+      },
+      "haengsel": "institution",
+      "laas": "noegle"
+    }
+  },
+  {
     "id": "lockers-kompakt",
     "produkt": "locker",
     "gruppe": "Lockers",
@@ -402,6 +713,45 @@
       },
       "haengsel": "institution",
       "laas": "haengelaas"
+    }
+  },
+  {
+    "id": "omklaedningsskabe-fitness",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Omklædningsskabe til fitness",
+    "tekst": "12 skabe på 30 × 90 cm i kompaktlaminat i lys beton med kodelås og institutionshængsler. Kompaktlaminat tåler vand og slid.",
+    "st": {
+      "soejler": 6,
+      "raekker": 2,
+      "b": 30,
+      "h": 90,
+      "d": 50,
+      "mat": "kompakt",
+      "farve": {
+        "kompakt": "chicago-concrete"
+      },
+      "haengsel": "institution",
+      "laas": "kode"
+    }
+  },
+  {
+    "id": "lockers-sort-kompakt",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Lockers i sort kompaktlaminat",
+    "tekst": "18 rum på 30 × 50 cm i sort kompaktlaminat, seks søjler og tre rækker, med nøglelås.",
+    "st": {
+      "soejler": 6,
+      "raekker": 3,
+      "b": 30,
+      "h": 50,
+      "d": 50,
+      "mat": "kompakt",
+      "farve": {
+        "kompakt": "black"
+      },
+      "laas": "noegle"
     }
   },
   {
@@ -456,6 +806,36 @@
     }
   },
   {
+    "id": "akustik-groen",
+    "produkt": "akustik",
+    "gruppe": "Akustik",
+    "titel": "Akustikvæg i grøn olie",
+    "tekst": "Fem paneler på 60 × 240 cm i fyrrekrydsfiner olieret i Fern med jævnt fordelte huller. 302 cm bred.",
+    "st": {
+      "b": 302,
+      "h": 240,
+      "mat": "kryds",
+      "farve": {
+        "kryds": "fern"
+      }
+    }
+  },
+  {
+    "id": "akustik-over-sofa",
+    "produkt": "akustik",
+    "gruppe": "Akustik",
+    "titel": "Akustikpaneler over sofaen",
+    "tekst": "Tre paneler på 60 × 120 cm i birkekrydsfiner med klar olie, 90 cm over gulvet. Feltet er 181 cm bredt.",
+    "st": {
+      "b": 181,
+      "h": 120,
+      "over": 90,
+      "format": "60x120",
+      "fuge": "5",
+      "mat": "birk"
+    }
+  },
+  {
     "id": "akustik-moedelokale",
     "produkt": "akustik",
     "gruppe": "Akustik",
@@ -478,6 +858,22 @@
     }
   },
   {
+    "id": "akustik-klasselokale",
+    "produkt": "akustik",
+    "gruppe": "Akustik",
+    "titel": "Brandimprægneret akustikvæg til klasselokalet",
+    "tekst": "Ti paneler på 60 × 120 cm i brandimprægneret fyrrekrydsfiner, sat kant i kant 110 cm over gulvet. 600 cm bred.",
+    "st": {
+      "b": 600,
+      "h": 120,
+      "over": 110,
+      "format": "60x120",
+      "fuge": "0",
+      "mat": "kryds",
+      "brand": "ja"
+    }
+  },
+  {
     "id": "akustik-boelger",
     "produkt": "akustik",
     "gruppe": "Akustik",
@@ -491,6 +887,53 @@
       "mat": "birk",
       "rum": "daginstitution",
       "fuge": "10"
+    }
+  },
+  {
+    "id": "akustik-trekanter",
+    "produkt": "akustik",
+    "gruppe": "Akustik",
+    "titel": "Akustikvæg med trekantmotiv",
+    "tekst": "Fem paneler på 60 × 240 cm i birkekrydsfiner, hvor hullerne danner trekanter. 302 cm bred.",
+    "st": {
+      "b": 302,
+      "h": 240,
+      "motiv": "trekanter",
+      "skala": 60,
+      "mat": "birk"
+    }
+  },
+  {
+    "id": "akustik-striber-cocoa",
+    "produkt": "akustik",
+    "gruppe": "Akustik",
+    "titel": "Akustikvæg med striber i Cocoa",
+    "tekst": "Fire paneler på 60 × 240 cm i fyrrekrydsfiner olieret i Cocoa, hvor hullerne danner striber. 240 cm bred.",
+    "st": {
+      "b": 240,
+      "h": 240,
+      "motiv": "striber",
+      "fuge": "0",
+      "mat": "kryds",
+      "farve": {
+        "kryds": "cocoa"
+      }
+    }
+  },
+  {
+    "id": "akustik-fint",
+    "produkt": "akustik",
+    "gruppe": "Akustik",
+    "titel": "Akustikvæg med fine huller",
+    "tekst": "Fem paneler på 60 × 240 cm i birkekrydsfiner med mange små huller tæt sammen. 302 cm bred.",
+    "st": {
+      "b": 302,
+      "h": 240,
+      "taethed": "fint",
+      "hul": 4,
+      "cc": 8,
+      "moenster": "lige",
+      "mat": "birk"
     }
   }
 ]
