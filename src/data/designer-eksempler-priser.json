@@ -1,282 +1,282 @@
 {
- "regnet": "2026-10-20T18:10:13+00:00",
+ "regnet": "2026-10-20T22:43:36+00:00",
  "kilde": "https://designer.neminventar.dk/designer.html",
  "note": "privat, inkl. moms, ekskl. levering — designerens egen prismodel (scripts/designer_eksempler.py)",
  "priser": {
   "aaben-reol-birk": {
-   "inkl": 39800,
-   "ex": 31840,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 40300,
+   "ex": 32240,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "aaben-sektion": {
-   "inkl": 40325,
-   "ex": 32260,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 40800,
+   "ex": 32640,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "akustik-boelger": {
-   "inkl": 13375,
-   "ex": 10700,
-   "gitter": "2026-10-20T06:40:28+00:00"
+   "inkl": 13575,
+   "ex": 10860,
+   "gitter": "2026-10-20T18:09:41+00:00"
   },
   "akustik-fint": {
-   "inkl": 13250,
-   "ex": 10600,
-   "gitter": "2026-10-20T06:40:28+00:00"
+   "inkl": 13425,
+   "ex": 10740,
+   "gitter": "2026-10-20T18:09:41+00:00"
   },
   "akustik-groen": {
-   "inkl": 13200,
-   "ex": 10560,
-   "gitter": "2026-10-20T06:40:28+00:00"
+   "inkl": 13375,
+   "ex": 10700,
+   "gitter": "2026-10-20T18:09:41+00:00"
   },
   "akustik-klasselokale": {
-   "inkl": 14875,
-   "ex": 11900,
-   "gitter": "2026-10-20T06:40:28+00:00"
+   "inkl": 15050,
+   "ex": 12040,
+   "gitter": "2026-10-20T18:09:41+00:00"
   },
   "akustik-moedelokale": {
-   "inkl": 5500,
-   "ex": 4400,
-   "gitter": "2026-10-20T06:40:28+00:00"
+   "inkl": 5575,
+   "ex": 4460,
+   "gitter": "2026-10-20T18:09:41+00:00"
   },
   "akustik-over-sofa": {
-   "inkl": 3450,
-   "ex": 2760,
-   "gitter": "2026-10-20T06:40:28+00:00"
+   "inkl": 3500,
+   "ex": 2800,
+   "gitter": "2026-10-20T18:09:41+00:00"
   },
   "akustik-striber-cocoa": {
-   "inkl": 10325,
-   "ex": 8260,
-   "gitter": "2026-10-20T06:40:28+00:00"
+   "inkl": 10475,
+   "ex": 8380,
+   "gitter": "2026-10-20T18:09:41+00:00"
   },
   "akustik-trekanter": {
-   "inkl": 11125,
-   "ex": 8900,
-   "gitter": "2026-10-20T06:40:28+00:00"
+   "inkl": 11300,
+   "ex": 9040,
+   "gitter": "2026-10-20T18:09:41+00:00"
   },
   "akustikvaeg": {
-   "inkl": 11450,
-   "ex": 9160,
-   "gitter": "2026-10-20T06:40:28+00:00"
+   "inkl": 11625,
+   "ex": 9300,
+   "gitter": "2026-10-20T18:09:41+00:00"
   },
   "ask-sorte-greb": {
-   "inkl": 29800,
-   "ex": 23840,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 30050,
+   "ex": 24040,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "baenk": {
-   "inkl": 7900,
-   "ex": 6320,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 7950,
+   "ex": 6360,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "baenk-lang-moerk-eg": {
-   "inkl": 10075,
-   "ex": 8060,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 10150,
+   "ex": 8120,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "birk-hvide-laager": {
-   "inkl": 45975,
-   "ex": 36780,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 46350,
+   "ex": 37080,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "elevskabe": {
-   "inkl": 34800,
-   "ex": 27840,
-   "gitter": "2026-10-20T04:17:22+00:00"
+   "inkl": 36000,
+   "ex": 28800,
+   "gitter": "2026-10-20T18:08:53+00:00"
   },
   "entre-med-baenk": {
-   "inkl": 28575,
-   "ex": 22860,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 28900,
+   "ex": 23120,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "entre-smal": {
-   "inkl": 20025,
-   "ex": 16020,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 20250,
+   "ex": 16200,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "et-skab": {
-   "inkl": 9250,
-   "ex": 7400,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 9375,
+   "ex": 7500,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "et-skab-ask-fern-laage": {
-   "inkl": 11450,
-   "ex": 9160,
-   "gitter": "2026-10-20T10:43:37+00:00"
-  },
-  "et-skab-birk-grafit": {
-   "inkl": 16200,
-   "ex": 12960,
-   "gitter": "2026-10-20T10:43:37+00:00"
-  },
-  "et-skab-boeg-blaa-laage": {
-   "inkl": 11825,
-   "ex": 9460,
-   "gitter": "2026-10-20T10:43:37+00:00"
-  },
-  "et-skab-kryds-tyrolerblaa": {
-   "inkl": 11700,
-   "ex": 9360,
-   "gitter": "2026-10-20T10:43:37+00:00"
-  },
-  "garderobe-boernevaerelse": {
-   "inkl": 28150,
-   "ex": 22520,
-   "gitter": "2026-10-20T10:43:37+00:00"
-  },
-  "garderobe-med-baenk": {
-   "inkl": 28475,
-   "ex": 22780,
-   "gitter": "2026-10-20T10:43:37+00:00"
-  },
-  "garderobeskab-eg-120": {
-   "inkl": 16900,
-   "ex": 13520,
-   "gitter": "2026-10-20T10:43:37+00:00"
-  },
-  "garderobeskab-hvide-laager": {
-   "inkl": 28250,
-   "ex": 22600,
-   "gitter": "2026-10-20T10:43:37+00:00"
-  },
-  "garderobevaeg-shinnoki": {
-   "inkl": 192600,
-   "ex": 154080,
-   "gitter": "2026-10-20T10:43:37+00:00"
-  },
-  "hoejskab-hylder-birk": {
    "inkl": 11575,
    "ex": 9260,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "gitter": "2026-10-20T18:58:46+00:00"
+  },
+  "et-skab-birk-grafit": {
+   "inkl": 16325,
+   "ex": 13060,
+   "gitter": "2026-10-20T18:58:46+00:00"
+  },
+  "et-skab-boeg-blaa-laage": {
+   "inkl": 11950,
+   "ex": 9560,
+   "gitter": "2026-10-20T18:58:46+00:00"
+  },
+  "et-skab-kryds-tyrolerblaa": {
+   "inkl": 11825,
+   "ex": 9460,
+   "gitter": "2026-10-20T18:58:46+00:00"
+  },
+  "garderobe-boernevaerelse": {
+   "inkl": 28350,
+   "ex": 22680,
+   "gitter": "2026-10-20T18:58:46+00:00"
+  },
+  "garderobe-med-baenk": {
+   "inkl": 28850,
+   "ex": 23080,
+   "gitter": "2026-10-20T18:58:46+00:00"
+  },
+  "garderobeskab-eg-120": {
+   "inkl": 17150,
+   "ex": 13720,
+   "gitter": "2026-10-20T18:58:46+00:00"
+  },
+  "garderobeskab-hvide-laager": {
+   "inkl": 28450,
+   "ex": 22760,
+   "gitter": "2026-10-20T18:58:46+00:00"
+  },
+  "garderobevaeg-shinnoki": {
+   "inkl": 193525,
+   "ex": 154820,
+   "gitter": "2026-10-20T18:58:46+00:00"
+  },
+  "hoejskab-hylder-birk": {
+   "inkl": 11675,
+   "ex": 9340,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "hoejskabe-cocoa": {
-   "inkl": 23500,
-   "ex": 18800,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 23750,
+   "ex": 19000,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "indeliggende-eg": {
-   "inkl": 19650,
-   "ex": 15720,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 19850,
+   "ex": 15880,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "kompakt-skabe": {
-   "inkl": 55350,
-   "ex": 44280,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 55725,
+   "ex": 44580,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "lockers": {
-   "inkl": 21000,
-   "ex": 16800,
-   "gitter": "2026-10-20T04:17:22+00:00"
+   "inkl": 21900,
+   "ex": 17520,
+   "gitter": "2026-10-20T18:08:53+00:00"
   },
   "lockers-cocoa-laager": {
-   "inkl": 19500,
-   "ex": 15600,
-   "gitter": "2026-10-20T04:17:22+00:00"
+   "inkl": 20000,
+   "ex": 16000,
+   "gitter": "2026-10-20T18:08:53+00:00"
   },
   "lockers-kompakt": {
-   "inkl": 48750,
-   "ex": 39000,
-   "gitter": "2026-10-20T04:17:22+00:00"
+   "inkl": 49500,
+   "ex": 39600,
+   "gitter": "2026-10-20T18:08:53+00:00"
   },
   "lockers-kontor": {
-   "inkl": 38600,
-   "ex": 30880,
-   "gitter": "2026-10-20T04:17:22+00:00"
+   "inkl": 39800,
+   "ex": 31840,
+   "gitter": "2026-10-20T18:08:53+00:00"
   },
   "lockers-sort-kompakt": {
-   "inkl": 54000,
-   "ex": 43200,
-   "gitter": "2026-10-20T04:17:22+00:00"
+   "inkl": 54900,
+   "ex": 43920,
+   "gitter": "2026-10-20T18:08:53+00:00"
   },
   "mobil-lockers": {
    "inkl": 22500,
    "ex": 18000,
-   "gitter": "2026-10-20T04:17:22+00:00"
+   "gitter": "2026-10-20T18:08:53+00:00"
   },
   "omklaedningsbaenk-kompakt": {
-   "inkl": 6625,
-   "ex": 5300,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 6675,
+   "ex": 5340,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "omklaedningsskabe-fitness": {
-   "inkl": 60000,
-   "ex": 48000,
-   "gitter": "2026-10-20T04:17:22+00:00"
+   "inkl": 61200,
+   "ex": 48960,
+   "gitter": "2026-10-20T18:08:53+00:00"
   },
   "opbevaringsbaenk-to-skuffer": {
-   "inkl": 7375,
-   "ex": 5900,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 7425,
+   "ex": 5940,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "personaleskabe": {
-   "inkl": 24000,
-   "ex": 19200,
-   "gitter": "2026-10-20T04:17:22+00:00"
+   "inkl": 25200,
+   "ex": 20160,
+   "gitter": "2026-10-20T18:08:53+00:00"
   },
   "roedbrun-olie": {
-   "inkl": 39750,
-   "ex": 31800,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 40125,
+   "ex": 32100,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "skabsvaeg-180-fjordgroen": {
-   "inkl": 38575,
-   "ex": 30860,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 38950,
+   "ex": 31160,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "skabsvaeg-groen": {
-   "inkl": 60500,
-   "ex": 48400,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 61125,
+   "ex": 48900,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "skabsvaeg-moerk-eg": {
-   "inkl": 45725,
-   "ex": 36580,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 46175,
+   "ex": 36940,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "skabsvaeg-overskabe": {
-   "inkl": 49300,
-   "ex": 39440,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 49900,
+   "ex": 39920,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "skabsvaeg-sovevaerelse": {
-   "inkl": 53025,
-   "ex": 42420,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 53525,
+   "ex": 42820,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "skabsvaeg-sovevaerelse-boeg-fern": {
-   "inkl": 50100,
-   "ex": 40080,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 50600,
+   "ex": 40480,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "skabsvaeg-sovevaerelse-eg-indeliggende": {
-   "inkl": 41225,
-   "ex": 32980,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 41725,
+   "ex": 33380,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "skobaenk": {
-   "inkl": 4025,
-   "ex": 3220,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 4075,
+   "ex": 3260,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "skobaenk-hvid-ask": {
-   "inkl": 5500,
-   "ex": 4400,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 5575,
+   "ex": 4460,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "skobaenk-smal": {
-   "inkl": 3325,
-   "ex": 2660,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 3350,
+   "ex": 2680,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "to-skabe-birk-skovgroen": {
-   "inkl": 28900,
-   "ex": 23120,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 29100,
+   "ex": 23280,
+   "gitter": "2026-10-20T18:58:46+00:00"
   },
   "to-skabe-et-aabent": {
-   "inkl": 25000,
-   "ex": 20000,
-   "gitter": "2026-10-20T10:43:37+00:00"
+   "inkl": 25300,
+   "ex": 20240,
+   "gitter": "2026-10-20T18:58:46+00:00"
   }
  }
 }
