@@ -1,5 +1,5 @@
 {
- "regnet": "2026-10-20T16:03:28+00:00",
+ "regnet": "2026-10-20T18:02:53+00:00",
  "kilde": "https://designer.neminventar.dk/designer.html",
  "note": "privat, inkl. moms, ekskl. levering — designerens egen prismodel (scripts/designer_eksempler.py)",
  "priser": {
@@ -98,19 +98,24 @@
    "ex": 7400,
    "gitter": "2026-10-20T10:43:37+00:00"
   },
-  "et-skab-birk-indeliggende": {
-   "inkl": 12325,
-   "ex": 9860,
+  "et-skab-ask-fern-laage": {
+   "inkl": 11450,
+   "ex": 9160,
    "gitter": "2026-10-20T10:43:37+00:00"
   },
-  "et-skab-boeg-indeliggende": {
-   "inkl": 9500,
-   "ex": 7600,
+  "et-skab-birk-grafit": {
+   "inkl": 16200,
+   "ex": 12960,
    "gitter": "2026-10-20T10:43:37+00:00"
   },
-  "et-skab-shinnoki-indeliggende": {
-   "inkl": 23500,
-   "ex": 18800,
+  "et-skab-boeg-blaa-laage": {
+   "inkl": 11825,
+   "ex": 9460,
+   "gitter": "2026-10-20T10:43:37+00:00"
+  },
+  "et-skab-kryds-tyrolerblaa": {
+   "inkl": 11700,
+   "ex": 9360,
    "gitter": "2026-10-20T10:43:37+00:00"
   },
   "garderobe-boernevaerelse": {
@@ -246,6 +251,11 @@
   "skobaenk-smal": {
    "inkl": 3325,
    "ex": 2660,
+   "gitter": "2026-10-20T10:43:37+00:00"
+  },
+  "to-skabe-birk-skovgroen": {
+   "inkl": 28900,
+   "ex": 23120,
    "gitter": "2026-10-20T10:43:37+00:00"
   },
   "to-skabe-et-aabent": {

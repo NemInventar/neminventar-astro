@@ -16,11 +16,11 @@
     }
   },
   {
-    "id": "et-skab-boeg-indeliggende",
+    "id": "et-skab-boeg-blaa-laage",
     "produkt": "hoejskab",
     "gruppe": "Højskabe",
-    "titel": "Ét skab i bøg med indeliggende låge",
-    "tekst": "60 × 210 × 60 cm i bøgefinér med fire løse hylder. Lågen sidder plant i skabet og åbner med et tryk, så der ikke er noget greb.",
+    "titel": "Ét skab i bøg med blå, indeliggende låge",
+    "tekst": "60 × 210 × 60 cm i bøgefinér med klar olie. Lågen er olieret blå og sidder plant i skabet. Den åbner med et tryk, så der ikke er noget greb. Fire løse hylder.",
     "st": {
       "n": 1,
       "b": 60,
@@ -30,42 +30,96 @@
       "inde": "hylder",
       "hy": 4,
       "indl": 1,
+      "front": "farve",
+      "farve": {
+        "laage": "blaa"
+      },
       "greb": "push"
     }
   },
   {
-    "id": "et-skab-birk-indeliggende",
+    "id": "et-skab-ask-fern-laage",
     "produkt": "hoejskab",
     "gruppe": "Højskabe",
-    "titel": "Garderobeskab i birk med indeliggende låge",
-    "tekst": "60 × 210 × 60 cm i birkekrydsfiner med klar olie. Lågen sidder plant i skabet og har fingergreb fræset i kanten. Hattehylde og bøjlestang.",
+    "titel": "Ét skab i ask med grøn, indeliggende låge",
+    "tekst": "60 × 210 × 60 cm i askefinér med klar olie. Lågen er olieret i Fern og sidder plant i skabet, med fingergreb fræset i kanten. Hattehylde og bøjlestang.",
+    "st": {
+      "n": 1,
+      "b": 60,
+      "h": 210,
+      "d": 60,
+      "mat": "ask",
+      "inde": "garderobe",
+      "indl": 1,
+      "front": "farve",
+      "farve": {
+        "laage": "fern"
+      },
+      "greb": "finger"
+    }
+  },
+  {
+    "id": "et-skab-kryds-tyrolerblaa",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Garderobeskab i krydsfiner med tyrolerblå låge",
+    "tekst": "60 × 210 × 60 cm i fyrrekrydsfiner med klar olie. Lågen er tyrolerblå laminat, sidder plant i skabet og åbner med et tryk. Hattehylde og bøjlestang.",
+    "st": {
+      "n": 1,
+      "b": 60,
+      "h": 210,
+      "d": 60,
+      "mat": "kryds",
+      "inde": "garderobe",
+      "indl": 1,
+      "front": "laminat",
+      "farve": {
+        "kryds": "natur",
+        "laminat": "tyrolean-blue"
+      },
+      "greb": "push"
+    }
+  },
+  {
+    "id": "et-skab-birk-grafit",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Garderobeskab i birk med grafitgrå låge",
+    "tekst": "60 × 210 × 60 cm i birkekrydsfiner med klar olie. Lågen er grafitgrå laminat, sidder plant i skabet og har fingergreb fræset i kanten. Hattehylde, bøjlestang og to skuffer.",
     "st": {
       "n": 1,
       "b": 60,
       "h": 210,
       "d": 60,
       "mat": "birk",
-      "inde": "garderobe",
+      "inde": "garderobe_skuffer",
       "indl": 1,
+      "front": "laminat",
+      "farve": {
+        "laminat": "graphite-grey"
+      },
       "greb": "finger"
     }
   },
   {
-    "id": "et-skab-shinnoki-indeliggende",
+    "id": "to-skabe-birk-skovgroen",
     "produkt": "hoejskab",
     "gruppe": "Højskabe",
-    "titel": "Garderobeskab i Shinnoki med indeliggende låge",
-    "tekst": "60 × 210 × 60 cm i Shinnoki. Lågen sidder plant i skabet, har trægreb i eg og hængsler, der åbner 170°. Hattehylde, bøjlestang og to skuffer.",
+    "titel": "To skabe i birk med skovgrønne låger",
+    "tekst": "To skabe på 50 cm i birkekrydsfiner med klar olie. Lågerne er skovgrøn laminat, sidder plant i skabene og åbner med et tryk. Hattehylde, bøjlestang og to skuffer i hvert.",
     "st": {
-      "n": 1,
-      "b": 60,
+      "n": 2,
+      "b": 50,
       "h": 210,
       "d": 60,
-      "mat": "shinnoki",
+      "mat": "birk",
       "inde": "garderobe_skuffer",
       "indl": 1,
-      "greb": "trae",
-      "hng": 1
+      "front": "laminat",
+      "farve": {
+        "laminat": "forest-green"
+      },
+      "greb": "push"
     }
   },
   {
