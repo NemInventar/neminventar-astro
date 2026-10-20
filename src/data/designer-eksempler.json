@@ -16,6 +16,59 @@
     }
   },
   {
+    "id": "et-skab-boeg-indeliggende",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Ét skab i bøg med indeliggende låge",
+    "tekst": "60 × 210 × 60 cm i bøgefinér med fire løse hylder. Lågen sidder plant i skabet og åbner med et tryk, så der ikke er noget greb.",
+    "st": {
+      "n": 1,
+      "b": 60,
+      "h": 210,
+      "d": 60,
+      "mat": "boeg",
+      "inde": "hylder",
+      "hy": 4,
+      "indl": 1,
+      "greb": "push"
+    }
+  },
+  {
+    "id": "et-skab-birk-indeliggende",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Garderobeskab i birk med indeliggende låge",
+    "tekst": "60 × 210 × 60 cm i birkekrydsfiner med klar olie. Lågen sidder plant i skabet og har fingergreb fræset i kanten. Hattehylde og bøjlestang.",
+    "st": {
+      "n": 1,
+      "b": 60,
+      "h": 210,
+      "d": 60,
+      "mat": "birk",
+      "inde": "garderobe",
+      "indl": 1,
+      "greb": "finger"
+    }
+  },
+  {
+    "id": "et-skab-shinnoki-indeliggende",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Garderobeskab i Shinnoki med indeliggende låge",
+    "tekst": "60 × 210 × 60 cm i Shinnoki. Lågen sidder plant i skabet, har trægreb i eg og hængsler, der åbner 170°. Hattehylde, bøjlestang og to skuffer.",
+    "st": {
+      "n": 1,
+      "b": 60,
+      "h": 210,
+      "d": 60,
+      "mat": "shinnoki",
+      "inde": "garderobe_skuffer",
+      "indl": 1,
+      "greb": "trae",
+      "hng": 1
+    }
+  },
+  {
     "id": "garderobeskab-eg-120",
     "produkt": "hoejskab",
     "gruppe": "Højskabe",

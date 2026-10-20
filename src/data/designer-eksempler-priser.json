@@ -1,5 +1,5 @@
 {
- "regnet": "2026-10-20T11:21:46+00:00",
+ "regnet": "2026-10-20T16:03:28+00:00",
  "kilde": "https://designer.neminventar.dk/designer.html",
  "note": "privat, inkl. moms, ekskl. levering — designerens egen prismodel (scripts/designer_eksempler.py)",
  "priser": {
@@ -96,6 +96,21 @@
   "et-skab": {
    "inkl": 9250,
    "ex": 7400,
+   "gitter": "2026-10-20T10:43:37+00:00"
+  },
+  "et-skab-birk-indeliggende": {
+   "inkl": 12325,
+   "ex": 9860,
+   "gitter": "2026-10-20T10:43:37+00:00"
+  },
+  "et-skab-boeg-indeliggende": {
+   "inkl": 9500,
+   "ex": 7600,
+   "gitter": "2026-10-20T10:43:37+00:00"
+  },
+  "et-skab-shinnoki-indeliggende": {
+   "inkl": 23500,
+   "ex": 18800,
    "gitter": "2026-10-20T10:43:37+00:00"
   },
   "garderobe-boernevaerelse": {
