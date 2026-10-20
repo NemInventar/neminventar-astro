@@ -48,6 +48,9 @@ const tabel = (s: string) => {
   const rk = linjer.filter((l) => !/^\|[\s:|-]+\|$/.test(l)).map((l) => l.slice(1, -1).split('|').map((c) => c.trim()));
   return { hoved: rk[0], rk: rk.slice(1) };
 };
+// Mellemoverskrifter i brødtekst: et afsnit, der starter med "## ", bliver en h2 (Joachim 20-10-2026: lange sider skal kunne
+// deles op, så læseren og AI-motorerne kan finde afsnittet om fx materialer eller låger).
+const overskrift = (s: string) => (s.startsWith('## ') ? plain(s.slice(3).trim()) : null);
 const images = (page.images ?? []).filter((im) => im.kind !== 'video');
 const videos = (page.images ?? []).filter((im) => im.kind === 'video');
 const hero = images[0];
@@ -142,6 +145,8 @@ const jsonLd = [
       <div class="guide-aside">
         <div class="prose lp-prose rv">
           {paragraphs.map((para) => {
+            const h = overskrift(para);
+            if (h) return <h2 class="lp-h2">{h}</h2>;
             const t = tabel(para);
             return t ? (
               <div class="lp-tabel"><table>
@@ -219,6 +224,8 @@ const jsonLd = [
       {paragraphs.length > 0 && (
         <div class="prose lp-prose rv">
           {paragraphs.map((para) => {
+            const h = overskrift(para);
+            if (h) return <h2 class="lp-h2">{h}</h2>;
             const t = tabel(para);
             return t ? (
               <div class="lp-tabel"><table>
