@@ -99,17 +99,22 @@ def mm_allowed(row, field, item):
     # Guides må forklare pladetykkelser, og et FAQ-svar på et spørgsmål OM tykkelse må give tallet.
     return row.get("kind") == "guide" or (field == "faq" and isinstance(item, dict) and "tyk" in item.get("q", "").lower())
 
+def synlig(s):
+    """Kun den synlige tekst: [tekst](/adresse) → tekst. Adressen ses ikke på siden, og en slug som
+    /reoler-paa-maal må ikke ramme aa-reglen (21-10-2026: links i brødteksten til de sider gav falsk FEJL)."""
+    return re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", s)
+
 def texts(row, fields):
     """Giver (feltnavn, tekst, mm_tilladt) for alle tekstfelter, også inde i jsonb-lister."""
     for f in fields:
         v = row.get(f)
-        if isinstance(v, str): yield f, v, row.get("kind") == "guide"
+        if isinstance(v, str): yield f, synlig(v), row.get("kind") == "guide"
         elif isinstance(v, list):
             for i, x in enumerate(v):
                 if isinstance(x, dict):
                     for k, s in x.items():
-                        if isinstance(s, str) and k not in ("src", "kind", "eks"): yield f"{f}[{i}].{k}", s, mm_allowed(row, f, x)
-                elif isinstance(x, str) and f != "keywords": yield f"{f}[{i}]", x, False
+                        if isinstance(s, str) and k not in ("src", "kind", "eks"): yield f"{f}[{i}].{k}", synlig(s), mm_allowed(row, f, x)
+                elif isinstance(x, str) and f != "keywords": yield f"{f}[{i}]", synlig(x), False
 
 SOURCES = [
     ("side", "v_web_landing_pages", "slug,kind,h1,lead,body,highlights,faq,seo_title,seo_description,images",
