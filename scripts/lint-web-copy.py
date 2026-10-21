@@ -63,6 +63,9 @@ if DIST:
 
 FEJL = [
     (r"\bKosovo\b|\bFerizaj\b|Korpus\s+SH", "produktionssted nævnes ikke udadtil — skriv 'egen produktion'"),
+    # skill seo, hårde grænser: "JSP Byg aldrig. Halbyg: nej (skriv 'idrætshal')". 21-10-2026 stod begge på sitet via
+    # sagernes contractor_label (show_customer_name = true), som tjekket ikke læste — derfor også felterne nedenfor
+    (r"\bJSP\s*Byg\b|\bHalbyg\b", "navn, der aldrig må stå på sitet (skill seo) — slå case_web.show_customer_name fra"),
     # Entreprenør- og arkitektnavne samt sagsnavnet "Sundby Idrætspark" må nævnes (Milot 04-10-2026: alle firmanavne
     # må bruges overalt på sitet). Hvilke navne der vises, styres af show_customer_name/show_architect_name i case_web.
     (r"\bT\d{2}\b|\btilbudslinje|\bquote\b|\bBOM\b|\brumkode", "internt tilbudssprog"),
@@ -111,8 +114,8 @@ def texts(row, fields):
 SOURCES = [
     ("side", "v_web_landing_pages", "slug,kind,h1,lead,body,highlights,faq,seo_title,seo_description,images",
      ["h1", "lead", "body", "highlights", "faq", "seo_title", "seo_description", "images"]),
-    ("case", "v_web_cases", "slug,name,hero_tagline,web_summary,web_story,delivery_label,seo_title,seo_description,gallery",
-     ["name", "hero_tagline", "web_summary", "web_story", "delivery_label", "seo_title", "seo_description", "gallery"]),
+    ("case", "v_web_cases", "slug,name,hero_tagline,web_summary,web_story,delivery_label,seo_title,seo_description,gallery,contractor_label,architect_label",
+     ["name", "hero_tagline", "web_summary", "web_story", "delivery_label", "seo_title", "seo_description", "gallery", "contractor_label", "architect_label"]),
     ("produkt", "v_web_products", "slug,name,hero_tagline,intro,story,seo_title,seo_description",
      ["name", "hero_tagline", "intro", "story", "seo_title", "seo_description"]),
 ]
