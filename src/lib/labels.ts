@@ -15,7 +15,7 @@ const MAP: Record<string, string | null> = {
   'HPL-laminat': 'Højtrykslaminat',
   krydsfiner: 'Krydsfiner',
   'krydsfiner-birk': 'Birkekrydsfiner',
-  Kvadrat: 'Kvadrat-tekstil',
+  Kvadrat: 'Møbeltekstil', // mærkenavnet må ikke stå på sitet (skill seo, hårde grænser)
   'laminatbordplade 30mm': 'Laminatbordplade',
   MDF: 'MDF',
   staal: 'Stål',
