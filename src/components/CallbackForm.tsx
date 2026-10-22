@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { hentKilde } from '../lib/kilde';
+import { hentKilde, sideMedKilde } from '../lib/kilde';
 import { formularFetch } from '../lib/api';
 
 // "Bestil et opkald" — poster til contact-form edge function med kind='opkald'.
@@ -9,6 +9,8 @@ import { formularFetch } from '../lib/api';
 // ref = den eksterne side, der sendte besøgeren hertil (document.referrer) → leadets lead_kanal.
 // Bevidst INGEN sessionStorage/localStorage: sitet gemmer intet på besøgerens enhed (ingen cookie-banner).
 // Kom de via en intern side, er ref tom → 'Ukendt', og Milot spørger i opkaldet.
+// side = siden med annoncens utm_* og klik-id'er (sideMedKilde, 22-10-2026): så kan et opkald fra en annonce ses i leadet
+// og i mailen ("Bestilt fra"), også uden et utm-felt i contact-form.
 // Adressen vælges i src/lib/api.ts: supabase.co direkte, eller api.neminventar.dk, når API_AKTIV er sat.
 
 type Status = 'idle' | 'sending' | 'ok' | 'error';
@@ -38,7 +40,7 @@ export default function CallbackForm({ defaultOpen = false, label = 'Bestil et o
       const { res } = await formularFetch({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, kind: 'opkald', side: location.pathname, ref }),
+        body: JSON.stringify({ ...form, kind: 'opkald', side: sideMedKilde(location.pathname, location.search), ref }),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data?.success) {

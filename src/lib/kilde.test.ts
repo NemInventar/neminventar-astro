@@ -1,7 +1,7 @@
 // node --test src/lib/kilde.test.ts  (Node 24: TypeScript køres direkte)
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { foersteBesoeg, mailtoMedEmne, medKilde, KILDE_SVAR } from './kilde.ts';
+import { foersteBesoeg, mailtoMedEmne, medKilde, medKildeTilKontakt, sideMedKilde, starterPrivat, KILDE_SVAR } from './kilde.ts';
 
 function lager() {
   const m = new Map<string, string>();
@@ -90,6 +90,38 @@ test('mailto får emne, eksisterende emne bevares', () => {
     'mailto:tilbud@neminventar.dk?subject=' + encodeURIComponent('Forespørgsel fra neminventar.dk – Lockers'));
   assert.equal(mailtoMedEmne('mailto:a@b.dk?subject=Hej', 'X'), 'mailto:a@b.dk?subject=Hej');
   assert.equal(mailtoMedEmne('mailto:a@b.dk?cc=c@d.dk', 'X'), 'mailto:a@b.dk?cc=c@d.dk&subject=' + encodeURIComponent('Forespørgsel fra neminventar.dk – X'));
+});
+
+// 22-10-2026: annonceklikkeren, der går fra en landingsside videre til /kontakt/, skal have kilden med
+const SIDE = 'https://neminventar.dk/garderobeskab/';
+test('medKildeTilKontakt: links til /kontakt på sitet får annoncens utm_* og klik-id\'er', () => {
+  assert.equal(medKildeTilKontakt('/kontakt?emne=Garderobeskab', ANNONCE, SIDE), '/kontakt?emne=Garderobeskab&utm_source=google_ads&utm_medium=cpc&utm_campaign=skoler&gclid=EAIaIQ');
+  assert.equal(medKildeTilKontakt('/kontakt/', '?utm_source=google_ads', SIDE), '/kontakt/?utm_source=google_ads');
+  assert.equal(medKildeTilKontakt('https://neminventar.dk/kontakt', '?gclid=a', SIDE), 'https://neminventar.dk/kontakt?gclid=a');
+  assert.equal(medKildeTilKontakt('/kontakt?utm_source=mail', ANNONCE, SIDE), '/kontakt?utm_source=mail&utm_medium=cpc&utm_campaign=skoler&gclid=EAIaIQ', 'eksisterende parametre røres ikke');
+  assert.equal(medKildeTilKontakt('/kontakt#send', '?gclid=a', SIDE), '/kontakt?gclid=a#send', 'før ankeret');
+});
+test('medKildeTilKontakt lader alt andet være', () => {
+  for (const h of ['/garderobeskab/', '/kontakt-os/', '/kontakter', 'mailto:tilbud@neminventar.dk', 'tel:+4542422684', '#send', '',
+    'https://evil.example/kontakt', 'https://neminventar.dk.evil.example/kontakt', 'kontakt', `${D}?p=locker`])
+    assert.equal(medKildeTilKontakt(h, ANNONCE, SIDE), h, h);
+  assert.equal(medKildeTilKontakt('/kontakt', '', SIDE), '/kontakt', 'ingen kilde på siden');
+  assert.equal(medKildeTilKontakt('/kontakt', '?foo=1', SIDE), '/kontakt');
+});
+test('sideMedKilde: siden med utm først og klik-id sidst, højst 200 tegn', () => {
+  assert.equal(sideMedKilde('/garderobeskab/', ''), '/garderobeskab/');
+  assert.equal(sideMedKilde('/garderobeskab/', '?gclid=G&utm_source=google_ads&utm_campaign=privat-skabe&foo=1'), '/garderobeskab/?utm_source=google_ads&utm_campaign=privat-skabe&gclid=G');
+  const lang = sideMedKilde('/garderobeskab/', `?gclid=${'g'.repeat(200)}&utm_source=google_ads&utm_term=skab%20p%C3%A5%20m%C3%A5l`);
+  assert.equal(lang.length, 200);
+  assert.ok(lang.startsWith('/garderobeskab/?utm_source=google_ads&utm_term=skab%20p%C3%A5%20m%C3%A5l&gclid='), lang);
+});
+test('starterPrivat: sider til private og privatkampagner', () => {
+  assert.equal(starterPrivat('?emne=Garderobeskab'), true);
+  assert.equal(starterPrivat('?emne=B%C3%A6nk'), true);
+  assert.equal(starterPrivat('?utm_campaign=privat-skabe'), true);
+  assert.equal(starterPrivat('?emne=Toiletb%C3%A5se'), false);
+  assert.equal(starterPrivat('?utm_campaign=erhverv-toiletbaase'), false);
+  assert.equal(starterPrivat(''), false);
 });
 
 test('svarmulighederne er de seks fra spec §4', () => {
