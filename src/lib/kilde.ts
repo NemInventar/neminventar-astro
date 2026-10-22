@@ -61,6 +61,10 @@ export function medKilde(href: string, search: string): string {
   let u: URL;
   try { u = new URL(href); } catch { return href; } // relativt eller ugyldigt link
   if (u.protocol !== 'https:' || u.host !== DESIGNER_HOST) return href; // host = med port: kun standardporten
+  return tilfoej(href, u, search);
+}
+// Sidens utm_* og klik-id'er bag på linket (før et #-anker), uden at røre dem, linket allerede har
+function tilfoej(href: string, u: URL, search: string): string {
   const nye = Object.entries(kildeParametre(new URLSearchParams(search))).filter(([k]) => !u.searchParams.has(k));
   if (!nye.length) return href;
   const anker = href.indexOf('#');
@@ -68,6 +72,35 @@ export function medKilde(href: string, search: string): string {
   const efter = anker === -1 ? '' : href.slice(anker);
   const sep = foer.includes('?') ? (/[?&]$/.test(foer) ? '' : '&') : '?';
   return foer + sep + nye.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&') + efter;
+}
+
+// Kontaktsiden på samme site (22-10-2026): går en annonceklikker fra en landingsside videre til /kontakt/ ("send os en
+// skitse", "Få en pris"), skal annoncens utm_* og klik-id'er med i linket — ellers står henvendelsen uden kilde, for
+// formularen læser kun sin egen adresse. Kun links til /kontakt på samme origin (også relative, regnet fra siden =
+// location.href); alt andet uændret.
+export function medKildeTilKontakt(href: string, search: string, side: string): string {
+  let u: URL, origin: string;
+  try { origin = new URL(side).origin; u = new URL(href, side); } catch { return href; }
+  if (!href || u.origin !== origin || !/^\/kontakt\/?$/.test(u.pathname)) return href;   // også mailto:, tel:, andre domæner
+  return tilfoej(href, u, search);
+}
+
+// "Bestil et opkald" (22-10-2026): siden, opkaldet blev bestilt fra, med annoncens utm_* og klik-id'er, så et opkald fra en
+// annonce kan skelnes fra et organisk i leadet og i mailen til Milot. contact-form gemmer feltet som tekst (højst 200 tegn):
+// utm først, klik-id'erne sidst, så det er dem, der skæres, hvis det bliver langt.
+export function sideMedKilde(pathname: string, search: string): string {
+  const p = kildeParametre(new URLSearchParams(search));
+  const raekke = [...Object.entries(p).filter(([k]) => k.startsWith('utm_')), ...Object.entries(p).filter(([k]) => !k.startsWith('utm_'))];
+  const q = raekke.map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
+  return (q ? `${pathname}?${q}` : pathname).slice(0, 200);
+}
+
+// Kontaktformularen starter på Privat, når besøgeren kommer fra en side til private (emnet i ?emne=) eller fra en
+// annoncekampagne til private (utm_campaign privat-…) — ellers mødte privatkunden "Virksomhed *" (22-10-2026).
+export const PRIVATE_EMNER = ['Garderobeskab', 'Bænk', 'Overskabe', 'Skobænk'] as const;
+export function starterPrivat(search: string): boolean {
+  const s = new URLSearchParams(search);
+  return (PRIVATE_EMNER as readonly string[]).includes(s.get('emne') || '') || /^privat/i.test(s.get('utm_campaign') || '');
 }
 
 // Browser: kilden for den side, formularen står på (læses ved afsendelse). Intet gemmes.
@@ -78,12 +111,13 @@ export function hentKilde(): Attribution {
 // Browser: retter href på et link til designeren i klik-øjeblikket. Det skal ske her og ikke ved indlæsning, fordi
 // linkene skifter undervejs ([slug].astro skifter hovedknappens href, når man skifter billede, og HeroPaths sætter
 // designerens permalink). Browseren læser href, når klikket er færdigbehandlet, så rettelsen når med.
+// Også links til /kontakt på sitet selv (medKildeTilKontakt, 22-10-2026).
 function rettDesignerLink(e: Event): void {
   if (!location.search) return;
   const a = (e.target as Element | null)?.closest?.('a[href]');
   if (!a) return;
   const href = a.getAttribute('href') || '';
-  const ny = medKilde(href, location.search);
+  const ny = medKildeTilKontakt(medKilde(href, location.search), location.search, location.href);
   if (ny !== href) a.setAttribute('href', ny);
 }
 

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { KILDE_SVAR, hentKilde } from '../lib/kilde';
+import { KILDE_SVAR, hentKilde, starterPrivat } from '../lib/kilde';
 import { variantFraUrl } from '../lib/varianter';
 import { formularFetch, uploadAdresse, type Via } from '../lib/api';
 
@@ -91,6 +91,8 @@ export default function ContactForm({ spor = 'besked', besked = '', konfiguratio
     if (besked) setForm((f) => ({ ...f, message: `${besked}\n\n` }));
     else if (emne) setForm((f) => (f.message ? f : { ...f, message: `Vedr. ${emne}\n\n` }));
     setUrlVariant(variantFraUrl(location.search));
+    // fra en side til private eller en annonce til private: start på Privat (starterPrivat, 22-10-2026)
+    if (starterPrivat(location.search)) setKundetype('privat');
   }, [besked]);
 
   const update = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
