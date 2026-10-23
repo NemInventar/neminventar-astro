@@ -71,6 +71,8 @@ const ld = [organization, ...jsonLd];
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  {/* Sidens egne tidlige hentninger, før stylesheets (et script efter dem venter på dem) — forsiden: designerens 3D */}
+  <slot name="tidlig" />
   <title>{title}</title>
   <meta name="description" content={description} />
   <link rel="canonical" href={canonical} />

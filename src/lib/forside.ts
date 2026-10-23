@@ -7,6 +7,9 @@
 // &hent=ifc henter IFC-filen ved start (ni-apps core/permalink.js). Designeren renser selv tilstanden mod sine valg,
 // så en kulør, den ikke har, falder tilbage til standarden. Eget domæne fra 07-10-2026 (firmafiltre blokerer *.pages.dev).
 export const DESIGNER_URL: string | null = 'https://designer.neminventar.dk/designer.html';
+// Designerens indlejring på forsiden (ni-apps indlejr.js → indlejr.v1.js, API v1). Hentes fra sidens første øjeblik
+// (modulepreload i HeroPaths), så 3D'en er fremme under 1 sekund (Milot 23-10-2026).
+export const INDLEJR_URL = 'https://designer.neminventar.dk/indlejr.v1.js';
 
 // Typer, designeren kan åbne (produkt-id i designeren).
 export const DESIGNER_AF: Record<string, 'locker' | 'hoejskab'> = {
