@@ -15,16 +15,16 @@ interface Props { products: WebProduct[]; colors: WebColor[] }
 const { products, colors } = Astro.props;
 const base = import.meta.env.BASE_URL;
 
-// Dark Roast først: højskabet starter i rumbilledets mørke eg (Milot 23-10-2026: "ændre farven på skabet så det går mere hen
-// og ligner det her link"). Lockerne starter stadig i rødbrun (S.locker i scriptet).
-const KUL = ['dark-roast', 'roedbrun', 'blaa', 'fern', 'natur', 'charcoal'];
+// Dark Roast med (Milot 23-10-2026): fremvisningen ender i rumbilledets mørke eg, og knapperne følger med. Højskabet starter i
+// blå (de 4 skabe), lockerne i rødbrun (S i scriptet) — den trykkede knap i HTML'en er højskabets.
+const KUL = ['roedbrun', 'blaa', 'fern', 'natur', 'charcoal', 'dark-roast'];
 const kul = KUL.map((s) => colors.find((c) => c.slug === s)).filter((c): c is WebColor => !!c);
+const kulStart = kul.find((c) => c.slug === 'blaa') ?? kul[0];
 
 const hoejskabRender = products.find((p) => p.slug === 'hoejskab-krydsfiner');
 const STILL = {
   locker: { src: cdn(morkhoj('26_garderobe-lockere-roede-med-baenk-og-skohylder.jpg'), 1400), tag: 'Foto fra en leverance', alt: 'Røde lockers med perforerede låger og kodelås over en bænk med skohylder', pos: '50% 58%' },
-  // samme mørke kulør som 3D'en, der afløser billedet (Dark Roast)
-  hoejskab: { src: cdn(hoejskabRender ? billedeAf(hoejskabRender, 'dark-roast') : '', 1400), tag: 'Visualisering', alt: 'Højskabe i krydsfiner med mørkbrune låger, ét skab åbent med hylder', pos: '50% 50%' },
+  hoejskab: { src: cdn(hoejskabRender ? billedeAf(hoejskabRender, 'blaa') : '', 1400), tag: 'Visualisering', alt: 'Højskabe i krydsfiner med blå låger, ét skab åbent med hylder', pos: '50% 50%' },
   // samme visualisering som landingssiden /akustikvaegge-perforeret-krydsfiner (landing_web_2026_09_24)
   akustik: { src: cdn('https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1790250138590.png', 1400), tag: 'Visualisering', alt: 'Akustikvæg i perforeret birkekrydsfiner i et musiklokale', pos: '50% 40%' },
 };
@@ -109,8 +109,8 @@ const katalog = KATALOG_TOP.map((k) => {
       <div class="hp-ctrl">
         <div>
           <span class="hp-lbl">Kulør</span>
-          <div class="hp-sw" id="hpSw">{kul.map((c, i) => <button type="button" data-hex={c.swatch_hex} data-slug={c.slug} aria-label={c.label} title={c.label} aria-pressed={i === 0 ? 'true' : 'false'} style={`background:${c.swatch_hex}`}></button>)}</div>
-          <div class="hp-colname" id="hpColname">{kul[0]?.label}</div>
+          <div class="hp-sw" id="hpSw">{kul.map((c, i) => <button type="button" data-hex={c.swatch_hex} data-slug={c.slug} aria-label={c.label} title={c.label} aria-pressed={c === kulStart ? 'true' : 'false'} style={`background:${c.swatch_hex}`}></button>)}</div>
+          <div class="hp-colname" id="hpColname">{kulStart?.label}</div>
         </div>
         <div>
           <span class="hp-lbl" id="hpDimLbl">Antal og højde</span>
@@ -120,9 +120,9 @@ const katalog = KATALOG_TOP.map((k) => {
             <div class="hp-step"><button type="button" data-d="r,-1" aria-label="Færre rum i højden">−</button><output data-o="r">2</output><button type="button" data-d="r,1" aria-label="Flere rum i højden">+</button></div>
           </div>
           <div class="hp-steps" data-for="hoejskab">
-            <div class="hp-step"><button type="button" data-d="c,-1" aria-label="Færre skabe">−</button><output data-o="c">6</output><button type="button" data-d="c,1" aria-label="Flere skabe">+</button></div>
+            <div class="hp-step"><button type="button" data-d="c,-1" aria-label="Færre skabe">−</button><output data-o="c">4</output><button type="button" data-d="c,1" aria-label="Flere skabe">+</button></div>
             <div class="hp-seg sm" id="hpH" role="group" aria-label="Højde i cm">
-              <button type="button" data-h="1.8" aria-pressed="false">180</button><button type="button" data-h="2.1" aria-pressed="false">210</button><button type="button" data-h="2.4" aria-pressed="false">240</button>
+              <button type="button" data-h="1.8" aria-pressed="false">180</button><button type="button" data-h="2.1" aria-pressed="true">210</button><button type="button" data-h="2.4" aria-pressed="false">240</button>
             </div>
           </div>
           <!-- akustik: bredder, der går op i hele paneler à 60 cm med 5 mm fuge (3, 5, 7 og 9 paneler), og de fire hulmønstre -->
@@ -135,7 +135,7 @@ const katalog = KATALOG_TOP.map((k) => {
             </div>
           </div>
         </div>
-        <div class="hp-read"><span class="hp-spec" id="hpSpec">6 højskabe · 360 × 200 × 60 cm</span></div>
+        <div class="hp-read"><span class="hp-spec" id="hpSpec">4 højskabe · 240 × 210 × 60 cm</span></div>
       </div>
       <div class="hp-acts">
         {/* designeren er hovedknappen (Joachim 16-10-2026: "Åbn i designeren skal måske være større end få et tilbud … byg selv") */}
@@ -292,7 +292,7 @@ const katalog = KATALOG_TOP.map((k) => {
   // Eget domæne (07-10-2026): firmafiltre blokerer ofte *.pages.dev. ni-designer.pages.dev svarer stadig som reserve.
   const INDLEJR = 'https://designer.neminventar.dk/indlejr.v1.js';
   type Indlejring = { saet(t: Record<string, unknown>): void; on(n: 'aendret', fn: (d: { spec: string; titel: string; linjer?: [string, string][] }) => void): () => void; permalink(): string; ryd(): void };
-  type Tilstand = { c: number; r: number; h: number; kuloer: string; t?: string };
+  type Tilstand = { c: number; r: number; h: number; kuloer: string; t?: string; mat?: string };
   const $ =<T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T | null;
 
   // ---------- tre veje: fanerne ----------
@@ -338,12 +338,13 @@ const katalog = KATALOG_TOP.map((k) => {
   let vis3d = !mobil;
   // Kulør = slug fra webpaletten (samme slugs som designerens lagerfarver). h = højskabets højde i meter (knapperne).
   // Akustik (Joachim 15-10-2026): c = feltets bredde i cm, t = hulmønstret; højden er designerens standard (240 cm).
-  // Højskabet (23-10-2026): 6 skabe, 200 cm og Dark Roast som rumbilledets skabsvæg — 200 er ikke en af højdeknapperne, så
-  // ingen af dem er trykket ind, før man selv vælger en
+  // Højskabet (Milot 23-10-2026): computeren starter i de 4 blå skabe i krydsfiner, og fremvisningen ender i rumbilledets
+  // skabsvæg; telefonen starter i rumbilledets væg (6 skabe, 200 cm — ikke en højdeknap — Dark Roast på eg). mat = højskabets
+  // plade, så en kulør-knap farver det træ, man ser. Under fremvisningen følger knapperne designeren (fraDesigner).
   const har = (slug: string) => sw.some((b) => b.dataset.slug === slug);
   const S: Record<Prod, Tilstand> = {
     locker: { c: 6, r: 2, h: 2.1, kuloer: har('roedbrun') ? 'roedbrun' : sw[0]?.dataset.slug || 'roedbrun' },
-    hoejskab: { c: 6, r: 1, h: 2.0, kuloer: har('dark-roast') ? 'dark-roast' : sw[0]?.dataset.slug || 'natur' },
+    hoejskab: mobil ? { c: 6, r: 1, h: 2.0, kuloer: 'dark-roast', mat: 'eg' } : { c: 4, r: 1, h: 2.1, kuloer: har('blaa') ? 'blaa' : sw[0]?.dataset.slug || 'natur', mat: 'kryds' },
     akustik: { c: 302, r: 1, h: 2.4, kuloer: 'natur', t: 'standard' },
   };
   const LIM = { locker: { c: [1, 10], r: [1, 3] }, hoejskab: { c: [1, 8], r: [1, 1] }, akustik: { c: [181, 544], r: [1, 1] } } as const;
@@ -355,19 +356,25 @@ const katalog = KATALOG_TOP.map((k) => {
     taet: { hul: 6, cc: 12, moenster: 'taet', navn: 'Tæt' },
     fint: { hul: 4, cc: 8, moenster: 'lige', navn: 'Fint' },
   };
-  // Computerens start på højskabet (Milot 23-10-2026: "ændre farven på skabet så det går mere hen og ligner det her link"):
-  // rumbilledets skabsvæg i egefinér med Dark Roast og indeliggende låger, endnu uden skabe for sig — designerens fremvisning
-  // bygger resten (det åbne skab og bænkrækken, ni-apps produkter/hoejskab/fremvis.js). Resten er designerens standard.
-  const VAEG = { n: 6, h: 200, mat: 'eg', farve: { eg: 'dark-roast' }, inde: 'garderobe', indl: 1 };
-  // Sidens tilstand → designerens (locker: soejler/raekker · højskab: n skabe, h i cm, egefinér · akustik: bredde, huller, birk)
-  let roert = false; // billedets/linkets skabsvæg, indtil man selv ændrer kulør eller antal
+  // Sidens tilstand → designerens (locker: soejler/raekker · højskab: n skabe, h i cm, pladen · akustik: bredde, huller, birk)
+  let roert = false; // telefon: billedets skabsvæg, indtil man selv ændrer kulør eller antal
   const til = (p: Prod) => {
     if (mobil && !roert && STILL_M[p]?.t) return STILL_M[p].t!;
-    if (!roert && p === 'hoejskab') return VAEG;
     const s = S[p];
     if (p === 'akustik') { const { navn, ...hul } = HUL[s.t || 'standard']; return { mat: 'birk', b: s.c, ...hul, farve: { birk: s.kuloer } }; }
-    return p === 'locker' ? { mat: 'kryds', soejler: s.c, raekker: s.r, farve: { kryds: s.kuloer } } : { mat: 'eg', n: s.c, h: Math.round(s.h * 100), farve: { eg: s.kuloer } };
+    if (p === 'locker') return { mat: 'kryds', soejler: s.c, raekker: s.r, farve: { kryds: s.kuloer } };
+    const mat = s.mat || 'kryds';
+    return { mat, n: s.c, h: Math.round(s.h * 100), farve: { [mat]: s.kuloer } };
   };
+  // Designerens tilstand → højskabets knapper (antal, højde, kulør og plade), så de viser det, fremvisningen bygger
+  function fraDesigner(t: Record<string, any> | undefined) {
+    if (cur !== 'hoejskab' || !t) return;
+    const s = S.hoejskab, k = t.farve?.[t.mat];
+    if (Number.isFinite(t.n)) s.c = t.n;
+    if (Number.isFinite(t.h)) s.h = t.h / 100;
+    if (typeof t.mat === 'string') s.mat = t.mat;
+    if (typeof k === 'string') s.kuloer = k;
+  }
   const PRODUKTNAVN: Record<Prod, string> = { locker: 'lockers', hoejskab: 'højskabe', akustik: 'akustikpaneler' };
   let cur: Prod = 'hoejskab';
   let d3: Indlejring | null = null;
@@ -451,7 +458,7 @@ const katalog = KATALOG_TOP.map((k) => {
       const mod = await hent();
       // luft: computer — teksten på 3D'en forneden · telefon — hintet og teksten foroven, knappen forneden
       d3 = await mod.indlejr(canvasEl, { produkt: cur, tilstand: til(cur), luft: { top: mobil ? 100 : 16, bund: 56 }, fremvis });
-      d3.on('aendret', ({ spec: sp, titel, linjer }) => { d3spec = kortSpec(sp, titel, linjer); if (spec) spec.textContent = d3spec; links(); });
+      d3.on('aendret', ({ spec: sp, titel, linjer, tilstand }) => { d3spec = kortSpec(sp, titel, linjer); fraDesigner(tilstand); sync(); });
       if (vis3d) { stage.classList.add('is-3d'); if (hint) hint.hidden = false; }
       toggle && (toggle.textContent = vis3d ? 'Se den i et rum' : KNAP_3D);
     } catch {
