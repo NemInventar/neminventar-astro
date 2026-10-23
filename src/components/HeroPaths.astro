@@ -96,6 +96,12 @@ const katalog = KATALOG_TOP.map((k) => {
         <div class="hp-canvas" id="hpCanvas" aria-hidden="true"></div>
         <span class="hp-hint" id="hpHint" hidden><i></i>3D · træk for at dreje · tryk på en låge</span>
         <button type="button" class="hp-toggle" id="hpToggle">Se i 3D</button>
+        {/* Teksten på 3D'en (Milot 23-10-2026: "en tekst foran på selve designeren hvor der står, at man kan redigere møblet i
+            designeren"): vises, når 3D'en kører, og åbner designeren med det, man ser — som "Byg selv i designeren" */}
+        {DESIGNER_URL && <a class="hp-ret" id="hpRet" href={`${DESIGNER_URL}?p=hoejskab`}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+          <span>Du kan selv ændre <span id="hpRetNavn">skabene</span> i designeren</span><span class="arr" aria-hidden="true">→</span>
+        </a>}
       </div>
       <div class="hp-ctrl">
         <div>
@@ -206,6 +212,15 @@ const katalog = KATALOG_TOP.map((k) => {
   .hp-hint[hidden]{display:none}
   .hp-hint i{width:8px;height:8px;border-radius:50%;background:#3B8A4F;box-shadow:0 0 0 4px rgba(59,138,79,.18)}
   .hp-toggle{position:absolute;right:14px;top:14px;background:rgba(23,20,14,.88);color:var(--paper);border:0;border-radius:999px;padding:8px 14px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+  /* teksten på 3D'en: i båndet forneden, som indlejringen holder fri af produktet (luft.bund) */
+  .hp-ret{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:none;align-items:center;gap:8px;max-width:calc(100% - 28px);background:rgba(23,20,14,.9);color:var(--paper);border-radius:999px;padding:9px 16px;font-size:13.5px;font-weight:600;line-height:1.25;text-decoration:none;white-space:nowrap;box-shadow:0 10px 24px -12px rgba(0,0,0,.5)}
+  .hp-ret:hover{background:var(--ink)}
+  .hp-ret:focus-visible{outline:2px solid var(--warm);outline-offset:2px}
+  .hp-ret svg{flex:none;color:var(--warm-soft)}
+  .hp-ret .arr{transition:transform .2s}
+  .hp-ret:hover .arr{transform:translateX(3px)}
+  .hp-stage.is-3d .hp-ret{display:flex;animation:hp-ret-ind .6s ease-out}
+  @keyframes hp-ret-ind{from{opacity:0;transform:translate(-50%,6px)}to{opacity:1;transform:translateX(-50%)}}
   .hp-ctrl{display:grid;grid-template-columns:auto auto 1fr;gap:14px 28px;align-items:end;padding:16px 18px;border-top:1px solid var(--line)}
   .hp-lbl{display:block;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
   .hp-sw{display:flex;gap:8px}
@@ -257,11 +272,15 @@ const katalog = KATALOG_TOP.map((k) => {
     .hp h1{font-size:clamp(40px,11vw,60px)}
     .hp-stage{aspect-ratio:4/5}
     .hp-toggle{top:auto;bottom:14px}
+    /* telefon: knappen "Se den i et rum" står forneden, så teksten står foroven under hintet (indlejringen holder produktet
+       fri af begge, luft.top i load3d) og må gå på to linjer på en smal telefon */
+    .hp-ret{left:14px;top:54px;bottom:auto;transform:none;max-width:calc(100% - 28px);white-space:normal;text-wrap:balance;padding:8px 14px;font-size:12px}
+    @keyframes hp-ret-ind{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
     .hp-ctrl{grid-template-columns:1fr;gap:14px}
     .hp-read{justify-self:stretch;text-align:left;border-top:1px solid var(--line);padding-top:12px}
     .hp-cgrid{grid-template-columns:1fr 1fr}
   }
-  @media (prefers-reduced-motion:reduce){.hp-path,.hp-still,.hp-canvas,.hp-cc .im img{transition:none}}
+  @media (prefers-reduced-motion:reduce){.hp-path,.hp-still,.hp-canvas,.hp-cc .im img,.hp-ret .arr{transition:none}.hp-stage.is-3d .hp-ret{animation:none}}
 </style>
 
 <script>
@@ -363,15 +382,18 @@ const katalog = KATALOG_TOP.map((k) => {
     const kort = samlet && samlet.includes('·') ? `${titel} · ${samlet.slice(samlet.indexOf('·') + 1).trim()}` : sp;
     return kort.replace(/ (m²|%|cm)/g, ' $1');
   }
-  // "Åbn i designeren" og "Hent IFC": designerens permalink, når 3D'en kører; ellers produktet med kuløren
+  // "Åbn i designeren", teksten på 3D'en og "Hent IFC": designerens permalink, når 3D'en kører; ellers produktet med kuløren
   function links() {
-    const dl = $<HTMLAnchorElement>('hpDesigner'), ifc = $<HTMLAnchorElement>('hpIfc');
+    const dl = $<HTMLAnchorElement>('hpDesigner'), ret = $<HTMLAnchorElement>('hpRet'), ifc = $<HTMLAnchorElement>('hpIfc');
     let url = '';
     try { url = d3 ? d3.permalink() : ''; } catch { url = ''; }
     if (!url && dl) url = `${dl.href.split('?')[0]}?p=${cur}&t=${btoa(JSON.stringify(til(cur))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`;
     if (dl && url) dl.href = url;
+    if (ret && url) ret.href = url;
     if (ifc && url) ifc.href = url + (url.includes('?') ? '&' : '?') + 'hent=ifc';
   }
+  // teksten på 3D'en: "Du kan selv ændre skabene i designeren" — navnet følger produktet og antallet
+  const RET_NAVN = (p: Prod, s: Tilstand) => (p === 'akustik' ? 'akustikvæggen' : p === 'locker' ? (s.c * s.r === 1 ? 'lockeren' : 'lockerne') : s.c === 1 ? 'skabet' : 'skabene');
   function sync() {
     const s = S[cur];
     sw.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.slug === s.kuloer)));
@@ -389,6 +411,8 @@ const katalog = KATALOG_TOP.map((k) => {
     document.querySelectorAll<HTMLButtonElement>('#hpB button').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.b! === S.akustik.c)));
     document.querySelectorAll<HTMLButtonElement>('#hpHul button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.t === S.akustik.t)));
     spec!.textContent = specTekst();
+    const retNavn = $('hpRetNavn');
+    if (retNavn) retNavn.textContent = RET_NAVN(cur, s);
     const st = STILL[cur], sm = (mobil && STILL_M[cur]) || st;
     // <source> vinder over img.src på telefon, så den følger produktet
     if (stillSrc && stillSrc.srcset !== (STILL_M[cur] ?? st)?.src) stillSrc.srcset = (STILL_M[cur] ?? st).src;
@@ -407,12 +431,16 @@ const katalog = KATALOG_TOP.map((k) => {
     new Promise<never>((_, rej) => setTimeout(() => rej(new Error('timeout')), 8000)),
   ]).catch((e) => { modP = null; throw e; });
   const KNAP_3D = 'Prøv det selv i 3D →';
-  async function load3d() {
+  // fremvis (Milot 23-10-2026): designeren viser selv, hvad den kan — kameraet svinger, låger åbner, og indretningen skifter —
+  // til man rører 3D'en eller en knap (designerens indlejring stopper selv). Kun første gang, 3D'en kommer af sig selv på
+  // computer; ikke efter et produktskift eller et tryk på "Prøv det selv i 3D". En ældre indlejring ignorerer valget.
+  async function load3d(fremvis = false) {
     if (d3 || loading || !canvasEl || !stage) return;
     loading = true; toggle && (toggle.textContent = 'Henter 3D …');
     try {
       const mod = await hent();
-      d3 = await mod.indlejr(canvasEl, { produkt: cur, tilstand: til(cur), luft: { top: 16, bund: 56 } });
+      // luft: computer — teksten på 3D'en forneden · telefon — hintet og teksten foroven, knappen forneden
+      d3 = await mod.indlejr(canvasEl, { produkt: cur, tilstand: til(cur), luft: { top: mobil ? 100 : 16, bund: 56 }, fremvis });
       d3.on('aendret', ({ spec: sp, titel, linjer }) => { d3spec = kortSpec(sp, titel, linjer); if (spec) spec.textContent = d3spec; links(); });
       if (vis3d) { stage.classList.add('is-3d'); if (hint) hint.hidden = false; }
       toggle && (toggle.textContent = vis3d ? 'Se den i et rum' : KNAP_3D);
@@ -422,7 +450,7 @@ const katalog = KATALOG_TOP.map((k) => {
     } finally { loading = false; }
   }
   toggle?.addEventListener('click', () => {
-    if (!d3) { vis3d = true; load3d(); return; }
+    if (!d3) { vis3d = true; load3d(false); return; }
     vis3d = true;
     const on3d = stage!.classList.toggle('is-3d');
     if (hint) hint.hidden = !on3d;
@@ -434,7 +462,7 @@ const katalog = KATALOG_TOP.map((k) => {
     document.querySelectorAll('#hpProd button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
     stage!.dataset.produkt = cur;
     // et andet produkt = en ny indlejring (API'et skifter ikke produkt)
-    if (d3 && fra !== cur) { d3.ryd(); d3 = null; d3spec = ''; stage!.classList.remove('is-3d'); load3d(); }
+    if (d3 && fra !== cur) { d3.ryd(); d3 = null; d3spec = ''; stage!.classList.remove('is-3d'); load3d(false); }
     sync();
   }));
   if (mobil) {
@@ -459,6 +487,10 @@ const katalog = KATALOG_TOP.map((k) => {
     window.dispatchEvent(new CustomEvent('ni:tilbud', { detail }));
     vis('send', true);
   });
+  // klik ind i designeren tælles (Plausible, ingen persondata): teksten på 3D'en eller knappen under — så vi kan se, om
+  // teksten og fremvisningen får flere ind i designeren (Milot 23-10-2026). Målet "Designer fra forsiden" oprettes i Plausible.
+  const plausible = (n: string, props: Record<string, string>) => (window as unknown as { plausible?: (n: string, o: object) => void }).plausible?.(n, { props });
+  ([['hpRet', 'teksten på 3D'], ['hpDesigner', 'knappen']] as const).forEach(([id, fra]) => $(id)?.addEventListener('click', () => plausible('Designer fra forsiden', { fra, produkt: cur })));
   sync();
 
   // 3D: computer efter 'load'. Telefon (18-10-2026): rumbilledet bliver stående, og designerens kode hentes i baggrunden,
@@ -469,7 +501,7 @@ const katalog = KATALOG_TOP.map((k) => {
   const hasGL = (() => { try { const c = document.createElement('canvas'), k = { failIfMajorPerformanceCaveat: true }; return !!(c.getContext('webgl2', k) || c.getContext('webgl', k)); } catch { return false; } })();
   if (!hasGL) toggle && (toggle.hidden = true);
   else if (!saveData) {
-    const start = mobil ? () => { hent().catch(() => {}); } : load3d;
+    const start = mobil ? () => { hent().catch(() => {}); } : () => load3d(true);
     const go = () => ('requestIdleCallback' in window ? (window as any).requestIdleCallback(start, { timeout: 1500 }) : setTimeout(start, 300));
     if (document.readyState === 'complete') go(); else window.addEventListener('load', go, { once: true });
   }
