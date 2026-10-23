@@ -1,8 +1,13 @@
 """Bevis for forsidens 3D med designerens indlejring (indlejr.v1.js).
   python scripts/test_forside_designer.py                 (lokal dist)
   python scripts/test_forside_designer.py https://neminventar.dk/
+  … --indlejr=<sti til indlejr.v1.js>    en lokal bundle i stedet for den udgivne (ni-apps dist/offentlig/public/)
+  … --uden-fremvisning                   den udgivne indlejring kan ikke fremvise endnu: de tjek springes over
 Tjekker: indlejringen indlæses (lærred i #hpCanvas), læsefeltet får designerens spec, kulør og antal ændrer permalinket,
-produktskift giver en ny indlejring, "Hent IFC" har &hent=ifc — og uden WebGL bliver stillbilledet stående."""
+produktskift giver en ny indlejring, "Hent IFC" har &hent=ifc — og uden WebGL bliver stillbilledet stående.
+Fremvisningen og teksten på 3D'en (23-10-2026): teksten vises på 3D'en og peger på designeren med det, man ser; på computer
+skifter indretningen af sig selv og stopper ved et tryk på 3D'en eller en knap; ingen fremvisning efter produktskift, på
+telefon eller med reduceret bevægelse; på telefon står teksten ikke oven i knappen "Se den i et rum"."""
 import base64, json, subprocess, sys, tempfile, time
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs
@@ -10,7 +15,11 @@ from playwright.sync_api import sync_playwright
 
 sys.stdout.reconfigure(encoding="utf-8")
 DIST = Path(__file__).resolve().parent.parent / "dist"
-REMOTE = sys.argv[1].rstrip("/") + "/" if len(sys.argv) > 1 else None
+FLAG = [a for a in sys.argv[1:] if a.startswith("--")]
+POS = [a for a in sys.argv[1:] if not a.startswith("--")]
+INDLEJR_FIL = next((a.split("=", 1)[1] for a in FLAG if a.startswith("--indlejr=")), None)
+FREMVIS = "--uden-fremvisning" not in FLAG
+REMOTE = POS[0].rstrip("/") + "/" if POS else None
 srv = None if REMOTE else subprocess.Popen([sys.executable, "-m", "http.server", "8775", "--bind", "127.0.0.1", "-d", str(DIST)],
                                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 time.sleep(0 if REMOTE else 1.2)
@@ -31,10 +40,43 @@ def tilstand(href):
     return json.loads(base64.urlsafe_b64decode(t + "=" * (-len(t) % 4)).decode()) if t else {}
 
 
+def ny_side(ctx):
+    """En side, der henter den lokale indlejring (--indlejr), når den er givet. Formularen sendes aldrig."""
+    s = ctx.new_page()
+    if INDLEJR_FIL:
+        s.route("**/indlejr.v1.js*", lambda r: r.fulfill(path=INDLEJR_FIL, content_type="text/javascript", headers={"access-control-allow-origin": "*"}))
+    s.route("**/contact-form", lambda r: r.abort())
+    return s
+
+
+def href(s):
+    return s.locator("#hpDesigner").get_attribute("href")
+
+
+def vent_paa_skift(s, fra, maks_ms):
+    """Venter, til permalinket ikke længere er `fra` (fremvisningen har ændret noget) — True, hvis det sker inden maks_ms."""
+    slut = time.time() + maks_ms / 1000
+    while time.time() < slut:
+        if href(s) != fra:
+            return True
+        s.wait_for_timeout(200)
+    return False
+
+
+def staar_stille(s, ms):
+    """Permalinket ændrer sig ikke i ms millisekunder (ingen fremvisning)."""
+    fra = href(s)
+    return not vent_paa_skift(s, fra, ms)
+
+
+def overlapper(a, b):
+    return a and b and a["x"] < b["x"] + b["width"] and b["x"] < a["x"] + a["width"] and a["y"] < b["y"] + b["height"] and b["y"] < a["y"] + a["height"]
+
+
 try:
     with sync_playwright() as p:
         b = p.chromium.launch(args=["--use-angle=swiftshader", "--enable-unsafe-swiftshader"])
-        pg = b.new_page(viewport={"width": 1440, "height": 900})
+        pg = ny_side(b.new_context(viewport={"width": 1440, "height": 900}))
         jsfejl = []
         pg.on("pageerror", lambda e: jsfejl.append(str(e)))
         pg.goto(URL, wait_until="load")
@@ -49,11 +91,38 @@ try:
              and pg.locator('#hpProd button[data-k="hoejskab"]').get_attribute("aria-pressed") == "true")
         tjek("computer: permalink med p=hoejskab", "p=hoejskab" in pg.locator("#hpDesigner").get_attribute("href"))
         tjek("computer: læsefeltet viser højskabe", "skab" in pg.locator("#hpSpec").inner_text().lower(), pg.locator("#hpSpec").inner_text())
+        # teksten på 3D'en (23-10-2026): synlig, siger designeren og peger på det samme som "Byg selv i designeren"
+        ret = pg.locator("#hpRet")
+        tjek("teksten på 3D'en vises", ret.is_visible() and "i designeren" in ret.inner_text(), ret.inner_text() if ret.count() else "")
+        tjek("teksten siger skabene (4 højskabe)", "ændre skabene" in ret.inner_text(), ret.inner_text())
+        tjek("teksten ligger på 3D'en", overlapper(ret.bounding_box(), pg.locator("#hpStage").bounding_box()))
+        if FREMVIS:
+            # fremvisningen: indretningen skifter af sig selv (permalinket får skabe for sig, m), og teksten følger med
+            h0 = href(pg)
+            tjek("fremvisning: indretningen skifter af sig selv", vent_paa_skift(pg, h0, 8000))
+            tjek("fremvisning: permalinket har det, man ser (skabe for sig)", "m" in tilstand(href(pg)), tilstand(href(pg)))
+            tjek("fremvisning: teksten peger på det samme som knappen", ret.get_attribute("href") == href(pg))
+            pg.screenshot(path=str(Path(tempfile.gettempdir()) / "forside-fremvisning.png"))
+            # et tryk på 3D'en: fremvisningen stopper (intet skifter mere)
+            pg.locator("#hpCanvas canvas").click(position={"x": 60, "y": 60})
+            tjek("fremvisning: stopper ved et tryk på 3D'en", staar_stille(pg, 7000))
+            # en knap på siden: fremvisningen stopper, og det, man så, bliver stående med den nye kulør
+            k = ny_side(pg.context)
+            k.on("pageerror", lambda e: jsfejl.append(str(e)))
+            k.goto(URL, wait_until="load"); k.wait_for_selector("#hpStage.is-3d", timeout=20000)
+            vent_paa_skift(k, href(k), 8000)
+            k.locator("#hpSw button").nth(0).click(); k.wait_for_timeout(400)
+            sk = tilstand(href(k)); slug0 = k.locator("#hpSw button").nth(0).get_attribute("data-slug")
+            tjek("fremvisning: en kulør-knap virker midt i den", (sk.get("farve") or {}).get("kryds") == slug0 and "m" in sk, sk)
+            tjek("fremvisning: stopper ved en knap på siden", staar_stille(k, 7000))
+            k.close()
         # resten af lockertjekket: skift til lockers
         pg.locator('#hpProd button[data-k="locker"]').click()
         pg.wait_for_selector("#hpStage.is-3d", timeout=20000); pg.wait_for_timeout(800)
         spec = pg.locator("#hpSpec").inner_text()
         tjek("læsefeltet viser designerens spec", "locker" in spec.lower(), spec)
+        tjek("teksten på 3D'en siger lockerne", "ændre lockerne" in pg.locator("#hpRet").inner_text(), pg.locator("#hpRet").inner_text())
+        tjek("ingen fremvisning efter et produktskift", staar_stille(pg, 6000))
         d0 = pg.locator("#hpDesigner").get_attribute("href")
         tjek("Åbn i designeren peger på ni-designer med tilstand", "designer.neminventar.dk" in d0 and "t=" in d0, d0)
         # kulør: anden knap
@@ -86,14 +155,21 @@ try:
         sa = tilstand(pg.locator("#hpDesigner").get_attribute("href"))
         tjek("akustik: bredde og hulmønster følger med", sa.get("b") == 423 and sa.get("hul") == 6 and sa.get("cc") == 12 and sa.get("taethed") == "taet", sa)
         tjek("akustik: læsefeltet følger bredden", "423 × 240" in pg.locator("#hpSpec").inner_text(), pg.locator("#hpSpec").inner_text())
+        tjek("akustik: teksten på 3D'en siger akustikvæggen", "ændre akustikvæggen" in pg.locator("#hpRet").inner_text(), pg.locator("#hpRet").inner_text())
+        tjek("akustik: teksten følger permalinket", pg.locator("#hpRet").get_attribute("href") == href(pg))
         tjek("ingen JS-fejl", not jsfejl, jsfejl[:3])
+        # reduceret bevægelse: 3D'en kommer, men ingen fremvisning
+        r = ny_side(b.new_context(viewport={"width": 1440, "height": 900}, reduced_motion="reduce"))
+        r.goto(URL, wait_until="load"); r.wait_for_selector("#hpStage.is-3d", timeout=20000)
+        tjek("reduceret bevægelse: ingen fremvisning", staar_stille(r, 7000))
+        tjek("reduceret bevægelse: teksten vises stadig", r.locator("#hpRet").is_visible())
         # uden WebGL: stillbilledet bliver
         ctx = b.new_context(viewport={"width": 1440, "height": 900})
         ctx.add_init_script("HTMLCanvasElement.prototype.getContext = function() { return null; };")
         q = ctx.new_page(); q.goto(URL, wait_until="load"); q.wait_for_timeout(2500)
         tjek("uden WebGL: stillbilledet står, ingen 3D", q.locator("#hpStill img").is_visible() and q.locator("#hpStage.is-3d").count() == 0)
         # telefon (18-10-2026): højskab + rumbillede først, ingen 3D før tryk, knappen bygger 3D'en
-        t = b.new_context(**p.devices["iPhone 13"]).new_page()
+        t = ny_side(b.new_context(**p.devices["iPhone 13"]))
         tfejl = []
         t.on("pageerror", lambda e: tfejl.append(str(e)))
         t.goto(URL, wait_until="load"); t.wait_for_timeout(4000)
@@ -104,6 +180,7 @@ try:
         tjek("telefon: 3D-hint skjult på billedet", not t.locator("#hpHint").is_visible())
         tjek("telefon: billedet står over de tre veje", t.locator("#hpStage").bounding_box()["y"] < t.locator(".hp-paths").bounding_box()["y"])
         tjek("telefon: knappen ind i 3D", "3D" in t.locator("#hpToggle").inner_text(), t.locator("#hpToggle").inner_text())
+        tjek("telefon: teksten på 3D'en er skjult på billedet", not t.locator("#hpRet").is_visible())
         t.locator("#hpToggle").click()
         try:
             t.wait_for_selector("#hpStage.is-3d", timeout=20000); tjek("telefon: tryk giver 3D", True)
@@ -113,6 +190,11 @@ try:
         tm = tilstand(t.locator("#hpDesigner").get_attribute("href"))
         tjek("telefon: 3D'en er billedets skabsvæg (6 skabe i mørk eg)", tm.get("mat") == "eg" and tm.get("n") == 6, tm)
         tjek("telefon: hint skjult på billedet, vist i 3D", t.locator("#hpHint").is_visible())
+        tjek("telefon: teksten på 3D'en vises i 3D", t.locator("#hpRet").is_visible())
+        tb, kb, sb = t.locator("#hpRet").bounding_box(), t.locator("#hpToggle").bounding_box(), t.locator("#hpStage").bounding_box()
+        tjek("telefon: teksten står ikke oven i knappen", not overlapper(tb, kb), (tb, kb))
+        tjek("telefon: teksten er inden for 3D'en", tb and sb and tb["x"] >= sb["x"] and tb["x"] + tb["width"] <= sb["x"] + sb["width"] and tb["y"] + tb["height"] <= sb["y"] + sb["height"], (tb, sb))
+        tjek("telefon: ingen fremvisning efter tryk (man vil selv)", staar_stille(t, 6000))
         t.wait_for_timeout(1500)
         t.screenshot(path=str(Path(tempfile.gettempdir()) / "forside-telefon-2.png"))
         tjek("telefon: ingen JS-fejl", not tfejl, tfejl[:3])
