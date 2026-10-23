@@ -115,15 +115,15 @@ try:
         # teksten på 3D'en (23-10-2026): synlig, siger designeren og peger på det samme som "Byg selv i designeren"
         ret = pg.locator("#hpRet")
         tjek("teksten på 3D'en vises", ret.is_visible() and "i designeren" in ret.inner_text(), ret.inner_text() if ret.count() else "")
-        tjek("teksten siger skabene (6 højskabe)", "ændre skabene" in ret.inner_text(), ret.inner_text())
-        # computerens start (23-10-2026): linkets skabsvæg uden skabe for sig — 6 skabe, Dark Roast på eg, 200 cm, indeliggende
+        tjek("teksten siger skabene", "ændre skabene" in ret.inner_text(), ret.inner_text())
+        # computerens start (Milot 23-10-2026: "start med det simple skab på 4 moduler"): 4 blå skabe i krydsfiner, 210 cm
         st0 = tilstand(href(pg))
-        tjek("computer: 3D'en starter i linkets skabsvæg (6 skabe, Dark Roast på eg, 200 cm)", som_linket(st0, med_m=False), st0)
+        tjek("computer: 3D'en starter i de 4 blå skabe (krydsfiner, 210 cm)", (st0.get("n"), st0.get("h"), st0.get("mat"), (st0.get("farve") or {}).get("kryds")) == (4, 210, "kryds", "blaa"), st0)
         trykket = [b.get_attribute("data-slug") for b in pg.locator("#hpSw button[aria-pressed='true']").all()]
-        tjek("computer: kuløren Dark Roast er valgt", trykket == ["dark-roast"] and "Dark Roast" in pg.locator("#hpColname").inner_text(), (trykket, pg.locator("#hpColname").inner_text()))
-        tjek("computer: 6 skabe og ingen højdeknap trykket ind (200 cm)", pg.locator('.hp-steps[data-for="hoejskab"] output').inner_text() == "6"
-             and pg.locator("#hpH button[aria-pressed='true']").count() == 0)
-        tjek("computer: stillbilledet er Dark Roast-renderen", "1791314493791" in (pg.locator("#hpStillImg").get_attribute("src") or ""), pg.locator("#hpStillImg").get_attribute("src"))
+        tjek("computer: kuløren Blå er valgt", trykket == ["blaa"], trykket)
+        tjek("computer: 4 skabe og 210 trykket ind", pg.locator('.hp-steps[data-for="hoejskab"] output').inner_text() == "4"
+             and pg.locator("#hpH button[aria-pressed='true']").get_attribute("data-h") == "2.1")
+        tjek("computer: stillbilledet er den blå render", "1791308242382" in (pg.locator("#hpStillImg").get_attribute("src") or ""), pg.locator("#hpStillImg").get_attribute("src"))
         tjek("teksten ligger på 3D'en", overlapper(ret.bounding_box(), pg.locator("#hpStage").bounding_box()))
         if FREMVIS:
             # fremvisningen: indretningen skifter af sig selv (permalinket får skabe for sig, m), og teksten følger med
@@ -133,7 +133,17 @@ try:
             tjek("fremvisning: teksten peger på det samme som knappen", ret.get_attribute("href") == href(pg))
             pg.screenshot(path=str(Path(tempfile.gettempdir()) / "forside-fremvisning.png"))
             # Milot 23-10-2026: "byg skabet i linket ud fra det første design du viser" — runden ender i linket
-            tjek("fremvisning: runden ender i linkets skabsvæg", vent_paa(pg, lambda: som_linket(tilstand(href(pg))), 25000), tilstand(href(pg)))
+            # runden ender i linket — og i samme øjeblik viser knapperne under 3D'en det: 6 skabe, Dark Roast, ingen højdeknap
+            # (200 cm). Tjekket i ét kald: linket står kun pausen ud (3 s), så starter næste runde forfra.
+            knapper = """() => [document.querySelector('.hp-steps[data-for="hoejskab"] output').textContent,
+              [...document.querySelectorAll('#hpSw button[aria-pressed="true"]')].map((b) => b.dataset.slug).join(),
+              document.querySelectorAll('#hpH button[aria-pressed="true"]').length]"""
+            saa = {}
+            def linket_og_knapper():
+                saa["st"], saa["k"] = tilstand(href(pg)), pg.evaluate(knapper)
+                return som_linket(saa["st"]) and saa["k"] == ["6", "dark-roast", 0]
+            tjek("fremvisning: runden ender i linkets skabsvæg, og knapperne følger med (6 skabe, Dark Roast, ingen højdeknap)",
+                 vent_paa(pg, linket_og_knapper, 25000), saa)
             pg.screenshot(path=str(Path(tempfile.gettempdir()) / "forside-fremvisning-linket.png"))
             # et tryk på 3D'en: fremvisningen stopper (intet skifter mere)
             pg.locator("#hpCanvas canvas").click(position={"x": 60, "y": 60})
@@ -143,9 +153,10 @@ try:
             k.on("pageerror", lambda e: jsfejl.append(str(e)))
             k.goto(URL, wait_until="load"); k.wait_for_selector("#hpStage.is-3d", timeout=20000)
             vent_paa_skift(k, href(k), 8000)
-            k.locator("#hpSw button").nth(1).click(); k.wait_for_timeout(400)
-            sk = tilstand(href(k)); slug1 = k.locator("#hpSw button").nth(1).get_attribute("data-slug")
-            tjek("fremvisning: en kulør-knap virker midt i den (egefinér i den nye kulør)", sk.get("mat") == "eg" and (sk.get("farve") or {}).get("eg") == slug1 and "m" in sk, sk)
+            slug0 = k.locator("#hpSw button").nth(0).get_attribute("data-slug")   # rødbrun — ikke den valgte blå
+            k.locator("#hpSw button").nth(0).click(); k.wait_for_timeout(400)
+            sk = tilstand(href(k))
+            tjek("fremvisning: en kulør-knap virker midt i den (den plade, man ser, i den nye kulør)", (sk.get("farve") or {}).get(sk.get("mat")) == slug0 and "m" in sk, sk)
             tjek("fremvisning: stopper ved en knap på siden", staar_stille(k, 7000))
             k.close()
         # resten af lockertjekket: skift til lockers
