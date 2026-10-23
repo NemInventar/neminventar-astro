@@ -69,6 +69,27 @@ def staar_stille(s, ms):
     return not vent_paa_skift(s, fra, ms)
 
 
+# Milots link 23-10-2026 (rumbilledets skabsvæg): fremvisningen bygger den ud fra computerens start
+LINK = {"n": 6, "h": 200, "mat": "eg", "indl": 1, "eg": "dark-roast",
+        "m": [{"i": 2, "t": "aaben", "inde": "garderobe_skuffer"}, {"i": 3, "t": "baenk", "bsk": 1, "ob": 0},
+              {"i": 4, "t": "baenk", "bsk": 1, "ob": 0}, {"i": 5, "t": "baenk", "bsk": 1, "ob": 0}]}
+
+
+def som_linket(st, med_m=True):
+    """Væggen som linket (antal, højde, egefinér, indeliggende, Dark Roast) — og med med_m også skabene for sig."""
+    ok_vaeg = (st.get("n"), st.get("h"), st.get("mat"), st.get("indl"), (st.get("farve") or {}).get("eg")) == (LINK["n"], LINK["h"], LINK["mat"], LINK["indl"], LINK["eg"])
+    return ok_vaeg and (not med_m or st.get("m") == LINK["m"])
+
+
+def vent_paa(s, betingelse, maks_ms):
+    slut = time.time() + maks_ms / 1000
+    while time.time() < slut:
+        if betingelse():
+            return True
+        s.wait_for_timeout(200)
+    return False
+
+
 def overlapper(a, b):
     return a and b and a["x"] < b["x"] + b["width"] and b["x"] < a["x"] + a["width"] and a["y"] < b["y"] + b["height"] and b["y"] < a["y"] + a["height"]
 
@@ -94,7 +115,15 @@ try:
         # teksten på 3D'en (23-10-2026): synlig, siger designeren og peger på det samme som "Byg selv i designeren"
         ret = pg.locator("#hpRet")
         tjek("teksten på 3D'en vises", ret.is_visible() and "i designeren" in ret.inner_text(), ret.inner_text() if ret.count() else "")
-        tjek("teksten siger skabene (4 højskabe)", "ændre skabene" in ret.inner_text(), ret.inner_text())
+        tjek("teksten siger skabene (6 højskabe)", "ændre skabene" in ret.inner_text(), ret.inner_text())
+        # computerens start (23-10-2026): linkets skabsvæg uden skabe for sig — 6 skabe, Dark Roast på eg, 200 cm, indeliggende
+        st0 = tilstand(href(pg))
+        tjek("computer: 3D'en starter i linkets skabsvæg (6 skabe, Dark Roast på eg, 200 cm)", som_linket(st0, med_m=False), st0)
+        trykket = [b.get_attribute("data-slug") for b in pg.locator("#hpSw button[aria-pressed='true']").all()]
+        tjek("computer: kuløren Dark Roast er valgt", trykket == ["dark-roast"] and "Dark Roast" in pg.locator("#hpColname").inner_text(), (trykket, pg.locator("#hpColname").inner_text()))
+        tjek("computer: 6 skabe og ingen højdeknap trykket ind (200 cm)", pg.locator('.hp-steps[data-for="hoejskab"] output').inner_text() == "6"
+             and pg.locator("#hpH button[aria-pressed='true']").count() == 0)
+        tjek("computer: stillbilledet er Dark Roast-renderen", "1791314493791" in (pg.locator("#hpStillImg").get_attribute("src") or ""), pg.locator("#hpStillImg").get_attribute("src"))
         tjek("teksten ligger på 3D'en", overlapper(ret.bounding_box(), pg.locator("#hpStage").bounding_box()))
         if FREMVIS:
             # fremvisningen: indretningen skifter af sig selv (permalinket får skabe for sig, m), og teksten følger med
@@ -103,6 +132,9 @@ try:
             tjek("fremvisning: permalinket har det, man ser (skabe for sig)", "m" in tilstand(href(pg)), tilstand(href(pg)))
             tjek("fremvisning: teksten peger på det samme som knappen", ret.get_attribute("href") == href(pg))
             pg.screenshot(path=str(Path(tempfile.gettempdir()) / "forside-fremvisning.png"))
+            # Milot 23-10-2026: "byg skabet i linket ud fra det første design du viser" — runden ender i linket
+            tjek("fremvisning: runden ender i linkets skabsvæg", vent_paa(pg, lambda: som_linket(tilstand(href(pg))), 25000), tilstand(href(pg)))
+            pg.screenshot(path=str(Path(tempfile.gettempdir()) / "forside-fremvisning-linket.png"))
             # et tryk på 3D'en: fremvisningen stopper (intet skifter mere)
             pg.locator("#hpCanvas canvas").click(position={"x": 60, "y": 60})
             tjek("fremvisning: stopper ved et tryk på 3D'en", staar_stille(pg, 7000))
@@ -111,9 +143,9 @@ try:
             k.on("pageerror", lambda e: jsfejl.append(str(e)))
             k.goto(URL, wait_until="load"); k.wait_for_selector("#hpStage.is-3d", timeout=20000)
             vent_paa_skift(k, href(k), 8000)
-            k.locator("#hpSw button").nth(0).click(); k.wait_for_timeout(400)
-            sk = tilstand(href(k)); slug0 = k.locator("#hpSw button").nth(0).get_attribute("data-slug")
-            tjek("fremvisning: en kulør-knap virker midt i den", (sk.get("farve") or {}).get("kryds") == slug0 and "m" in sk, sk)
+            k.locator("#hpSw button").nth(1).click(); k.wait_for_timeout(400)
+            sk = tilstand(href(k)); slug1 = k.locator("#hpSw button").nth(1).get_attribute("data-slug")
+            tjek("fremvisning: en kulør-knap virker midt i den (egefinér i den nye kulør)", sk.get("mat") == "eg" and (sk.get("farve") or {}).get("eg") == slug1 and "m" in sk, sk)
             tjek("fremvisning: stopper ved en knap på siden", staar_stille(k, 7000))
             k.close()
         # resten af lockertjekket: skift til lockers
@@ -126,9 +158,9 @@ try:
         d0 = pg.locator("#hpDesigner").get_attribute("href")
         tjek("Åbn i designeren peger på ni-designer med tilstand", "designer.neminventar.dk" in d0 and "t=" in d0, d0)
         # kulør: anden knap
-        pg.locator("#hpSw button").nth(1).click(); pg.wait_for_timeout(500)
+        pg.locator("#hpSw button").nth(2).click(); pg.wait_for_timeout(500)
         st = tilstand(pg.locator("#hpDesigner").get_attribute("href"))
-        slug = pg.locator("#hpSw button").nth(1).get_attribute("data-slug")
+        slug = pg.locator("#hpSw button").nth(2).get_attribute("data-slug")
         tjek(f"kuløren følger med i permalinket ({slug})", (st.get("farve") or {}).get("kryds") == slug, st)
         # antal: flere søjler
         pg.locator('.hp-steps[data-for="locker"] [data-d="c,1"]').click(); pg.wait_for_timeout(500)
