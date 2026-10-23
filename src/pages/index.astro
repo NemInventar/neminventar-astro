@@ -14,7 +14,7 @@ import ProjectCard from '../components/ProjectCard.astro';
 import { getWebProducts, getWebCases, getWebLandingPages, getWebColors } from '../lib/supabase';
 import { cdn } from '../lib/img';
 import { morkhoj } from '../lib/catalog';
-import { KATALOG_TOP, PROJEKTER, emneGruppe } from '../lib/forside';
+import { KATALOG_TOP, PROJEKTER, emneGruppe, INDLEJR_URL } from '../lib/forside';
 import { TEAM } from '../lib/team';
 import { PHONE, PHONE_TEL } from '../lib/contact';
 
@@ -50,6 +50,14 @@ const itemList = {
   { hreflang: 'en', href: new URL(base + 'en/', site).href },
   { hreflang: 'x-default', href: new URL(base, site).href },
 ]}>
+  {/* Designerens 3D (HeroPaths) hentes fra sidens første øjeblik, før stylesheets, så den er fremme hurtigst muligt (Milot
+      23-10-2026: "designeren åbner op under 1 sekund efter man har åbnet siden"). Kun hentes (modulepreload) — at køre den
+      tidligt konkurrerede med sidens indlæsning og var langsommere (målt 23-10-2026). Ikke med datasparetilstand. */}
+  <Fragment slot="tidlig">
+    <script is:inline define:vars={{ url: INDLEJR_URL }}>
+      if (!(navigator.connection && navigator.connection.saveData)) { var l = document.createElement('link'); l.rel = 'modulepreload'; l.href = url; l.crossOrigin = 'anonymous'; document.head.appendChild(l); }
+    </script>
+  </Fragment>
 
   <!-- 1 · TOPPEN: tre veje -->
   <HeroPaths products={products} colors={colors} />

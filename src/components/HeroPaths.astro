@@ -3,8 +3,8 @@
 // Mockup: mockups/forside-v3.html · spec §5-6. Fanerne er almindelige links (#design, #katalog, #send); uden JS
 // vises alle tre paneler under hinanden. 3D'en er designerens indlejring (designer.neminventar.dk/indlejr.v1.js, API v1;
 // Joachim 07-10-2026: ja til at skifte den midlertidige hero3d.ts ud). Stillbilledet er LCP; 3D hentes af sig selv efter 'load'
-// — på telefon et par sekunder efter (Joachim 16-10-2026: "Det var bedre da det skiftede til 3d designeren efter et par sekunder
-// så man kunne se der skede noget"). "Byg selv i designeren" og "Hent IFC" følger det, man har sat sammen.
+// med designerens fremvisning — på computer og telefon (Milot 23-10-2026), med datasparetilstand først ved tryk.
+// "Byg selv i designeren" og "Hent IFC" følger det, man har sat sammen.
 import type { WebProduct, WebColor } from '../lib/supabase';
 import { cdn } from '../lib/img';
 import { isPhoto, morkhoj, productImage } from '../lib/catalog';
@@ -28,8 +28,9 @@ const STILL = {
   // samme visualisering som landingssiden /akustikvaegge-perforeret-krydsfiner (landing_web_2026_09_24)
   akustik: { src: cdn('https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1790250138590.png', 1400), tag: 'Visualisering', alt: 'Akustikvæg i perforeret birkekrydsfiner i et musiklokale', pos: '50% 40%' },
 };
-// Telefon (Joachim 18-10-2026: "man skal wowes"): start på højskabet med et rumbillede, der står med det samme, og én
-// knap ind i 3D — 3D'en hentes ikke af sig selv på telefon. Billedet er designerens "Billede i et rum" (designer_renders
+// Telefon (Joachim 18-10-2026: "man skal wowes"): start på højskabet med et rumbillede, der står med det samme. Fra 23-10-2026
+// står det kun, til 3D'en med fremvisningen er klar (den bygger netop denne væg); uden 3D af sig selv (intet grafikkort eller
+// datasparetilstand) er det som før: billedet og én knap ind i 3D. Billedet er designerens "Billede i et rum" (designer_renders
 // d39ed37a, lavet af Milot), beskåret uden de indbrændte mærkater. t = billedets konfiguration (designer_renders.konfiguration),
 // så "Prøv det selv i 3D" åbner den samme skabsvæg, man lige har set — til man selv ændrer kulør eller antal.
 const STILL_M = {
@@ -204,9 +205,9 @@ const katalog = KATALOG_TOP.map((k) => {
   .hp-seg.sm button{padding:6px 10px;font-size:13px}
 
   .hp-stage{position:relative;aspect-ratio:16/11;max-width:100%;background:linear-gradient(180deg,#EFE8DA 0%,#EAE2D2 72%,#DCD3C3 72.2%,#D6CDBC 100%)}
-  .hp-still{position:absolute;inset:0;margin:0;transition:opacity .6s}
+  .hp-still{position:absolute;inset:0;margin:0;transition:opacity .35s}
   .hp-still img{width:100%;height:100%;object-fit:cover}
-  .hp-canvas{position:absolute;inset:0;opacity:0;transition:opacity .6s;pointer-events:none}
+  .hp-canvas{position:absolute;inset:0;opacity:0;transition:opacity .35s;pointer-events:none}
   .hp-canvas :global(canvas){width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab}
   .hp-stage.is-3d .hp-canvas{opacity:1;pointer-events:auto}
   .hp-stage.is-3d .hp-still{opacity:0}
@@ -290,7 +291,7 @@ const katalog = KATALOG_TOP.map((k) => {
   // Designerens indlejring (D3b, ni-apps public/prisbog/designer/indlejr.js). API v1 er frosset: saet · on('aendret')
   // · permalink · ryd. Siden ejer knapperne; designeren ejer scenen, læsefeltet og permalinket (IFC sker dér).
   // Eget domæne (07-10-2026): firmafiltre blokerer ofte *.pages.dev. ni-designer.pages.dev svarer stadig som reserve.
-  const INDLEJR = 'https://designer.neminventar.dk/indlejr.v1.js';
+  import { INDLEJR_URL as INDLEJR } from '../lib/forside';
   type Indlejring = { saet(t: Record<string, unknown>): void; on(n: 'aendret', fn: (d: { spec: string; titel: string; linjer?: [string, string][] }) => void): () => void; permalink(): string; ryd(): void };
   type Tilstand = { c: number; r: number; h: number; kuloer: string; t?: string; mat?: string };
   const $ =<T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T | null;
@@ -333,9 +334,16 @@ const katalog = KATALOG_TOP.map((k) => {
   const { d: STILL = {}, m: STILL_M = {} }: { d?: Record<string, Still>; m?: Record<string, Still> } = JSON.parse(document.getElementById('hp-still')?.textContent || '{}');
   const stillSrc = document.getElementById('hpStillSrc') as HTMLSourceElement | null;
   type Prod = 'locker' | 'hoejskab' | 'akustik';
-  // Telefon: rumbilledet først, 3D først når man trykker (vis3d). Computer: 3D'en kommer af sig selv som før.
+  // 3D'en kommer af sig selv med fremvisningen — på computer og fra 23-10-2026 også på telefon (Milot: "Det skal komme på samme
+  // måde som hjemmesiden på pc, altså nærmest med det samme"). Kun med grafikkort: uden hardwareacceleration tegner browseren
+  // 3D på processoren, og det frøs en hel browser (07-10-2026). Med datasparetilstand hentes 3D først ved tryk.
+  // wow = telefon uden 3D af sig selv: rumbilledet med én knap ind i 3D, som Joachim besluttede 18-10-2026 ("man skal wowes").
+  // Med 3D af sig selv står rumbilledet kun, til 3D'en er klar — og fremvisningen bygger den væg, billedet viser.
   const mobil = matchMedia('(max-width: 980px)').matches;
-  let vis3d = !mobil;
+  const saveData = (navigator as any).connection?.saveData === true;
+  const hasGL = (() => { try { const c = document.createElement('canvas'), k = { failIfMajorPerformanceCaveat: true }; return !!(c.getContext('webgl2', k) || c.getContext('webgl', k)); } catch { return false; } })();
+  const auto3d = hasGL && !saveData, wow = mobil && !auto3d;
+  let vis3d = !wow;
   // Kulør = slug fra webpaletten (samme slugs som designerens lagerfarver). h = højskabets højde i meter (knapperne).
   // Akustik (Joachim 15-10-2026): c = feltets bredde i cm, t = hulmønstret; højden er designerens standard (240 cm).
   // Højskabet (Milot 23-10-2026): computeren starter i de 4 blå skabe i krydsfiner, og fremvisningen ender i rumbilledets
@@ -344,7 +352,7 @@ const katalog = KATALOG_TOP.map((k) => {
   const har = (slug: string) => sw.some((b) => b.dataset.slug === slug);
   const S: Record<Prod, Tilstand> = {
     locker: { c: 6, r: 2, h: 2.1, kuloer: har('roedbrun') ? 'roedbrun' : sw[0]?.dataset.slug || 'roedbrun' },
-    hoejskab: mobil ? { c: 6, r: 1, h: 2.0, kuloer: 'dark-roast', mat: 'eg' } : { c: 4, r: 1, h: 2.1, kuloer: har('blaa') ? 'blaa' : sw[0]?.dataset.slug || 'natur', mat: 'kryds' },
+    hoejskab: wow ? { c: 6, r: 1, h: 2.0, kuloer: 'dark-roast', mat: 'eg' } : { c: 4, r: 1, h: 2.1, kuloer: har('blaa') ? 'blaa' : sw[0]?.dataset.slug || 'natur', mat: 'kryds' },
     akustik: { c: 302, r: 1, h: 2.4, kuloer: 'natur', t: 'standard' },
   };
   const LIM = { locker: { c: [1, 10], r: [1, 3] }, hoejskab: { c: [1, 8], r: [1, 1] }, akustik: { c: [181, 544], r: [1, 1] } } as const;
@@ -359,7 +367,7 @@ const katalog = KATALOG_TOP.map((k) => {
   // Sidens tilstand → designerens (locker: soejler/raekker · højskab: n skabe, h i cm, pladen · akustik: bredde, huller, birk)
   let roert = false; // telefon: billedets skabsvæg, indtil man selv ændrer kulør eller antal
   const til = (p: Prod) => {
-    if (mobil && !roert && STILL_M[p]?.t) return STILL_M[p].t!;
+    if (wow && !roert && STILL_M[p]?.t) return STILL_M[p].t!;
     const s = S[p];
     if (p === 'akustik') { const { navn, ...hul } = HUL[s.t || 'standard']; return { mat: 'birk', b: s.c, ...hul, farve: { birk: s.kuloer } }; }
     if (p === 'locker') return { mat: 'kryds', soejler: s.c, raekker: s.r, farve: { kryds: s.kuloer } };
@@ -435,12 +443,12 @@ const katalog = KATALOG_TOP.map((k) => {
     if (stillSrc && stillSrc.srcset !== (STILL_M[cur] ?? st)?.src) stillSrc.srcset = (STILL_M[cur] ?? st).src;
     if (stillImg && st && stillImg.getAttribute('src') !== st.src) { stillImg.src = st.src; stillImg.style.objectPosition = st.pos; }
     if (stillImg && sm) { stillImg.alt = sm.alt; stillTag!.textContent = sm.tag; }
-    stage?.classList.toggle('wow', mobil && !!STILL_M[cur]);
+    stage?.classList.toggle('wow', wow && !!STILL_M[cur]);
     links();
   }
 
   // Indlejringen hentes med timeout (8 s — en telefon på mobilnet er langsommere); fejler den (ingen WebGL, netværk), bliver
-  // stillbilledet stående.
+  // stillbilledet stående. Sidens top (index.astro, slot "tidlig") har som regel allerede hentet den (modulepreload).
   type Modul = { indlejr: (el: HTMLElement, o: object) => Promise<Indlejring> };
   let modP: Promise<Modul> | null = null;
   const hent = () => modP ??= Promise.race([
@@ -482,7 +490,7 @@ const katalog = KATALOG_TOP.map((k) => {
     if (d3 && fra !== cur) { d3.ryd(); d3 = null; d3spec = ''; stage!.classList.remove('is-3d'); load3d(false); }
     sync();
   }));
-  if (mobil) toggle && (toggle.textContent = KNAP_3D);
+  if (wow) toggle && (toggle.textContent = KNAP_3D);
   sw.forEach((b) => b.addEventListener('click', () => { roert = true; S[cur].kuloer = b.dataset.slug!; sync(); d3?.saet(til(cur)); }));
   document.querySelectorAll<HTMLButtonElement>('.hp-steps [data-d]').forEach((b) => b.addEventListener('click', () => {
     roert = true;
@@ -507,17 +515,11 @@ const katalog = KATALOG_TOP.map((k) => {
   ([['hpRet', 'teksten på 3D'], ['hpDesigner', 'knappen']] as const).forEach(([id, fra]) => $(id)?.addEventListener('click', () => plausible('Designer fra forsiden', { fra, produkt: cur })));
   sync();
 
-  // 3D: computer efter 'load'. Telefon (18-10-2026): rumbilledet bliver stående, og designerens kode hentes i baggrunden,
-  // så "Prøv det selv i 3D" svarer med det samme — scenen bygges først ved tryk (ingen skjult 3D, der æder telefonen,
-  // mens man scroller). saveData kun ved tryk. Kun med grafikkort: uden hardwareacceleration tegner browseren 3D på
-  // processoren, og det frøs en hel browser (07-10-2026) — så bliver stillbilledet, og 3D hentes ikke.
-  const saveData = (navigator as any).connection?.saveData === true;
-  const hasGL = (() => { try { const c = document.createElement('canvas'), k = { failIfMajorPerformanceCaveat: true }; return !!(c.getContext('webgl2', k) || c.getContext('webgl', k)); } catch { return false; } })();
+  // 3D med fremvisningen med det samme (auto3d, se øverst) — ikke efter 'load', som ventede på alle sidens billeder (Milot
+  // 23-10-2026: "designeren åbner op under 1 sekund efter man har åbnet siden"); indlejringen er allerede ved at blive hentet
+  // (modulepreload i toppen). Uden grafikkort bliver stillbilledet, og 3D hentes ikke. Med datasparetilstand først ved tryk.
+  // Off-screen tegner scenen ikke, og fremvisningens trin venter (designerens indlejring).
   if (!hasGL) toggle && (toggle.hidden = true);
-  else if (!saveData) {
-    const start = mobil ? () => { hent().catch(() => {}); } : () => load3d(true);
-    const go = () => ('requestIdleCallback' in window ? (window as any).requestIdleCallback(start, { timeout: 1500 }) : setTimeout(start, 300));
-    if (document.readyState === 'complete') go(); else window.addEventListener('load', go, { once: true });
-  }
+  else if (auto3d) load3d(true);
 </script>
 <script is:inline type="application/json" id="hp-still" set:html={JSON.stringify({ d: STILL, m: STILL_M })} />

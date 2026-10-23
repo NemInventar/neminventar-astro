@@ -201,46 +201,63 @@ try:
         tjek("akustik: teksten på 3D'en siger akustikvæggen", "ændre akustikvæggen" in pg.locator("#hpRet").inner_text(), pg.locator("#hpRet").inner_text())
         tjek("akustik: teksten følger permalinket", pg.locator("#hpRet").get_attribute("href") == href(pg))
         tjek("ingen JS-fejl", not jsfejl, jsfejl[:3])
+        pg.context.close()   # hver side lukkes efter brug: en fremvisning i software-3D tager ellers CPU'en fra den næste
         # reduceret bevægelse: 3D'en kommer, men ingen fremvisning
         r = ny_side(b.new_context(viewport={"width": 1440, "height": 900}, reduced_motion="reduce"))
         r.goto(URL, wait_until="load"); r.wait_for_selector("#hpStage.is-3d", timeout=20000)
         tjek("reduceret bevægelse: ingen fremvisning", staar_stille(r, 7000))
         tjek("reduceret bevægelse: teksten vises stadig", r.locator("#hpRet").is_visible())
+        r.context.close()
         # uden WebGL: stillbilledet bliver
         ctx = b.new_context(viewport={"width": 1440, "height": 900})
         ctx.add_init_script("HTMLCanvasElement.prototype.getContext = function() { return null; };")
         q = ctx.new_page(); q.goto(URL, wait_until="load"); q.wait_for_timeout(2500)
         tjek("uden WebGL: stillbilledet står, ingen 3D", q.locator("#hpStill img").is_visible() and q.locator("#hpStage.is-3d").count() == 0)
-        # telefon (18-10-2026): højskab + rumbillede først, ingen 3D før tryk, knappen bygger 3D'en
+        ctx.close()
+        # telefon (Milot 23-10-2026: "på samme måde som hjemmesiden på pc, altså nærmest med det samme"): rumbilledet står,
+        # til 3D'en kommer af sig selv med fremvisningen fra de 4 blå skabe
         t = ny_side(b.new_context(**p.devices["iPhone 13"]))
         tfejl = []
         t.on("pageerror", lambda e: tfejl.append(str(e)))
-        t.goto(URL, wait_until="load"); t.wait_for_timeout(4000)
-        t.screenshot(path=str(Path(tempfile.gettempdir()) / "forside-telefon-1.png"))
-        tjek("telefon: starter på højskab", t.locator('#hpStage[data-produkt="hoejskab"].wow').count() == 1)
-        tjek("telefon: rumbilledet vises", "skabsvaeg-aften-telefon" in (t.evaluate("document.getElementById('hpStillImg').currentSrc") or ""))
-        tjek("telefon: ingen 3D af sig selv", t.locator("#hpStage.is-3d").count() == 0)
-        tjek("telefon: 3D-hint skjult på billedet", not t.locator("#hpHint").is_visible())
-        tjek("telefon: billedet står over de tre veje", t.locator("#hpStage").bounding_box()["y"] < t.locator(".hp-paths").bounding_box()["y"])
-        tjek("telefon: knappen ind i 3D", "3D" in t.locator("#hpToggle").inner_text(), t.locator("#hpToggle").inner_text())
-        tjek("telefon: teksten på 3D'en er skjult på billedet", not t.locator("#hpRet").is_visible())
-        t.locator("#hpToggle").click()
+        t.goto(URL, wait_until="load")
+        tjek("telefon: starter på højskab med rumbilledet", t.locator('#hpStage[data-produkt="hoejskab"]').count() == 1
+             and "skabsvaeg-aften-telefon" in (t.evaluate("document.getElementById('hpStillImg').currentSrc") or ""))
         try:
-            t.wait_for_selector("#hpStage.is-3d", timeout=20000); tjek("telefon: tryk giver 3D", True)
+            t.wait_for_selector("#hpStage.is-3d", timeout=20000); tjek("telefon: 3D'en kommer af sig selv", True)
         except Exception as e:
-            tjek("telefon: tryk giver 3D", False, str(e)[:120])
-        tjek("telefon: permalink med p=hoejskab", "p=hoejskab" in t.locator("#hpDesigner").get_attribute("href"))
-        tm = tilstand(t.locator("#hpDesigner").get_attribute("href"))
-        tjek("telefon: 3D'en er billedets skabsvæg (6 skabe i mørk eg)", tm.get("mat") == "eg" and tm.get("n") == 6, tm)
-        tjek("telefon: hint skjult på billedet, vist i 3D", t.locator("#hpHint").is_visible())
-        tjek("telefon: teksten på 3D'en vises i 3D", t.locator("#hpRet").is_visible())
+            tjek("telefon: 3D'en kommer af sig selv", False, str(e)[:120])
+        tjek("telefon: 3D'en står over de tre veje", t.locator("#hpStage").bounding_box()["y"] < t.locator(".hp-paths").bounding_box()["y"])
+        tjek("telefon: permalink med p=hoejskab", "p=hoejskab" in href(t))
+        tjek("telefon: hint og tekst vises i 3D", t.locator("#hpHint").is_visible() and t.locator("#hpRet").is_visible())
         tb, kb, sb = t.locator("#hpRet").bounding_box(), t.locator("#hpToggle").bounding_box(), t.locator("#hpStage").bounding_box()
         tjek("telefon: teksten står ikke oven i knappen", not overlapper(tb, kb), (tb, kb))
         tjek("telefon: teksten er inden for 3D'en", tb and sb and tb["x"] >= sb["x"] and tb["x"] + tb["width"] <= sb["x"] + sb["width"] and tb["y"] + tb["height"] <= sb["y"] + sb["height"], (tb, sb))
-        tjek("telefon: ingen fremvisning efter tryk (man vil selv)", staar_stille(t, 6000))
-        t.wait_for_timeout(1500)
+        if FREMVIS:
+            t0 = href(t)
+            tjek("telefon: fremvisningen kører som på computeren", vent_paa_skift(t, t0, 8000) and "m" in tilstand(href(t)), tilstand(href(t)))
         t.screenshot(path=str(Path(tempfile.gettempdir()) / "forside-telefon-2.png"))
         tjek("telefon: ingen JS-fejl", not tfejl, tfejl[:3])
+        t.context.close()
+        # telefon med datasparetilstand: som før (Joachim 18-10-2026) — rumbilledet og én knap ind i 3D, intet af sig selv
+        sc = b.new_context(**p.devices["iPhone 13"])
+        sc.add_init_script("Object.defineProperty(navigator, 'connection', { value: { saveData: true }, configurable: true });")
+        u = ny_side(sc)
+        ufejl = []
+        u.on("pageerror", lambda e: ufejl.append(str(e)))
+        u.goto(URL, wait_until="load"); u.wait_for_timeout(4000)
+        u.screenshot(path=str(Path(tempfile.gettempdir()) / "forside-telefon-1.png"))
+        tjek("datasparetilstand: rumbilledet med knappen, ingen 3D af sig selv", u.locator('#hpStage[data-produkt="hoejskab"].wow').count() == 1
+             and u.locator("#hpStage.is-3d").count() == 0 and "3D" in u.locator("#hpToggle").inner_text(), u.locator("#hpToggle").inner_text())
+        tjek("datasparetilstand: hint og tekst skjult på billedet", not u.locator("#hpHint").is_visible() and not u.locator("#hpRet").is_visible())
+        u.locator("#hpToggle").click()
+        try:
+            u.wait_for_selector("#hpStage.is-3d", timeout=20000); tjek("datasparetilstand: tryk giver 3D", True)
+        except Exception as e:
+            tjek("datasparetilstand: tryk giver 3D", False, str(e)[:120])
+        um = tilstand(href(u))
+        tjek("datasparetilstand: 3D'en er billedets skabsvæg (6 skabe i mørk eg)", um.get("mat") == "eg" and um.get("n") == 6, um)
+        tjek("datasparetilstand: ingen fremvisning efter tryk", staar_stille(u, 6000))
+        tjek("datasparetilstand: ingen JS-fejl", not ufejl, ufejl[:3])
         b.close()
 finally:
     if srv:
