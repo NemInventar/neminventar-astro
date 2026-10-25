@@ -1,0 +1,61 @@
+---
+// Oversigt over de oversatte guides (/en/guides/, /de/ratgeber/): én række pr. guide med titel og indledning.
+import Base from '../layouts/Base.astro';
+import { GUIDE_DIR, guidePath, type GuideI18n, type GuideLang } from '../lib/guides-i18n';
+
+interface Props { lang: GuideLang; guides: GuideI18n[] }
+const { lang, guides } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
+const abs = (p: string) => new URL(base + p, site).href;
+const UI = {
+  en: {
+    title: 'Guides: materials, prices and acoustics | Nem Inventar',
+    description: 'Guides from Nem Inventar on built-in joinery: compact laminate, plywood vs MDF, painting plywood, sound absorption, joinery quotes and fitted wardrobe cost.',
+    label: 'Guides', h1: 'Guides to built-in <em>joinery.</em>',
+    lede: 'What we explain to architects, contractors and private customers again and again: materials, finishes, acoustics, prices and what goes into a request for a price.',
+  },
+  de: {
+    title: 'Ratgeber: Materialien, Preise und Akustik | Nem Inventar',
+    description: 'Ratgeber von Nem Inventar zu Einbaumöbeln: HPL-Kompaktplatte, Multiplex oder MDF, Sperrholz streichen, Schallabsorption, Ausschreibung und Einbauschrank Kosten.',
+    label: 'Ratgeber', h1: 'Ratgeber zu <em>Einbaumöbeln.</em>',
+    lede: 'Was wir Architekten, Bauunternehmen und Privatkunden immer wieder erklären: Materialien, Oberflächen, Akustik, Preise und was in eine Anfrage gehört.',
+  },
+}[lang];
+const other: GuideLang = lang === 'en' ? 'de' : 'en';
+const jsonLd = [{
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: UI.label,
+  inLanguage: lang,
+  itemListElement: guides.map((g, i) => ({ '@type': 'ListItem', position: i + 1, url: abs(guidePath(lang, g.slug)), name: g.h1 })),
+}];
+---
+<Base lang={lang} title={UI.title} description={UI.description} jsonLd={jsonLd}
+  alternates={[{ hreflang: lang, href: abs(GUIDE_DIR[lang]) }, { hreflang: other, href: abs(GUIDE_DIR[other]) }]}>
+  <section class="sec"><div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="label">{UI.label}</span>
+        <h1 set:html={UI.h1} />
+        <p class="lede">{UI.lede}</p>
+      </div>
+    </div>
+    <div class="faq-list">
+      {guides.map((g) => (
+        <article class="gi-row">
+          {g.kicker && <span class="label">{g.kicker}</span>}
+          <h2><a href={base + guidePath(lang, g.slug)}>{g.h1}</a></h2>
+          {g.lead && <p>{g.lead}</p>}
+        </article>
+      ))}
+    </div>
+  </div></section>
+  <style>
+    .gi-row{padding:22px 0;border-top:1px solid var(--line, #ddd)}
+    .gi-row h2{font-size:1.35rem;margin:6px 0 8px}
+    .gi-row h2 a{color:var(--ink);text-decoration:none}
+    .gi-row h2 a:hover{text-decoration:underline}
+    .gi-row p{margin:0;max-width:68ch}
+  </style>
+</Base>

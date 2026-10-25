@@ -17,13 +17,15 @@ const cta = de ? { href: `${base}de/#kontakt`, t: 'Anfrage senden' } : en ? { hr
 // "Designeren" fører til forsidens 3D (#design), indtil den offentlige designer findes (DESIGNER_URL). Med ?p=hoejskab
 // (22-10-2026): uden produkt åbnede designeren lockers — også for den, der kom fra en annonce for garderobeskabe.
 const links = de ? [
-  { href: `${base}de/`, t: 'Schließfächer mit Sitzbank' },
+  { href: `${base}de/`, t: 'Spind mit Sitzbank' },
+  { href: `${base}de/ratgeber/`, t: 'Ratgeber' },
   { href: `${base}de/impressum/`, t: 'Impressum' },
   { href: `${base}de/datenschutz/`, t: 'Datenschutz' },
 ] : en ? [
   { href: `${base}en/products/`, t: 'Products' },
   { href: `${base}en/lockers-with-bench/`, t: 'Lockers with bench' },
   { href: `${base}en/wardrobes/`, t: 'Wardrobes' },
+  { href: `${base}en/guides/`, t: 'Guides' },
   { href: `${base}en/#how`, t: 'How we work' },
   { href: `${base}en/contact/`, t: 'Contact' },
 ] : [

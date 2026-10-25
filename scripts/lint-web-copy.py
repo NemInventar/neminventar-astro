@@ -138,5 +138,25 @@ for label, view, cols, fields in SOURCES:
                         print(f"{level} {label}/{row['slug']} · {field}: «{m.group(0)}» — {why}\n        …{ctx}…")
                         if level == "FEJL ": n_err += 1
                         else: n_warn += 1
+
+# Oversatte guides (src/data/guides-i18n.<lang>.json, Joachim 25-10-2026). Samme regler; "quote" er almindeligt engelsk
+# for et tilbud og er kun internt sprog på dansk.
+QUOTE_RULE = FEJL[2][0]
+I18N_FIELDS = ["h1", "lead", "body", "highlights", "faq", "seo_title", "seo_description", "images"]
+for f in sorted((Path(__file__).resolve().parent.parent / "src" / "data").glob("guides-i18n.*.json")):
+    lang = f.stem.split(".")[-1]
+    for row in json.loads(f.read_text(encoding="utf-8")):
+        row = dict(row, kind="guide", images=list(row.get("image_alts", {}).values()))
+        for field, s, mm_ok in texts(row, I18N_FIELDS):
+            for rules, level in ((FEJL, "FEJL "), (ADVAR, "ADVAR")):
+                for pat, why in rules:
+                    if pat == MM_RULE and mm_ok: continue
+                    if pat == QUOTE_RULE and lang == "en":
+                        pat = r"\bT\d{2}\b|\btilbudslinje|\bBOM\b|\brumkode"
+                    for m in re.finditer(pat, s):
+                        ctx = s[max(0, m.start() - 35):m.end() + 35].replace("\n", " ")
+                        print(f"{level} {lang}/{row['slug']} · {field}: «{m.group(0)}» — {why}\n        …{ctx}…")
+                        if level == "FEJL ": n_err += 1
+                        else: n_warn += 1
 print(f"\n{n_err} fejl · {n_warn} advarsler")
 sys.exit(1 if n_err else 0)

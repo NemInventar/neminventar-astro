@@ -14,6 +14,7 @@ import { DESIGNER_URL, eksempelLink } from '../lib/forside';
 import { getWebLandingPages, getWebCases, getWebProducts, getWebColors, type WebLanding, type WebCase, type WebProduct, type WebColor } from '../lib/supabase';
 import { cdn } from '../lib/img';
 import { FAM, famOf, typeBillede, fotoTag, imgLabel } from '../lib/catalog';
+import { translationsOf } from '../lib/guides-i18n';
 
 export async function getStaticPaths() {
   const [pages, cases, products, colors] = await Promise.all([getWebLandingPages(), getWebCases(), getWebProducts(), getWebColors()]);
@@ -26,9 +27,11 @@ const base = import.meta.env.BASE_URL;
 const site = Astro.site!;
 // Sider med en engelsk udgave (/en/, backlog e2c66652) får hreflang begge veje.
 const EN_UDGAVE: Record<string, string> = { garderobeskab: 'en/wardrobes/' };
-const alternates = EN_UDGAVE[page.slug] ? [
+// Guides med engelsk og tysk udgave (src/lib/guides-i18n.ts) får hreflang til dem.
+const sprog = EN_UDGAVE[page.slug] ? [{ lang: 'en', path: EN_UDGAVE[page.slug] }] : translationsOf(page.slug, pages);
+const alternates = sprog.length ? [
   { hreflang: 'da', href: new URL(`${base}${page.slug}/`, site).href },
-  { hreflang: 'en', href: new URL(base + EN_UDGAVE[page.slug], site).href },
+  ...sprog.map((t) => ({ hreflang: t.lang, href: new URL(base + t.path, site).href })),
 ] : [];
 
 const paragraphs = (page.body ?? '').split('\n\n').filter(Boolean);

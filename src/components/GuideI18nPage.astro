@@ -1,0 +1,181 @@
+---
+// Én oversat guide (/en/guides/<slug>/, /de/ratgeber/<slug>/). Samme artikellayout og samme strukturerede data
+// (Article + FAQPage + BreadcrumbList) som de danske guides i src/pages/[slug].astro, så AI-motorerne kan citere
+// spørgsmål og svar på sproget. Teksten: src/lib/guides-i18n.ts.
+import Base from '../layouts/Base.astro';
+import ContactCta from './ContactCta.astro';
+import { cdn } from '../lib/img';
+import { imgLabel } from '../lib/catalog';
+import { GUIDE_DIR, guidePath, translationsOf, localHref, type GuideI18n, type GuideLang } from '../lib/guides-i18n';
+import type { WebLanding } from '../lib/supabase';
+import { PHONE, PHONE_TEL } from '../lib/contact';
+
+interface Props { page: GuideI18n; guides: GuideI18n[]; daPages: WebLanding[] }
+const { page, guides, daPages } = Astro.props;
+const lang: GuideLang = page.lang;
+const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
+const abs = (p: string) => new URL(base + p, site).href;
+
+const UI = {
+  en: {
+    back: '← All guides', guides: 'Guides', faqLabel: 'Questions and answers', faqH: 'What people often <em>ask us.</em>',
+    seeAlso: 'See also:', danish: '(in Danish)', ctaH: 'Working on a specific room?',
+    ctaP: 'Send drawings or dimensions, and we will choose the material with you and come back with a price.',
+    ctaBtn: 'Send drawings or dimensions', ctaHref: `${base}en/contact/`, labels: { foto: 'Photo', visualisering: 'Visualisation', tegning: 'Drawing', video: 'Video' },
+  },
+  de: {
+    back: '← Alle Ratgeber', guides: 'Ratgeber', faqLabel: 'Fragen und Antworten', faqH: 'Das werden wir oft <em>gefragt.</em>',
+    seeAlso: 'Siehe auch:', danish: '(auf Dänisch)', ctaH: 'Sie planen einen konkreten Raum?',
+    ctaP: 'Schicken Sie uns Zeichnungen oder Maße, dann wählen wir das Material mit Ihnen und melden uns mit einem Preis.',
+    ctaBtn: 'Zeichnungen oder Maße senden', ctaHref: `${base}de/#kontakt`, labels: { foto: 'Foto', visualisering: 'Visualisierung', tegning: 'Zeichnung', video: 'Video' },
+  },
+}[lang];
+const label = (kind: string) => (UI.labels as Record<string, string>)[kind] ?? imgLabel(kind);
+
+const paragraphs = page.body.split('\n\n').filter(Boolean);
+const LINK = /\[([^\]]+)\]\(((?:https?:\/\/|\/)[^)\s]+)\)/g;
+const segs = (s: string) => {
+  const out: { t: string; href?: string }[] = [];
+  let last = 0;
+  for (const m of s.matchAll(LINK)) {
+    if (m.index! > last) out.push({ t: s.slice(last, m.index) });
+    out.push({ t: m[1], href: m[2].startsWith('/') ? base + localHref(lang, m[2], daPages) : m[2] });
+    last = m.index! + m[0].length;
+  }
+  if (last < s.length) out.push({ t: s.slice(last) });
+  return out;
+};
+const plain = (s: string) => s.replace(LINK, '$1');
+const tabel = (s: string) => {
+  const linjer = s.split('\n').map((l) => l.trim());
+  if (linjer.length < 2 || !linjer.every((l) => l.length > 1 && l.startsWith('|') && l.endsWith('|'))) return null;
+  const rk = linjer.filter((l) => !/^\|[\s:|-]+\|$/.test(l)).map((l) => l.slice(1, -1).split('|').map((c) => c.trim()));
+  return { hoved: rk[0], rk: rk.slice(1) };
+};
+const overskrift = (s: string) => (s.startsWith('## ') ? plain(s.slice(3).trim()) : null);
+const images = page.images.filter((im) => im.kind !== 'video');
+const hero = images[0];
+
+// Relaterede sider: oversat guide, hvis den findes, ellers den danske side med danske ord og en note.
+const related = page.related_slugs.flatMap((s) => {
+  const g = guides.find((x) => x.da_slug === s);
+  if (g) return [{ href: base + guidePath(lang, g.slug), t: g.nav_label, da: false }];
+  const d = daPages.find((p) => p.slug === s);
+  return d ? [{ href: `${base}${d.slug}`, t: d.nav_label, da: true }] : [];
+});
+
+const url = abs(guidePath(lang, page.slug));
+const alternates = [
+  { hreflang: 'da', href: abs(page.da_slug + '/') },
+  ...translationsOf(page.da_slug, daPages).map((t) => ({ hreflang: t.lang, href: abs(t.path) })),
+];
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Nem Inventar', item: abs(lang + '/') },
+      { '@type': 'ListItem', position: 2, name: UI.guides, item: abs(GUIDE_DIR[lang]) },
+      { '@type': 'ListItem', position: 3, name: page.nav_label, item: url },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: page.h1,
+    description: page.seo_description,
+    author: { '@id': abs('') + '#virksomhed' },
+    publisher: { '@id': abs('') + '#virksomhed' },
+    dateModified: page.updated_at,
+    inLanguage: lang,
+    ...(hero ? { image: cdn(hero.src, 1200) } : {}),
+    mainEntityOfPage: url,
+  },
+  ...(page.faq.length
+    ? [{
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        inLanguage: lang,
+        mainEntity: page.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: plain(f.a) } })),
+      }]
+    : []),
+];
+---
+<Base lang={lang} title={page.seo_title} description={page.seo_description} image={hero ? cdn(hero.src, 1200) : undefined} jsonLd={jsonLd} alternates={alternates}>
+  <section class="guide"><div class="wrap">
+    <div class="crumbrow"><a href={base + GUIDE_DIR[lang]} class="crumb">{UI.back}</a></div>
+    <div class="guide-head">
+      {page.kicker && <span class="label">{page.kicker}</span>}
+      <h1>{page.h1}</h1>
+      {page.lead && <p class="lead">{page.lead}</p>}
+    </div>
+    {hero && (
+      <figure class="guide-hero">
+        <img class={hero.kind === 'tegning' ? 'contain' : undefined} src={cdn(hero.src, 1600)} alt={hero.alt} fetchpriority="high" />
+        <figcaption class="img-tag"><b>{label(hero.kind)}</b>{hero.caption}</figcaption>
+      </figure>
+    )}
+    {page.highlights.length > 0 && (
+      <dl class="lp-facts three rv">
+        {page.highlights.map((h) => (<div><dt>{h.k}</dt><dd>{h.v}</dd></div>))}
+      </dl>
+    )}
+    <div class="guide-aside">
+      <div class="prose lp-prose rv">
+        {paragraphs.map((para) => {
+          const h = overskrift(para);
+          if (h) return <h2 class="lp-h2">{h}</h2>;
+          const t = tabel(para);
+          return t ? (
+            <div class="lp-tabel"><table>
+              <thead><tr>{t.hoved.map((c) => <th>{c}</th>)}</tr></thead>
+              <tbody>{t.rk.map((r) => <tr>{r.map((c) => <td>{segs(c).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))}</td>)}</tr>)}</tbody>
+            </table></div>
+          ) : <p>{segs(para).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))}</p>;
+        })}
+      </div>
+      <aside class="guide-cta rv">
+        <h3>{UI.ctaH}</h3>
+        <p>{UI.ctaP}</p>
+        <div class="detail-cta" style="flex-direction:column;align-items:stretch">
+          <a href={UI.ctaHref} class="btn btn-primary" style="justify-content:center">{UI.ctaBtn} <span class="arr">→</span></a>
+          <a href={`tel:${PHONE_TEL}`} class="btn btn-ghost" style="justify-content:center">{PHONE}</a>
+        </div>
+      </aside>
+    </div>
+    {images.length > 1 && (
+      <div class="cd-gallery rv" style="margin-top:48px">
+        {images.slice(1).map((im) => (
+          <figure class={`gfig${im.kind === 'tegning' ? ' contain' : ''}`} style="cursor:default">
+            <img src={cdn(im.src, 800)} alt={im.alt} loading="lazy" decoding="async" />
+            <figcaption class="img-tag"><b>{label(im.kind)}</b>{im.caption}</figcaption>
+          </figure>
+        ))}
+      </div>
+    )}
+  </div></section>
+
+  {page.faq.length > 0 && (
+    <section class="sec lp-faq"><div class="wrap">
+      <span class="label">{UI.faqLabel}</span>
+      <h2 set:html={UI.faqH} />
+      <div class="faq-list rv">
+        {page.faq.map((f) => (
+          <details>
+            <summary>{f.q}</summary>
+            <p>{segs(f.a).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))}</p>
+          </details>
+        ))}
+      </div>
+    </div></section>
+  )}
+
+  {related.length > 0 && (
+    <section class="lp-related"><div class="wrap">
+      <div class="yd-row rv"><span class="lbl">{UI.seeAlso}</span>{related.map((r) => <a class="pill" href={r.href} lang={r.da ? 'da' : undefined}>{r.t}{r.da && ` ${UI.danish}`}</a>)}</div>
+    </div></section>
+  )}
+
+  {lang === 'en' && <ContactCta lang="en" subject={page.nav_label} />}
+</Base>

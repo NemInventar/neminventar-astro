@@ -1,0 +1,7 @@
+---
+import GuideI18nIndex from '../../../components/GuideI18nIndex.astro';
+import { getWebLandingPages } from '../../../lib/supabase';
+import { guidesFor } from '../../../lib/guides-i18n';
+const guides = guidesFor('de', await getWebLandingPages());
+---
+<GuideI18nIndex lang="de" guides={guides} />
