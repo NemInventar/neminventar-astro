@@ -293,7 +293,7 @@ const katalog = KATALOG_TOP.map((k) => {
   // Eget domæne (07-10-2026): firmafiltre blokerer ofte *.pages.dev. ni-designer.pages.dev svarer stadig som reserve.
   import { INDLEJR_URL as INDLEJR } from '../lib/forside';
   type Indlejring = { saet(t: Record<string, unknown>): void; on(n: 'aendret', fn: (d: { spec: string; titel: string; linjer?: [string, string][] }) => void): () => void; permalink(): string; ryd(): void };
-  type Tilstand = { c: number; r: number; h: number; kuloer: string; t?: string; mat?: string };
+  type Tilstand = { c: number; r: number; h: number; kuloer: string; t?: string; mat?: string; front?: 'farve' };
   const $ =<T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T | null;
 
   // ---------- tre veje: fanerne ----------
@@ -349,6 +349,8 @@ const katalog = KATALOG_TOP.map((k) => {
   // Højskabet (Milot 23-10-2026): computeren starter i de 4 blå skabe i krydsfiner, og fremvisningen ender i rumbilledets
   // skabsvæg; telefonen starter i rumbilledets væg (6 skabe, 200 cm — ikke en højdeknap — Dark Roast på eg). mat = højskabets
   // plade, så en kulør-knap farver det træ, man ser. Under fremvisningen følger knapperne designeren (fraDesigner).
+  // front 'farve' (fremvisningens låge-akt, Joachim 25-10-2026): lågerne har deres egen farve på klar korpus — så er kuløren
+  // lågernes, og en kulør-knap farver lågerne (som "Højskab med bejdsede krydsfinerlåger" i kataloget).
   const har = (slug: string) => sw.some((b) => b.dataset.slug === slug);
   const S: Record<Prod, Tilstand> = {
     locker: { c: 6, r: 2, h: 2.1, kuloer: har('roedbrun') ? 'roedbrun' : sw[0]?.dataset.slug || 'roedbrun' },
@@ -372,12 +374,15 @@ const katalog = KATALOG_TOP.map((k) => {
     if (p === 'akustik') { const { navn, ...hul } = HUL[s.t || 'standard']; return { mat: 'birk', b: s.c, ...hul, farve: { birk: s.kuloer } }; }
     if (p === 'locker') return { mat: 'kryds', soejler: s.c, raekker: s.r, farve: { kryds: s.kuloer } };
     const mat = s.mat || 'kryds';
+    if (s.front === 'farve') return { mat, n: s.c, h: Math.round(s.h * 100), front: 'farve', farve: { laage: s.kuloer } };
     return { mat, n: s.c, h: Math.round(s.h * 100), farve: { [mat]: s.kuloer } };
   };
-  // Designerens tilstand → højskabets knapper (antal, højde, kulør og plade), så de viser det, fremvisningen bygger
+  // Designerens tilstand → højskabets knapper (antal, højde, kulør og plade), så de viser det, fremvisningen bygger —
+  // med lågerne i egen farve er kuløren lågernes
   function fraDesigner(t: Record<string, any> | undefined) {
     if (cur !== 'hoejskab' || !t) return;
-    const s = S.hoejskab, k = t.farve?.[t.mat];
+    const s = S.hoejskab, laage = t.front === 'farve', k = laage ? t.farve?.laage : t.farve?.[t.mat];
+    s.front = laage ? 'farve' : undefined;
     if (Number.isFinite(t.n)) s.c = t.n;
     if (Number.isFinite(t.h)) s.h = t.h / 100;
     if (typeof t.mat === 'string') s.mat = t.mat;
@@ -504,7 +509,7 @@ const katalog = KATALOG_TOP.map((k) => {
     e.preventDefault();
     const navn = sw.find((x) => x.dataset.slug === S[cur].kuloer)?.getAttribute('aria-label') ?? '';
     const link = $<HTMLAnchorElement>('hpDesigner')?.href;
-    const detail = `Vedr. ${PRODUKTNAVN[cur]} fra forsiden: ${specTekst()} · kulør ${navn.toLowerCase()}.${link ? ` Designer-link: ${link}` : ''}`;
+    const detail = `Vedr. ${PRODUKTNAVN[cur]} fra forsiden: ${specTekst()} · ${S[cur].front === 'farve' ? 'låger i' : 'kulør'} ${navn.toLowerCase()}.${link ? ` Designer-link: ${link}` : ''}`;
     (window as unknown as { niTilbud?: string }).niTilbud = detail; // læses af SendPanel, hvis det hydreres efter dette klik
     window.dispatchEvent(new CustomEvent('ni:tilbud', { detail }));
     vis('send', true);
