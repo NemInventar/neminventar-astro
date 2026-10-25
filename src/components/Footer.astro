@@ -2,7 +2,7 @@
 // Delt footer i fire spalter: hvem vi er · inventar og materialer · hvem vi leverer til · firmaet.
 // Landingssiderne linkes fra hver side (intern linkstruktur) — grupperet efter type i stedet for én lang linje.
 import { getWebLandingPages } from '../lib/supabase';
-import { PHONE, PHONE_TEL, LINKEDIN } from '../lib/contact';
+import { PHONE, PHONE_TEL, LINKEDIN, FACEBOOK } from '../lib/contact';
 const base = import.meta.env.BASE_URL; // slutter med '/'
 const landing = await getWebLandingPages();
 const emner = landing.filter((l) => l.kind === 'emne');
@@ -42,6 +42,7 @@ const { lang = 'da' } = Astro.props as { lang?: 'da' | 'en' | 'de' };
         <li><a href={base} hreflang="da" lang="da">Dansk</a></li>
         <li><a href={`${base}en/`} hreflang="en" lang="en">English</a></li>
         <li><a href={LINKEDIN} target="_blank" rel="noopener">LinkedIn</a></li>
+        <li><a href={FACEBOOK} target="_blank" rel="noopener">Facebook</a></li>
       </ul>
     </div>
   </div>
@@ -81,6 +82,7 @@ const { lang = 'da' } = Astro.props as { lang?: 'da' | 'en' | 'de' };
       <h4>Nem Inventar</h4>
       <ul>
         <li><a href={LINKEDIN} target="_blank" rel="noopener">LinkedIn</a></li>
+        <li><a href={FACEBOOK} target="_blank" rel="noopener">Facebook</a></li>
       </ul>
     </div>
   </div>
@@ -126,6 +128,7 @@ const { lang = 'da' } = Astro.props as { lang?: 'da' | 'en' | 'de' };
         <li><a href={`${base}nem-inventar-brochure.pdf`}>Brochure (PDF)</a></li>
         <li><a href={`${base}en/`} hreflang="en" lang="en">In English</a></li>
         <li><a href={LINKEDIN} target="_blank" rel="noopener">LinkedIn</a></li>
+        <li><a href={FACEBOOK} target="_blank" rel="noopener">Facebook</a></li>
       </ul>
       <h4 style="margin-top:26px">Det juridiske</h4>
       <ul>

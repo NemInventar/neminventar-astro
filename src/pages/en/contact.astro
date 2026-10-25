@@ -3,7 +3,7 @@
 // alle andre web-henvendelser; at det kom på engelsk, kan ses på "Sendt fra: neminventar.dk/en/contact/".
 import Base from '../../layouts/Base.astro';
 import ContactForm from '../../components/ContactForm.tsx';
-import { PHONE, PHONE_TEL, LINKEDIN } from '../../lib/contact';
+import { PHONE, PHONE_TEL, LINKEDIN, FACEBOOK } from '../../lib/contact';
 const base = import.meta.env.BASE_URL;
 const site = Astro.site!;
 ---
@@ -31,6 +31,8 @@ const site = Astro.site!;
         <a href="mailto:tilbud@neminventar.dk">tilbud@neminventar.dk</a>
         <span class="k">LinkedIn</span>
         <a href={LINKEDIN} target="_blank" rel="noopener">Nem Inventar ApS on LinkedIn</a>
+        <span class="k">Facebook</span>
+        <a href={FACEBOOK} target="_blank" rel="noopener">Nem Inventar on Facebook</a>
         <span class="k">Address</span>
         <span>Nem Inventar ApS · Mågevej 73, st. tv. · 2400 Copenhagen NV · Denmark · VAT DK45085473</span>
       </div>

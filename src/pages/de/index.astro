@@ -9,6 +9,8 @@ import ContactForm from '../../components/ContactForm.tsx';
 import { PHONE, PHONE_TEL } from '../../lib/contact';
 import { cdn } from '../../lib/img';
 import { morkhoj } from '../../lib/catalog';
+import { DESIGNER_URL } from '../../lib/forside';
+const designer = `${DESIGNER_URL ?? 'https://designer.neminventar.dk/designer.html'}?p=locker`;
 const base = import.meta.env.BASE_URL;
 const site = Astro.site!;
 const photos = [
@@ -36,6 +38,7 @@ const photos = [
     </div>
     <div class="hero2-cta">
       <a href="#kontakt" class="btn btn-primary">Zeichnungen oder Stückzahlen senden <span class="arr">→</span></a>
+      <a href={designer} class="btn btn-ghost" title="Der Konfigurator ist auf Dänisch und zeigt Preise für Lieferung in Dänemark.">Schließfächer in 3D zusammenstellen (auf Dänisch)</a>
       <a href={`tel:${PHONE_TEL}`} class="btn btn-ghost">{PHONE}</a>
     </div>
     <div class="duo" aria-label="Fotos von der Lieferung an die Mørkhøj-Schule">
