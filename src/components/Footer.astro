@@ -2,14 +2,96 @@
 // Delt footer i fire spalter: hvem vi er · inventar og materialer · hvem vi leverer til · firmaet.
 // Landingssiderne linkes fra hver side (intern linkstruktur) — grupperet efter type i stedet for én lang linje.
 import { getWebLandingPages } from '../lib/supabase';
-import { PHONE, PHONE_TEL, LINKEDIN } from '../lib/contact';
+import { PHONE, PHONE_TEL, LINKEDIN, FACEBOOK } from '../lib/contact';
 const base = import.meta.env.BASE_URL; // slutter med '/'
 const landing = await getWebLandingPages();
 const emner = landing.filter((l) => l.kind === 'emne');
 const segmenter = landing.filter((l) => l.kind === 'segment');
 const guides = landing.filter((l) => l.kind === 'guide');
 const year = new Date().getFullYear();
+// Engelsk udgave (/en/): kun de engelske sider + vej tilbage til den danske. Landingssiderne er på dansk og linkes ikke.
+// Tysk light-udgave (/de/): landingssiden, Impressum og Datenschutz (krævet af tysk ret).
+const { lang = 'da' } = Astro.props as { lang?: 'da' | 'en' | 'de' };
 ---
+{lang === 'de' ? (
+<footer><div class="wrap">
+  <div class="foot2">
+    <div class="foot-brand">
+      <div class="brand">NEM<b style="color:var(--warm)">·</b>INVENTAR</div>
+      <p>Festeinbauten nach Maß für Schulen, Sporthallen und Wohnungsbau, im 3D-Modell geplant und in eigener Fertigung gebaut.</p>
+      <p class="foot-tel"><a href={`tel:${PHONE_TEL}`}>{PHONE}</a></p>
+      <p><a href="mailto:tilbud@neminventar.dk">tilbud@neminventar.dk</a></p>
+    </div>
+    <div>
+      <h4>Auf Deutsch</h4>
+      <ul>
+        <li><a href={`${base}de/`}>Schließfächer mit Sitzbank</a></li>
+        <li><a href={`${base}de/#kontakt`}>Anfrage senden</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Rechtliches</h4>
+      <ul>
+        <li><a href={`${base}de/impressum/`}>Impressum</a></li>
+        <li><a href={`${base}de/datenschutz/`}>Datenschutz</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Andere Sprachen</h4>
+      <ul>
+        <li><a href={base} hreflang="da" lang="da">Dansk</a></li>
+        <li><a href={`${base}en/`} hreflang="en" lang="en">English</a></li>
+        <li><a href={LINKEDIN} target="_blank" rel="noopener">LinkedIn</a></li>
+        <li><a href={FACEBOOK} target="_blank" rel="noopener">Facebook</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© {year} Nem Inventar ApS · USt-IdNr. DK45085473</span>
+    <span>Mågevej 73, st. tv. · 2400 Kopenhagen NV · Dänemark</span>
+  </div>
+</div></footer>
+) : lang === 'en' ? (
+<footer><div class="wrap">
+  <div class="foot2">
+    <div class="foot-brand">
+      <div class="brand">NEM<b style="color:var(--warm)">·</b>INVENTAR</div>
+      <p>Built-in joinery and fixed furniture for construction, modelled in 3D and built in our own production. Single pieces and whole projects.</p>
+      <p class="foot-tel"><a href={`tel:${PHONE_TEL}`}>{PHONE}</a></p>
+      <p><a href="mailto:tilbud@neminventar.dk">tilbud@neminventar.dk</a></p>
+    </div>
+    <div>
+      <h4>In English</h4>
+      <ul>
+        <li><a href={`${base}en/`}>Nem Inventar</a></li>
+        <li><a href={`${base}en/products/`}>Products</a></li>
+        <li><a href={`${base}en/lockers-with-bench/`}>Lockers with bench</a></li>
+        <li><a href={`${base}en/wardrobes/`}>Wardrobes made to measure</a></li>
+        <li><a href={`${base}en/contact/`}>Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>På dansk</h4>
+      <ul>
+        <li><a href={base} hreflang="da" lang="da">Forside</a></li>
+        <li><a href={`${base}projekter`} hreflang="da" lang="da">Projekter</a></li>
+        <li><a href={`${base}privatlivspolitik`} hreflang="da" lang="da">Privatlivspolitik</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Nem Inventar</h4>
+      <ul>
+        <li><a href={LINKEDIN} target="_blank" rel="noopener">LinkedIn</a></li>
+        <li><a href={FACEBOOK} target="_blank" rel="noopener">Facebook</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© {year} Nem Inventar ApS · VAT DK45085473</span>
+    <span>Mågevej 73, st. tv. · 2400 Copenhagen NV · Denmark</span>
+  </div>
+</div></footer>
+) : (
 <footer><div class="wrap">
   <div class="foot2">
     <div class="foot-brand">
@@ -46,6 +128,7 @@ const year = new Date().getFullYear();
         <li><a href={`${base}nem-inventar-brochure.pdf`}>Brochure (PDF)</a></li>
         <li><a href={`${base}en/`} hreflang="en" lang="en">In English</a></li>
         <li><a href={LINKEDIN} target="_blank" rel="noopener">LinkedIn</a></li>
+        <li><a href={FACEBOOK} target="_blank" rel="noopener">Facebook</a></li>
       </ul>
       <h4 style="margin-top:26px">Det juridiske</h4>
       <ul>
@@ -60,3 +143,4 @@ const year = new Date().getFullYear();
     <span>Mågevej 73, st. tv. · 2400 København NV</span>
   </div>
 </div></footer>
+)}

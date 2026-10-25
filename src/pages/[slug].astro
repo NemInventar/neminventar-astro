@@ -24,6 +24,12 @@ interface Props { page: WebLanding; pages: WebLanding[]; cases: WebCase[]; produ
 const { page, pages, cases, products, colors } = Astro.props;
 const base = import.meta.env.BASE_URL;
 const site = Astro.site!;
+// Sider med en engelsk udgave (/en/, backlog e2c66652) får hreflang begge veje.
+const EN_UDGAVE: Record<string, string> = { garderobeskab: 'en/wardrobes/' };
+const alternates = EN_UDGAVE[page.slug] ? [
+  { hreflang: 'da', href: new URL(`${base}${page.slug}/`, site).href },
+  { hreflang: 'en', href: new URL(base + EN_UDGAVE[page.slug], site).href },
+] : [];
 
 const paragraphs = (page.body ?? '').split('\n\n').filter(Boolean);
 // Links i brødtekst og FAQ-svar: [tekst](https://…) eller [tekst](/sti). Alt andet vises som ren tekst.
@@ -121,7 +127,7 @@ const jsonLd = [
     : []),
 ];
 ---
-<Base title={page.seo_title} description={page.seo_description} image={hero ? cdn(hero.src, 1200) : undefined} jsonLd={jsonLd}>
+<Base title={page.seo_title} description={page.seo_description} image={hero ? cdn(hero.src, 1200) : undefined} jsonLd={jsonLd} alternates={alternates}>
   {isGuide ? (
     <!-- ============ GUIDE: artikel ============ -->
     <section class="guide"><div class="wrap">

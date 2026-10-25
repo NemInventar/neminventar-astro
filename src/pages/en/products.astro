@@ -1,0 +1,98 @@
+---
+// Engelsk produktoversigt (backlog e2c66652): de web-publicerede typer fra v_web_products med engelsk navn og kort tekst.
+// Billedet er det samme som på /inventar/ (typeBillede). En type uden engelsk tekst i EN vises ikke, så siden aldrig
+// blander sprog. Ny type på sitet → tilføj den her. Typesiderne er på dansk; linket siger det.
+import Base from '../../layouts/Base.astro';
+import ContactCta from '../../components/ContactCta.astro';
+import { getWebProducts, getWebColors } from '../../lib/supabase';
+import { cdn } from '../../lib/img';
+import { FAM_ORDER, famOf, typeBillede } from '../../lib/catalog';
+
+const EN: Record<string, { name: string; desc: string }> = {
+  'omklaedningsbaenk-integreret-knagerakke': { name: 'Changing-room bench with coat hooks', desc: 'A continuous bench with backrest and a row of coat hooks, built as one element along the wall. Oiled wood that can be repaired locally.' },
+  'garderobeskab-perforerede-lager': { name: 'Wardrobes with perforated doors', desc: 'A row of plywood wardrobes with perforated doors and no handles, a closed top, open shoe compartments at the bottom and an integrated oak bench.' },
+  'lockers-krydsfiner': { name: 'Plywood lockers', desc: 'Lockers in two tiers with plain doors and locks. For changing rooms, sports halls and staff rooms.' },
+  'lockerskab-ventilerede-laager': { name: 'Lockers with ventilated doors', desc: 'Tall plywood lockers where each door has a field of holes at the top and bottom, so air can pass through.' },
+  'lockerbank-omklaedning': { name: 'Locker bank for changing rooms', desc: 'A freestanding plywood locker bank with many small compartments in five tiers, each with a hasp for a padlock.' },
+  'vaegbeklaedning-krydsfiner': { name: 'Plywood wall cladding', desc: 'Birch plywood cladding with visible edges and pigmented oil, also used to close installation walls behind a calm timber surface.' },
+  'hoejskab-kompaktlaminat': { name: 'Tall cabinet in compact laminate', desc: 'A tall cabinet for bathrooms and wet rooms with visible surfaces in compact laminate, which does not absorb water.' },
+  'akustikpanel-kvadrat-stof': { name: 'Upholstered acoustic panel', desc: 'An acoustic panel upholstered in coloured fabric, made to measure with no minimum quantity. The cover can be replaced without replacing the panel.' },
+  'garderobereol-siddenicher': { name: 'Open wardrobe with seating niches', desc: 'An open plywood wardrobe unit with upholstered seating niches.' },
+  'garderobeskab-laager-siddeniche': { name: 'Wardrobe with lockable doors', desc: 'A plywood wardrobe with lockable doors and an upholstered seating niche.' },
+  'skohylde-siddeplads': { name: 'Open shoe rack with seat', desc: 'An open plywood shoe rack with an integrated seat.' },
+  'omklaedningsmoebel-gitterskaerm': { name: 'Changing unit with grille screen', desc: 'A changing unit clad in high-pressure laminate, with a grille screen and a seat. The modules can be replaced one by one.' },
+  'opbevaringsskab-laminat-standard': { name: 'Tall cabinet in laminate', desc: 'A tall cabinet for storage or clothes in high-pressure laminate, which stands up to wear and daily cleaning.' },
+  'opbevaringsskab-bejdset-krydsfiner': { name: 'Tall cabinet with stained plywood doors', desc: 'A tall cabinet with stained plywood doors that show the grain and the edge.' },
+  'koekkenvaeg-laminat-standard': { name: 'Kitchen wall in laminate', desc: 'A complete kitchen wall in high-pressure laminate with a laminate worktop, for staff rooms and kitchenettes.' },
+  'hoejskab-krydsfiner': { name: 'Tall cabinet in plywood', desc: 'A tall cabinet built entirely in plywood: carcass, shelves, back and doors. The doors can be oiled, stained or faced with laminate.' },
+  'hoejskab-aaben-reol': { name: 'Tall cabinets with open shelving', desc: 'Plywood tall cabinets with an open shelf section between the closed cabinets. Carcass in clear oil, doors oiled in one of our colours.' },
+  'koekkenvaeg-bejdset-krydsfiner': { name: 'Kitchen wall with stained plywood fronts', desc: 'A kitchen wall with fronts in stained plywood that show the grain and the edge.' },
+  'hoejskab-hpl-laager': { name: 'Tall cabinet with laminate doors', desc: 'A tall cabinet with a carcass in clear oiled plywood and doors faced with high-pressure laminate in seven colours.' },
+  'mobil-lockers-krydsfiner': { name: 'Phone lockers in plywood', desc: 'For schools that collect phones during the day, and for sports halls where valuables need locking away. Thirty small compartments in one narrow bank, each with a hasp for a padlock.' },
+  'akustikpaneler-perforeret-krydsfiner': { name: 'Perforated plywood acoustic panels', desc: 'Pine or birch plywood panels with holes and acoustic felt behind. For classrooms, music rooms, sports halls and canteens, where the wall must absorb sound and take knocks.' },
+};
+const FAM_EN: Record<string, string> = {
+  garderober: 'Wardrobes and lockers', skabe: 'Tall cabinets and storage', nicher: 'Niches and benches',
+  koekken: 'Kitchenettes', omklaedning: 'Changing rooms and wet rooms', vaegge: 'Walls and acoustics',
+};
+
+const [products, colors] = await Promise.all([getWebProducts(), getWebColors()]);
+const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
+const cards = products
+  .filter((p) => EN[p.slug])
+  .map((p) => {
+    const im = typeBillede(p, colors);
+    return { ...EN[p.slug], href: `${base}produkter/${p.slug}/`, img: im.img, pos: im.pos, foto: im.foto, fam: famOf(p) };
+  })
+  .sort((a, b) => FAM_ORDER.indexOf(a.fam) - FAM_ORDER.indexOf(b.fam));
+const jsonLd = [{
+  '@context': 'https://schema.org', '@type': 'ItemList', name: 'Fixed furniture from Nem Inventar',
+  itemListElement: cards.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, url: new URL(c.href, site).href })),
+}];
+---
+<Base
+  lang="en"
+  title="Fixed furniture made to measure: all types | Nem Inventar"
+  description="Wardrobes, lockers, tall cabinets, benches, kitchen walls, changing-room furniture and acoustic panels, built to measure for schools, sports halls and housing."
+  jsonLd={jsonLd}
+  alternates={[
+    { hreflang: 'da', href: new URL(base + 'inventar/', site).href },
+    { hreflang: 'en', href: new URL(base + 'en/products/', site).href },
+  ]}>
+  <section class="sec inv" id="products"><div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="label">Products</span>
+        <h1 class="inv-h1">Fixed furniture made to measure. <em>All types.</em></h1>
+        <p class="lede">These are the types we build most often. Each one is made to measure: size, number of compartments, material and colour follow the room and the tender. The product pages are in Danish, and we answer questions in English.</p>
+      </div>
+      <a href={`${base}en/contact/`} class="ulink">Need something else? →</a>
+    </div>
+    <div class="types expanded">
+      {cards.map((c) => (
+        <article class="tcard">
+          <a class="ph" href={c.href} aria-label={c.name} hreflang="da">
+            {c.img && <img src={cdn(c.img, 800)} alt={c.name} style={`--pos:${c.pos}`} loading="lazy" decoding="async" />}
+            <span class="ptag">{c.foto ? 'Photo from a delivery' : '3D visualisation'}</span>
+          </a>
+          <div class="body">
+            <span class="kicker">{FAM_EN[c.fam]}</span>
+            <h3><a href={c.href} hreflang="da">{c.name}</a></h3>
+            <p class="desc">{c.desc}</p>
+            <div class="tfoot">
+              <span class="made"><b>Made to measure</b> · priced from the drawings</span>
+              <a href={c.href} class="order" hreflang="da">Details (Danish) <span class="arr">→</span></a>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div></section>
+
+  <ContactCta lang="en" />
+
+  <style>
+    .inv-h1{font-size:clamp(36px,4.6vw,64px);margin-top:22px;max-width:20ch}
+  </style>
+</Base>

@@ -1,6 +1,7 @@
 ---
-// Engelsk kortversion (Joachim 24-09-2026: "den lette version"). Én side for udenlandske entreprenører,
-// arkitekter og indkøbere. Samme regler som de danske sider: ingen mm-mål, ingen mærkenavne på dele,
+// Engelsk kortversion (Joachim 24-09-2026: "den lette version"). Forsiden for udenlandske entreprenører,
+// arkitekter og indkøbere. Udvidet 25-10-2026 (backlog e2c66652) med /en/products/, /en/lockers-with-bench/,
+// /en/wardrobes/ og /en/contact/ efter en tysk forespørgsel på engelsk. Samme regler som de danske sider: ingen mm-mål, ingen mærkenavne på dele,
 // levering påstås kun med navngiven sag. Udvides kun, hvis Search Console viser engelske søgninger.
 import Base from '../../layouts/Base.astro';
 import ProcessSteps from '../../components/ProcessSteps.astro';
@@ -12,7 +13,7 @@ const site = Astro.site!;
 ---
 <Base
   lang="en"
-  title="Built-in joinery for construction in Denmark | Nem Inventar"
+  title="Bespoke joinery and fixed furniture for construction in Denmark | Nem Inventar"
   description="Fixed furniture for Danish schools, daycare centres and sports halls: wardrobes, lockers, toilet cubicles and kitchenettes, produced and installed."
   image={new URL(cdn(morkhoj('33_lockere-roede-ved-doer-til-klasserum.jpg')), site).href}
   alternates={[
@@ -27,7 +28,7 @@ const site = Astro.site!;
       <h1>Built-in joinery for schools, daycare centres and <em>sports facilities.</em></h1>
     </div>
     <div class="hero2-cta">
-      <a href="mailto:tilbud@neminventar.dk?subject=Enquiry" class="btn btn-primary">Send drawings or tender documents <span class="arr">→</span></a>
+      <a href={`${base}en/contact/`} class="btn btn-primary">Send drawings or tender documents <span class="arr">→</span></a>
       <a href="tel:+4542422684" class="btn btn-ghost">+45 42 42 26 84</a>
     </div>
     <div class="duo" aria-label="Photos from the delivery to Mørkhøj School">
@@ -68,6 +69,7 @@ const site = Astro.site!;
           <li><b>Kitchenettes and mobile kitchen islands</b> with worktops in linoleum, laminate, compact laminate or stainless steel.</li>
           <li><b>Shelving, tall cabinets, niches and acoustic panels</b>, built to the room.</li>
         </ul>
+        <p style="margin-top:14px">See <a href={`${base}en/products/`} style="color:var(--ink);text-decoration:underline">all types</a>, <a href={`${base}en/lockers-with-bench/`} style="color:var(--ink);text-decoration:underline">lockers with bench</a> for schools and sports halls, and <a href={`${base}en/wardrobes/`} style="color:var(--ink);text-decoration:underline">wardrobes made to measure</a> for homes.</p>
         <p>Most of our joinery is made in pine or birch plywood, finished with Rubio Monocoat hardwax oil rather than lacquer, so worn surfaces can be repaired on site instead of being sanded down. Where water is involved, we use compact laminate.</p>
       </article>
       <article>
@@ -101,7 +103,7 @@ const site = Astro.site!;
       </div>
     </div>
     <ProcessSteps lang="en" />
-    <p class="cd-note rv" style="margin-top:28px">The rest of this website is in Danish. <a href={base} hreflang="da" lang="da" style="color:var(--ink);text-decoration:underline">Til den danske side</a></p>
+    <p class="cd-note rv" style="margin-top:28px">Projects outside Denmark: send us the drawings and we will tell you what we can deliver. The rest of this website is in Danish. <a href={base} hreflang="da" lang="da" style="color:var(--ink);text-decoration:underline">Til den danske side</a></p>
   </div></section>
 
   <ContactCta lang="en" />

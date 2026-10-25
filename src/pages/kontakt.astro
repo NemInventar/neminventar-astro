@@ -4,13 +4,18 @@
 import Base from '../layouts/Base.astro';
 import ContactForm from '../components/ContactForm.tsx';
 import CallbackForm from '../components/CallbackForm.tsx';
-import { PHONE, PHONE_TEL, LINKEDIN } from '../lib/contact';
+import { PHONE, PHONE_TEL, LINKEDIN, FACEBOOK } from '../lib/contact';
 import { TEAM } from '../lib/team';
 const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
 ---
 <Base
   title="Kontakt — Nem Inventar"
-  description="Send os jeres mål eller hele udbuddet. Vi leverer til byggeri og til private og vender hurtigt tilbage med næste skridt.">
+  description="Send os jeres mål eller hele udbuddet. Vi leverer til byggeri og til private og vender hurtigt tilbage med næste skridt."
+  alternates={[
+    { hreflang: 'da', href: new URL(base + 'kontakt/', site).href },
+    { hreflang: 'en', href: new URL(base + 'en/contact/', site).href },
+  ]}>
   <section class="contact"><div class="wrap contact-grid">
     <div class="contact-info">
       <span class="label">Kontakt</span>
@@ -29,6 +34,8 @@ const base = import.meta.env.BASE_URL;
         <a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a>
         <span class="k">LinkedIn</span>
         <a href={LINKEDIN} target="_blank" rel="noopener">Nem Inventar ApS på LinkedIn</a>
+        <span class="k">Facebook</span>
+        <a href={FACEBOOK} target="_blank" rel="noopener">Nem Inventar på Facebook</a>
         <span class="k">Adresse</span>
         <span>Nem Inventar ApS · Mågevej 73, st. tv. · 2400 København NV · CVR 45085473</span>
       </div>

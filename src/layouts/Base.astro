@@ -13,7 +13,7 @@ import '@fontsource/archivo/600-italic.css';
 import '../styles/site.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
-import { LINKEDIN } from '../lib/contact';
+import { LINKEDIN, FACEBOOK } from '../lib/contact';
 import { API_AKTIV, plausibleViaApi } from '../lib/api';
 
 interface Props {
@@ -21,7 +21,7 @@ interface Props {
   description: string;
   image?: string;
   jsonLd?: Record<string, unknown>[]; // side-specifik struktureret data (FAQ, brødkrummer …)
-  lang?: 'da' | 'en';
+  lang?: 'da' | 'en' | 'de';
   // Sprogversioner af samme side (hreflang). Sættes kun på sider, der findes på begge sprog.
   alternates?: { hreflang: string; href: string }[];
 }
@@ -56,7 +56,7 @@ const organization = {
   areaServed: { '@type': 'Country', name: 'Danmark' },
   // Samme virksomhed andre steder — binder profilerne sammen til én enhed for Google og AI-søgning.
   // Tilføj Krak, Proff og Bing Places her, når de har en fast profil-URL.
-  sameAs: ['https://g.page/r/CZTJypcXhpHcEBM', LINKEDIN],
+  sameAs: ['https://g.page/r/CZTJypcXhpHcEBM', LINKEDIN, FACEBOOK],
   hasMap: 'https://g.page/r/CZTJypcXhpHcEBM',
   knowsAbout: [
     'Krydsfiner-inventar', 'Kompaktlaminat', 'Toiletbåse', 'Garderober', 'Troldegarderober',
@@ -86,7 +86,7 @@ const ld = [organization, ...jsonLd];
   <meta property="og:description" content={description} />
   <meta property="og:url" content={canonical} />
   <meta property="og:image" content={ogImage} />
-  <meta property="og:locale" content={lang === 'en' ? 'en_GB' : 'da_DK'} />
+  <meta property="og:locale" content={lang === 'en' ? 'en_GB' : lang === 'de' ? 'de_DE' : 'da_DK'} />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
@@ -126,9 +126,9 @@ const ld = [organization, ...jsonLd];
   </script>
 </head>
 <body>
-  <Nav />
+  <Nav lang={lang} />
   <slot />
-  <Footer />
+  <Footer lang={lang} />
   <script>
     // ---------- ankre fra andre sider (fx "Inventar" → /#katalog) ----------
     // Browseren ruller til ankeret, før skrifter og billeder er færdige; når indholdet ovenfor derefter vokser, ender

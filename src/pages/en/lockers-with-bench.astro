@@ -1,0 +1,99 @@
+---
+// Engelsk side om lockers med bænk til skoler og haller (backlog e2c66652). Skrevet efter forespørgslen fra en skole på
+// Sylt 25-10-2026 (lockers med bænk på engelsk til en dansk side). Fotos fra Mørkhøj; tal og navne kun fra casen.
+// Intet dansk modstykke 1:1 (lockers + garderober er to sider på dansk); hreflang kun til den tyske udgave (/de/).
+import Base from '../../layouts/Base.astro';
+import ContactCta from '../../components/ContactCta.astro';
+import { cdn } from '../../lib/img';
+import { morkhoj } from '../../lib/catalog';
+import { DESIGNER_URL } from '../../lib/forside';
+const designer = `${DESIGNER_URL ?? 'https://designer.neminventar.dk/designer.html'}?p=locker`;
+const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
+const photos = [
+  { f: '26_garderobe-lockere-roede-med-baenk-og-skohylder.jpg', alt: 'Red plywood lockers over a bench and open shoe shelves at Mørkhøj School', cap: 'Lockers, bench and shoe shelves as one unit', pos: '50% 58%' },
+  { f: '20_lockere-roede-perforerede-laager-kodelaase-og-skohylder.jpg', alt: 'Red lockers with perforated doors and code locks above shoe shelves', cap: 'Perforated doors with code locks', pos: '50% 50%' },
+  { f: '21_baenk-blaa-krydsfiner-med-hynder-og-roede-lockere.jpg', alt: 'Blue plywood bench with cushions in front of red lockers', cap: 'Bench with cushions in front of the lockers', pos: '50% 55%' },
+  { f: '30_lockere-roede-i-hjoerne-med-skohylder.jpg', alt: 'Red lockers fitted around a corner with shoe shelves below', cap: 'Fitted around a corner', pos: '50% 55%' },
+  { f: '35_detalje-haengsel-og-perforering-roed-laage.jpg', alt: 'Close-up of the hinge and perforation on a red locker door', cap: 'Hinge and perforation', pos: '50% 50%' },
+  { f: '33_lockere-roede-ved-doer-til-klasserum.jpg', alt: 'Red lockers next to the door to a classroom at Mørkhøj School', cap: 'Lockers by the classroom door', pos: '40% 55%' },
+];
+---
+<Base
+  lang="en"
+  title="School lockers with bench and changing room lockers | Nem Inventar"
+  description="School lockers and changing room lockers in plywood, built together with a locker bench and open shoe shelves, made to measure for schools, sports halls and swimming pools."
+  image={new URL(cdn(morkhoj(photos[0].f)), site).href}
+  alternates={[
+    { hreflang: 'en', href: new URL(base + 'en/lockers-with-bench/', site).href },
+    { hreflang: 'de', href: new URL(base + 'de/', site).href },
+  ]}>
+  <header class="hero2"><div class="wrap hero2-grid">
+    <div class="hero2-head">
+      <span class="label">Lockers with bench</span>
+      <h1>Lockers, bench and shoe rack as <em>one piece of furniture.</em></h1>
+    </div>
+    <div class="hero2-cta">
+      <a href={`${base}en/contact/?emne=${encodeURIComponent('Lockers with bench')}`} class="btn btn-primary">Send drawings or quantities <span class="arr">→</span></a>
+      <a href={designer} class="btn btn-ghost" title="The designer is in Danish. It shows the price for delivery in Denmark.">Build your lockers in 3D (in Danish)</a>
+      <a href={`${base}en/products/`} class="btn btn-ghost">See all types</a>
+    </div>
+    <div class="duo" aria-label="Photos from the delivery to Mørkhøj School">
+      <div class="slot a">
+        <img class="is-on" src={cdn(morkhoj(photos[0].f))} alt={photos[0].alt} style={`--pos:${photos[0].pos}`} fetchpriority="high" />
+        <span class="img-tag"><b>Photo</b>{photos[0].cap}</span>
+      </div>
+      <div class="slot b">
+        <img class="is-on" src={cdn(morkhoj(photos[1].f))} alt={photos[1].alt} style={`--pos:${photos[1].pos}`} fetchpriority="high" />
+        <span class="img-tag"><b>Photo</b>{photos[1].cap}</span>
+      </div>
+    </div>
+    <p class="hero2-sub">In a school cloakroom or a changing room, everyone arrives at once. When the locker, the bench and the shoe rack are built as one unit, each pupil has a place for the bag, the jacket and the shoes, and somewhere to sit while changing. The floor under the bench stays open, so it can be cleaned every day.</p>
+  </div></header>
+
+  <section class="sec" id="what"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">What you choose</span>
+        <h2>Built to the room and the number of <em>users.</em></h2>
+      </div>
+    </div>
+    <div class="agrid two rv">
+      <article>
+        <span class="n">I.</span>
+        <h3>The doors are what people touch every day</h3>
+        <p>Perforated doors let air through, so wet sports clothes can dry. Plain doors give a calm wall in a corridor. The lock follows how the room is used: code locks for pupils who should not keep track of keys, key locks for staff, and a hasp for a padlock in sports halls and swimming pools, where users bring their own.</p>
+        <h3 style="margin-top:22px">The material follows the water</h3>
+        <p>In cloakrooms and corridors we build in oiled pine or birch plywood. The oil sits in the wood, so a worn spot can be repaired on site instead of sanding the whole surface. Where there is water from the showers, we build in compact laminate, which does not absorb water.</p>
+      </article>
+      <article>
+        <span class="n">II.</span>
+        <h3>The bench and the shoes</h3>
+        <p>The bench can run the full length of the lockers, with or without cushions, and open shoe compartments below keep wet shoes off the floor. Coat hooks can sit inside the locker or on a rail above the bench.</p>
+        <h3 style="margin-top:22px">From a few lockers to several hundred</h3>
+        <p>For Mørkhøj School in Copenhagen, together with the main contractor Ason A/S and Rønnow Arkitekter, we are delivering 342 lockers with shoe shelves in stages. Every room is modelled in 3D and approved before production, and for series we build a prototype first.</p>
+      </article>
+    </div>
+  </div></section>
+
+  <section class="sec" style="padding-top:0"><div class="wrap">
+    <div class="cd-gallery rv" style="grid-template-columns:repeat(3,1fr)">
+      {photos.map((p) => (
+        <figure class="gfig" style="cursor:default"><img src={cdn(morkhoj(p.f), 800)} alt={p.alt} loading="lazy" style={`object-position:${p.pos}`} /><figcaption class="img-tag"><b>Photo</b>{p.cap}</figcaption></figure>
+      ))}
+    </div>
+    <p class="cd-note rv">Photos from the delivery to Mørkhøj School. We built the furniture; floors, lamps and walls are by others.</p>
+  </div></section>
+
+  <section class="sec" style="padding-top:0"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">How to get a price</span>
+        <h2>Send the drawings and the <em>quantities.</em></h2>
+        <p class="lede">A floor plan with the walls marked and the number of users per room is enough to start. With the tender documents or a bill of quantities, we price item by item. Projects outside Denmark: send us the drawings and we will tell you what we can deliver.</p>
+      </div>
+    </div>
+  </div></section>
+
+  <ContactCta lang="en" subject="Lockers with bench" />
+</Base>

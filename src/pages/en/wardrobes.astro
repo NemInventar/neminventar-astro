@@ -1,0 +1,87 @@
+---
+// Engelsk side om garderobeskabe på mål til private (backlog e2c66652), modstykke til /garderobeskab/. Designeren er
+// hovedknappen. Ingen priser her: de danske sider skriver dem i teksten (landing_web), og en kopi ville ikke følge med,
+// når prisbogen ændres. Designeren viser prisen. Designeren er på dansk; siden siger det.
+import Base from '../../layouts/Base.astro';
+import ContactCta from '../../components/ContactCta.astro';
+import { DESIGNER_URL } from '../../lib/forside';
+const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
+const designer = `${DESIGNER_URL ?? 'https://designer.neminventar.dk/designer.html'}?p=hoejskab`;
+const img = (f: string) => `${base}billeder/designer-eksempler/${f}`;
+const examples = [
+  { f: 'skabsvaeg-moerk-eg.jpg', alt: 'Wardrobe wall in dark oak with a bench, built in the designer', cap: 'Wardrobe wall in dark oak' },
+  { f: 'birk-hvide-laager.jpg', alt: 'Three wardrobes in birch plywood with white doors', cap: 'Birch plywood with white doors' },
+  { f: 'garderobe-med-baenk.jpg', alt: 'Two oak veneer wardrobes with a bench with drawers and a top cabinet between them', cap: 'Wardrobes with a bench between them' },
+  { f: 'aaben-sektion.jpg', alt: 'Wardrobe wall in pine plywood with green doors and an open shelf section', cap: 'With an open shelf section' },
+  { f: 'entre-med-baenk.jpg', alt: 'Hallway with a bench, an open wardrobe with a rail and a closed cabinet in oiled oak veneer', cap: 'Hallway with bench and open wardrobe' },
+  { f: 'skabsvaeg-sovevaerelse.jpg', alt: 'Wardrobe wall in a bedroom, built in the designer', cap: 'Bedroom wardrobe wall' },
+];
+---
+<Base
+  lang="en"
+  title="Made to measure fitted wardrobes in Denmark | Nem Inventar"
+  description="Wardrobes and wardrobe walls made to measure for high ceilings, niches and sloping walls. Design them yourself and see the price as you go. Delivered across Denmark."
+  image={new URL(img(examples[0].f), site).href}
+  alternates={[
+    { hreflang: 'da', href: new URL(base + 'garderobeskab/', site).href },
+    { hreflang: 'en', href: new URL(base + 'en/wardrobes/', site).href },
+  ]}>
+  <header class="hero2"><div class="wrap hero2-grid">
+    <div class="hero2-head">
+      <span class="label">Wardrobes made to measure</span>
+      <h1>A wardrobe that fits the wall, all the way <em>to the ceiling.</em></h1>
+    </div>
+    <div class="hero2-cta">
+      <a href={designer} class="btn btn-primary">Design your wardrobe <span class="arr">→</span></a>
+      <a href={`${base}en/contact/?emne=${encodeURIComponent('Wardrobe made to measure')}`} class="btn btn-ghost">Send a sketch instead</a>
+    </div>
+    <div class="duo" aria-label="Wardrobes built in the designer">
+      <div class="slot a">
+        <img class="is-on" src={img(examples[0].f)} alt={examples[0].alt} style="--pos:50% 50%" fetchpriority="high" />
+        <span class="img-tag"><b>3D visualisation</b>{examples[0].cap}</span>
+      </div>
+      <div class="slot b">
+        <img class="is-on" src={img(examples[1].f)} alt={examples[1].alt} style="--pos:50% 50%" fetchpriority="high" />
+        <span class="img-tag"><b>3D visualisation</b>{examples[1].cap}</span>
+      </div>
+    </div>
+    <p class="hero2-sub">Older flats often have high ceilings, narrow niches and walls that are not quite straight. A wardrobe built to measure uses the whole wall. You build it in our designer, choose material, doors and interior, and see the price while you choose. The designer is in Danish, but it works with pictures, and you can always write to us in English.</p>
+  </div></header>
+
+  <section class="sec" id="what"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">What you choose</span>
+        <h2>The material sets the price. The door is what you <em>see every day.</em></h2>
+      </div>
+    </div>
+    <div class="agrid two rv">
+      <article>
+        <span class="n">I.</span>
+        <h3>Material</h3>
+        <p>White melamine is the simple, hard-wearing choice. Oak, beech or ash veneer gives a wardrobe that looks like solid wood. Pine or birch plywood shows its layered edge, and compact laminate is for damp rooms. The material moves the price more than anything else, so the designer lets you swap it and compare.</p>
+        <h3 style="margin-top:22px">Doors and handles</h3>
+        <p>The door is the part you look at every day, so it is worth choosing with care. It can match the carcass or contrast with it, with or without handles.</p>
+      </article>
+      <article>
+        <span class="n">II.</span>
+        <h3>Inside</h3>
+        <p>Shelves, a hanging rail and drawers decide what the wardrobe can hold. Each cabinet gets its own interior, and a top cabinet can take the space up to the ceiling.</p>
+        <h3 style="margin-top:22px">From design to delivery</h3>
+        <p>Before we start production, you approve a drawing with the final measurements. The wardrobe is delivered flat-packed, so it can be carried up the stairs, and we can assemble and install it by arrangement. We deliver across Denmark.</p>
+      </article>
+    </div>
+  </div></section>
+
+  <section class="sec" style="padding-top:0"><div class="wrap">
+    <div class="cd-gallery rv" style="grid-template-columns:repeat(3,1fr)">
+      {examples.map((e) => (
+        <figure class="gfig" style="cursor:default"><img src={img(e.f)} alt={e.alt} loading="lazy" /><figcaption class="img-tag"><b>3D visualisation</b>{e.cap}</figcaption></figure>
+      ))}
+    </div>
+    <p class="cd-note rv">Built in the designer. <a href={designer} style="color:var(--ink);text-decoration:underline">Open the designer</a> and start from one of the examples, or from scratch.</p>
+  </div></section>
+
+  <ContactCta lang="en" subject="Wardrobe made to measure" />
+</Base>
