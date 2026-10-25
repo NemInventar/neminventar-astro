@@ -389,22 +389,34 @@ const katalog = KATALOG_TOP.map((k) => {
   const til = (p: Prod) => {
     if (wow && !roert && STILL_M[p]?.t) return STILL_M[p].t!;
     const s = S[p];
-    if (p === 'akustik') { const { navn, ...hul } = HUL[s.t || 'standard']; return { mat: 'birk', b: s.c, ...hul, farve: { birk: s.kuloer } }; }
-    if (p === 'locker') return { mat: 'kryds', soejler: s.c, raekker: s.r, farve: { kryds: s.kuloer } };
+    // akustik og lockers (25-10-2026): pladen og lågerne, som fremvisningen efterlod dem — en kulør-knap farver det, man ser
+    if (p === 'akustik') { const { navn, ...hul } = HUL[s.t || 'standard'], mat = s.mat || 'birk'; return { mat, b: s.c, ...hul, farve: { [mat]: s.kuloer } }; }
+    if (p === 'locker') return s.front === 'farve' ? { mat: 'kryds', soejler: s.c, raekker: s.r, front: 'farve', farve: { laage: s.kuloer } } : { mat: 'kryds', soejler: s.c, raekker: s.r, farve: { kryds: s.kuloer } };
     const mat = s.mat || 'kryds';
     if (s.front === 'farve') return { mat, n: s.c, h: Math.round(s.h * 100), front: 'farve', farve: { laage: s.kuloer } };
     return { mat, n: s.c, h: Math.round(s.h * 100), farve: { [mat]: s.kuloer } };
   };
   // Designerens tilstand → højskabets knapper (antal, højde, kulør og plade), så de viser det, fremvisningen bygger —
   // med lågerne i egen farve er kuløren lågernes
+  // Alle tre produkter fra 25-10-2026 (lockerens og akustikvæggens fremvisning): lockers — søjler og rækker, akustik — bredden og
+  // hulmønstret (som knapperne kender det, ellers bliver knappen stående)
   function fraDesigner(t: Record<string, any> | undefined) {
-    if (cur !== 'hoejskab' || !t) return;
-    const s = S.hoejskab, laage = t.front === 'farve', k = laage ? t.farve?.laage : t.farve?.[t.mat];
+    if (!t) return;
+    const s = S[cur], laage = t.front === 'farve', k = laage ? t.farve?.laage : t.farve?.[t.mat];
     s.front = laage ? 'farve' : undefined;
-    if (Number.isFinite(t.n)) s.c = t.n;
-    if (Number.isFinite(t.h)) s.h = t.h / 100;
     if (typeof t.mat === 'string') s.mat = t.mat;
     if (typeof k === 'string') s.kuloer = k;
+    if (cur === 'hoejskab') {
+      if (Number.isFinite(t.n)) s.c = t.n;
+      if (Number.isFinite(t.h)) s.h = t.h / 100;
+    } else if (cur === 'locker') {
+      if (Number.isFinite(t.soejler)) s.c = t.soejler;
+      if (Number.isFinite(t.raekker)) s.r = t.raekker;
+    } else {
+      if (Number.isFinite(t.b)) s.c = t.b;
+      const hul = Object.keys(HUL).find((n) => HUL[n].hul === t.hul && HUL[n].cc === t.cc && HUL[n].moenster === t.moenster);
+      if (hul) s.t = hul;
+    }
   }
   const PRODUKTNAVN: Record<Prod, string> = { locker: 'lockers', hoejskab: 'højskabe', akustik: 'akustikpaneler' };
   let cur: Prod = 'hoejskab';
@@ -480,10 +492,14 @@ const katalog = KATALOG_TOP.map((k) => {
   ]).catch((e) => { modP = null; throw e; });
   const KNAP_3D = 'Prøv det selv i 3D →';
   // fremvis (Milot 23-10-2026): designeren viser selv, hvad den kan — kameraet svinger, låger åbner, og indretningen skifter —
-  // til man rører 3D'en eller en knap (designerens indlejring stopper selv). Kun første gang, 3D'en kommer af sig selv på
-  // computer; ikke efter et produktskift eller et tryk på "Prøv det selv i 3D". En ældre indlejring ignorerer valget.
+  // til man rører 3D'en eller en knap (designerens indlejring stopper selv). Når 3D'en kommer af sig selv, og fra 25-10-2026
+  // (Joachim: "man skal i hvert fald kunne se hvad man kan i designerne … alle steder") også første gang, man skifter til
+  // Lockers eller Akustik — hvert produkt én gang pr. sidevisning (fremvist). Ikke efter et tryk på "Prøv det selv i 3D".
+  // En ældre indlejring ignorerer valget.
+  const fremvist = new Set<Prod>();
   async function load3d(fremvis = false) {
     if (d3 || loading || !canvasEl || !stage) return;
+    if (fremvis) fremvist.add(cur);
     loading = true; toggle && (toggle.textContent = 'Henter 3D …');
     try {
       const mod = await hent();
@@ -510,7 +526,7 @@ const katalog = KATALOG_TOP.map((k) => {
     document.querySelectorAll('#hpProd button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
     stage!.dataset.produkt = cur;
     // et andet produkt = en ny indlejring (API'et skifter ikke produkt)
-    if (d3 && fra !== cur) { d3.ryd(); d3 = null; d3spec = ''; stage!.classList.remove('is-3d'); load3d(false); }
+    if (d3 && fra !== cur) { d3.ryd(); d3 = null; d3spec = ''; stage!.classList.remove('is-3d'); load3d(auto3d && !fremvist.has(cur)); }
     sync();
   }));
   if (wow) toggle && (toggle.textContent = KNAP_3D);
