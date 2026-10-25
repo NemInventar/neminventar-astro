@@ -1,0 +1,40 @@
+---
+// Engelsk kontaktside (backlog e2c66652): samme formular som /kontakt/, med engelske tekster. Leadet lander i CRM som
+// alle andre web-henvendelser; at det kom på engelsk, kan ses på "Sendt fra: neminventar.dk/en/contact/".
+import Base from '../../layouts/Base.astro';
+import ContactForm from '../../components/ContactForm.tsx';
+import { PHONE, PHONE_TEL, LINKEDIN } from '../../lib/contact';
+const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
+---
+<Base
+  lang="en"
+  title="Contact | Nem Inventar"
+  description="Send us drawings, tender documents or the measurements of the room. We reply in English and come back with questions and a price."
+  alternates={[
+    { hreflang: 'da', href: new URL(base + 'kontakt/', site).href },
+    { hreflang: 'en', href: new URL(base + 'en/contact/', site).href },
+  ]}>
+  <section class="contact"><div class="wrap contact-grid">
+    <div class="contact-info">
+      <span class="label">Contact</span>
+      <h1>Tell us about <em>your project.</em></h1>
+      <p class="lead">Send the drawings, the tender documents or a sketch with measurements. Files can be attached directly in the form. We reply in English, and documents in Danish or English are both fine.</p>
+      <a href={`tel:${PHONE_TEL}`} class="contact-tel">{PHONE}</a>
+      <div class="ksteps">
+        <div class="step"><span class="sn">1</span><div><b>We read the material</b><p>Drawings, specifications or the bill of quantities, attached here or as an invitation to the tender platform. We send back the questions that need answering before we can price it.</p></div></div>
+        <div class="step"><span class="sn">2</span><div><b>Drawing and price</b><p>You get the solution as a 3D model and a price per item, so it can be compared with the tender or the budget.</p></div></div>
+        <div class="step"><span class="sn">3</span><div><b>We build and deliver</b><p>In our own production, delivered to the site schedule. Projects outside Denmark: send us the drawings and we will tell you what we can deliver.</p></div></div>
+      </div>
+      <div class="lines">
+        <span class="k">Sales and quotes</span>
+        <a href="mailto:tilbud@neminventar.dk">tilbud@neminventar.dk</a>
+        <span class="k">LinkedIn</span>
+        <a href={LINKEDIN} target="_blank" rel="noopener">Nem Inventar ApS on LinkedIn</a>
+        <span class="k">Address</span>
+        <span>Nem Inventar ApS · Mågevej 73, st. tv. · 2400 Copenhagen NV · Denmark · VAT DK45085473</span>
+      </div>
+    </div>
+    <ContactForm client:load lang="en" />
+  </div></section>
+</Base>

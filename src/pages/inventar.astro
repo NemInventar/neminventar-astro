@@ -41,7 +41,10 @@ const jsonLd = [
 ];
 const ogImage = all[0]?.img ? new URL(cdn(all[0].img, 1200), site).href : undefined;
 ---
-<Base title={title} description={description} image={ogImage} jsonLd={jsonLd}>
+<Base title={title} description={description} image={ogImage} jsonLd={jsonLd} alternates={[
+  { hreflang: 'da', href: new URL(base + 'inventar/', site).href },
+  { hreflang: 'en', href: new URL(base + 'en/products/', site).href },
+]}>
   <section class="sec inv" id="katalog"><div class="wrap">
     <div class="sec-head">
       <div>

@@ -1,0 +1,113 @@
+---
+// Tysk light-udgave (backlog 3de10daf, Joachim 25-10-2026): én landingsside om skabe med bænk til skoler, med
+// kontaktformular på tysk, plus Impressum og Datenschutz, som tysk ret kræver. En test: mål henvendelser i 3 måneder
+// (fn_plausible_kilder + crm_deals: "Sendt fra: neminventar.dk/de/"), før mere oversættes.
+// Samme indhold som /en/lockers-with-bench/. Montage i Tyskland tilbydes ikke (Joachims ord, 25-10-2026).
+// Ingen påstand om tyske leverancer.
+import Base from '../../layouts/Base.astro';
+import ContactForm from '../../components/ContactForm.tsx';
+import { PHONE, PHONE_TEL } from '../../lib/contact';
+import { cdn } from '../../lib/img';
+import { morkhoj } from '../../lib/catalog';
+const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
+const photos = [
+  { f: '26_garderobe-lockere-roede-med-baenk-og-skohylder.jpg', alt: 'Rote Schließfächer aus Sperrholz über einer Sitzbank und offenen Schuhfächern in der Mørkhøj-Schule', cap: 'Schließfächer, Sitzbank und Schuhfächer als ein Möbel', pos: '50% 58%' },
+  { f: '20_lockere-roede-perforerede-laager-kodelaase-og-skohylder.jpg', alt: 'Rote Schließfächer mit gelochten Türen und Zahlenschlössern über Schuhfächern', cap: 'Gelochte Türen mit Zahlenschlössern', pos: '50% 50%' },
+  { f: '21_baenk-blaa-krydsfiner-med-hynder-og-roede-lockere.jpg', alt: 'Blaue Sitzbank aus Sperrholz mit Kissen vor roten Schließfächern', cap: 'Sitzbank mit Kissen vor den Schließfächern', pos: '50% 55%' },
+  { f: '30_lockere-roede-i-hjoerne-med-skohylder.jpg', alt: 'Rote Schließfächer über Eck mit Schuhfächern darunter', cap: 'Über Eck eingebaut', pos: '50% 55%' },
+  { f: '35_detalje-haengsel-og-perforering-roed-laage.jpg', alt: 'Nahaufnahme von Scharnier und Lochung einer roten Schließfachtür', cap: 'Scharnier und Lochung', pos: '50% 50%' },
+  { f: '33_lockere-roede-ved-doer-til-klasserum.jpg', alt: 'Rote Schließfächer neben der Tür zu einem Klassenzimmer in der Mørkhøj-Schule', cap: 'Schließfächer an der Klassenzimmertür', pos: '40% 55%' },
+];
+---
+<Base
+  lang="de"
+  title="Schließfächer mit Sitzbank für Schulen | Nem Inventar"
+  description="Schließfächer aus Sperrholz mit Sitzbank und offenen Schuhfächern, nach Maß gebaut für Schulen, Sporthallen und Schwimmbäder. Von wenigen Fächern bis zu mehreren hundert."
+  image={new URL(cdn(morkhoj(photos[0].f)), site).href}
+  alternates={[
+    { hreflang: 'de', href: new URL(base + 'de/', site).href },
+    { hreflang: 'en', href: new URL(base + 'en/lockers-with-bench/', site).href },
+  ]}>
+  <header class="hero2"><div class="wrap hero2-grid">
+    <div class="hero2-head">
+      <span class="label">Schließfächer mit Sitzbank</span>
+      <h1>Schließfach, Sitzbank und Schuhregal als <em>ein Möbel.</em></h1>
+    </div>
+    <div class="hero2-cta">
+      <a href="#kontakt" class="btn btn-primary">Zeichnungen oder Stückzahlen senden <span class="arr">→</span></a>
+      <a href={`tel:${PHONE_TEL}`} class="btn btn-ghost">{PHONE}</a>
+    </div>
+    <div class="duo" aria-label="Fotos von der Lieferung an die Mørkhøj-Schule">
+      <div class="slot a">
+        <img class="is-on" src={cdn(morkhoj(photos[0].f))} alt={photos[0].alt} style={`--pos:${photos[0].pos}`} fetchpriority="high" />
+        <span class="img-tag"><b>Foto</b>{photos[0].cap}</span>
+      </div>
+      <div class="slot b">
+        <img class="is-on" src={cdn(morkhoj(photos[1].f))} alt={photos[1].alt} style={`--pos:${photos[1].pos}`} fetchpriority="high" />
+        <span class="img-tag"><b>Foto</b>{photos[1].cap}</span>
+      </div>
+    </div>
+    <p class="hero2-sub">In der Garderobe einer Schule oder im Umkleideraum kommen alle gleichzeitig. Wenn Schließfach, Sitzbank und Schuhregal als ein Möbel gebaut sind, hat jedes Kind einen Platz für Tasche, Jacke und Schuhe und kann sich beim Umziehen setzen. Unter der Sitzbank bleibt der Boden frei und lässt sich täglich reinigen. Nem Inventar ist ein dänischer Hersteller von Festeinbauten mit Sitz in Kopenhagen und eigener Fertigung.</p>
+  </div></header>
+
+  <section class="sec" id="auswahl"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">Was Sie wählen</span>
+        <h2>Gebaut für den Raum und die Zahl der <em>Nutzer.</em></h2>
+      </div>
+    </div>
+    <div class="agrid two rv">
+      <article>
+        <span class="n">I.</span>
+        <h3>Die Türen fasst man jeden Tag an</h3>
+        <p>Gelochte Türen lassen Luft durch, damit nasse Sportkleidung trocknen kann. Glatte Türen ergeben eine ruhige Wand im Flur. Das Schloss richtet sich nach der Nutzung: Zahlenschlösser für Kinder, die keinen Schlüssel verwalten sollen, Schlüsselschlösser für das Personal und eine Öse für ein Vorhängeschloss in Sporthallen und Schwimmbädern, wo die Nutzer ihr eigenes Schloss mitbringen.</p>
+        <h3 style="margin-top:22px">Das Material folgt dem Wasser</h3>
+        <p>In Garderoben und Fluren bauen wir aus geöltem Kiefern- oder Birkensperrholz. Das Öl sitzt im Holz, so dass eine abgenutzte Stelle vor Ort ausgebessert werden kann, statt die ganze Fläche abzuschleifen. Wo Wasser aus den Duschen hinkommt, bauen wir aus Kompaktlaminat, das kein Wasser aufnimmt.</p>
+      </article>
+      <article>
+        <span class="n">II.</span>
+        <h3>Sitzbank und Schuhe</h3>
+        <p>Die Sitzbank kann über die ganze Länge der Schließfächer laufen, mit oder ohne Kissen, und offene Schuhfächer darunter halten nasse Schuhe vom Boden fern. Garderobenhaken sitzen im Fach oder an einer Leiste über der Bank.</p>
+        <h3 style="margin-top:22px">Von wenigen Fächern bis zu mehreren hundert</h3>
+        <p>Für die Mørkhøj-Schule in Kopenhagen liefern wir zusammen mit dem Generalunternehmer Ason A/S und Rønnow Arkitekter in Etappen 342 Schließfächer mit Schuhfächern. Jeder Raum wird als 3D-Modell gezeichnet und vor der Fertigung freigegeben, und bei Serien bauen wir zuerst ein Musterstück.</p>
+      </article>
+    </div>
+  </div></section>
+
+  <section class="sec" style="padding-top:0"><div class="wrap">
+    <div class="cd-gallery rv" style="grid-template-columns:repeat(3,1fr)">
+      {photos.map((p) => (
+        <figure class="gfig" style="cursor:default"><img src={cdn(morkhoj(p.f), 800)} alt={p.alt} loading="lazy" style={`object-position:${p.pos}`} /><figcaption class="img-tag"><b>Foto</b>{p.cap}</figcaption></figure>
+      ))}
+    </div>
+    <p class="cd-note rv">Fotos von der Lieferung an die Mørkhøj-Schule. Die Möbel sind von uns, Böden, Leuchten und Wände von anderen.</p>
+  </div></section>
+
+  <section class="sec" style="padding-top:0"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">Lieferung und Montage</span>
+        <h2>Wir liefern. Die Montage vergeben Sie <em>vor Ort.</em></h2>
+        <p class="lede">Montage in Deutschland können wir derzeit nicht anbieten. Wir liefern die Möbel, und für die Montage holen Sie bitte ein Angebot bei einem Betrieb vor Ort ein. Schicken Sie uns die Zeichnungen, dann sagen wir Ihnen, was wir liefern können.</p>
+      </div>
+    </div>
+  </div></section>
+
+  <section class="contact" id="kontakt"><div class="wrap contact-grid">
+    <div class="contact-info">
+      <span class="label">Anfrage</span>
+      <h2>Schicken Sie uns die Zeichnungen und die <em>Stückzahlen.</em></h2>
+      <p class="lead">Ein Grundriss mit den markierten Wänden und der Zahl der Nutzer pro Raum reicht für den Anfang. Mit Ausschreibung oder Leistungsverzeichnis kalkulieren wir Position für Position. Wir antworten auf Deutsch oder Englisch; Unterlagen auf Deutsch oder Englisch sind beide in Ordnung.</p>
+      <a href={`tel:${PHONE_TEL}`} class="contact-tel">{PHONE}</a>
+      <div class="lines">
+        <span class="k">Angebote</span>
+        <a href="mailto:tilbud@neminventar.dk">tilbud@neminventar.dk</a>
+        <span class="k">Anschrift</span>
+        <span>Nem Inventar ApS · Mågevej 73, st. tv. · 2400 Kopenhagen NV · Dänemark</span>
+      </div>
+    </div>
+    <ContactForm client:load lang="de" />
+  </div></section>
+</Base>

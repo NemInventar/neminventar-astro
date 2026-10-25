@@ -7,10 +7,15 @@ import CallbackForm from '../components/CallbackForm.tsx';
 import { PHONE, PHONE_TEL, LINKEDIN } from '../lib/contact';
 import { TEAM } from '../lib/team';
 const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
 ---
 <Base
   title="Kontakt — Nem Inventar"
-  description="Send os jeres mål eller hele udbuddet. Vi leverer til byggeri og til private og vender hurtigt tilbage med næste skridt.">
+  description="Send os jeres mål eller hele udbuddet. Vi leverer til byggeri og til private og vender hurtigt tilbage med næste skridt."
+  alternates={[
+    { hreflang: 'da', href: new URL(base + 'kontakt/', site).href },
+    { hreflang: 'en', href: new URL(base + 'en/contact/', site).href },
+  ]}>
   <section class="contact"><div class="wrap contact-grid">
     <div class="contact-info">
       <span class="label">Kontakt</span>
