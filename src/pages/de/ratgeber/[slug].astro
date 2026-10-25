@@ -1,0 +1,14 @@
+---
+// Deutsche Ratgeber: /de/ratgeber/<slug>/. Tekst og regler: src/lib/guides-i18n.ts.
+import GuideI18nPage from '../../../components/GuideI18nPage.astro';
+import { getWebLandingPages } from '../../../lib/supabase';
+import { guidesFor } from '../../../lib/guides-i18n';
+
+export async function getStaticPaths() {
+  const daPages = await getWebLandingPages();
+  const guides = guidesFor('de', daPages);
+  return guides.map((page) => ({ params: { slug: page.slug }, props: { page, guides, daPages } }));
+}
+const { page, guides, daPages } = Astro.props;
+---
+<GuideI18nPage page={page} guides={guides} daPages={daPages} />

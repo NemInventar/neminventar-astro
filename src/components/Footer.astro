@@ -2,6 +2,7 @@
 // Delt footer i fire spalter: hvem vi er · inventar og materialer · hvem vi leverer til · firmaet.
 // Landingssiderne linkes fra hver side (intern linkstruktur) — grupperet efter type i stedet for én lang linje.
 import { getWebLandingPages } from '../lib/supabase';
+import { guidesFor, guidePath } from '../lib/guides-i18n';
 import { PHONE, PHONE_TEL, LINKEDIN, FACEBOOK } from '../lib/contact';
 const base = import.meta.env.BASE_URL; // slutter med '/'
 const landing = await getWebLandingPages();
@@ -9,6 +10,8 @@ const emner = landing.filter((l) => l.kind === 'emne');
 const segmenter = landing.filter((l) => l.kind === 'segment');
 const guides = landing.filter((l) => l.kind === 'guide');
 const year = new Date().getFullYear();
+const guidesEn = guidesFor('en', landing);
+const guidesDe = guidesFor('de', landing);
 // Engelsk udgave (/en/): kun de engelske sider + vej tilbage til den danske. Landingssiderne er på dansk og linkes ikke.
 // Tysk light-udgave (/de/): landingssiden, Impressum og Datenschutz (krævet af tysk ret).
 const { lang = 'da' } = Astro.props as { lang?: 'da' | 'en' | 'de' };
@@ -25,8 +28,12 @@ const { lang = 'da' } = Astro.props as { lang?: 'da' | 'en' | 'de' };
     <div>
       <h4>Auf Deutsch</h4>
       <ul>
-        <li><a href={`${base}de/`}>Schließfächer mit Sitzbank</a></li>
+        <li><a href={`${base}de/`}>Spind mit Sitzbank</a></li>
         <li><a href={`${base}de/#kontakt`}>Anfrage senden</a></li>
+      </ul>
+      <h4 style="margin-top:26px">Ratgeber</h4>
+      <ul>
+        {guidesDe.map((g) => <li><a href={base + guidePath('de', g.slug)}>{g.nav_label}</a></li>)}
       </ul>
     </div>
     <div>
@@ -68,6 +75,10 @@ const { lang = 'da' } = Astro.props as { lang?: 'da' | 'en' | 'de' };
         <li><a href={`${base}en/lockers-with-bench/`}>Lockers with bench</a></li>
         <li><a href={`${base}en/wardrobes/`}>Wardrobes made to measure</a></li>
         <li><a href={`${base}en/contact/`}>Contact</a></li>
+      </ul>
+      <h4 style="margin-top:26px">Guides</h4>
+      <ul>
+        {guidesEn.map((g) => <li><a href={base + guidePath('en', g.slug)}>{g.nav_label}</a></li>)}
       </ul>
     </div>
     <div>

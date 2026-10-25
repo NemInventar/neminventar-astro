@@ -2,6 +2,7 @@
 // Genereres ved build fra de samme views som sitet, så den aldrig driver fra indholdet.
 import type { APIRoute } from 'astro';
 import { getWebLandingPages, getWebCases, getWebProducts } from '../lib/supabase';
+import { guidesFor, guidePath } from '../lib/guides-i18n';
 
 export const GET: APIRoute = async ({ site }) => {
   const base = import.meta.env.BASE_URL;
@@ -37,6 +38,13 @@ export const GET: APIRoute = async ({ site }) => {
     '',
     '## English',
     `- [English overview](${abs('en/')}): Built-in joinery for schools, daycare centres and sports facilities in Denmark — what we make, how we work, documentation and contact.`,
+    '',
+    '## Guides in English',
+    ...guidesFor('en', pages).map((g) => `- [${g.h1}](${abs(guidePath('en', g.slug))}): ${g.lead ?? g.seo_description}`),
+    '',
+    '## Deutsch',
+    `- [Spind mit Sitzbank für Schulen](${abs('de/')}): Spinde mit Sitzbank und Schuhregal aus Sperrholz nach Maß für Schulen, Sporthallen und Schwimmbäder. Lieferung aus Dänemark, Montage in Deutschland derzeit nicht im Angebot.`,
+    ...guidesFor('de', pages).map((g) => `- [${g.h1}](${abs(guidePath('de', g.slug))}): ${g.lead ?? g.seo_description}`),
     '',
     '## Kontakt',
     `- [Kontakt](${abs('kontakt')}): Send tegninger, snedkerbeskrivelse eller tilbudsliste til tilbud@neminventar.dk.`,
