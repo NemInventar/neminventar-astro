@@ -6,7 +6,8 @@
 Tjekker: indlejringen indlæses (lærred i #hpCanvas), læsefeltet får designerens spec, kulør og antal ændrer permalinket,
 produktskift giver en ny indlejring, "Hent IFC" har &hent=ifc — og uden WebGL bliver stillbilledet stående.
 Fremvisningen og teksten på 3D'en (23-10-2026): teksten vises på 3D'en og peger på designeren med det, man ser; på computer
-skifter indretningen af sig selv og stopper ved et tryk på 3D'en eller en knap; ingen fremvisning efter produktskift, på
+skifter indretningen af sig selv og stopper ved et tryk på 3D'en eller en knap; lockers og akustik har deres egen første gang, man
+skifter fane (25-10-2026), og højskabet ikke igen; ingen fremvisning på
 telefon eller med reduceret bevægelse; på telefon står teksten ikke oven i knappen "Se den i et rum"."""
 import base64, json, subprocess, sys, tempfile, time
 from pathlib import Path
@@ -165,18 +166,24 @@ try:
         spec = pg.locator("#hpSpec").inner_text()
         tjek("læsefeltet viser designerens spec", "locker" in spec.lower(), spec)
         tjek("teksten på 3D'en siger lockerne", "ændre lockerne" in pg.locator("#hpRet").inner_text(), pg.locator("#hpRet").inner_text())
-        tjek("ingen fremvisning efter et produktskift", staar_stille(pg, 6000))
+        # lockerens egen fremvisning (25-10-2026, Joachim: "alle steder"): første gang man skifter til fanen — et tryk stopper den
+        if FREMVIS:
+            tjek("lockers: fremvisningen kører første gang, man skifter til fanen", vent_paa_skift(pg, href(pg), 8000), tilstand(href(pg)))
+            pg.locator("#hpCanvas canvas").click(position={"x": 60, "y": 60})
+            tjek("lockers: fremvisningen stopper ved et tryk på 3D'en", staar_stille(pg, 5000))
         d0 = pg.locator("#hpDesigner").get_attribute("href")
         tjek("Åbn i designeren peger på ni-designer med tilstand", "designer.neminventar.dk" in d0 and "t=" in d0, d0)
         # kulør: anden knap
         pg.locator("#hpSw button").nth(2).click(); pg.wait_for_timeout(500)
         st = tilstand(pg.locator("#hpDesigner").get_attribute("href"))
         slug = pg.locator("#hpSw button").nth(2).get_attribute("data-slug")
-        tjek(f"kuløren følger med i permalinket ({slug})", (st.get("farve") or {}).get("kryds") == slug, st)
-        # antal: flere søjler
+        # lågerne i egen farve (fremvisningen kan have nået dem): så er det lågerne, kuløren farver
+        tjek(f"kuløren følger med i permalinket ({slug})", (st.get("farve") or {}).get("laage" if st.get("front") == "farve" else "kryds") == slug, st)
+        # antal: flere søjler — fra det antal, knapperne viser (de følger fremvisningen)
+        c0 = int(pg.locator('.hp-steps[data-for="locker"] output[data-o="c"]').inner_text())
         pg.locator('.hp-steps[data-for="locker"] [data-d="c,1"]').click(); pg.wait_for_timeout(500)
         st2 = tilstand(pg.locator("#hpDesigner").get_attribute("href"))
-        tjek("antal søjler følger med", st2.get("soejler") == 7, st2)
+        tjek(f"antal søjler følger med ({c0} → {min(c0 + 1, 10)})", st2.get("soejler") == min(c0 + 1, 10), st2)
         ifc = pg.locator("#hpIfc").get_attribute("href")
         tjek("Hent IFC har &hent=ifc", "hent=ifc" in ifc and "t=" in ifc, ifc)
         # produktskift
@@ -186,6 +193,7 @@ try:
         h = pg.locator("#hpDesigner").get_attribute("href")
         tjek("højskab: permalink med p=hoejskab", "p=hoejskab" in h, h)
         tjek("højskab: læsefeltet skifter", "højskab" in pg.locator("#hpSpec").inner_text().lower() or "skab" in pg.locator("#hpSpec").inner_text().lower(), pg.locator("#hpSpec").inner_text())
+        if FREMVIS: tjek("højskab: ingen fremvisning anden gang i samme sidevisning", staar_stille(pg, 5000))
         # akustik (15-10-2026): bredde i hele paneler, hulmønster og kulør på birk
         pg.locator('#hpProd button[data-k="akustik"]').click()
         pg.wait_for_selector("#hpStage.is-3d", timeout=20000)
@@ -193,6 +201,8 @@ try:
         a = pg.locator("#hpDesigner").get_attribute("href")
         tjek("akustik: permalink med p=akustik", "p=akustik" in a, a)
         tjek("akustik: læsefeltet skifter", "302 × 240" in pg.locator("#hpSpec").inner_text(), pg.locator("#hpSpec").inner_text())
+        # akustikvæggens egen fremvisning (25-10-2026): hulmønstrene skifter af sig selv — knapperne nedenfor stopper den
+        if FREMVIS: tjek("akustik: fremvisningen kører første gang, man skifter til fanen", vent_paa_skift(pg, href(pg), 8000), tilstand(href(pg)))
         tjek("akustik: knapperne for bredde og huller vises", pg.locator('.hp-steps[data-for="akustik"]').is_visible() and not pg.locator('.hp-steps[data-for="locker"]').is_visible())
         pg.locator('#hpB button[data-b="423"]').click(); pg.locator('#hpHul button[data-t="taet"]').click(); pg.wait_for_timeout(600)
         sa = tilstand(pg.locator("#hpDesigner").get_attribute("href"))
