@@ -1,5 +1,5 @@
 {
- "regnet": "2026-10-25T21:13:14+00:00",
+ "regnet": "2026-10-26T09:32:31+00:00",
  "kilde": "https://designer.neminventar.dk/designer.html",
  "note": "privat, inkl. moms, ekskl. levering — designerens egen prismodel (scripts/designer_eksempler.py)",
  "priser": {
@@ -81,7 +81,7 @@
   "elevskabe": {
    "inkl": 59400,
    "ex": 47520,
-   "gitter": "2026-10-25T20:24:57+00:00"
+   "gitter": "2026-10-26T08:46:53+00:00"
   },
   "entre-med-baenk": {
    "inkl": 28900,
@@ -166,32 +166,32 @@
   "lockers": {
    "inkl": 38400,
    "ex": 30720,
-   "gitter": "2026-10-25T20:24:57+00:00"
+   "gitter": "2026-10-26T08:46:53+00:00"
   },
   "lockers-cocoa-laager": {
    "inkl": 33250,
    "ex": 26600,
-   "gitter": "2026-10-25T20:24:57+00:00"
+   "gitter": "2026-10-26T08:46:53+00:00"
   },
   "lockers-kompakt": {
-   "inkl": 86250,
-   "ex": 69000,
-   "gitter": "2026-10-25T20:24:57+00:00"
+   "inkl": 49875,
+   "ex": 39900,
+   "gitter": "2026-10-26T08:46:53+00:00"
   },
   "lockers-kontor": {
    "inkl": 63000,
    "ex": 50400,
-   "gitter": "2026-10-25T20:24:57+00:00"
+   "gitter": "2026-10-26T08:46:53+00:00"
   },
   "lockers-sort-kompakt": {
-   "inkl": 94950,
-   "ex": 75960,
-   "gitter": "2026-10-25T20:24:57+00:00"
+   "inkl": 55800,
+   "ex": 44640,
+   "gitter": "2026-10-26T08:46:53+00:00"
   },
   "mobil-lockers": {
    "inkl": 35250,
    "ex": 28200,
-   "gitter": "2026-10-25T20:24:57+00:00"
+   "gitter": "2026-10-26T08:46:53+00:00"
   },
   "omklaedningsbaenk-kompakt": {
    "inkl": 6675,
@@ -199,9 +199,9 @@
    "gitter": "2026-10-21T04:25:35+00:00"
   },
   "omklaedningsskabe-fitness": {
-   "inkl": 106200,
-   "ex": 84960,
-   "gitter": "2026-10-25T20:24:57+00:00"
+   "inkl": 66000,
+   "ex": 52800,
+   "gitter": "2026-10-26T08:46:53+00:00"
   },
   "opbevaringsbaenk-to-skuffer": {
    "inkl": 7425,
@@ -211,7 +211,7 @@
   "personaleskabe": {
    "inkl": 44400,
    "ex": 35520,
-   "gitter": "2026-10-25T20:24:57+00:00"
+   "gitter": "2026-10-26T08:46:53+00:00"
   },
   "roedbrun-olie": {
    "inkl": 40125,
