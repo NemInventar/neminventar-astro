@@ -10,6 +10,7 @@
 //   PUT|OPTIONS      /storage/v1/object/upload/sign/*  → Supabase Storage: filupload, token i query-strengen.
 //   GET              /js/script.js                     → Plausible-scriptet (cache 1 dag).
 //   POST             /api/event                        → Plausible (deres proxy-vejledning for Cloudflare).
+//   GET              /pris?p=hoejskab&bredde=60…       → designer-ordre ?pris: prisen på et designer-link (cache 10 min).
 // Test: node --test api/test/
 
 const SUPABASE = 'https://guhbrpektblabndqttgp.supabase.co';
@@ -88,6 +89,27 @@ async function script(req, ctx) {
   return res;
 }
 
+// Prisen på et læsbart designer-link til AI-assistenter (27-10-2026): ni-apps edge function designer-ordre GET ?pris, samme
+// regnemaskine som designeren og bestillingen. Kun salgspriser, ingen writes. Cache 10 min pr. adresse (funktionen siger selv
+// max-age=600), så gentagne opslag ikke rammer funktionen. Ingen headere fra besøgeren videre.
+const PRIS_MAKS = 2000;
+async function pris(req, url, ctx) {
+  if (url.search.length > PRIS_MAKS) return new Response('For langt link', { status: 414 });
+  const cache = typeof caches !== 'undefined' ? caches.default : null;
+  const key = new Request(url.origin + url.pathname + url.search);
+  if (cache) {
+    const hit = await cache.match(key).catch(() => null);
+    if (hit) return hit;
+  }
+  const up = await fetch(`${SUPABASE}/functions/v1/designer-ordre?pris=1${url.search ? `&${url.search.slice(1)}` : ''}`);
+  const res = videre(up);
+  if (up.status === 200 && cache) {
+    const gem = cache.put(key, res.clone()).catch(() => {});
+    if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(gem);
+  }
+  return res;
+}
+
 async function event(req) {
   return videre(await fetch(PLAUSIBLE_EVENT, {
     method: 'POST',
@@ -106,6 +128,7 @@ export default {
       if (p.startsWith(UPLOAD) && p.length > UPLOAD.length && (m === 'PUT' || m === 'OPTIONS')) return await upload(req, url);
       if (p === '/js/script.js' && m === 'GET') return await script(req, ctx);
       if (p === '/api/event' && m === 'POST') return await event(req);
+      if (p === '/pris' && m === 'GET') return await pris(req, url, ctx);
     } catch {
       return ikkeNaaet();
     }
