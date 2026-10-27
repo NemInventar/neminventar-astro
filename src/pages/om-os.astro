@@ -15,8 +15,9 @@ const base = import.meta.env.BASE_URL;
 const cases = await getWebCases();
 const reference = cases.find((c) => c.slug === PHOTO_PROJECT_SLUG) ?? cases[0];
 
-// Kæden: det, der sker hos os selv — fra model til pakket emne
-const CHAIN = ['3D-model', 'Værkstedstegning', 'Opskæring', 'Samling', 'Overfladebehandling', 'Pakning'];
+// Kæden: det, der sker hos os selv — fra model til pakket emne. Overfladen før samlingen (Milot 27-10-2026: "det er
+// overfladebehandling før samling")
+const CHAIN = ['3D-model', 'Værkstedstegning', 'Opskæring', 'Overfladebehandling', 'Samling', 'Pakning'];
 
 // Tidslinjen: fem faser i samarbejdet, hver med "Det kan I" (Milot 04-10: ikke "sene ændringer" — et låst design er en styrke;
 // til gengæld Apple Vision Pro ude hos kunden, så designet er set i rummet, før det låses).
@@ -25,7 +26,7 @@ const FASER = [
     kan: [{ b: 'Bestemme alle mål.', p: 'Bredde, højde og dybde tegnes efter jeres rum.' }, { b: 'Kræve certificeret træ.', p: 'Vi køber selv pladerne og leverer FSC eller PEFC, når udbuddet kræver det.' }] },
   { n: '02', fase: 'Under tegning', h: 'Designet låses, når I er sikre.', p: 'I godkender 3D-modellen og renderne. Derefter trækker vi værkstedstegninger og styklister ud af samme model, så det, I har sagt ja til, er det, der bliver skåret.',
     kan: [{ b: 'Se det i rummet.', p: 'Vi tager Apple Vision Pro med ud og viser inventaret i fuld størrelse i det rum, hvor det skal stå.' }, { b: 'Vælge kuløren.', p: 'Vi bruger hårdvoksolie fra Rubio Monocoat og kan få en kulør blandet til jeres byggeri.' }] },
-  { n: '03', fase: 'Under produktion', h: 'Bygget præcis, som I godkendte det.', p: 'Vores egne folk skærer, samler og olierer efter tegningerne, så det er os, der står inde for kvalitet og tidsplan.',
+  { n: '03', fase: 'Under produktion', h: 'Bygget præcis, som I godkendte det.', p: 'Vores egne folk skærer, olierer og samler efter tegningerne, så det er os, der står inde for kvalitet og tidsplan.',
     kan: [{ b: 'Godkende et prøveemne.', p: 'Ved større leverancer bygger vi ét eksemplar først, og når I har godkendt det i hånden, bygges serien magen til.' }] },
   { n: '04', fase: 'Ved levering', h: 'Leveret i den rækkefølge, byggeriet skal bruge det.', p: 'Vi pakker selv. Fordi vi også køber materialerne, følger datablade, indeklimadokumentation og de EPD’er, der findes, med i afleveringen.',
     kan: [{ b: 'Få det i etaper.', p: 'Rum for rum eller etage for etage, i takt med byggeriet.' }, { b: 'Få det monteret.', p: 'Vi monterer også, hvis I ønsker det, så én svarer for inventaret, til det sidste skab sidder fast.' }] },
@@ -72,7 +73,7 @@ const FASER = [
       <div>
         <span class="label">Fra tilbud til aflevering</span>
         <h2 class="tl-h2">Vi har vores egen <em>produktion.</em></h2>
-        <p class="lede">Vi skærer, samler, olierer og pakker inventaret selv. Vi bestiller det ikke hos andre, og derfor svarer vi for tegningen, kvaliteten og tidsplanen. Sådan mærker I det, fra tilbuddet til årene efter afleveringen.</p>
+        <p class="lede">Vi skærer, olierer, samler og pakker inventaret selv. Vi bestiller det ikke hos andre, og derfor svarer vi for tegningen, kvaliteten og tidsplanen. Sådan mærker I det, fra tilbuddet til årene efter afleveringen.</p>
       </div>
     </div>
     <ol class="tl rv">
