@@ -4,10 +4,25 @@ import type { APIRoute } from 'astro';
 import { getWebLandingPages, getWebCases, getWebProducts } from '../lib/supabase';
 import { guidesFor, guidePath } from '../lib/guides-i18n';
 
+// Designerens egen llms.txt (ni-apps scripts/designer/llms.mjs, Joachim 27-10-2026): hvordan en AI-assistent skriver et
+// læsbart link til kundens eget skab (?p=hoejskab&antal=3&bredde=80&materiale=eg). Teksten bygges af designerens kontrakt
+// og hentes her ved build, så der kun findes én udgave. Kan den ikke hentes, står kun linket i "Til private".
+const DESIGNER_LLMS = 'https://designer.neminventar.dk/llms.txt';
+async function designerSektioner(): Promise<string[]> {
+  try {
+    const r = await fetch(DESIGNER_LLMS, { signal: AbortSignal.timeout(10000) });
+    const t = r.ok ? await r.text() : '';
+    const i = t.indexOf('\n## ');
+    return t.startsWith('# Nem Inventars designer') && i > 0 ? [...t.slice(i + 1).trimEnd().split('\n'), ''] : [];
+  } catch {
+    return [];
+  }
+}
+
 export const GET: APIRoute = async ({ site }) => {
   const base = import.meta.env.BASE_URL;
   const abs = (p: string) => new URL(base + p, site).href;
-  const [pages, cases, products] = await Promise.all([getWebLandingPages(), getWebCases(), getWebProducts()]);
+  const [pages, cases, products, designer] = await Promise.all([getWebLandingPages(), getWebCases(), getWebProducts(), designerSektioner()]);
   const emner = pages.filter((p) => p.kind === 'emne');
   const segmenter = pages.filter((p) => p.kind === 'segment');
   const guides = pages.filter((p) => p.kind === 'guide');
@@ -24,7 +39,9 @@ export const GET: APIRoute = async ({ site }) => {
     // Designeren er JavaScript på eget domæne og kan ikke læses af AI-crawlere, så det, den kan, står her i ren tekst (backlog 2c7a8099).
     `- [Design dit garderobeskab](https://designer.neminventar.dk/designer?p=hoejskab): 3D-designer til garderobeskabe og skabsvægge efter mål. Man vælger bredde, højde, dybde, materiale, låger og indretning, og prisen inkl. moms står i designeren, mens man bygger. Levering, montage og opmåling vælges til. Fra designeren sender man skabet til os og får et tilbud.`,
     `- [Garderobeskab på mål](${abs('garderobeskab')}): Ét skab eller en hel skabsvæg efter mål til entré, soveværelse eller personalegarderobe, i finér, krydsfiner eller kompaktlaminat. Leveret i hele Danmark.`,
+    `- [Link til kundens eget skab](${DESIGNER_LLMS}): Et link kan bære et helt design, fx https://designer.neminventar.dk/designer?p=hoejskab&antal=3&bredde=80&hoejde=240&materiale=eg. Så åbner designeren med netop det skab tegnet og prisen regnet. Navnene og værdierne står i designerens llms.txt.`,
     '',
+    ...designer,
     '## Målgrupper',
     ...segmenter.map((p) => `- [${p.nav_label}](${abs(p.slug)}): ${p.lead ?? p.seo_description}`),
     '',
