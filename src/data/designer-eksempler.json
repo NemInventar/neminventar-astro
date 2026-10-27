@@ -367,6 +367,42 @@
     }
   },
   {
+    "id": "entre-baenk-mellem-garderober",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Entré med bænk mellem to åbne garderober",
+    "tekst": "Fem skabe i egefinér med klar olie. Et lukket skab i hver ende med indeliggende låge uden greb, to åbne garderober med hattehylde, bøjlestang og to skuffer forneden, og i midten en bænk på 100 cm med to skuffer og hynde, med fri væg over til et spejl. 340 cm bred og 210 cm høj.",
+    "st": {
+      "n": 5,
+      "b": 60,
+      "h": 210,
+      "d": 60,
+      "mat": "eg",
+      "inde": "garderobe",
+      "indl": 1,
+      "greb": "push",
+      "m": [
+        {
+          "i": 1,
+          "t": "aaben",
+          "inde": "garderobe_skuffer"
+        },
+        {
+          "i": 2,
+          "t": "baenk",
+          "b": 100,
+          "bsk": 2,
+          "ob": 0
+        },
+        {
+          "i": 3,
+          "t": "aaben",
+          "inde": "garderobe_skuffer"
+        }
+      ]
+    }
+  },
+  {
     "id": "garderobe-med-baenk",
     "produkt": "hoejskab",
     "gruppe": "Højskabe",

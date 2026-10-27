@@ -25,6 +25,9 @@ const hoejskabRender = products.find((p) => p.slug === 'hoejskab-krydsfiner');
 const STILL = {
   locker: { src: cdn(morkhoj('26_garderobe-lockere-roede-med-baenk-og-skohylder.jpg'), 1400), tag: 'Foto fra en leverance', alt: 'Røde lockers med perforerede låger og kodelås over en bænk med skohylder', pos: '50% 58%' },
   hoejskab: { src: cdn(hoejskabRender ? billedeAf(hoejskabRender, 'blaa') : '', 1400), tag: 'Visualisering', alt: 'Højskabe i krydsfiner med blå låger, ét skab åbent med hylder', pos: '50% 50%' },
+  // bænken (Milot 27-10-2026: "Sørg også for, at bænke er vist i den øverste bjælke af designeren på forsiden"): designerens egen
+  // 3D af bænken, som indlejringen starter den (100 cm egefinér, to skuffer og hynde) — så skiftet til 3D'en ikke springer
+  baenk: { src: `${base}forside/baenk-eg.jpg`, tag: 'Visualisering', alt: 'Bænk i egefinér med to skuffer og hynde', pos: '50% 50%' },
   // samme visualisering som landingssiden /akustikvaegge-perforeret-krydsfiner (landing_web_2026_09_24)
   akustik: { src: cdn('https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1790250138590.png', 1400), tag: 'Visualisering', alt: 'Akustikvæg i perforeret birkekrydsfiner i et musiklokale', pos: '50% 40%' },
 };
@@ -63,7 +66,7 @@ const katalog = KATALOG_TOP.map((k) => {
     <nav class="hp-paths" aria-label="Tre veje ind">
       <a class="hp-path" href="#design" data-p="design" aria-current="true">
         <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg></span>
-        <span><b>Design det selv</b><small>Lockers, højskabe og akustikvægge i 3D. Mål, kulør og antal.</small></span><span class="ar" aria-hidden="true">→</span>
+        <span><b>Design det selv</b><small>Lockers, højskabe, bænke og akustikvægge i 3D. Mål, kulør og antal.</small></span><span class="ar" aria-hidden="true">→</span>
       </a>
       <a class="hp-path" href="#katalog" data-p="katalog">
         <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg></span>
@@ -84,6 +87,7 @@ const katalog = KATALOG_TOP.map((k) => {
         <div class="hp-seg" id="hpProd" role="group" aria-label="Produkt">
           <button type="button" aria-pressed="false" data-k="locker">Lockers</button>
           <button type="button" aria-pressed="true" data-k="hoejskab">Højskab</button>
+          <button type="button" aria-pressed="false" data-k="baenk">Bænk</button>
           <button type="button" aria-pressed="false" data-k="akustik">Akustik</button>
         </div>
         <span class="hp-note">Til mål · tegning og pris inden for én arbejdsdag</span>
@@ -134,6 +138,13 @@ const katalog = KATALOG_TOP.map((k) => {
             <div class="hp-seg sm" id="hpH" role="group" aria-label="Højde i cm">
               <button type="button" data-h="1.8" aria-pressed="false">180</button><button type="button" data-h="2.1" aria-pressed="true">210</button><button type="button" data-h="2.4" aria-pressed="false">240</button>
             </div>
+          </div>
+          <!-- bænk (27-10-2026): bredden og skufferne under sædet -->
+          <div class="hp-steps" data-for="baenk" hidden>
+            <div class="hp-seg sm" id="hpBw" role="group" aria-label="Bredde i cm">
+              <button type="button" data-bw="100" aria-pressed="true">100</button><button type="button" data-bw="120" aria-pressed="false">120</button><button type="button" data-bw="160" aria-pressed="false">160</button>
+            </div>
+            <div class="hp-step"><button type="button" data-d="r,-1" aria-label="Færre skuffer">−</button><output data-o="r">2</output><button type="button" data-d="r,1" aria-label="Flere skuffer">+</button></div>
           </div>
           <!-- akustik: bredder, der går op i hele paneler à 60 cm med 5 mm fuge (3, 5, 7 og 9 paneler), og de fire hulmønstre -->
           <div class="hp-steps stak" data-for="akustik" hidden>
@@ -351,7 +362,7 @@ const katalog = KATALOG_TOP.map((k) => {
   type Still = { src: string; tag: string; alt: string; pos: string; t?: Record<string, unknown> };
   const { d: STILL = {}, m: STILL_M = {} }: { d?: Record<string, Still>; m?: Record<string, Still> } = JSON.parse(document.getElementById('hp-still')?.textContent || '{}');
   const stillSrc = document.getElementById('hpStillSrc') as HTMLSourceElement | null;
-  type Prod = 'locker' | 'hoejskab' | 'akustik';
+  type Prod = 'locker' | 'hoejskab' | 'akustik' | 'baenk';
   // 3D'en kommer af sig selv med fremvisningen — på computer og fra 23-10-2026 også på telefon (Milot: "Det skal komme på samme
   // måde som hjemmesiden på pc, altså nærmest med det samme"). Kun med grafikkort: uden hardwareacceleration tegner browseren
   // 3D på processoren, og det frøs en hel browser (07-10-2026). Med datasparetilstand hentes 3D først ved tryk.
@@ -374,8 +385,10 @@ const katalog = KATALOG_TOP.map((k) => {
     locker: { c: 6, r: 2, h: 2.1, kuloer: har('roedbrun') ? 'roedbrun' : sw[0]?.dataset.slug || 'roedbrun' },
     hoejskab: wow ? { c: 6, r: 1, h: 2.0, kuloer: 'dark-roast', mat: 'eg' } : { c: 4, r: 1, h: 2.1, kuloer: har('blaa') ? 'blaa' : sw[0]?.dataset.slug || 'natur', mat: 'kryds' },
     akustik: { c: 302, r: 1, h: 2.4, kuloer: 'natur', t: 'standard' },
+    // bænken (27-10-2026): c = bredden i cm, r = skuffer under sædet — designerens standard (100 cm egefinér, to skuffer)
+    baenk: { c: 100, r: 2, h: 0.42, kuloer: 'natur', mat: 'eg' },
   };
-  const LIM = { locker: { c: [1, 10], r: [1, 3] }, hoejskab: { c: [1, 8], r: [1, 1] }, akustik: { c: [181, 544], r: [1, 1] } } as const;
+  const LIM = { locker: { c: [1, 10], r: [1, 3] }, hoejskab: { c: [1, 8], r: [1, 1] }, akustik: { c: [181, 544], r: [1, 1] }, baenk: { c: [60, 160], r: [0, 3] } } as const;
   // Hulmønstrene som i designeren (ni-apps produkter/akustik/produkt.js, TAETHED): designeren udleder mønstret af hul,
   // afstand og mønster, så alle tre sendes — ellers bliver det "Tilpasset"
   const HUL: Record<string, { hul: number; cc: number; moenster: string; navn: string }> = {
@@ -391,6 +404,7 @@ const katalog = KATALOG_TOP.map((k) => {
     const s = S[p];
     // akustik og lockers (25-10-2026): pladen og lågerne, som fremvisningen efterlod dem — en kulør-knap farver det, man ser
     if (p === 'akustik') { const { navn, ...hul } = HUL[s.t || 'standard'], mat = s.mat || 'birk'; return { mat, b: s.c, ...hul, farve: { [mat]: s.kuloer } }; }
+    if (p === 'baenk') { const mat = s.mat || 'eg'; return { mat, b: s.c, bsk: s.r, farve: { [mat]: s.kuloer } }; }
     if (p === 'locker') return s.front === 'farve' ? { mat: 'kryds', soejler: s.c, raekker: s.r, front: 'farve', farve: { laage: s.kuloer } } : { mat: 'kryds', soejler: s.c, raekker: s.r, farve: { kryds: s.kuloer } };
     const mat = s.mat || 'kryds';
     if (s.front === 'farve') return { mat, n: s.c, h: Math.round(s.h * 100), front: 'farve', farve: { laage: s.kuloer } };
@@ -409,6 +423,9 @@ const katalog = KATALOG_TOP.map((k) => {
     if (cur === 'hoejskab') {
       if (Number.isFinite(t.n)) s.c = t.n;
       if (Number.isFinite(t.h)) s.h = t.h / 100;
+    } else if (cur === 'baenk') {
+      if (Number.isFinite(t.b)) s.c = t.b;
+      if (Number.isFinite(t.bsk)) s.r = t.bsk;
     } else if (cur === 'locker') {
       if (Number.isFinite(t.soejler)) s.c = t.soejler;
       if (Number.isFinite(t.raekker)) s.r = t.raekker;
@@ -418,7 +435,7 @@ const katalog = KATALOG_TOP.map((k) => {
       if (hul) s.t = hul;
     }
   }
-  const PRODUKTNAVN: Record<Prod, string> = { locker: 'lockers', hoejskab: 'højskabe', akustik: 'akustikpaneler' };
+  const PRODUKTNAVN: Record<Prod, string> = { locker: 'lockers', hoejskab: 'højskabe', akustik: 'akustikpaneler', baenk: 'bænke' };
   let cur: Prod = 'hoejskab';
   let d3: Indlejring | null = null;
   let d3spec = '', loading = false;
@@ -431,6 +448,7 @@ const katalog = KATALOG_TOP.map((k) => {
       const n = s.c * s.r, w = Math.round((s.c * 0.30 + 0.018) * 100), h = Math.round((0.43 + s.r * 0.80) * 100);
       return `${n} ${n === 1 ? 'locker' : 'lockers'} · ${w} × ${h} cm · med bænk og skohylder`;
     }
+    if (cur === 'baenk') return `Bænk ${s.c} × 42 × 40 cm · ${s.r ? `${s.r} ${s.r === 1 ? 'skuffe' : 'skuffer'}` : 'åben under sædet'}`;
     if (cur === 'akustik') return `Akustikpaneler · ${s.c} × 240 cm · ${Math.round((s.c + 0.5) / 60.5)} paneler · huller ${HUL[s.t || 'standard'].navn.toLowerCase()}`;
     return `${s.c} ${s.c === 1 ? 'højskab' : 'højskabe'} · ${s.c * 60} × ${Math.round(s.h * 100)} × 60 cm`;
   }
@@ -453,15 +471,15 @@ const katalog = KATALOG_TOP.map((k) => {
     if (ifc && url) ifc.href = url + (url.includes('?') ? '&' : '?') + 'hent=ifc';
   }
   // teksten på 3D'en: "Du kan selv ændre skabene i designeren" — navnet følger produktet og antallet
-  const RET_NAVN = (p: Prod, s: Tilstand) => (p === 'akustik' ? 'akustikvæggen' : p === 'locker' ? (s.c * s.r === 1 ? 'lockeren' : 'lockerne') : s.c === 1 ? 'skabet' : 'skabene');
+  const RET_NAVN = (p: Prod, s: Tilstand) => (p === 'akustik' ? 'akustikvæggen' : p === 'baenk' ? 'bænken' : p === 'locker' ? (s.c * s.r === 1 ? 'lockeren' : 'lockerne') : s.c === 1 ? 'skabet' : 'skabene');
   function sync() {
     const s = S[cur];
     sw.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.slug === s.kuloer)));
     const navn = sw.find((b) => b.dataset.slug === s.kuloer)?.getAttribute('aria-label') ?? '';
     $('hpColname')!.textContent = navn;
     document.querySelectorAll<HTMLElement>('.hp-steps').forEach((el) => { el.hidden = el.dataset.for !== cur; });
-    $('hpDimLbl')!.textContent = cur === 'locker' ? 'Antal rum' : cur === 'akustik' ? 'Bredde (cm) og huller' : 'Antal og højde';
-    if (hint) hint.lastChild!.textContent = cur === 'akustik' ? '3D · træk for at dreje' : '3D · træk for at dreje · tryk på en låge';
+    $('hpDimLbl')!.textContent = cur === 'locker' ? 'Antal rum' : cur === 'akustik' ? 'Bredde (cm) og huller' : cur === 'baenk' ? 'Bredde (cm) og skuffer' : 'Antal og højde';
+    if (hint) hint.lastChild!.textContent = cur === 'akustik' || cur === 'baenk' ? '3D · træk for at dreje' : '3D · træk for at dreje · tryk på en låge';
     document.querySelectorAll<HTMLElement>(`.hp-steps[data-for="${cur}"] output`).forEach((o) => { o.textContent = String(s[o.dataset.o as 'c' | 'r']); });
     document.querySelectorAll<HTMLButtonElement>(`.hp-steps[data-for="${cur}"] [data-d]`).forEach((b) => {
       const [k, d] = b.dataset.d!.split(','); const lim = (LIM[cur] as any)[k] as readonly [number, number];
@@ -469,6 +487,7 @@ const katalog = KATALOG_TOP.map((k) => {
     });
     document.querySelectorAll<HTMLButtonElement>('#hpH button').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.h! === S.hoejskab.h)));
     document.querySelectorAll<HTMLButtonElement>('#hpB button').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.b! === S.akustik.c)));
+    document.querySelectorAll<HTMLButtonElement>('#hpBw button').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.bw! === S.baenk.c)));
     document.querySelectorAll<HTMLButtonElement>('#hpHul button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.t === S.akustik.t)));
     spec!.textContent = specTekst();
     const retNavn = $('hpRetNavn');
@@ -538,6 +557,7 @@ const katalog = KATALOG_TOP.map((k) => {
   }));
   document.querySelectorAll<HTMLButtonElement>('#hpH button').forEach((b) => b.addEventListener('click', () => { roert = true; S.hoejskab.h = +b.dataset.h!; sync(); d3?.saet(til('hoejskab')); }));
   document.querySelectorAll<HTMLButtonElement>('#hpB button').forEach((b) => b.addEventListener('click', () => { S.akustik.c = +b.dataset.b!; sync(); d3?.saet(til('akustik')); }));
+  document.querySelectorAll<HTMLButtonElement>('#hpBw button').forEach((b) => b.addEventListener('click', () => { roert = true; S.baenk.c = +b.dataset.bw!; sync(); d3?.saet(til('baenk')); }));
   document.querySelectorAll<HTMLButtonElement>('#hpHul button').forEach((b) => b.addEventListener('click', () => { S.akustik.t = b.dataset.t!; sync(); d3?.saet(til('akustik')); }));
   $('hpTilbud')?.addEventListener('click', (e) => {
     e.preventDefault();
