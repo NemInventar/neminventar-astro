@@ -34,7 +34,9 @@ PRIS_JS = """async (p) => {
   const base = new URL(`produkter/${p}/pris.js`, location.href), m = await import(base.href);
   const k = await import(new URL('core/pris.js', location.href).href);
   const D = await (await fetch(new URL(m.GITTER, base), { cache: 'no-cache' })).json();
-  const v = m.lavPris({ D, MOMS: k.MOMS, web: k.web }).vare(window.designer.tilstand, { kunde: 'privat' });
+  // den offentlige designer kalder webprisen salg (28-10-2026) — begge navne, så scriptet virker før og efter
+  const salg = k.salg ?? k.web;
+  const v = m.lavPris({ D, MOMS: k.MOMS, salg, web: salg }).vare(window.designer.tilstand, { kunde: 'privat' });
   return v.ok ? { inkl: Math.round(v.inkl), ex: Math.round(v.ex), gitter: D.regnet } : null;
 }"""
 

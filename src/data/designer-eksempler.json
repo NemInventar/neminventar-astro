@@ -561,6 +561,42 @@
     }
   },
   {
+    "id": "garderobevaeg-aabne-midte",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Garderobevæg med åbne skabe i midten",
+    "tekst": "Fem skabe på 76 cm i bøgefinér med klar olie, kun 40 cm dybe. De tre i midten er åbne med fire hylder. De to yderste har indeliggende låger olieret i Fern, der åbner med et tryk. 380 cm bred.",
+    "st": {
+      "n": 5,
+      "b": 76,
+      "h": 195,
+      "d": 40,
+      "mat": "boeg",
+      "inde": "hylder",
+      "hy": 4,
+      "indl": 1,
+      "front": "farve",
+      "farve": {
+        "laage": "fern"
+      },
+      "greb": "push",
+      "m": [
+        {
+          "i": 1,
+          "t": "aaben"
+        },
+        {
+          "i": 2,
+          "t": "aaben"
+        },
+        {
+          "i": 3,
+          "t": "aaben"
+        }
+      ]
+    }
+  },
+  {
     "id": "indeliggende-eg",
     "produkt": "hoejskab",
     "gruppe": "Højskabe",

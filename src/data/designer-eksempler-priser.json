@@ -1,5 +1,5 @@
 {
- "regnet": "2026-10-26T09:32:31+00:00",
+ "regnet": "2026-10-28T20:21:53+00:00",
  "kilde": "https://designer.neminventar.dk/designer.html",
  "note": "privat, inkl. moms, ekskl. levering — designerens egen prismodel (scripts/designer_eksempler.py)",
  "priser": {
@@ -142,6 +142,11 @@
    "inkl": 28450,
    "ex": 22760,
    "gitter": "2026-10-21T04:25:35+00:00"
+  },
+  "garderobevaeg-aabne-midte": {
+   "inkl": 47100,
+   "ex": 37680,
+   "gitter": "2026-10-23T10:00:26+00:00"
   },
   "garderobevaeg-shinnoki": {
    "inkl": 193525,
