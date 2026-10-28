@@ -1060,6 +1060,116 @@
     }
   },
   {
+    "id": "skolegang-siddepladser",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Skolegang med siddepladser",
+    "tekst": "48 rum i fyrrekrydsfiner i to elementer med en ramme i 35 mm krydsfiner om hvert og en bænk på 150 cm med ryg og hynde efter hvert element. Kodelås og institutionshængsler.",
+    "st": {
+      "soejler": 16,
+      "raekker": 3,
+      "b": 30,
+      "h": 40,
+      "d": 45,
+      "mat": "kryds",
+      "haengsel": "institution",
+      "greb": "ingen",
+      "laas": "kode",
+      "baenke": "efter",
+      "blok": 8,
+      "bl": 150,
+      "hynde": "med",
+      "ramme": "ramme"
+    }
+  },
+  {
+    "id": "omklaedning-baenk-efter",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Omklædning med en bænk efter hvert element",
+    "tekst": "32 rum i birkekrydsfiner i to elementer, hver med en bænk på 120 cm med ryg ved siden af. Institutionshængsler og beslag til brugerens egen hængelås.",
+    "st": {
+      "soejler": 16,
+      "raekker": 2,
+      "b": 30,
+      "h": 60,
+      "d": 45,
+      "mat": "birk",
+      "haengsel": "institution",
+      "laas": "haengelaas",
+      "baenke": "efter",
+      "blok": 8,
+      "bl": 120
+    }
+  },
+  {
+    "id": "aabne-garderoberum-boernehave",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Åbne garderoberum til børnehaven",
+    "tekst": "12 åbne rum uden låger i blå krydsfiner med en hylde og en frakkekrog i hvert rum. Foran står en bænk med to skorum under sædet pr. søjle.",
+    "st": {
+      "soejler": 6,
+      "raekker": 2,
+      "b": 30,
+      "h": 60,
+      "d": 40,
+      "mat": "kryds",
+      "farve": {
+        "kryds": "blaa"
+      },
+      "laager": "uden",
+      "hylder": "en",
+      "krog": "krog",
+      "sokkel": "baenk"
+    }
+  },
+  {
+    "id": "lockers-ramme-roedbrune-laager",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Lockers med ramme og rødbrune låger",
+    "tekst": "24 rum i fyrrekrydsfiner i to elementer med en ramme i 35 mm krydsfiner om hvert, låger olieret i rødbrun og kodelås.",
+    "st": {
+      "soejler": 12,
+      "raekker": 2,
+      "b": 30,
+      "h": 50,
+      "d": 45,
+      "mat": "kryds",
+      "front": "farve",
+      "farve": {
+        "laage": "roedbrun"
+      },
+      "laas": "kode",
+      "greb": "ingen",
+      "blok": 6,
+      "ramme": "ramme"
+    }
+  },
+  {
+    "id": "sportshal-huller-baenk",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Sportshal med ventilerede låger og bænk",
+    "tekst": "32 rum i fyrrekrydsfiner med huller over hele lågen, så rummene er ventilerede. Mellem de to elementer står en bænk på 200 cm med ryg og hynde.",
+    "st": {
+      "soejler": 16,
+      "raekker": 2,
+      "b": 30,
+      "h": 80,
+      "d": 50,
+      "mat": "kryds",
+      "huller": "overalt",
+      "haengsel": "institution",
+      "laas": "haengelaas",
+      "baenke": "imellem",
+      "blok": 8,
+      "bl": 200,
+      "hynde": "med"
+    }
+  },
+  {
     "id": "akustikvaeg",
     "produkt": "akustik",
     "gruppe": "Akustik",

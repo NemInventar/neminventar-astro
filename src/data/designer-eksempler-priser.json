@@ -1,5 +1,5 @@
 {
- "regnet": "2026-10-28T20:21:53+00:00",
+ "regnet": "2026-10-28T20:50:06+00:00",
  "kilde": "https://designer.neminventar.dk/designer.html",
  "note": "privat, inkl. moms, ekskl. levering — designerens egen prismodel (scripts/designer_eksempler.py)",
  "priser": {
@@ -12,6 +12,11 @@
    "inkl": 40800,
    "ex": 32640,
    "gitter": "2026-10-21T04:25:35+00:00"
+  },
+  "aabne-garderoberum-boernehave": {
+   "inkl": 42000,
+   "ex": 33600,
+   "gitter": "2026-10-27T21:28:43+00:00"
   },
   "akustik-boelger": {
    "inkl": 13575,
@@ -193,6 +198,11 @@
    "ex": 50400,
    "gitter": "2026-10-26T08:46:53+00:00"
   },
+  "lockers-ramme-roedbrune-laager": {
+   "inkl": 81000,
+   "ex": 64800,
+   "gitter": "2026-10-27T21:28:43+00:00"
+  },
   "lockers-sort-kompakt": {
    "inkl": 55800,
    "ex": 44640,
@@ -202,6 +212,11 @@
    "inkl": 35250,
    "ex": 28200,
    "gitter": "2026-10-26T08:46:53+00:00"
+  },
+  "omklaedning-baenk-efter": {
+   "inkl": 121250,
+   "ex": 97000,
+   "gitter": "2026-10-27T21:28:43+00:00"
   },
   "omklaedningsbaenk-kompakt": {
    "inkl": 6675,
@@ -277,6 +292,16 @@
    "inkl": 3350,
    "ex": 2680,
    "gitter": "2026-10-21T04:25:35+00:00"
+  },
+  "skolegang-siddepladser": {
+   "inkl": 166000,
+   "ex": 132800,
+   "gitter": "2026-10-27T21:28:43+00:00"
+  },
+  "sportshal-huller-baenk": {
+   "inkl": 129875,
+   "ex": 103900,
+   "gitter": "2026-10-27T21:28:43+00:00"
   },
   "to-skabe-birk-skovgroen": {
    "inkl": 29100,
