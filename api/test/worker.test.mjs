@@ -130,6 +130,23 @@ test('POST /api/event → plausible.io med user-agent, content-type, body og X-F
   assert.equal(r.status, 202);
 });
 
+test('GET /pris → designer-ordre ?pris med linkets parametre, ingen headere fra besøgeren; 200 caches, fejl gør ikke', async () => {
+  const gemt = new Map();
+  globalThis.caches = { default: { match: async (k) => gemt.get(k.url)?.clone(), put: async (k, r) => { gemt.set(k.url, r); } } };
+  svar = () => new Response('Nem Inventar, pris regnet …', { status: 200, headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'public, max-age=600' } });
+  const r = await req('/pris?p=hoejskab&antal=3&bredde=80', { headers: BESOEG });
+  assert.equal(kald[0].url, `${S}/functions/v1/designer-ordre?pris=1&p=hoejskab&antal=3&bredde=80`);
+  assert.equal(kald[0].headers.get('cookie'), null); assert.equal(kald[0].headers.get('origin'), null); assert.equal(kald[0].headers.get('x-forwarded-for'), null);
+  assert.equal(r.status, 200); assert.equal(r.headers.get('content-type'), 'text/plain; charset=utf-8');
+  await req('/pris?p=hoejskab&antal=3&bredde=80');
+  assert.equal(kald.length, 1, 'andet kald rammer cachen');
+  svar = () => new Response('linket kunne ikke læses', { status: 400 });
+  await req('/pris?p=x'); await req('/pris?p=x');
+  assert.equal(kald.length, 3, 'en fejl caches ikke');
+  assert.equal((await req(`/pris?p=hoejskab&t=${'a'.repeat(2100)}`)).status, 414);
+  assert.equal(kald.length, 3, 'et for langt link når ikke funktionen');
+});
+
 test('alt andet er 404, og upstream kaldes ikke', async () => {
   const forkerte = [
     ['/', 'GET'], ['/contact-form', 'PUT'], ['/contact-form', 'DELETE'], ['/contact-form/', 'POST'],
