@@ -18,6 +18,7 @@ export const DESIGNER_AF: Record<string, 'locker' | 'hoejskab'> = {
   'lockerskab-ventilerede-laager': 'locker',
   'lockerbank-omklaedning': 'locker',
   'mobil-lockers-krydsfiner': 'locker',
+  'lockers-med-baenke': 'locker',
   'hoejskab-krydsfiner': 'hoejskab',
   'opbevaringsskab-bejdset-krydsfiner': 'hoejskab',
   'opbevaringsskab-laminat-standard': 'hoejskab',
@@ -40,6 +41,9 @@ const TILSTAND: Record<string, (kuloer?: string) => Record<string, unknown>> = {
   'lockerbank-omklaedning': (k) => ({ mat: 'kryds', farve: { kryds: k ?? 'natur' }, raekker: 5 }),
   // Mobil-lockers (Sundby-modellen, 08-10-2026): 3 × 10 små rum, uden sokkel, hængelås — som designerens valg siden 1e074a6
   'mobil-lockers-krydsfiner': (k) => ({ mat: 'kryds', farve: { kryds: k ?? 'natur' }, soejler: 3, raekker: 10, b: 26, h: 16, d: 28, sokkel: 'uden', laas: 'haengelaas' }),
+  // Lockers med bænke (Joachim 30-10-2026, designer-render dff490cf): 3 elementer à 3 × 2 rum, bænk med ryg og hynde efter
+  // hvert — kuløren farver lågerne, korpus og bænke er klar olie (som renderne)
+  'lockers-med-baenke': (k) => ({ ...laager(k), soejler: 9, raekker: 2, b: 30, h: 40, d: 45, haengsel: 'institution', laas: 'noegle', baenke: 'efter', blok: 3, bl: 100, hynde: 'med' }),
 };
 export const kod = (st: unknown) => {
   let s = '';
