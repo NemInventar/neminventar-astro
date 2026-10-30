@@ -1170,6 +1170,32 @@
     }
   },
   {
+    "id": "elevskabe-baenke-groenne-laager",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Elevskabe med bænke og grønne låger",
+    "tekst": "18 rum på 30 × 40 cm i fyrrekrydsfiner i tre elementer. Lågerne er olieret i Fern, og efter hvert element står en bænk på 100 cm med ryg og hynde. Institutionshængsler og nøglelås.",
+    "st": {
+      "soejler": 9,
+      "raekker": 2,
+      "b": 30,
+      "h": 40,
+      "d": 45,
+      "mat": "kryds",
+      "front": "farve",
+      "farve": {
+        "kryds": "natur",
+        "laage": "fern"
+      },
+      "haengsel": "institution",
+      "laas": "noegle",
+      "baenke": "efter",
+      "blok": 3,
+      "bl": 100,
+      "hynde": "med"
+    }
+  },
+  {
     "id": "akustikvaeg",
     "produkt": "akustik",
     "gruppe": "Akustik",

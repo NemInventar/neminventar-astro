@@ -1,5 +1,5 @@
 {
- "regnet": "2026-10-28T20:50:06+00:00",
+ "regnet": "2026-10-30T18:25:30+00:00",
  "kilde": "https://designer.neminventar.dk/designer.html",
  "note": "privat, inkl. moms, ekskl. levering — designerens egen prismodel (scripts/designer_eksempler.py)",
  "priser": {
@@ -87,6 +87,11 @@
    "inkl": 59400,
    "ex": 47520,
    "gitter": "2026-10-26T08:46:53+00:00"
+  },
+  "elevskabe-baenke-groenne-laager": {
+   "inkl": 73875,
+   "ex": 59100,
+   "gitter": "2026-10-27T21:28:43+00:00"
   },
   "entre-baenk-mellem-garderober": {
    "inkl": 41550,
