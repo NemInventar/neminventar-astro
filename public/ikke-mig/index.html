@@ -25,7 +25,7 @@
 <body>
 <main>
   <h1>Tæl ikke mine besøg</h1>
-  <p>For Nem Inventars eget hold. Tryk én gang på hver enhed og i hver browser, du bruger (computer, telefon, Chrome, Edge …). Så tæller dine besøg på neminventar.dk ikke med i besøgsstatistikken, også selvom din IP-adresse skifter.</p>
+  <p>For Nem Inventars eget hold. Tryk én gang på hver enhed og i hver browser, du bruger (computer, telefon, Chrome, Edge …). Så tæller dine besøg på neminventar.dk ikke med i besøgsstatistikken, også selvom din IP-adresse skifter. Designeren er et andet domæne, så den slås fra med linket, der kommer frem, når du har trykket. Skriver du en mail på @neminventar.dk i designeren, slås den fra af sig selv.</p>
   <div class="status" id="status"></div>
   <button id="knap"></button>
   <p style="margin-top:32px;font-size:14px">Valget gemmes i browseren. Rydder du browserdata eller bruger et privat vindue, skal du trykke igen. <a href="/">Til forsiden</a></p>
@@ -41,9 +41,11 @@
       b.style.display = 'none'; return;
     }
     s.className = 'status' + (on ? ' on' : '');
+    // designer.neminventar.dk er et andet domæne med sit eget valg: ?ikke-mig slår det til, ?ikke-mig=0 fra
+    var D = 'https://designer.neminventar.dk/designer.html?ikke-mig';
     s.innerHTML = on
-      ? '<strong>✓ Dine besøg tælles ikke</strong>Gælder denne browser på denne enhed.'
-      : '<strong>Dine besøg tælles med</strong>Tryk på knappen for at slå det fra i denne browser.';
+      ? '<strong>✓ Dine besøg tælles ikke</strong>Gælder denne browser på denne enhed. <a href="' + D + '">Gør det samme i designeren</a> (åbner designeren, og så tælles den heller ikke).'
+      : '<strong>Dine besøg tælles med</strong>Tryk på knappen for at slå det fra i denne browser. <a href="' + D + '=0">Tæl også designeren igen</a>.';
     b.textContent = on ? 'Tæl mine besøg igen' : 'Tæl ikke mine besøg';
     b.className = on ? 'ghost' : '';
   }
