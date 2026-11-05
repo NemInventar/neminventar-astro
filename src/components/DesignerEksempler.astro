@@ -21,10 +21,15 @@ const FILTRE: { p: string; titel: string; anker: string }[] = [
   { p: 'hoejskab', titel: 'Højskabe', anker: 'hoejskabe' }, { p: 'baenk', titel: 'Bænke', anker: 'baenke' },
   { p: 'locker', titel: 'Lockers', anker: 'lockers' }, { p: 'akustik', titel: 'Akustik', anker: 'akustik' },
 ];
-// Udvalgte i den rækkefølge, siden angiver (redaktionel); ukendte id'er springes over.
-const liste = ids ? ids.map((id) => EKS.find((e) => e.id === id)).filter((e): e is (typeof EKS)[number] => Boolean(e)) : EKS;
-const billede = (id: string) => `${base}billeder/designer-eksempler/${id}.jpg`;
 const PRIS = PRISER.priser as Record<string, { inkl: number } | undefined>;
+// Udvalgte i den rækkefølge, siden angiver (redaktionel); ukendte id'er springes over. Alle (galleriet): produkterne i
+// samme rækkefølge som i filen, og inden for hvert produkt de dyreste først (Joachim 05-11-2026: "vi skal ikke reklamere
+// med for billige bænke") — hele entréer og skabsvægge øverst. Eksempler uden pris står sidst i deres produkt.
+const PRODUKTER = [...new Set(EKS.map((e) => e.produkt))];
+const liste = ids
+  ? ids.map((id) => EKS.find((e) => e.id === id)).filter((e): e is (typeof EKS)[number] => Boolean(e))
+  : [...EKS].sort((a, b) => PRODUKTER.indexOf(a.produkt) - PRODUKTER.indexOf(b.produkt) || (PRIS[b.id]?.inkl ?? 0) - (PRIS[a.id]?.inkl ?? 0));
+const billede = (id: string) => `${base}billeder/designer-eksempler/${id}.jpg`;
 const kr = new Intl.NumberFormat('da-DK', { maximumFractionDigits: 0 });
 const antal = (p: string) => liste.filter((e) => e.produkt === p).length;
 ---
