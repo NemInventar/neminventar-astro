@@ -771,33 +771,49 @@
     }
   },
   {
-    "id": "skobaenk",
+    "id": "baenkeraekke-skuffer-skohylde",
     "produkt": "baenk",
     "gruppe": "Bænke",
-    "titel": "Skobænk med hynde",
-    "tekst": "100 cm skobænk i egefinér, åben under sædet med en skohylde: to etager til sko og en hynde i gråt møbelstof på toppen.",
+    "titel": "Bænkerække med skuffer og skohylde",
+    "tekst": "Tre bænke på 80 cm i egefinér under én gennemgående sædeplade: to skuffer i hver ende, en skohylde med to etager i midten og én lang hynde i gråt møbelstof.",
     "st": {
-      "b": 100,
-      "d": 35,
-      "bsk": 0,
-      "sh": 1,
+      "n": 3,
+      "b": 80,
+      "d": 40,
+      "bsk": 2,
+      "sh": 0,
       "hynde": 1,
-      "mat": "eg"
+      "mat": "eg",
+      "m": [
+        {
+          "i": 1,
+          "bsk": 0,
+          "sh": 1
+        }
+      ]
     }
   },
   {
-    "id": "skobaenk-smal",
+    "id": "baenkeraekke-smal-krydsfiner",
     "produkt": "baenk",
     "gruppe": "Bænke",
-    "titel": "Smal skobænk i krydsfiner",
-    "tekst": "80 cm bred og 30 cm dyb, så den passer i en smal entré. Skohylde under sædet og hynde i gråt møbelstof.",
+    "titel": "Smal bænkerække i krydsfiner",
+    "tekst": "To bænke på 80 cm og kun 30 cm dybe, så de passer i en smal entré: en skohylde med to etager og to skuffer under én sædeplade med hynde i gråt møbelstof.",
     "st": {
+      "n": 2,
       "b": 80,
       "d": 30,
-      "sh": 1,
-      "bsk": 0,
+      "bsk": 2,
+      "sh": 0,
       "hynde": 1,
-      "mat": "kryds"
+      "mat": "kryds",
+      "m": [
+        {
+          "i": 0,
+          "bsk": 0,
+          "sh": 1
+        }
+      ]
     }
   },
   {
@@ -833,11 +849,11 @@
     "id": "skobaenk-hvid-ask",
     "produkt": "baenk",
     "gruppe": "Bænke",
-    "titel": "Skobænk i hvid ask",
-    "tekst": "120 cm skobænk i askefinér olieret i Cotton White med skohylde under sædet og hynde ovenpå.",
+    "titel": "Lang skobænk i hvid ask",
+    "tekst": "160 cm skobænk i askefinér olieret i Cotton White med skohylde under sædet og hynde ovenpå.",
     "st": {
-      "b": 120,
-      "d": 35,
+      "b": 160,
+      "d": 40,
       "sh": 1,
       "bsk": 0,
       "hynde": 1,
