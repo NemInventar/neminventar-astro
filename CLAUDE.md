@@ -170,10 +170,12 @@ npm run preview  # serv dist/ lokalt
 ```
 src/
 ├── layouts/Base.astro        # html-skal + SEO-meta (title, description, canonical, OG), fonts, Nav+Footer
-├── components/Nav.astro       # sticky nav, base-bevidste links
+├── components/Nav.astro       # sticky nav, base-bevidste links · sprogskiftet bliver på siden (lib/sprog.ts, sidens hreflang-par)
 ├── components/Footer.astro
+├── components/Forside.astro   # forsiden på dansk OG engelsk (index.astro og en/index.astro er kun indgange), designeren i toppen
+├── lib/engelsk.ts             # engelske navne på typer, kulører, forsidens sager og holdet — uden en række her vises den ikke på /en/
 ├── pages/
-│   ├── index.astro            # forside (hero, katalog, bridge, cases, værdier, cert, proces, CTA)
+│   ├── index.astro            # forside → components/Forside.astro
 │   ├── produkter/[slug].astro # produkt-detalje, getStaticPaths fra v_web_products
 │   └── projekter/[slug].astro # case-detalje, getStaticPaths fra v_web_cases
 ├── lib/supabase.ts            # build-time Supabase-klient + getWebProducts/getWebCases + typer

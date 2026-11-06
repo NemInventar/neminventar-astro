@@ -15,9 +15,25 @@ import { formularFetch } from '../lib/api';
 
 type Status = 'idle' | 'sending' | 'ok' | 'error';
 
-interface Props { defaultOpen?: boolean; label?: string }
+// lang: den engelske forsides "Send os materialet" (06-11-2026). Leadet og Milots besked er de samme.
+interface Props { defaultOpen?: boolean; label?: string; lang?: 'da' | 'en' }
 
-export default function CallbackForm({ defaultOpen = false, label = 'Bestil et opkald' }: Props) {
+const TEKST = {
+  da: { mangler: 'Skriv dit navn og et telefonnummer, så ringer vi dig op.', fejl: 'Det lykkedes ikke at sende. Ring til os på +45 42 42 26 84.',
+    tak: 'Tak, vi ringer dig op.', takTekst: 'Du hører fra os inden for en arbejdsdag. Haster det, så ring på +45 42 42 26 84.',
+    titel: 'Bestil et opkald', lead: 'Skriv dit nummer, så ringer vi dig op og tager en snak om projektet.',
+    navn: 'Navn *', telefon: 'Telefon *', firma: 'Virksomhed', hvad: 'Hvad drejer det sig om?', ph: 'Fx garderober til en skole, udbud i november',
+    sender: 'Sender…', send: 'Ring mig op', note: 'Vi bruger kun dit nummer til at ringe dig op. Se vores', politik: 'privatlivspolitik' },
+  en: { mangler: 'Enter your name and a phone number, and we will call you.', fejl: 'Sending failed. Call us on +45 42 42 26 84.',
+    tak: 'Thank you, we will call you.', takTekst: 'You will hear from us within one working day. If it is urgent, call +45 42 42 26 84.',
+    titel: 'Book a call', lead: 'Enter your number, and we will call you to talk about the project.',
+    navn: 'Name *', telefon: 'Phone *', firma: 'Company', hvad: 'What is it about?', ph: 'E.g. wardrobes for a school, tender in November',
+    sender: 'Sending…', send: 'Call me', note: 'We only use your number to call you. See our', politik: 'privacy policy (in Danish)' },
+};
+
+export default function CallbackForm({ defaultOpen = false, label, lang = 'da' }: Props) {
+  const t = TEKST[lang];
+  label ??= t.titel;
   const [open, setOpen] = useState(defaultOpen);
   const [form, setForm] = useState({ name: '', company: '', phone: '', message: '', hp: '' });
   const [status, setStatus] = useState<Status>('idle');
@@ -30,7 +46,7 @@ export default function CallbackForm({ defaultOpen = false, label = 'Bestil et o
     e.preventDefault();
     if (!form.name.trim() || form.phone.replace(/\D/g, '').length < 8) {
       setStatus('error');
-      setErrMsg('Skriv dit navn og et telefonnummer, så ringer vi dig op.');
+      setErrMsg(t.mangler);
       return;
     }
     setStatus('sending');
@@ -52,7 +68,7 @@ export default function CallbackForm({ defaultOpen = false, label = 'Bestil et o
       }
     } catch {
       setStatus('error');
-      setErrMsg('Det lykkedes ikke at sende. Ring til os på +45 42 42 26 84.');
+      setErrMsg(t.fejl);
     }
   }
 
@@ -68,8 +84,8 @@ export default function CallbackForm({ defaultOpen = false, label = 'Bestil et o
     return (
       <div className="form callback-form">
         <div className="form-done">
-          <h3>Tak, vi ringer dig op.</h3>
-          <p>Du hører fra os inden for en arbejdsdag. Haster det, så ring på +45 42 42 26 84.</p>
+          <h3>{t.tak}</h3>
+          <p>{t.takTekst}</p>
         </div>
       </div>
     );
@@ -78,36 +94,36 @@ export default function CallbackForm({ defaultOpen = false, label = 'Bestil et o
   const sending = status === 'sending';
   return (
     <form className="form callback-form" id="opkald" onSubmit={submit} noValidate>
-      <h3 className="callback-title">Bestil et opkald</h3>
-      <p className="callback-lead">Skriv dit nummer, så ringer vi dig op og tager en snak om projektet.</p>
+      <h3 className="callback-title">{t.titel}</h3>
+      <p className="callback-lead">{t.lead}</p>
       {/* Honeypot — usynligt for mennesker; bots udfylder det og afvises server-side */}
       <input type="text" name="hp" tabIndex={-1} autoComplete="off" aria-hidden="true"
         value={form.hp} onChange={update}
         style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', opacity: 0 }} />
       <div className="row">
         <div className="field">
-          <label htmlFor="cb-name">Navn *</label>
+          <label htmlFor="cb-name">{t.navn}</label>
           <input id="cb-name" name="name" autoComplete="name" required value={form.name} onChange={update} disabled={sending} />
         </div>
         <div className="field">
-          <label htmlFor="cb-phone">Telefon *</label>
+          <label htmlFor="cb-phone">{t.telefon}</label>
           <input id="cb-phone" name="phone" type="tel" autoComplete="tel" required value={form.phone} onChange={update} disabled={sending} />
         </div>
       </div>
       <div className="field">
-        <label htmlFor="cb-company">Virksomhed</label>
+        <label htmlFor="cb-company">{t.firma}</label>
         <input id="cb-company" name="company" autoComplete="organization" value={form.company} onChange={update} disabled={sending} />
       </div>
       <div className="field">
-        <label htmlFor="cb-message">Hvad drejer det sig om?</label>
+        <label htmlFor="cb-message">{t.hvad}</label>
         <input id="cb-message" name="message" value={form.message} onChange={update} disabled={sending}
-          placeholder="Fx garderober til en skole, udbud i november" />
+          placeholder={t.ph} />
       </div>
       <button type="submit" className="btn btn-primary" disabled={sending}>
-        {sending ? 'Sender…' : 'Ring mig op'} <span className="arr">→</span>
+        {sending ? t.sender : t.send} <span className="arr">→</span>
       </button>
       {status === 'error' && <p className="form-msg err">{errMsg}</p>}
-      <p className="callback-note">Vi bruger kun dit nummer til at ringe dig op. Se vores <a href={`${import.meta.env.BASE_URL}privatlivspolitik`}>privatlivspolitik</a>.</p>
+      <p className="callback-note">{t.note} <a href={`${import.meta.env.BASE_URL}privatlivspolitik`}>{t.politik}</a>.</p>
     </form>
   );
 }

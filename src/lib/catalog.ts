@@ -65,10 +65,11 @@ export const tal = (c?: WebCase | null) =>
 
 // ---------- Datarækker på et projekt ----------
 // Pladsholderen "Hovedentreprenør" (uden tilladelse til navn) vises ikke som en oplysning.
-export const caseMeta = (c: WebCase) => [
-  { k: 'Leverance', v: c.delivery_label },
-  ...(c.contractor_label && c.contractor_label !== 'Hovedentreprenør' ? [{ k: 'Entreprenør', v: c.contractor_label }] : []),
-  ...(c.architect_label ? [{ k: 'Arkitekt', v: c.architect_label }] : []),
+// lang 'en': den engelske forsides projektkort (værdierne kommer på engelsk fra lib/engelsk.ts).
+export const caseMeta = (c: WebCase, lang: 'da' | 'en' = 'da') => [
+  { k: lang === 'en' ? 'Delivery' : 'Leverance', v: c.delivery_label },
+  ...(c.contractor_label && c.contractor_label !== 'Hovedentreprenør' ? [{ k: lang === 'en' ? 'Contractor' : 'Entreprenør', v: c.contractor_label }] : []),
+  ...(c.architect_label ? [{ k: lang === 'en' ? 'Architect' : 'Arkitekt', v: c.architect_label }] : []),
   { k: 'Status', v: c.status_label },
 ].filter((m): m is { k: string; v: string } => !!m.v);
 
