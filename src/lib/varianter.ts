@@ -84,10 +84,11 @@ export function varianterAf(p: Produkt, kulorer: Kuloer[]): Variant[] {
 }
 
 // "Få pris på denne": kontaktsiden med emnet og, for en variant, ?v=<slug>~<kulør> → spor 'variant' i leadet.
-export function prisHref(base: string, v: { slug: string; navn: string; kuloer?: string; label?: string }): string {
+// sti = sprogets kontaktside (den engelske forside: 'en/contact/').
+export function prisHref(base: string, v: { slug: string; navn: string; kuloer?: string; label?: string }, sti = 'kontakt'): string {
   const emne = v.label ? `${v.navn}, ${v.label.toLowerCase()}` : v.navn;
   const q = `emne=${encodeURIComponent(emne)}` + (v.kuloer ? `&v=${encodeURIComponent(`${v.slug}~${v.kuloer}`)}` : '');
-  return `${base}kontakt?${q}`;
+  return `${base}${sti}?${q}`;
 }
 
 // Kontaktsiden: ?v=<slug>~<kulør> → konfigurationen, der følger med henvendelsen. Ugyldigt giver null.
@@ -103,14 +104,15 @@ export function variantFraUrl(search: string): { type: 'variant'; produkt: strin
 }
 
 // Forsiden, en type uden valgt kulør (fx et foto fra en leverance): samme formular på forsiden, med typen som emne.
-export function typeTilbud(navn: string) {
-  return { besked: `Vedr. ${navn}`, spor: 'skitse' as const };
+// lang: beskeden står på sidens sprog (den engelske forside: "Re:").
+export function typeTilbud(navn: string, lang: 'da' | 'en' = 'da') {
+  return { besked: `${lang === 'en' ? 'Re:' : 'Vedr.'} ${navn}`, spor: 'skitse' as const };
 }
 
 // Forsiden: "Få pris på denne" åbner "Send os materialet" med varianten udfyldt (samme felter som ?v= på kontaktsiden).
-export function variantTilbud(v: { slug: string; navn: string; kuloer: string; label: string }) {
+export function variantTilbud(v: { slug: string; navn: string; kuloer: string; label: string }, lang: 'da' | 'en' = 'da') {
   return {
-    besked: `Vedr. ${v.navn}, ${v.label.toLowerCase()}`,
+    besked: `${lang === 'en' ? 'Re:' : 'Vedr.'} ${v.navn}, ${v.label.toLowerCase()}`,
     spor: 'variant' as const,
     konfiguration: { type: 'variant', produkt: v.slug, kuloer: v.kuloer },
   };

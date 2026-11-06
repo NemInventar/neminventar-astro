@@ -7,22 +7,26 @@
 // står som farveflade (rubio-*-ask.jpg er de afviste prøver).
 import type { WebColor } from '../lib/supabase';
 import { cdn } from '../lib/img';
-interface Props { colors: WebColor[] }
-const { colors } = Astro.props;
+// lang: den engelske forside (kulørnavnene kommer på engelsk fra Forside.astro)
+interface Props { colors: WebColor[]; lang?: 'da' | 'en' }
+const { colors, lang = 'da' } = Astro.props;
+const en = lang === 'en';
 const ORDER = ['natur', 'cotton-white', 'cocoa', 'roedbrun', 'fern', 'blaa', 'dark-roast', 'charcoal'];
 const MED_PROEVE = new Set(['natur', 'cotton-white', 'cocoa', 'roedbrun', 'fern', 'blaa', 'dark-roast']);
 const band = ORDER.map((s) => colors.find((c) => c.slug === s)).filter((c): c is WebColor => !!c);
 const medBillede = (slug: string) => MED_PROEVE.has(slug);
 ---
-<div class="kul" role="list" aria-label="Vores standardkulører" style={`--n:${band.length}`}>
+<div class="kul" role="list" aria-label={en ? 'Our standard colours' : 'Vores standardkulører'} style={`--n:${band.length}`}>
   {band.map((c) => (
     <div class={`ks${medBillede(c.slug) ? ' img' : ''}${c.slug === 'natur' || c.slug === 'cotton-white' ? ' lys' : ''}`} role="listitem" style={`--c:${c.swatch_hex}`}>
-      {medBillede(c.slug) && <img src={cdn(`/billeder/kuloerer/${c.slug}.jpg`)} alt={`${c.label} på træ`} loading="lazy" decoding="async" />}
+      {medBillede(c.slug) && <img src={cdn(`/billeder/kuloerer/${c.slug}.jpg`)} alt={`${c.label} ${en ? 'on wood' : 'på træ'}`} loading="lazy" decoding="async" />}
       <span>{c.label}</span>
     </div>
   ))}
 </div>
-<p class="kul-note">Prøverne er olieret træ: rødbrun og blå er låger fra vores leverancer, de øvrige Rubio Monocoats prøver. Charcoal vises som farve. Farverne på skærmen er vejledende.</p>
+<p class="kul-note">{en
+  ? 'The samples are oiled wood: red-brown and blue are doors from our deliveries, the others are samples from Rubio Monocoat. Charcoal is shown as a colour. Colours on screen are indicative.'
+  : 'Prøverne er olieret træ: rødbrun og blå er låger fra vores leverancer, de øvrige Rubio Monocoats prøver. Charcoal vises som farve. Farverne på skærmen er vejledende.'}</p>
 <style>
   .kul{display:grid;grid-template-columns:repeat(var(--n,8),minmax(0,1fr));border-radius:18px;overflow:hidden;height:clamp(150px,16vw,200px)}
   .ks{position:relative;background:var(--c);background-image:radial-gradient(circle at 30% 15%,rgba(255,255,255,.14),rgba(255,255,255,0) 55%),repeating-linear-gradient(100deg,rgba(0,0,0,0) 0 3px,rgba(0,0,0,.05) 3px 4px);display:flex;align-items:flex-end;padding:12px;min-width:0}

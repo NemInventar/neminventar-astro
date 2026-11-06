@@ -4,15 +4,19 @@
 import { getWebLandingPages } from '../lib/supabase';
 import { guidesFor, guidePath } from '../lib/guides-i18n';
 import { PHONE, PHONE_TEL, LINKEDIN, FACEBOOK, MIN_SIDE, MIN_SIDE_EN } from '../lib/contact';
+import { sprogLink, type Alternate } from '../lib/sprog';
 // Min side (12-11-2026, Fable runde 3 afsnit b) — samme props som Nav:
 //   origin     = 'https://neminventar.dk' gør alle interne links til fulde adresser til sitet (standard '': som før).
 //   visMinSide = "Min side" øverst i spalten "Nem Inventar" (engelsk: "My account"). Tysk har ingen Min side.
 // konto.neminventar.dk bruger KontoFooter.astro, ikke denne: footeren her henter landingssiderne fra ERP ved build.
-const { lang = 'da', origin = '', visMinSide = false } = Astro.props as { lang?: 'da' | 'en' | 'de'; origin?: string; visMinSide?: boolean };
+// Sprogskiftet bliver på siden, når den findes på sproget (lib/sprog.ts), ellers sprogets forside.
+const { lang = 'da', origin = '', visMinSide = false, alternates = [] } = Astro.props as { lang?: 'da' | 'en' | 'de'; origin?: string; visMinSide?: boolean; alternates?: Alternate[] };
 const base = origin ? `${origin.replace(/\/+$/, '')}/` : import.meta.env.BASE_URL; // slutter med '/'
 // En adresse på sitet. Med origin får en side afsluttende skråstreg her, for skraastreg.mjs retter kun links til sider i eget dist.
 const u = (p = '') => (origin && p && !/[#?.]/.test(p) && !p.endsWith('/') ? `${base}${p}/` : `${base}${p}`);
 const minSide = !visMinSide || lang === 'de' ? null : lang === 'en' ? { href: MIN_SIDE_EN, t: 'My account' } : { href: MIN_SIDE, t: 'Min side' };
+const tilDa = sprogLink(base, 'da', alternates);
+const tilEn = sprogLink(base, 'en', alternates);
 const landing = await getWebLandingPages();
 const emner = landing.filter((l) => l.kind === 'emne');
 const segmenter = landing.filter((l) => l.kind === 'segment');
@@ -53,8 +57,8 @@ const guidesDe = guidesFor('de', landing);
     <div>
       <h4>Andere Sprachen</h4>
       <ul>
-        <li><a href={u()} hreflang="da" lang="da">Dansk</a></li>
-        <li><a href={u('en/')} hreflang="en" lang="en">English</a></li>
+        <li><a href={tilDa} hreflang="da" lang="da">Dansk</a></li>
+        <li><a href={tilEn} hreflang="en" lang="en">English</a></li>
         <li><a href={LINKEDIN} target="_blank" rel="noopener">LinkedIn</a></li>
         <li><a href={FACEBOOK} target="_blank" rel="noopener">Facebook</a></li>
       </ul>
@@ -145,7 +149,7 @@ const guidesDe = guidesFor('de', landing);
         <li><a href={u('om-os')}>Om os</a></li>
         <li><a href={u('kontakt')}>Kontakt</a></li>
         <li><a href={u('nem-inventar-brochure.pdf')}>Brochure (PDF)</a></li>
-        <li><a href={u('en/')} hreflang="en" lang="en">In English</a></li>
+        <li><a href={tilEn} hreflang="en" lang="en">In English</a></li>
         <li><a href={LINKEDIN} target="_blank" rel="noopener">LinkedIn</a></li>
         <li><a href={FACEBOOK} target="_blank" rel="noopener">Facebook</a></li>
       </ul>
