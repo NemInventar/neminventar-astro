@@ -4,6 +4,7 @@
 import { getWebLandingPages } from '../lib/supabase';
 import { guidesFor, guidePath } from '../lib/guides-i18n';
 import { PHONE, PHONE_TEL, LINKEDIN, FACEBOOK } from '../lib/contact';
+import { sprogLink, type Alternate } from '../lib/sprog';
 const base = import.meta.env.BASE_URL; // slutter med '/'
 const landing = await getWebLandingPages();
 const emner = landing.filter((l) => l.kind === 'emne');
@@ -14,7 +15,10 @@ const guidesEn = guidesFor('en', landing);
 const guidesDe = guidesFor('de', landing);
 // Engelsk udgave (/en/): kun de engelske sider + vej tilbage til den danske. Landingssiderne er på dansk og linkes ikke.
 // Tysk light-udgave (/de/): landingssiden, Impressum og Datenschutz (krævet af tysk ret).
-const { lang = 'da' } = Astro.props as { lang?: 'da' | 'en' | 'de' };
+// Sprogskiftet bliver på siden, når den findes på sproget (lib/sprog.ts), ellers sprogets forside.
+const { lang = 'da', alternates = [] } = Astro.props as { lang?: 'da' | 'en' | 'de'; alternates?: Alternate[] };
+const tilDa = sprogLink(base, 'da', alternates);
+const tilEn = sprogLink(base, 'en', alternates);
 ---
 {lang === 'de' ? (
 <footer><div class="wrap">
@@ -46,8 +50,8 @@ const { lang = 'da' } = Astro.props as { lang?: 'da' | 'en' | 'de' };
     <div>
       <h4>Andere Sprachen</h4>
       <ul>
-        <li><a href={base} hreflang="da" lang="da">Dansk</a></li>
-        <li><a href={`${base}en/`} hreflang="en" lang="en">English</a></li>
+        <li><a href={tilDa} hreflang="da" lang="da">Dansk</a></li>
+        <li><a href={tilEn} hreflang="en" lang="en">English</a></li>
         <li><a href={LINKEDIN} target="_blank" rel="noopener">LinkedIn</a></li>
         <li><a href={FACEBOOK} target="_blank" rel="noopener">Facebook</a></li>
       </ul>
@@ -137,7 +141,7 @@ const { lang = 'da' } = Astro.props as { lang?: 'da' | 'en' | 'de' };
         <li><a href={`${base}om-os`}>Om os</a></li>
         <li><a href={`${base}kontakt`}>Kontakt</a></li>
         <li><a href={`${base}nem-inventar-brochure.pdf`}>Brochure (PDF)</a></li>
-        <li><a href={`${base}en/`} hreflang="en" lang="en">In English</a></li>
+        <li><a href={tilEn} hreflang="en" lang="en">In English</a></li>
         <li><a href={LINKEDIN} target="_blank" rel="noopener">LinkedIn</a></li>
         <li><a href={FACEBOOK} target="_blank" rel="noopener">Facebook</a></li>
       </ul>

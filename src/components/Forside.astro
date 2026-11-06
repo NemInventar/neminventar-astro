@@ -1,0 +1,272 @@
+---
+// Forside v3 (05-10-2026): "Se det, før vi bygger det." Godkendt af Joachim ("forsiden er vild, det er præcis sådan
+// det skal være"). Mockup: mockups/forside-v3.html · spec: docs/superpowers/specs/2026-10-05-ny-forside-design.md.
+// Syv afsnit med almindelig scroll: toppen med tre veje → bevisbjælke → inspiration → det laver vi → sådan arbejder vi
+// → projekter → kulører → kontakt. Indhold fra Supabase-views; kun udvalg og rækkefølge står i src/lib/forside.ts.
+// En sag nævnes sparsomt (opmærksomhedspunkt, Joachim 05-10): fotos får en billedtekst om, hvad de viser.
+// Én forside på to sprog (Milot 06-11-2026: "der skal ikke være forskel på hvordan forsiden er på engelsk eller dansk,
+// altså designeren skal stadig virke"): / og /en/ er denne komponent. Teksterne står i T; typer, kulører, sager og holdet
+// kommer på engelsk fra src/lib/engelsk.ts (uden engelsk tekst falder de fra). "Det laver vi" linker på engelsk kun til
+// sider, der findes på engelsk, plus typesiderne (på dansk, det står ved dem).
+import Base from '../layouts/Base.astro';
+import HeroPaths from './HeroPaths.astro';
+import ProofRow from './ProofRow.astro';
+import InspirationMosaic from './InspirationMosaic.astro';
+import KulorBand from './KulorBand.astro';
+import ProcessSteps from './ProcessSteps.astro';
+import ProjectCard from './ProjectCard.astro';
+import { getWebProducts, getWebCases, getWebLandingPages, getWebColors } from '../lib/supabase';
+import { cdn } from '../lib/img';
+import { morkhoj } from '../lib/catalog';
+import { KATALOG_TOP, PROJEKTER, emneGruppe, INDLEJR_URL } from '../lib/forside';
+import { TEAM } from '../lib/team';
+import { PHONE, PHONE_TEL } from '../lib/contact';
+import { produkterPaaEngelsk, kulorerPaaEngelsk, sagerPaaEngelsk, TEAM_EN } from '../lib/engelsk';
+import { guidesFor, guidePath } from '../lib/guides-i18n';
+
+interface Props { lang?: 'da' | 'en' }
+const { lang = 'da' } = Astro.props;
+const en = lang === 'en';
+
+const [daProducts, daCases, landing, daColors] = await Promise.all([getWebProducts(), getWebCases(), getWebLandingPages(), getWebColors()]);
+const products = en ? produkterPaaEngelsk(daProducts) : daProducts;
+const cases = en ? sagerPaaEngelsk(daCases) : daCases;
+const colors = en ? kulorerPaaEngelsk(daColors) : daColors;
+const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
+const segmenter = landing.filter((l) => l.kind === 'segment');
+const emner = landing.filter((l) => l.kind === 'emne');
+const guides = landing.filter((l) => l.kind === 'guide');
+const guidesEn = guidesFor('en', landing);
+// inventar først, så materialerne — én liste (som footerens "Inventar og materialer")
+const inventarMat = [...emner.filter((l) => emneGruppe(l.slug) === 'inventar'), ...emner.filter((l) => emneGruppe(l.slug) === 'materialer')];
+const arbejdsform = emner.filter((l) => emneGruppe(l.slug) === 'arbejdsform');
+const hasLanding = (slug: string) => !en && landing.some((l) => l.slug === slug);
+const projekter = PROJEKTER.map((s) => cases.find((c) => c.slug === s)).filter((c): c is NonNullable<typeof c> => !!c);
+const typer = [...products].sort((a, b) => a.name.localeCompare(b.name, lang));
+
+const T = en ? {
+  title: 'Bespoke joinery and fixed furniture for construction in Denmark | Nem Inventar',
+  description: 'Fixed furniture made to measure for schools, institutions, sports halls and homes. See it in 3D, send a sketch or a tender, and get a reply within one working day.',
+  itemList: 'Fixed furniture from Nem Inventar',
+  insp: { label: 'Inspiration', h: ['Seen in 3D before it is', 'built.'], lede: 'Visualisations of types we build. Each version can be priced as it stands, or rebuilt to your measurements and colour.', op: 'To the catalogue at the top ↑' },
+  saadan: { id: 'how', label: 'How we work', h: ['From 3D model to', 'finished room.'], lede: 'The team are engineers. Every cabinet, bench and niche is built as a 3D model first; the same model gives the drawing for your approval and the parts list for production.' },
+  docs: 'Documentation and files:', chips: ['Nordic Swan Ecolabel buildings', 'DGNB', 'EPD', 'IFC models'], dalux: 'https://www.dalux.com/', ibinder: 'https://ibinder.com/en/',
+  proj: { label: 'Projects', h: ['Schools, housing and', 'sport.'], lede: 'A selection of the projects we have delivered or have in production.', alle: 'All projects, architects and contractors (in Danish) →' },
+  kul: { label: 'Finish', h: ['Eight colours, or', 'your', 'own.'], lede: 'We oil with Rubio Monocoat. Behind it is a colour card of about 40 colours, and we can have one mixed for you.' },
+  surf: [['Oil, not lacquer', 'One coat of hardwax oil that penetrates the wood. There is no lacquer film to flake off.'],
+    ['Wear can be spot-repaired', 'A scratch is sanded and oiled on site without replacing the door.'],
+    ['The same colour again', 'The colour is a recipe, so an extra door in three years gets the same colour.']],
+  kontakt: { label: 'Contact', h: ['Send us the drawings.', 'Or a sketch.'], lede: 'A tender, a drawing or a photo of the room with measurements is enough for a price. We reply in English within one working day, and drawings in Danish or English are both fine.',
+    send: 'Send the material', design: 'Design it yourself', adr: 'Nem Inventar ApS · Mågevej 73, st. tv. · 2400 Copenhagen NV · Denmark · VAT DK45085473' },
+} : {
+  title: 'Fast inventar på mål til byggeri | Nem Inventar',
+  description: 'Fast inventar på mål til skoler, institutioner, idrætshaller og boliger. Se det i 3D, send en skitse eller et udbud, og få svar inden for én arbejdsdag.',
+  itemList: 'Fast inventar fra Nem Inventar',
+  insp: { label: 'Inspiration', h: ['Set i 3D, før det', 'bygges.'], lede: 'Visualiseringer af typer, vi bygger. Hver udgave kan prissættes, som den står, eller bygges om til jeres mål og kulør.', op: 'Til kataloget i toppen ↑' },
+  saadan: { id: 'saadan', label: 'Sådan arbejder vi', h: ['Fra 3D-model til', 'færdigt rum.'], lede: 'Holdet er ingeniører. Hvert skab, hver bænk og hver niche bygges først som 3D-model; samme model giver tegningen til jeres godkendelse og styklisten til produktionen.' },
+  docs: 'Dokumentation og filer:', chips: ['Svanemærket byggeri', 'DGNB', 'EPD', 'IFC-modeller'], dalux: 'https://www.dalux.com/da/', ibinder: 'https://ibinder.com/da/',
+  proj: { label: 'Projekter', h: ['Skoler, boliger og', 'idræt.'], lede: 'Et udvalg af de sager, vi har leveret eller har i produktion.', alle: 'Alle projekter, arkitekter og entreprenører →' },
+  kul: { label: 'Overflade', h: ['Otte kulører — eller', 'jeres', 'egen.'], lede: 'Vi olierer med Rubio Monocoat. Bagved ligger et farvekort med omkring 40 kulører, og vi kan få blandet en til jer.' },
+  surf: [['Olie, ikke lak', 'Ét lag hårdvoksolie, der trænger ind i træet. Der er ingen lakfilm, der kan skalle af.'],
+    ['Slid kan pletrepareres', 'En ridse slibes og olieres på stedet uden at skifte lågen.'],
+    ['Samme kulør igen', 'Kuløren er en opskrift, så en ekstra låge om tre år får samme farve.']],
+  kontakt: { label: 'Kontakt', h: ['Send os tegningerne.', 'Eller en skitse.'], lede: 'Et udbud, en tegning eller et foto af rummet med mål er nok til en pris. Vi svarer inden for én arbejdsdag.',
+    send: 'Send materialet', design: 'Design det selv', adr: 'Nem Inventar ApS · Mågevej 73, st. tv. · 2400 København NV · CVR 45085473' },
+};
+const ogImage = new URL(cdn(morkhoj('33_lockere-roede-ved-doer-til-klasserum.jpg')), site).href;
+
+// Katalogpanelets typer som ItemList (søgemaskiner og AI-assistenter kan læse, hvad vi bygger)
+const itemList = {
+  '@context': 'https://schema.org', '@type': 'ItemList', name: T.itemList,
+  itemListElement: KATALOG_TOP.map((k, i) => products.find((p) => p.slug === k.slug)).filter((p) => !!p)
+    .map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p!.name, url: new URL(`${base}produkter/${p!.slug}`, site).href })),
+};
+---
+<Base lang={lang} title={T.title} description={T.description} image={ogImage} jsonLd={[itemList]} alternates={[
+  { hreflang: 'da', href: new URL(base, site).href },
+  { hreflang: 'en', href: new URL(base + 'en/', site).href },
+  { hreflang: 'x-default', href: new URL(base, site).href },
+]}>
+  {/* Designerens 3D (HeroPaths) hentes fra sidens første øjeblik, før stylesheets, så den er fremme hurtigst muligt (Milot
+      23-10-2026: "designeren åbner op under 1 sekund efter man har åbnet siden"). Kun hentes (modulepreload) — at køre den
+      tidligt konkurrerede med sidens indlæsning og var langsommere (målt 23-10-2026). Ikke med datasparetilstand. */}
+  <Fragment slot="tidlig">
+    <script is:inline define:vars={{ url: INDLEJR_URL }}>
+      if (!(navigator.connection && navigator.connection.saveData)) { var l = document.createElement('link'); l.rel = 'modulepreload'; l.href = url; l.crossOrigin = 'anonymous'; document.head.appendChild(l); }
+    </script>
+  </Fragment>
+
+  <!-- 1 · TOPPEN: tre veje -->
+  <HeroPaths products={products} colors={colors} lang={lang} />
+
+  <!-- 2 · BEVIS: fire tal fra fire sager -->
+  <ProofRow cases={cases} lang={lang} />
+
+  <!-- 3 · INSPIRATION -->
+  <section class="sec" id="inventar"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">{T.insp.label}</span>
+        <h2>{T.insp.h[0]} <em>{T.insp.h[1]}</em></h2>
+        <p class="lede">{T.insp.lede}</p>
+      </div>
+      <a href="#katalog" class="ulink">{T.insp.op}</a>
+    </div>
+    <div class="rv"><InspirationMosaic products={products} colors={colors} lang={lang} /></div>
+
+    <!-- 3b · DET LAVER VI: link-hubben til typerne og landingssiderne (ankeret #ydelser bruges af alle landingssider).
+         En indholdsfortegnelse i spalter med almindelige links, ikke kasser (07-10-2026: "68 hvide kasser" var en mur).
+         Typer → typesider; resten er sider at læse (emneGruppe i lib/forside) og står også i footeren.
+         På engelsk: typerne (siderne er på dansk), de engelske sider og de engelske guides. -->
+    {en ? (
+      <nav class="yd-links rv" id="ydelser" aria-labelledby="yd-h">
+        <h2 class="label yd-h" id="yd-h">What we make</h2>
+        <div class="yd-idx">
+          <div class="yd-grp yd-2">
+            <h3>Types (pages in Danish)</h3>
+            <ul>{typer.map((p) => <li><a href={`${base}produkter/${p.slug}`} hreflang="da">{p.name}</a></li>)}</ul>
+            <a class="ulink yd-alle" href={`${base}en/products/`}>All types →</a>
+          </div>
+          <div class="yd-grp">
+            <h3>In English</h3>
+            <ul>
+              <li><a href={`${base}en/lockers-with-bench/`}>Lockers with bench</a></li>
+              <li><a href={`${base}en/wardrobes/`}>Wardrobes made to measure</a></li>
+              <li><a href={`${base}en/products/`}>Products</a></li>
+              <li><a href={`${base}en/contact/`}>Contact</a></li>
+            </ul>
+          </div>
+          {guidesEn.length > 0 && <div class="yd-grp yd-2"><h3>Guides</h3><ul>{guidesEn.map((g) => <li><a href={base + guidePath('en', g.slug)}>{g.nav_label}</a></li>)}</ul></div>}
+        </div>
+      </nav>
+    ) : (
+      <nav class="yd-links rv" id="ydelser" aria-labelledby="yd-h">
+        <h2 class="label yd-h" id="yd-h">Det laver vi</h2>
+        <div class="yd-idx">
+          <div class="yd-grp yd-2">
+            <h3>Typer</h3>
+            <ul>{typer.map((p) => <li><a href={`${base}produkter/${p.slug}`}>{p.name}</a></li>)}</ul>
+            <a class="ulink yd-alle" href={`${base}inventar`}>Alle typer →</a>
+          </div>
+          {inventarMat.length > 0 && <div class="yd-grp yd-2"><h3>Inventar og materialer</h3><ul>{inventarMat.map((l) => <li><a href={`${base}${l.slug}`}>{l.nav_label}</a></li>)}</ul></div>}
+          <div class="yd-grp">
+            {segmenter.length > 0 && <><h3>Til</h3><ul>{segmenter.map((l) => <li><a href={`${base}${l.slug}`}>{l.nav_label}</a></li>)}</ul></>}
+            {arbejdsform.length > 0 && <><h3>Sådan arbejder vi</h3><ul>{arbejdsform.map((l) => <li><a href={`${base}${l.slug}`}>{l.nav_label}</a></li>)}</ul></>}
+          </div>
+          {guides.length > 0 && <div class="yd-grp"><h3>Guides</h3><ul>{guides.map((l) => <li><a href={`${base}${l.slug}`}>{l.nav_label}</a></li>)}</ul></div>}
+        </div>
+      </nav>
+    )}
+  </div></section>
+
+  <!-- 4 · SÅDAN ARBEJDER VI -->
+  <section class="sec" id={T.saadan.id} style="padding-top:0"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">{T.saadan.label}</span>
+        <h2>{T.saadan.h[0]} <em>{T.saadan.h[1]}</em></h2>
+        <p class="lede">{T.saadan.lede}</p>
+      </div>
+      {hasLanding('vaerkstedstegninger-og-3d-model') && <a href={`${base}vaerkstedstegninger-og-3d-model`} class="ulink">Sådan ser tegningerne ud →</a>}
+    </div>
+    <ProcessSteps lang={lang} />
+    <div class="docs rv">
+      <b>{T.docs}</b>
+      {T.chips.map((c) => <span class="chip">{c}</span>)}
+      <a class="chip" href={T.dalux} target="_blank" rel="noopener">Dalux ↗</a>
+      <a class="chip" href={T.ibinder} target="_blank" rel="noopener">iBinder ↗</a>
+    </div>
+  </div></section>
+
+  <!-- 5 · PROJEKTER (her nævnes sagerne ved navn) -->
+  <section class="sec projekter-udvalg" id="projekter-udvalg"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">{T.proj.label}</span>
+        <h2>{T.proj.h[0]} <em>{T.proj.h[1]}</em></h2>
+        <p class="lede">{T.proj.lede}</p>
+      </div>
+      <a href={`${base}projekter`} class="ulink" hreflang={en ? 'da' : undefined}>{T.proj.alle}</a>
+    </div>
+    <div class="pgrid three rv">{projekter.map((c) => <ProjectCard c={c} compact lang={lang} />)}</div>
+  </div></section>
+
+  <!-- 6 · KULØRER -->
+  <section class="sec" id="kulorer"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">{T.kul.label}</span>
+        <h2>{T.kul.h[0]} <em>{T.kul.h[1]}</em> {T.kul.h[2]}</h2>
+        <p class="lede">{T.kul.lede}</p>
+      </div>
+      {hasLanding('bejdset-olieret-eller-lakeret') && <a href={`${base}bejdset-olieret-eller-lakeret`} class="ulink">Bejdset, olieret eller lakeret? →</a>}
+    </div>
+    <div class="rv"><KulorBand colors={colors} lang={lang} /></div>
+    <div class="surf rv">
+      {T.surf.map(([b, s]) => <div><b>{b}</b><span>{s}</span></div>)}
+    </div>
+  </div></section>
+
+  <!-- 7 · KONTAKT -->
+  <section class="sec sec-dark" id="kontakt"><div class="wrap kontakt-grid">
+    <div class="rv">
+      <span class="label">{T.kontakt.label}</span>
+      <h2 class="kontakt-h">{T.kontakt.h[0]} <em>{T.kontakt.h[1]}</em></h2>
+      <p class="lede">{T.kontakt.lede}</p>
+      <div class="kontakt-btns">
+        <a href="#send" class="btn btn-light">{T.kontakt.send} <span class="arr">→</span></a>
+        <a href="#design" class="btn btn-dark-ghost">{T.kontakt.design}</a>
+      </div>
+      <div class="clines">
+        <a href={`tel:${PHONE_TEL}`} class="tel">{PHONE}</a>
+        <span><a href="mailto:tilbud@neminventar.dk">tilbud@neminventar.dk</a></span>
+        <span>{T.kontakt.adr}</span>
+      </div>
+    </div>
+    <div class="team rv">
+      {TEAM.map((m) => (
+        <div class="mem">
+          <img src={`${base}team/${m.img}`} alt={m.name} loading="lazy" decoding="async" />
+          <div><b>{m.name}</b><span>{en ? TEAM_EN[m.email] ?? m.desc : m.desc}</span><a href={`mailto:${m.email}`}>{m.email}</a></div>
+        </div>
+      ))}
+    </div>
+  </div></section>
+
+  <style>
+    .yd-links{margin-top:48px;padding-top:28px;border-top:1px solid var(--line)}
+    .yd-h{margin-bottom:6px}
+    .yd-alle{display:inline-block;font-size:14px;margin-top:10px;white-space:nowrap}
+    /* indholdsfortegnelsen: 6 spor — typer og inventar to spor hver (to spalter), "Til" og guides ét hver */
+    .yd-idx{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:24px 28px;margin-top:18px}
+    .yd-grp.yd-2{grid-column:span 2}
+    .yd-grp.yd-2 ul{columns:2;column-gap:28px}
+    .yd-grp h3{font-family:'Inter',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+    .yd-grp h3:not(:first-child){margin-top:22px}
+    .yd-grp ul{list-style:none;margin:0;padding:0}
+    .yd-grp li{break-inside:avoid;margin:0 0 7px;font-size:14.5px;line-height:1.35}
+    .yd-grp li a{color:var(--ink);text-decoration:none}
+    .yd-grp li a:hover{color:var(--warm);text-decoration:underline;text-underline-offset:3px}
+    @media (max-width:1020px){.yd-idx{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media (max-width:520px){.yd-grp.yd-2 ul{column-gap:18px}.yd-grp li{font-size:14px}}
+    .docs{display:flex;gap:8px 10px;flex-wrap:wrap;align-items:center;margin-top:32px;padding-top:22px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+    .docs b{color:var(--ink);font-weight:600;margin-right:6px}
+    .docs .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 12px;font-size:13px;color:var(--ink);text-decoration:none}
+    .projekter-udvalg{background:var(--soft);border-block:1px solid var(--line)}
+    .surf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 28px;margin-top:28px}
+    .surf div{border-top:1px solid var(--line);padding-top:12px}
+    .surf b{font-family:'Archivo',sans-serif;font-size:17px;display:block}
+    .surf span{font-size:14.5px;color:var(--muted)}
+    .kontakt-grid{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:clamp(28px,5vw,72px);align-items:start}
+    .kontakt-h{font-size:clamp(32px,4.2vw,56px);line-height:1;letter-spacing:-.03em;margin-top:22px}
+    .kontakt-btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+    .team{display:grid;gap:12px}
+    .mem{display:grid;grid-template-columns:64px 1fr;gap:14px;align-items:center;border:1px solid var(--dark-line);border-radius:16px;padding:12px;background:var(--dark-2)}
+    .mem img{width:64px;height:64px;border-radius:12px;object-fit:cover;background:#3a3226}
+    .mem b{display:block;font-family:'Archivo',sans-serif;font-size:16px;color:#F4EFE6}
+    .mem span{display:block;font-size:13.5px;color:var(--dark-muted)}
+    .mem a{font-size:13.5px;color:#F4EFE6;text-decoration-color:#5A4F3C;text-underline-offset:3px}
+    @media (max-width:900px){.kontakt-grid{grid-template-columns:1fr}.surf{grid-template-columns:1fr}}
+  </style>
+</Base>
