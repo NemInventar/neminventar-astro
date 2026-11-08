@@ -27,7 +27,7 @@ const { page, pages, cases, products, colors } = Astro.props;
 const base = import.meta.env.BASE_URL;
 const site = Astro.site!;
 // Sider med en engelsk udgave (/en/, backlog e2c66652) får hreflang begge veje.
-const EN_UDGAVE: Record<string, string> = { garderobeskab: 'en/wardrobes/' };
+const EN_UDGAVE: Record<string, string> = { garderobeskab: 'en/wardrobes/', lockers: 'en/lockers/' };
 // Guides med engelsk og tysk udgave (src/lib/guides-i18n.ts) får hreflang til dem.
 const sprog = EN_UDGAVE[page.slug] ? [{ lang: 'en', path: EN_UDGAVE[page.slug] }] : translationsOf(page.slug, pages);
 const alternates = sprog.length ? [
