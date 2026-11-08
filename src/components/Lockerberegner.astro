@@ -1,0 +1,130 @@
+---
+// Lockerberegner (landingssiderne lockers og hvad-koster-lockers): antal brugere → antal rum, opstilling, prisoverslag og en
+// knap, der åbner væggen i designeren. Logikken står i src/lib/lockerberegner.ts, priserne i src/data/locker-beregner.json
+// (scripts/locker_beregner_priser.py). Valgene står i adressen (?brugere=24&rum=elev&mat=kryds&laas=kode#beregner), så et
+// resultat kan deles. Uden JavaScript står standardvalget og en tekst om, at beregneren kræver JavaScript.
+import DATA from '../data/locker-beregner.json';
+import { RUM_VALG, MAT_VALG, LAAS_VALG, STANDARD } from '../lib/lockerberegner';
+
+const dato = new Date(DATA.regnet).toLocaleDateString('da-DK', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+<section class="sec lb" id="beregner" aria-labelledby="lb-h"><div class="wrap">
+  <div class="sec-head rv">
+    <div>
+      <span class="label">Lockerberegner</span>
+      <h2 id="lb-h">Hvor mange lockers skal I <em>bruge?</em></h2>
+      <p class="lede">Skriv, hvor mange brugere der skal have en locker. Så får I antal rum, opstilling og et prisoverslag.</p>
+    </div>
+  </div>
+  <div class="lb-grid">
+    <form class="lb-form" id="lb-form" novalidate>
+      <div class="field">
+        <label for="lb-brugere">Antal brugere</label>
+        <input id="lb-brugere" name="brugere" type="number" inputmode="numeric" min="1" max="5000" step="1" value={STANDARD.brugere} required />
+      </div>
+      <div class="field">
+        <label for="lb-rum">Rumtype</label>
+        <select id="lb-rum" name="rum">
+          {RUM_VALG.map((r) => <option value={r.v} selected={r.v === STANDARD.rum}>{r.t} ({r.maal.replace(/, [0-9] rækker/, '')})</option>)}
+        </select>
+      </div>
+      <div class="field">
+        <label for="lb-mat">Materiale</label>
+        <select id="lb-mat" name="mat">
+          {MAT_VALG.map((m) => <option value={m.v} selected={m.v === STANDARD.mat}>{m.t}</option>)}
+        </select>
+      </div>
+      <div class="field">
+        <label for="lb-laas">Lås</label>
+        <select id="lb-laas" name="laas">
+          {LAAS_VALG.map((l) => <option value={l.v} selected={l.v === STANDARD.laas}>{l.t}</option>)}
+        </select>
+      </div>
+    </form>
+
+    <div class="lb-res" aria-live="polite" id="lb-res">
+      <noscript><p>Beregneren kræver JavaScript. Skriv til os, så regner vi på det.</p></noscript>
+      <dl class="lb-tal">
+        <div><dt>Antal rum</dt><dd id="lb-rum-n">–</dd></div>
+        <div><dt>Opstilling</dt><dd id="lb-opst">–</dd></div>
+        <div id="lb-vaeg-r" hidden><dt>Væg</dt><dd id="lb-vaeg">–</dd></div>
+        <div class="lb-pris"><dt>Prisoverslag inkl. moms</dt><dd id="lb-inkl">–</dd></div>
+        <div><dt>Prisoverslag ekskl. moms</dt><dd id="lb-ex">–</dd></div>
+      </dl>
+      <p class="lb-note" id="lb-note"></p>
+      <a id="lb-knap" class="btn btn-primary" href="#beregner" target="_blank" rel="noopener" data-side="lockerberegner">Åbn væggen i designeren <span class="arr">→</span></a>
+      <p class="lb-fod">Overslag efter designerens priser pr. {dato}, til privat, ekskl. levering og montage. Størrelsen af væggen kan ændre prisen pr. rum lidt. Send mål eller tegninger, så får I et tilbud.</p>
+    </div>
+  </div>
+</div></section>
+
+<script>
+  import DATA from '../data/locker-beregner.json';
+  import { laesValg, skrivValg, beregn, designerUrl, opstilling, rund100, type Data } from '../lib/lockerberegner';
+
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const form = $<HTMLFormElement>('lb-form');
+  const felt = { brugere: $<HTMLInputElement>('lb-brugere'), rum: $<HTMLSelectElement>('lb-rum'), mat: $<HTMLSelectElement>('lb-mat'), laas: $<HTMLSelectElement>('lb-laas') };
+  const kr = new Intl.NumberFormat('da-DK', { maximumFractionDigits: 0 });
+
+  function vis(skrivAdresse: boolean) {
+    const valg = {
+      brugere: Number(felt.brugere.value) || 0,
+      rum: felt.rum.value as never, mat: felt.mat.value as never, laas: felt.laas.value as never,
+    };
+    const ok = valg.brugere >= 1;
+    felt.brugere.setAttribute('aria-invalid', ok ? 'false' : 'true');
+    const r = ok ? beregn(valg, DATA as unknown as Data) : null;
+    const knap = $<HTMLAnchorElement>('lb-knap');
+    if (!r) {
+      for (const id of ['lb-rum-n', 'lb-opst', 'lb-inkl', 'lb-ex']) $(id).textContent = '–';
+      $('lb-vaeg-r').hidden = true;
+      $('lb-note').textContent = 'Skriv et antal brugere på mindst 1.';
+      knap.setAttribute('aria-disabled', 'true'); knap.removeAttribute('href');
+      return;
+    }
+    $('lb-rum-n').textContent = `${kr.format(r.antalRum)} rum`;
+    $('lb-opst').textContent = opstilling(r.soejler, r.raekker);
+    $('lb-inkl').textContent = `ca. ${kr.format(rund100(r.inkl))} kr.`;
+    $('lb-ex').textContent = `ca. ${kr.format(rund100(r.ex))} kr.`;
+    $('lb-vaeg-r').hidden = r.vaegCm == null;
+    if (r.vaegCm != null) $('lb-vaeg').textContent = `ca. ${kr.format(Math.round(r.vaegCm / 10) * 10)} cm${r.elementer > 1 ? `, ${r.elementer} elementer` : ''}`;
+    const overskud = r.antalRum - valg.brugere;
+    $('lb-note').textContent = overskud > 0
+      ? `${kr.format(overskud)} ekstra rum, så søjlerne er fyldt.` : '';
+    knap.href = designerUrl(r.tilstand); knap.removeAttribute('aria-disabled');
+    if (skrivAdresse) {
+      const url = `${location.pathname}?${skrivValg(valg)}#beregner`;
+      try { history.replaceState(null, '', url); } catch { /* ingen adresse at opdatere */ }
+    }
+  }
+
+  // Siden åbner med valgene fra adressen
+  const start = laesValg(location.search);
+  felt.brugere.value = String(start.brugere); felt.rum.value = start.rum; felt.mat.value = start.mat; felt.laas.value = start.laas;
+  vis(false);
+  form.addEventListener('input', () => vis(true));
+  form.addEventListener('submit', (e) => e.preventDefault());
+</script>
+
+<style>
+  .lb-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:32px;align-items:start}
+  .lb-form,.lb-res{background:var(--soft);border:1px solid var(--line);border-radius:var(--radius);padding:24px;min-width:0}
+  .lb-form .field:last-child{margin-bottom:0}
+  .lb-form select,.lb-form input{width:100%;min-width:0}
+  .lb-tal{margin:0 0 16px;display:grid;gap:0}
+  .lb-tal > div{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:10px 0;border-bottom:1px solid var(--line)}
+  .lb-tal > div[hidden]{display:none}
+  .lb-tal dt{color:var(--muted);font-size:14px}
+  .lb-tal dd{margin:0;font-weight:600;text-align:right}
+  .lb-pris dd{font-size:1.5rem}
+  .lb-note{min-height:1.3em;margin:0 0 14px;color:var(--muted);font-size:14px}
+  .lb-fod{margin:14px 0 0;color:var(--muted);font-size:13px;line-height:1.5}
+  #lb-knap[aria-disabled=true]{opacity:.5;pointer-events:none}
+  .lb-res .btn:focus-visible,.lb-form :focus-visible{outline:2px solid var(--warm);outline-offset:2px}
+  @media (max-width:760px){
+    .lb-grid{grid-template-columns:minmax(0,1fr);gap:16px}
+    .lb-form,.lb-res{padding:18px}
+    .lb-tal > div{flex-wrap:wrap;gap:4px 16px}
+  }
+</style>
