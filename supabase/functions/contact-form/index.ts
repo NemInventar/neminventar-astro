@@ -12,8 +12,8 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 //   kind="opkald": "Bestil et opkald". Milot (kontakt@) ringer tilbage. Opretter:
 //     1) lead i crm_deals_2026_04_12 (source_channel 'Hjemmeside: bestil opkald', assigned_to 'milot')
 //     2) huskeliste-række til kontakt@ med frist i dag — kun en pointer til leadet
-//     3) mail til kontakt@ via Graph  4) Slack-DM til Milot (slack-id fra standup_participants)
-//   Leadet er artefaktet. Mail/Slack er best-effort: fejler de, er leadet stadig gemt.
+//     3) mail til kontakt@ via Graph  4) Teams-besked 1:1 til Milot via botten Claude (edge fn post-teams)
+//   Leadet er artefaktet. Mail/Teams er best-effort: fejler de, er leadet stadig gemt.
 //   v6 (05-10-2026, D1 konverteringslag): en besked bærer også kilden — spor, kilde_svar ("Hvor fandt I os?"),
 //     referrer_host + landingsside + utm for den side, formularen står på (intet gemmes på besøgerens enhed),
 //     og opretter best effort et lead i
@@ -28,13 +28,15 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 //     ni-designer.pages.dev må stadig sende (reserve). Ellers uændret.
 //   v9 (07-10-2026): honeypot-træf gemmes i web_henvendelser som kind 'honeypot' (intet lead, ingen mail), så et
 //     menneske kan se dem, og mistanke-grænsen for links er 6 i stedet for 3. Formularerne sender feltet som hp.
+//   v10 (07-11-2026): "ring tilbage"-pinget til Milot går via Teams (post-teams, to_email kontakt@) i stedet for
+//     Slack — Slack udfases (Joachim 07-11-2026). notify_failed bruger nu "teams" i stedet for "slack".
 // Beskyttelse: fast modtager + honeypot + input-validering + origin-låst CORS + dedup/rate-limit
 // på opkald og leads + tidsfælde/linktæller før lead + filtype/størrelse/antal på upload.
 // verify_jwt=false (offentligt endpoint, ingen nøgle i klienten).
 // Deployes via Supabase MCP (deploy_edge_function, verify_jwt=false, filer: index.ts + lead.ts). Denne fil er kilden.
 import { byggLead, erMistaenkelig, kanalFraHost, mapKanal } from "./lead.ts";
 
-const VERSION = 9;
+const VERSION = 10;
 const SPOR = new Set(["besked", "skitse", "udbud", "designer", "variant"]);
 
 const TENANT_ID = Deno.env.get("MS_GRAPH_TENANT_ID") || "";
@@ -295,24 +297,21 @@ async function handleCallback(body: any, json: Record<string, string>): Promise<
     notes.push("mail");
   }
 
+  // Teams-besked 1:1 til Milot via botten Claude (edge fn post-teams). Afløste Slack-DM'en 07-11-2026.
   try {
-    const { data: p } = await sb.from("standup_participants").select("slack_user_id").eq("email", CALLBACK_OWNER).limit(1).single();
-    const { data: s } = await sb.from("api_secrets").select("api_key").eq("service_name", "slack_bot").eq("environment", "PROD").limit(1).single();
-    if (p?.slack_user_id && s?.api_key) {
-      const text = `Ring tilbage: ${who} på ${phone}, bestilt fra neminventar.dk${side || "/"} (lead ${id8}).`;
-      const r = await fetch("https://slack.com/api/chat.postMessage", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${s.api_key}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ channel: p.slack_user_id, text }),
-      });
-      const j = await r.json();
-      if (!j?.ok) throw new Error(j?.error ?? "slack error");
-    } else {
-      throw new Error("slack-id eller token mangler");
-    }
+    const { data: s } = await sb.from("api_secrets").select("api_key").eq("service_name", "teams_post_key").eq("environment", "PROD").limit(1).single();
+    if (!s?.api_key) throw new Error("teams_post_key mangler");
+    const text = `Ring tilbage: ${who} på ${phone}, bestilt fra neminventar.dk${side || "/"} (lead ${id8}).`;
+    const r = await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/post-teams`, {
+      method: "POST",
+      headers: { "x-ni-key": s.api_key, "Content-Type": "application/json" },
+      body: JSON.stringify({ to_email: CALLBACK_OWNER, text, allow_long: true }),
+    });
+    const j = await r.json();
+    if (!j?.ok) throw new Error(j?.error ?? `post-teams ${r.status}`);
   } catch (e) {
-    console.error("contact-form opkald: slack fejlede", e);
-    notes.push("slack");
+    console.error("contact-form opkald: teams fejlede", e);
+    notes.push("teams");
   }
 
   return new Response(JSON.stringify({ success: true, lead: id8, ...(notes.length ? { notify_failed: notes } : {}) }), { headers: json });
