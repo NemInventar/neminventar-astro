@@ -60,7 +60,7 @@ const dato = new Date(DATA.regnet).toLocaleDateString('da-DK', { day: 'numeric',
 
 <script>
   import DATA from '../data/locker-beregner.json';
-  import { laesValg, skrivValg, beregn, designerUrl, opstilling, rund100, type Data } from '../lib/lockerberegner';
+  import { laesValg, skrivValg, beregn, designerUrl, opstilling, type Data } from '../lib/lockerberegner';
 
   const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
   const form = $<HTMLFormElement>('lb-form');
@@ -85,8 +85,8 @@ const dato = new Date(DATA.regnet).toLocaleDateString('da-DK', { day: 'numeric',
     }
     $('lb-rum-n').textContent = `${kr.format(r.antalRum)} rum`;
     $('lb-opst').textContent = opstilling(r.soejler, r.raekker);
-    $('lb-inkl').textContent = `ca. ${kr.format(rund100(r.inkl))} kr.`;
-    $('lb-ex').textContent = `ca. ${kr.format(rund100(r.ex))} kr.`;
+    $('lb-inkl').textContent = `${kr.format(r.inkl)} kr.`;
+    $('lb-ex').textContent = `${kr.format(r.ex)} kr.`;
     $('lb-vaeg-r').hidden = r.vaegCm == null;
     if (r.vaegCm != null) $('lb-vaeg').textContent = `ca. ${kr.format(Math.round(r.vaegCm / 10) * 10)} cm${r.elementer > 1 ? `, ${r.elementer} elementer` : ''}`;
     const overskud = r.antalRum - valg.brugere;

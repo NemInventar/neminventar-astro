@@ -86,5 +86,4 @@ export const designerUrl = (tilstand: Record<string, unknown>) => `${DESIGNER}?p
 export const opstilling = (soejler: number, raekker: number) =>
   `${soejler} ${soejler === 1 ? 'søjle' : 'søjler'} i ${raekker} rækker`;
 
-// Overslaget skrives som "ca." og rundes til nærmeste 100 kr.
-export const rund100 = (kr: number) => Math.round(kr / 100) * 100;
+// Overslaget skrives som det udregnede tal, ikke rundet (Joachim 13-10-2026: ingen runde beløb ud af døren).

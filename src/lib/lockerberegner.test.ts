@@ -1,7 +1,7 @@
 // node --test src/lib/lockerberegner.test.ts
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { beregn, laesValg, skrivValg, designerUrl, vaegBreddeCm, opstilling, rund100, type Data } from './lockerberegner.ts';
+import { beregn, laesValg, skrivValg, designerUrl, vaegBreddeCm, opstilling, type Data } from './lockerberegner.ts';
 
 const data: Data = {
   rum: {
@@ -29,7 +29,6 @@ test('prisen er pris pr. rum × antal rum', () => {
   assert.equal(r.antalRum, 26);
   assert.equal(r.inkl, 2875 * 26); assert.equal(r.ex, 2300 * 26);
   assert.equal(beregn({ brugere: 10, rum: 'hoej', mat: 'birk', laas: 'kode' }, data), null);
-  assert.equal(rund100(74750), 74800);
 });
 
 test('linket koder den rigtige tilstand', () => {
