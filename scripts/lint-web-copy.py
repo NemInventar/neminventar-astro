@@ -71,6 +71,9 @@ FEJL = [
     (r"\bT\d{2}\b|\btilbudslinje|\bquote\b|\bBOM\b|\brumkode", "internt tilbudssprog"),
     (r"\bprojekt(?:nummer|nr)\b|\b2[56]\d{3}\b", "internt sagsnummer"),
     (r"\b(?:paa|foer|moede|faerdig|stoerre|aabn)\w*", "translittereret dansk (aa/oe/ae)"),
+    # Joachim 08-11-2026 (korrektion fbec29f0): "Lad være med at kalde det en bank … Et eller andet som er dansk".
+    # Sidst i listen, fordi QUOTE_RULE peger på FEJL[2].
+    (r"(?i)\blocker-?bank\w*", "kald det lockerskab eller lockers, aldrig en bank (Joachim 08-11-2026)"),
 ]
 ADVAR = [
     (r"\d+(?:[,.]\d+)?\s*(?:×|x)\s*\d+|\b\d+(?:[,.]\d+)?\s*mm\b|Ø\s*\d+", "mål i mm — for specifikt til en kundevendt tekst"),
