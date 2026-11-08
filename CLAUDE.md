@@ -163,6 +163,8 @@ npm run preview  # serv dist/ lokalt
 
 `.env` skal findes lokalt (se Sikkerhed). Uden den fejler build med en tydelig astro:env-fejl.
 
+**Priser fra designeren:** `scripts/produkt_priser.py` (fra-priser på produktsiderne) og `scripts/designer_eksempler.py` (eksempler). Ændres lockergitteret i designeren, skal også `scripts/locker_beregner_priser.py` køres (lockerberegneren, `src/data/locker-beregner.json`).
+
 ---
 
 ## Filkort

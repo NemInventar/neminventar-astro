@@ -1,0 +1,340 @@
+{
+ "regnet": "2026-11-08T13:25:50+00:00",
+ "gitter": "2026-11-08T10:23:18+00:00",
+ "kilde": "https://designer.neminventar.dk/designer.html",
+ "note": "pris pr. rum i en væg på 6 søjler (personale 4), hængsel institution · privat, inkl./ekskl. moms, ekskl. levering (scripts/locker_beregner_priser.py)",
+ "rum": {
+  "elev": {
+   "b": 30,
+   "h": 40,
+   "d": 40,
+   "raekker": 3,
+   "soejler": 6
+  },
+  "standard": {
+   "b": 30,
+   "h": 50,
+   "d": 45,
+   "raekker": 2,
+   "soejler": 6
+  },
+  "hoej": {
+   "b": 30,
+   "h": 90,
+   "d": 50,
+   "raekker": 2,
+   "soejler": 6
+  },
+  "personale": {
+   "b": 40,
+   "h": 90,
+   "d": 50,
+   "raekker": 2,
+   "soejler": 4
+  }
+ },
+ "vaeg": {
+  "elev/kryds": {
+   "tyk": 0.018,
+   "plade": 2.44,
+   "fuge": 0.002
+  },
+  "elev/birk": {
+   "tyk": 0.018,
+   "plade": 2.44,
+   "fuge": 0.002
+  },
+  "elev/kompakt": {
+   "tyk": 0.012,
+   "plade": 2.78,
+   "fuge": 0.002
+  },
+  "standard/kryds": {
+   "tyk": 0.018,
+   "plade": 2.44,
+   "fuge": 0.002
+  },
+  "standard/birk": {
+   "tyk": 0.018,
+   "plade": 2.44,
+   "fuge": 0.002
+  },
+  "standard/kompakt": {
+   "tyk": 0.012,
+   "plade": 2.78,
+   "fuge": 0.002
+  },
+  "hoej/kryds": {
+   "tyk": 0.018,
+   "plade": 2.44,
+   "fuge": 0.002
+  },
+  "hoej/birk": {
+   "tyk": 0.018,
+   "plade": 2.44,
+   "fuge": 0.002
+  },
+  "hoej/kompakt": {
+   "tyk": 0.012,
+   "plade": 2.78,
+   "fuge": 0.002
+  },
+  "personale/kryds": {
+   "tyk": 0.018,
+   "plade": 2.44,
+   "fuge": 0.002
+  },
+  "personale/birk": {
+   "tyk": 0.018,
+   "plade": 2.44,
+   "fuge": 0.002
+  },
+  "personale/kompakt": {
+   "tyk": 0.012,
+   "plade": 2.78,
+   "fuge": 0.002
+  }
+ },
+ "priser": {
+  "elev/kryds/haengelaas": {
+   "inkl": 2500,
+   "ex": 2000,
+   "rum": 18
+  },
+  "elev/kryds/noegle": {
+   "inkl": 2500,
+   "ex": 2000,
+   "rum": 18
+  },
+  "elev/kryds/kode": {
+   "inkl": 2925,
+   "ex": 2340,
+   "rum": 18
+  },
+  "elev/kryds/elektronisk": {
+   "inkl": 3625,
+   "ex": 2900,
+   "rum": 18
+  },
+  "elev/birk/haengelaas": {
+   "inkl": 2750,
+   "ex": 2200,
+   "rum": 18
+  },
+  "elev/birk/noegle": {
+   "inkl": 2750,
+   "ex": 2200,
+   "rum": 18
+  },
+  "elev/birk/kode": {
+   "inkl": 3175,
+   "ex": 2540,
+   "rum": 18
+  },
+  "elev/birk/elektronisk": {
+   "inkl": 3875,
+   "ex": 3100,
+   "rum": 18
+  },
+  "elev/kompakt/haengelaas": {
+   "inkl": 2750,
+   "ex": 2200,
+   "rum": 18
+  },
+  "elev/kompakt/noegle": {
+   "inkl": 2750,
+   "ex": 2200,
+   "rum": 18
+  },
+  "elev/kompakt/kode": {
+   "inkl": 3250,
+   "ex": 2600,
+   "rum": 18
+  },
+  "elev/kompakt/elektronisk": {
+   "inkl": 3875,
+   "ex": 3100,
+   "rum": 18
+  },
+  "standard/kryds/haengelaas": {
+   "inkl": 2925,
+   "ex": 2340,
+   "rum": 12
+  },
+  "standard/kryds/noegle": {
+   "inkl": 2875,
+   "ex": 2300,
+   "rum": 12
+  },
+  "standard/kryds/kode": {
+   "inkl": 3300,
+   "ex": 2640,
+   "rum": 12
+  },
+  "standard/kryds/elektronisk": {
+   "inkl": 4000,
+   "ex": 3200,
+   "rum": 12
+  },
+  "standard/birk/haengelaas": {
+   "inkl": 3250,
+   "ex": 2600,
+   "rum": 12
+  },
+  "standard/birk/noegle": {
+   "inkl": 3175,
+   "ex": 2540,
+   "rum": 12
+  },
+  "standard/birk/kode": {
+   "inkl": 3625,
+   "ex": 2900,
+   "rum": 12
+  },
+  "standard/birk/elektronisk": {
+   "inkl": 4300,
+   "ex": 3440,
+   "rum": 12
+  },
+  "standard/kompakt/haengelaas": {
+   "inkl": 3300,
+   "ex": 2640,
+   "rum": 12
+  },
+  "standard/kompakt/noegle": {
+   "inkl": 3300,
+   "ex": 2640,
+   "rum": 12
+  },
+  "standard/kompakt/kode": {
+   "inkl": 3800,
+   "ex": 3040,
+   "rum": 12
+  },
+  "standard/kompakt/elektronisk": {
+   "inkl": 4425,
+   "ex": 3540,
+   "rum": 12
+  },
+  "hoej/kryds/haengelaas": {
+   "inkl": 4050,
+   "ex": 3240,
+   "rum": 12
+  },
+  "hoej/kryds/noegle": {
+   "inkl": 4050,
+   "ex": 3240,
+   "rum": 12
+  },
+  "hoej/kryds/kode": {
+   "inkl": 4475,
+   "ex": 3580,
+   "rum": 12
+  },
+  "hoej/kryds/elektronisk": {
+   "inkl": 5100,
+   "ex": 4080,
+   "rum": 12
+  },
+  "hoej/birk/haengelaas": {
+   "inkl": 4600,
+   "ex": 3680,
+   "rum": 12
+  },
+  "hoej/birk/noegle": {
+   "inkl": 4550,
+   "ex": 3640,
+   "rum": 12
+  },
+  "hoej/birk/kode": {
+   "inkl": 4975,
+   "ex": 3980,
+   "rum": 12
+  },
+  "hoej/birk/elektronisk": {
+   "inkl": 5675,
+   "ex": 4540,
+   "rum": 12
+  },
+  "hoej/kompakt/haengelaas": {
+   "inkl": 4975,
+   "ex": 3980,
+   "rum": 12
+  },
+  "hoej/kompakt/noegle": {
+   "inkl": 4975,
+   "ex": 3980,
+   "rum": 12
+  },
+  "hoej/kompakt/kode": {
+   "inkl": 5475,
+   "ex": 4380,
+   "rum": 12
+  },
+  "hoej/kompakt/elektronisk": {
+   "inkl": 6100,
+   "ex": 4880,
+   "rum": 12
+  },
+  "personale/kryds/haengelaas": {
+   "inkl": 4775,
+   "ex": 3820,
+   "rum": 8
+  },
+  "personale/kryds/noegle": {
+   "inkl": 4725,
+   "ex": 3780,
+   "rum": 8
+  },
+  "personale/kryds/kode": {
+   "inkl": 5150,
+   "ex": 4120,
+   "rum": 8
+  },
+  "personale/kryds/elektronisk": {
+   "inkl": 5850,
+   "ex": 4680,
+   "rum": 8
+  },
+  "personale/birk/haengelaas": {
+   "inkl": 5400,
+   "ex": 4320,
+   "rum": 8
+  },
+  "personale/birk/noegle": {
+   "inkl": 5350,
+   "ex": 4280,
+   "rum": 8
+  },
+  "personale/birk/kode": {
+   "inkl": 5775,
+   "ex": 4620,
+   "rum": 8
+  },
+  "personale/birk/elektronisk": {
+   "inkl": 6475,
+   "ex": 5180,
+   "rum": 8
+  },
+  "personale/kompakt/haengelaas": {
+   "inkl": 6025,
+   "ex": 4820,
+   "rum": 8
+  },
+  "personale/kompakt/noegle": {
+   "inkl": 6025,
+   "ex": 4820,
+   "rum": 8
+  },
+  "personale/kompakt/kode": {
+   "inkl": 6525,
+   "ex": 5220,
+   "rum": 8
+  },
+  "personale/kompakt/elektronisk": {
+   "inkl": 7150,
+   "ex": 5720,
+   "rum": 8
+  }
+ }
+}

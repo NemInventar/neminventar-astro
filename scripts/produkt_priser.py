@@ -5,6 +5,7 @@ Resultatet skrives i src/data/produkt-priser.json og bruges af src/pages/produkt
 "fra"-pris og til Product/Offer i den strukturerede data (Google kræver, at prisen i data også står på siden).
 
 Kør igen, når prisgitteret i designeren regnes om: python scripts/produkt_priser.py   (kræver playwright og node ≥ 23)
+Ændres lockergitteret, skal scripts/locker_beregner_priser.py også køres (priserne i lockerberegneren, src/data/locker-beregner.json).
 """
 import json, subprocess, sys
 from datetime import datetime, timezone

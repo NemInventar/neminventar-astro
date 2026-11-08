@@ -9,6 +9,7 @@ import ProjectCard from '../components/ProjectCard.astro';
 import ProcessSteps from '../components/ProcessSteps.astro';
 import ContactCta from '../components/ContactCta.astro';
 import DesignerEksempler from '../components/DesignerEksempler.astro';
+import Lockerberegner from '../components/Lockerberegner.astro';
 import EKS from '../data/designer-eksempler.json';
 import { DESIGNER_URL, eksempelLink } from '../lib/forside';
 import { getWebLandingPages, getWebCases, getWebProducts, getWebColors, type WebLanding, type WebCase, type WebProduct, type WebColor } from '../lib/supabase';
@@ -258,6 +259,8 @@ const jsonLd = [
       )}
     </div></section>
   )}
+
+  {(page.slug === 'lockers' || page.slug === 'hvad-koster-lockers') && <Lockerberegner />}
 
   {eks.length > 0 && (
     <section class="sec" id="designer"><div class="wrap">
