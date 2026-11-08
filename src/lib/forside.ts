@@ -16,7 +16,7 @@ export const DESIGNER_AF: Record<string, 'locker' | 'hoejskab'> = {
   'garderobeskab-perforerede-lager': 'locker',
   'lockers-krydsfiner': 'locker',
   'lockerskab-ventilerede-laager': 'locker',
-  'lockerbank-omklaedning': 'locker',
+  'lockerskab-omklaedning': 'locker',
   'mobil-lockers-krydsfiner': 'locker',
   'lockers-med-baenke': 'locker',
   'hoejskab-krydsfiner': 'hoejskab',
@@ -38,7 +38,7 @@ const TILSTAND: Record<string, (kuloer?: string) => Record<string, unknown>> = {
   'garderobeskab-perforerede-lager': (k) => ({ mat: 'kryds', farve: { kryds: k ?? 'natur' } }),
   'lockers-krydsfiner': (k) => ({ mat: 'kryds', farve: { kryds: k ?? 'natur' }, raekker: 2 }),
   'lockerskab-ventilerede-laager': (k) => ({ mat: 'kryds', farve: { kryds: k ?? 'natur' }, raekker: 1 }),
-  'lockerbank-omklaedning': (k) => ({ mat: 'kryds', farve: { kryds: k ?? 'natur' }, raekker: 5 }),
+  'lockerskab-omklaedning': (k) => ({ mat: 'kryds', farve: { kryds: k ?? 'natur' }, raekker: 5 }),
   // Mobil-lockers (Sundby-modellen, 08-10-2026): 3 × 10 små rum, uden sokkel, hængelås — som designerens valg siden 1e074a6
   'mobil-lockers-krydsfiner': (k) => ({ mat: 'kryds', farve: { kryds: k ?? 'natur' }, soejler: 3, raekker: 10, b: 26, h: 16, d: 28, sokkel: 'uden', laas: 'haengelaas' }),
   // Lockers med bænke (Joachim 30-10-2026, designer-render dff490cf): 3 elementer à 3 × 2 rum, bænk med ryg og hynde efter

@@ -14,6 +14,9 @@ import { chipLabels } from '../../lib/labels';
 import { FAM, famOf, productImage, typeBillede, fotoTag, isPhoto } from '../../lib/catalog';
 import { DESIGNER_AF, designerLink } from '../../lib/forside';
 import { varianterAf, prisHref } from '../../lib/varianter';
+// Standardudgavens pris i designeren (scripts/produkt_priser.py, designerens egen prismodel). Står synligt på siden og
+// i Product/Offer, så Google og AI-assistenter kan læse den (lockers-SEO 08-11-2026: produktsiderne havde ingen pris).
+import produktPriser from '../../data/produkt-priser.json';
 
 export async function getStaticPaths() {
   const [products, cases, landing, colors] = await Promise.all([getWebProducts(), getWebCases(), getWebLandingPages(), getWebColors()]);
@@ -60,7 +63,32 @@ const FARVE_FAQ = {
   q: 'Kan man få andre farver?',
   a: 'Ja, selvfølgelig. Her viser vi de farver, vi har på lager. Olien, laminatet og stoffet findes i mange flere farver, og ud fra en prøve eller en RAL- eller NCS-kode finder vi den, der ligger tættest på. Skriv farven i forespørgslen.',
 };
+const pris = (produktPriser.priser as Record<string, { inkl: number; ex: number; link: string }>)[product.slug] ?? null;
+const kr = (n: number) => n.toLocaleString('da-DK');
+const produktUrl = new URL(`${base}produkter/${product.slug}/`, site).href;
 const jsonLd = [{
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: product.name,
+  description: product.seo_description ?? product.short_description ?? undefined,
+  image: mainImg ? new URL(cdn(mainImg, 1200), site).href : undefined,
+  url: produktUrl,
+  category: FAM[fam],
+  material: materials.length ? materials.join(', ') : undefined,
+  brand: { '@type': 'Brand', name: 'Nem Inventar' },
+  ...(pris ? {
+    offers: {
+      '@type': 'Offer',
+      url: pris.link,
+      price: pris.inkl,
+      priceCurrency: 'DKK',
+      priceSpecification: { '@type': 'UnitPriceSpecification', price: pris.inkl, priceCurrency: 'DKK', valueAddedTaxIncluded: true },
+      availability: 'https://schema.org/MadeToOrder',
+      itemCondition: 'https://schema.org/NewCondition',
+      seller: { '@type': 'Organization', name: 'Nem Inventar ApS', url: new URL(base, site).href },
+    },
+  } : {}),
+}, {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: [
@@ -117,7 +145,9 @@ const jsonLd = [{
           {applications.length > 0 && <div class="row"><span class="k">Velegnet til</span><div class="chips">{applications.map((a) => <span>{a}</span>)}</div></div>}
         </div>
         <details class="pd-faq"><summary>{FARVE_FAQ.q}</summary><p>{FARVE_FAQ.a}</p></details>
-        <p class="pd-made"><b>Til mål</b> · pris efter opmåling · tegnet i 3D til godkendelse, før vi bygger</p>
+        {pris
+          ? <p class="pd-made"><b>Standardudgaven i designeren: <a href={pris.link}>{kr(pris.inkl)} kr.</a></b> inkl. moms ({kr(pris.ex)} kr. ekskl. moms for virksomheder), ekskl. levering · ændr mål og antal, så følger prisen med · tegnet i 3D til godkendelse, før vi bygger</p>
+          : <p class="pd-made"><b>Til mål</b> · pris efter opmåling · tegnet i 3D til godkendelse, før vi bygger</p>}
         <div class="detail-cta">
           <a id="pris-knap" href={prisHref(base, v0 ?? { slug: product.slug, navn: product.name })} class="btn btn-primary">Få pris på denne<span id="pris-label">{v0 && varianter.length > 1 ? ` · ${v0.label}` : ''}</span> <span class="arr">→</span></a>
           <a href="tel:+4542422684" class="btn btn-ghost">+45 42 42 26 84</a>
