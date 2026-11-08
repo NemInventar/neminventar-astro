@@ -1211,6 +1211,459 @@
     }
   },
   {
+    "id": "kontor-hvid-indeliggende",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Hvide kontorlockers med indeliggende låger",
+    "tekst": "18 rum i fyrrekrydsfiner olieret i Cotton White. Lågerne ligger inde i rammen, uden greb, med kodelås og hængsler, der åbner helt til side og lukker blødt.",
+    "st": {
+      "soejler": 6,
+      "raekker": 3,
+      "b": 35,
+      "h": 45,
+      "d": 45,
+      "mat": "kryds",
+      "farve": {
+        "kryds": "cotton-white"
+      },
+      "placering": "inde",
+      "greb": "ingen",
+      "laas": "kode",
+      "haengsel": "luksus"
+    }
+  },
+  {
+    "id": "moerk-vaeg-lyse-laager",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Mørk væg med lyse låger",
+    "tekst": "24 rum i fyrrekrydsfiner, hvor skabet er olieret i Charcoal og lågerne i klar olie. Uden greb, med kodelås. Hænger på væggen uden sokkel.",
+    "st": {
+      "soejler": 6,
+      "raekker": 4,
+      "b": 40,
+      "h": 40,
+      "d": 43,
+      "mat": "kryds",
+      "farve": {
+        "kryds": "charcoal",
+        "laage": "natur"
+      },
+      "front": "farve",
+      "greb": "ingen",
+      "laas": "kode",
+      "sokkel": "uden"
+    }
+  },
+  {
+    "id": "spa-hoeje-terra",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Høje skabe i mørk sten til spa og wellness",
+    "tekst": "Seks skabe i fuld højde i kompaktlaminat i Terra, en mørk stenfarve. Elektronisk lås, krog og en hylde i hvert. Kompaktlaminat tåler vand og damp.",
+    "st": {
+      "soejler": 6,
+      "raekker": 1,
+      "b": 40,
+      "h": 180,
+      "d": 50,
+      "mat": "kompakt",
+      "farve": {
+        "kompakt": "terra"
+      },
+      "laas": "elektronisk",
+      "krog": "krog",
+      "hylder": "en",
+      "haengsel": "institution"
+    }
+  },
+  {
+    "id": "ramme-dark-roast-elektronisk",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Lockers med ramme og låger i Dark Roast",
+    "tekst": "20 rum i fyrrekrydsfiner med låger olieret i Dark Roast, en ramme i krydsfiner om hvert element, designgreb, hængsler med blød lukning og elektronisk lås.",
+    "st": {
+      "soejler": 10,
+      "raekker": 2,
+      "b": 35,
+      "h": 60,
+      "d": 50,
+      "mat": "kryds",
+      "front": "farve",
+      "farve": {
+        "laage": "dark-roast"
+      },
+      "greb": "luksus",
+      "haengsel": "luksus",
+      "laas": "elektronisk",
+      "blok": 5,
+      "ramme": "ramme"
+    }
+  },
+  {
+    "id": "omklaedning-ventileret-skorum",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Omklædning med ventilerede låger og skorum",
+    "tekst": "12 rum i fyrrekrydsfiner med huller i toppen af lågen, to hylder i rummet og skorum under. Dæksider i begge ender, institutionshængsler og kodelås.",
+    "st": {
+      "soejler": 6,
+      "raekker": 2,
+      "b": 30,
+      "h": 80,
+      "d": 40,
+      "mat": "kryds",
+      "huller": "top",
+      "hylder": "to",
+      "sokkel": "skohylde",
+      "skohylder": "en",
+      "daekside": "begge",
+      "haengsel": "institution",
+      "laas": "kode"
+    }
+  },
+  {
+    "id": "elevskabe-roedbrun-hvide-laager",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Elevskabe i rødbrun med hvide låger",
+    "tekst": "24 rum på 30 × 40 cm i fyrrekrydsfiner. Skabet er olieret rødbrunt og lågerne i Cotton White, hængt skiftevis til venstre og højre, så lågerne åbner parvis. Nøglelås.",
+    "st": {
+      "soejler": 8,
+      "raekker": 3,
+      "b": 30,
+      "h": 40,
+      "d": 40,
+      "mat": "kryds",
+      "farve": {
+        "kryds": "roedbrun",
+        "laage": "cotton-white"
+      },
+      "front": "farve",
+      "side": "skift",
+      "haengsel": "institution",
+      "laas": "noegle"
+    }
+  },
+  {
+    "id": "mobilskab-fern-32",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Mobilskab i Fern med 32 rum",
+    "tekst": "32 små rum i fyrrekrydsfiner olieret i Fern, fire søjler og otte rækker, med hængelås. Hænger på væggen ved klassens dør.",
+    "st": {
+      "soejler": 4,
+      "raekker": 8,
+      "b": 26,
+      "h": 16,
+      "d": 28,
+      "mat": "kryds",
+      "farve": {
+        "kryds": "fern"
+      },
+      "sokkel": "uden",
+      "laas": "haengelaas"
+    }
+  },
+  {
+    "id": "personale-hvid-kompakt",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Personaleskabe i hvid kompaktlaminat",
+    "tekst": "Ti skabe på 40 × 90 cm i alpinhvid kompaktlaminat med kodelås, krog og en hylde i hvert. Til personalerum på hospitaler og plejecentre, hvor der gøres grundigt rent. Kompaktlaminat tåler vand og slid.",
+    "st": {
+      "soejler": 5,
+      "raekker": 2,
+      "b": 40,
+      "h": 90,
+      "d": 50,
+      "mat": "kompakt",
+      "farve": {
+        "kompakt": "alpine-white"
+      },
+      "laas": "kode",
+      "krog": "krog",
+      "hylder": "en",
+      "haengsel": "institution"
+    }
+  },
+  {
+    "id": "golfskabe",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Golfskabe til tasken",
+    "tekst": "Fem høje rum på 50 × 130 cm og 60 cm dybe, så en golftaske står oprejst. Birkekrydsfiner med låger i Dark Roast, designgreb, hængsler med blød lukning og kodelås.",
+    "st": {
+      "soejler": 5,
+      "raekker": 1,
+      "b": 50,
+      "h": 130,
+      "d": 60,
+      "mat": "birk",
+      "front": "farve",
+      "farve": {
+        "laage": "dark-roast"
+      },
+      "greb": "luksus",
+      "haengsel": "luksus",
+      "laas": "kode",
+      "krog": "krog"
+    }
+  },
+  {
+    "id": "lav-raekke-cocoa",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Lav lockerrække i vindueshøjde",
+    "tekst": "Ti rum på 40 × 45 cm på én række i birkekrydsfiner med låger olieret i Cocoa, uden greb og med kodelås. Toppen kan bruges som hylde under vinduet.",
+    "st": {
+      "soejler": 10,
+      "raekker": 1,
+      "b": 40,
+      "h": 45,
+      "d": 45,
+      "mat": "birk",
+      "front": "farve",
+      "farve": {
+        "laage": "cocoa"
+      },
+      "greb": "ingen",
+      "laas": "kode",
+      "haengsel": "luksus"
+    }
+  },
+  {
+    "id": "roede-huller-skorum",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Rødbrune låger med huller over skorum",
+    "tekst": "16 rum i fyrrekrydsfiner med låger olieret rødbrunt og huller over hele lågen, uden greb og med kodelås. Under rummene står skorum. Institutionshængsler.",
+    "st": {
+      "soejler": 8,
+      "raekker": 2,
+      "b": 30,
+      "h": 80,
+      "d": 45,
+      "mat": "kryds",
+      "front": "farve",
+      "farve": {
+        "kryds": "natur",
+        "laage": "roedbrun"
+      },
+      "huller": "overalt",
+      "greb": "ingen",
+      "laas": "kode",
+      "haengsel": "institution",
+      "sokkel": "skohylde",
+      "skohylder": "en"
+    }
+  },
+  {
+    "id": "blaa-skolegang-baenk-imellem",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Skolegang i blåt med bænke imellem",
+    "tekst": "48 rum på 30 × 40 cm i fyrrekrydsfiner med blå låger, delt i elementer med en ramme om hvert og en bænk på 150 cm med hynde imellem. Nøglelås og institutionshængsler.",
+    "st": {
+      "soejler": 16,
+      "raekker": 3,
+      "b": 30,
+      "h": 40,
+      "d": 45,
+      "mat": "kryds",
+      "front": "farve",
+      "farve": {
+        "kryds": "natur",
+        "laage": "blaa"
+      },
+      "baenke": "imellem",
+      "blok": 8,
+      "bl": 150,
+      "hynde": "med",
+      "ramme": "ramme",
+      "laas": "noegle",
+      "haengsel": "institution"
+    }
+  },
+  {
+    "id": "aabne-spillerpladser",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Åbne spillerpladser til klubhuset",
+    "tekst": "Seks åbne rum på 50 × 150 cm uden låger, med en hylde og en krog i hvert og en bænk med skorum foran. Som i et professionelt omklædningsrum, hvor tøjet hænger til tørre.",
+    "st": {
+      "soejler": 6,
+      "raekker": 1,
+      "b": 50,
+      "h": 150,
+      "d": 50,
+      "mat": "kryds",
+      "laager": "uden",
+      "hylder": "en",
+      "krog": "krog",
+      "sokkel": "baenk"
+    }
+  },
+  {
+    "id": "hvid-kompakt-skorum",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Hvid kompaktlaminat med skorum til svømmehal",
+    "tekst": "12 rum i alpinhvid kompaktlaminat på skorum, med kodelås og krog. Kompaktlaminat tåler vand og slid, så skabene kan stå tæt på bruserne.",
+    "st": {
+      "soejler": 6,
+      "raekker": 2,
+      "b": 35,
+      "h": 80,
+      "d": 45,
+      "mat": "kompakt",
+      "farve": {
+        "kompakt": "alpine-white"
+      },
+      "laas": "kode",
+      "krog": "krog",
+      "haengsel": "institution",
+      "sokkel": "skohylde",
+      "skohylder": "en"
+    }
+  },
+  {
+    "id": "dark-roast-lyse-laager",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Personaleskabe i Dark Roast med lyse låger",
+    "tekst": "12 skabe på 40 × 90 cm. Skabet er olieret i Dark Roast og lågerne i klar olie, med designgreb, hængsler med blød lukning, kodelås og en krog i hvert.",
+    "st": {
+      "soejler": 6,
+      "raekker": 2,
+      "b": 40,
+      "h": 90,
+      "d": 50,
+      "mat": "kryds",
+      "front": "farve",
+      "farve": {
+        "kryds": "dark-roast",
+        "laage": "natur"
+      },
+      "greb": "luksus",
+      "haengsel": "luksus",
+      "laas": "kode",
+      "krog": "krog"
+    }
+  },
+  {
+    "id": "udstyrsskabe-ventileret",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Udstyrsskabe med ventilation til sejl- og spejderklub",
+    "tekst": "Fire høje rum på 50 × 160 cm og 60 cm dybe i fyrrekrydsfiner med huller over hele lågen, så vådt tøj og udstyr kan tørre. En hylde og en krog i hvert, dæksider og beslag til hængelås.",
+    "st": {
+      "soejler": 4,
+      "raekker": 1,
+      "b": 50,
+      "h": 160,
+      "d": 60,
+      "mat": "kryds",
+      "huller": "overalt",
+      "hylder": "en",
+      "krog": "krog",
+      "daekside": "begge",
+      "laas": "haengelaas",
+      "haengsel": "institution"
+    }
+  },
+  {
+    "id": "charcoal-birk-elektronisk",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Kontorlockers i birk med Charcoal-låger og elektronisk lås",
+    "tekst": "24 rum på 35 × 40 cm i birkekrydsfiner med låger olieret i Charcoal, uden greb, hængt skiftevis til venstre og højre og med elektronisk lås, der åbnes med brik eller kort.",
+    "st": {
+      "soejler": 8,
+      "raekker": 3,
+      "b": 35,
+      "h": 40,
+      "d": 45,
+      "mat": "birk",
+      "front": "farve",
+      "farve": {
+        "laage": "charcoal"
+      },
+      "greb": "ingen",
+      "laas": "elektronisk",
+      "side": "skift",
+      "haengsel": "luksus"
+    }
+  },
+  {
+    "id": "boernehave-fern-aabne",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Børnehavens garderobe i Fern på bænk",
+    "tekst": "Otte åbne garderoberum på 30 × 100 cm i fyrrekrydsfiner olieret i Fern, med hylde og krog, på en bænk med skorum under sædet.",
+    "st": {
+      "soejler": 8,
+      "raekker": 1,
+      "b": 30,
+      "h": 100,
+      "d": 40,
+      "mat": "kryds",
+      "farve": {
+        "kryds": "fern"
+      },
+      "laager": "uden",
+      "hylder": "en",
+      "krog": "krog",
+      "sokkel": "baenk"
+    }
+  },
+  {
+    "id": "gymnasium-ramme-hvide-laager",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Høje lockers med ramme og hvide låger til gymnasiet",
+    "tekst": "24 rum på 30 × 90 cm i fyrrekrydsfiner i to elementer med en ramme om hvert og låger olieret i Cotton White. Uden greb, med kodelås og institutionshængsler.",
+    "st": {
+      "soejler": 12,
+      "raekker": 2,
+      "b": 30,
+      "h": 90,
+      "d": 50,
+      "mat": "kryds",
+      "front": "farve",
+      "farve": {
+        "kryds": "natur",
+        "laage": "cotton-white"
+      },
+      "greb": "ingen",
+      "laas": "kode",
+      "blok": 6,
+      "ramme": "ramme",
+      "haengsel": "institution"
+    }
+  },
+  {
+    "id": "mobilskab-hvid-laererrum",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Mobilskab i Cotton White til lærerværelset",
+    "tekst": "20 små rum i fyrrekrydsfiner olieret i Cotton White, fire søjler og fem rækker, med nøglelås. Hænger på væggen.",
+    "st": {
+      "soejler": 4,
+      "raekker": 5,
+      "b": 26,
+      "h": 16,
+      "d": 28,
+      "mat": "kryds",
+      "farve": {
+        "kryds": "cotton-white"
+      },
+      "sokkel": "uden",
+      "laas": "noegle"
+    }
+  },
+  {
     "id": "akustikvaeg",
     "produkt": "akustik",
     "gruppe": "Akustik",

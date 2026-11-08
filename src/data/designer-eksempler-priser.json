@@ -1,5 +1,5 @@
 {
- "regnet": "2026-11-08T12:12:29+00:00",
+ "regnet": "2026-11-08T20:19:03+00:00",
  "kilde": "https://designer.neminventar.dk/designer.html",
  "note": "privat, inkl. moms, ekskl. levering — designerens egen prismodel (scripts/designer_eksempler.py)",
  "priser": {
@@ -16,6 +16,11 @@
   "aabne-garderoberum-boernehave": {
    "inkl": 45000,
    "ex": 36000,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
+  "aabne-spillerpladser": {
+   "inkl": 60300,
+   "ex": 48240,
    "gitter": "2026-11-08T10:23:18+00:00"
   },
   "ask-sorte-greb": {
@@ -48,6 +53,26 @@
    "ex": 37080,
    "gitter": "2026-10-23T10:00:26+00:00"
   },
+  "blaa-skolegang-baenk-imellem": {
+   "inkl": 158525,
+   "ex": 126820,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
+  "boernehave-fern-aabne": {
+   "inkl": 48400,
+   "ex": 38720,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
+  "charcoal-birk-elektronisk": {
+   "inkl": 114000,
+   "ex": 91200,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
+  "dark-roast-lyse-laager": {
+   "inkl": 85200,
+   "ex": 68160,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
   "elevskabe": {
    "inkl": 64200,
    "ex": 51360,
@@ -56,6 +81,11 @@
   "elevskabe-baenke-groenne-laager": {
    "inkl": 77025,
    "ex": 61620,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
+  "elevskabe-roedbrun-hvide-laager": {
+   "inkl": 64200,
+   "ex": 51360,
    "gitter": "2026-11-08T10:23:18+00:00"
   },
   "entre-baenk-mellem-garderober": {
@@ -128,6 +158,16 @@
    "ex": 154820,
    "gitter": "2026-10-23T10:00:26+00:00"
   },
+  "golfskabe": {
+   "inkl": 62750,
+   "ex": 50200,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
+  "gymnasium-ramme-hvide-laager": {
+   "inkl": 134400,
+   "ex": 107520,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
   "hoejskab-hylder-birk": {
    "inkl": 11675,
    "ex": 9340,
@@ -138,6 +178,11 @@
    "ex": 19000,
    "gitter": "2026-10-23T10:00:26+00:00"
   },
+  "hvid-kompakt-skorum": {
+   "inkl": 80700,
+   "ex": 64560,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
   "indeliggende-eg": {
    "inkl": 19850,
    "ex": 15880,
@@ -147,6 +192,16 @@
    "inkl": 55725,
    "ex": 44580,
    "gitter": "2026-10-23T10:00:26+00:00"
+  },
+  "kontor-hvid-indeliggende": {
+   "inkl": 76500,
+   "ex": 61200,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
+  "lav-raekke-cocoa": {
+   "inkl": 50250,
+   "ex": 40200,
+   "gitter": "2026-11-08T10:23:18+00:00"
   },
   "lockers": {
    "inkl": 41400,
@@ -183,9 +238,29 @@
    "ex": 30000,
    "gitter": "2026-11-08T10:23:18+00:00"
   },
+  "mobilskab-fern-32": {
+   "inkl": 42400,
+   "ex": 33920,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
+  "mobilskab-hvid-laererrum": {
+   "inkl": 26500,
+   "ex": 21200,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
+  "moerk-vaeg-lyse-laager": {
+   "inkl": 72000,
+   "ex": 57600,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
   "omklaedning-baenk-efter": {
    "inkl": 129250,
    "ex": 103400,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
+  "omklaedning-ventileret-skorum": {
+   "inkl": 64800,
+   "ex": 51840,
    "gitter": "2026-11-08T10:23:18+00:00"
   },
   "omklaedningsbaenk-kompakt": {
@@ -203,15 +278,30 @@
    "ex": 5940,
    "gitter": "2026-10-23T10:00:26+00:00"
   },
+  "personale-hvid-kompakt": {
+   "inkl": 71000,
+   "ex": 56800,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
   "personaleskabe": {
    "inkl": 47800,
    "ex": 38240,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
+  "ramme-dark-roast-elektronisk": {
+   "inkl": 138000,
+   "ex": 110400,
    "gitter": "2026-11-08T10:23:18+00:00"
   },
   "roedbrun-olie": {
    "inkl": 40125,
    "ex": 32100,
    "gitter": "2026-10-23T10:00:26+00:00"
+  },
+  "roede-huller-skorum": {
+   "inkl": 87200,
+   "ex": 69760,
+   "gitter": "2026-11-08T10:23:18+00:00"
   },
   "skabsvaeg-180-fjordgroen": {
    "inkl": 38950,
@@ -258,6 +348,11 @@
    "ex": 142400,
    "gitter": "2026-11-08T10:23:18+00:00"
   },
+  "spa-hoeje-terra": {
+   "inkl": 82800,
+   "ex": 66240,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
   "sportshal-huller-baenk": {
    "inkl": 137875,
    "ex": 110300,
@@ -272,6 +367,11 @@
    "inkl": 25300,
    "ex": 20240,
    "gitter": "2026-10-23T10:00:26+00:00"
+  },
+  "udstyrsskabe-ventileret": {
+   "inkl": 47500,
+   "ex": 38000,
+   "gitter": "2026-11-08T10:23:18+00:00"
   }
  }
 }
