@@ -42,6 +42,14 @@ export const GET: APIRoute = async ({ site }) => {
     `- [Link til kundens eget skab](${DESIGNER_LLMS}): Et link kan bære et helt design, fx https://designer.neminventar.dk/designer?p=hoejskab&antal=3&bredde=80&hoejde=240&materiale=eg. Så åbner designeren med netop det skab tegnet og prisen regnet. Navnene og værdierne står i designerens llms.txt.`,
     '',
     ...designer,
+    // Lockers (lockers-SEO 08-11-2026): designerens llms.txt dækker kun skabe og bænke, så lockerne står her i ren tekst.
+    // ChatGPT svarede på pris pr. locker med stålskabe — derfor står materialet og prisen pr. rum tydeligt (skriveregel: positivt).
+    '## Lockers',
+    `- [Design lockers](https://designer.neminventar.dk/designer?p=locker): 3D-designer til lockers efter mål til skoler, omklædning, personalerum og kontorer. Man vælger antal rum, rummets bredde, højde og dybde, fyrrekrydsfiner, birkekrydsfiner eller kompaktlaminat, lås (beslag til hængelås, nøglelås, kodelås eller elektronisk lås med brik eller kort), bænke med ryg og hynde og ventilerede låger. Prisen står i designeren, mens man bygger: inkl. moms for private, ekskl. moms for virksomheder. Levering, montage og opmåling vælges til.`,
+    `- [Hvad koster lockers?](${abs('hvad-koster-lockers')}): Pris pr. rum regnet i designeren, og hvad materiale, lås, rummets størrelse og bænke betyder for prisen.`,
+    `- [Lockers](${abs('lockers')}) · [Lockers til kontor](${abs('lockers-til-kontor')}) · [Omklædningsskabe](${abs('omklaedningsskabe')}) · [Mobilskab til skolen](${abs('mobilskab')})`,
+    '- Lockerne er i fyrrekrydsfiner, birkekrydsfiner eller kompaktlaminat og bygges på mål i vores egenproduktion. En væg med 12 rum i fyrrekrydsfiner med nøglelås koster 2.875 kr. pr. rum inkl. moms (2.300 kr. ekskl. moms), regnet i designeren 08-11-2026.',
+    '',
     '## Målgrupper',
     ...segmenter.map((p) => `- [${p.nav_label}](${abs(p.slug)}): ${p.lead ?? p.seo_description}`),
     '',

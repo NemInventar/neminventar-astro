@@ -24,6 +24,8 @@ export default defineConfig({
     '/produkter/skydedoer-massiv-krydsfiner': '/inventar/',
     // Joachim 07-10-2026: "det er bare lockers" — typen hedder nu Lockers i krydsfiner
     '/produkter/skohylde-med-locker': '/produkter/lockers-krydsfiner/',
+    // Joachim 08-11-2026: "Lad være med at kalde det en bank" — typen hedder nu Lockerskab til omklædning
+    '/produkter/lockerbank-omklaedning': '/produkter/lockerskab-omklaedning/',
   },
 
   // Build-time secrets. SUPABASE_ANON_KEY er KRÆVET (ingen default => ligger aldrig i koden).

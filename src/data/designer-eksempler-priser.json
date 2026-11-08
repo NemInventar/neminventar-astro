@@ -1,5 +1,5 @@
 {
- "regnet": "2026-11-05T09:27:16+00:00",
+ "regnet": "2026-11-08T12:12:29+00:00",
  "kilde": "https://designer.neminventar.dk/designer.html",
  "note": "privat, inkl. moms, ekskl. levering — designerens egen prismodel (scripts/designer_eksempler.py)",
  "priser": {
@@ -14,9 +14,9 @@
    "gitter": "2026-10-23T10:00:26+00:00"
   },
   "aabne-garderoberum-boernehave": {
-   "inkl": 42000,
-   "ex": 33600,
-   "gitter": "2026-10-27T21:28:43+00:00"
+   "inkl": 45000,
+   "ex": 36000,
+   "gitter": "2026-11-08T10:23:18+00:00"
   },
   "ask-sorte-greb": {
    "inkl": 30050,
@@ -49,14 +49,14 @@
    "gitter": "2026-10-23T10:00:26+00:00"
   },
   "elevskabe": {
-   "inkl": 60000,
-   "ex": 48000,
-   "gitter": "2026-10-27T21:28:43+00:00"
+   "inkl": 64200,
+   "ex": 51360,
+   "gitter": "2026-11-08T10:23:18+00:00"
   },
   "elevskabe-baenke-groenne-laager": {
-   "inkl": 73875,
-   "ex": 59100,
-   "gitter": "2026-10-27T21:28:43+00:00"
+   "inkl": 77025,
+   "ex": 61620,
+   "gitter": "2026-11-08T10:23:18+00:00"
   },
   "entre-baenk-mellem-garderober": {
    "inkl": 41550,
@@ -149,44 +149,44 @@
    "gitter": "2026-10-23T10:00:26+00:00"
   },
   "lockers": {
-   "inkl": 38400,
-   "ex": 30720,
-   "gitter": "2026-10-27T21:28:43+00:00"
+   "inkl": 41400,
+   "ex": 33120,
+   "gitter": "2026-11-08T10:23:18+00:00"
   },
   "lockers-cocoa-laager": {
-   "inkl": 33000,
-   "ex": 26400,
-   "gitter": "2026-10-27T21:28:43+00:00"
+   "inkl": 35500,
+   "ex": 28400,
+   "gitter": "2026-11-08T10:23:18+00:00"
   },
   "lockers-kompakt": {
    "inkl": 50625,
    "ex": 40500,
-   "gitter": "2026-10-27T21:28:43+00:00"
+   "gitter": "2026-11-08T10:23:18+00:00"
   },
   "lockers-kontor": {
-   "inkl": 63200,
-   "ex": 50560,
-   "gitter": "2026-10-27T21:28:43+00:00"
+   "inkl": 67800,
+   "ex": 54240,
+   "gitter": "2026-11-08T10:23:18+00:00"
   },
   "lockers-ramme-roedbrune-laager": {
-   "inkl": 81000,
-   "ex": 64800,
-   "gitter": "2026-10-27T21:28:43+00:00"
+   "inkl": 87000,
+   "ex": 69600,
+   "gitter": "2026-11-08T10:23:18+00:00"
   },
   "lockers-sort-kompakt": {
    "inkl": 56250,
    "ex": 45000,
-   "gitter": "2026-10-27T21:28:43+00:00"
+   "gitter": "2026-11-08T10:23:18+00:00"
   },
   "mobil-lockers": {
-   "inkl": 36000,
-   "ex": 28800,
-   "gitter": "2026-10-27T21:28:43+00:00"
+   "inkl": 37500,
+   "ex": 30000,
+   "gitter": "2026-11-08T10:23:18+00:00"
   },
   "omklaedning-baenk-efter": {
-   "inkl": 121250,
-   "ex": 97000,
-   "gitter": "2026-10-27T21:28:43+00:00"
+   "inkl": 129250,
+   "ex": 103400,
+   "gitter": "2026-11-08T10:23:18+00:00"
   },
   "omklaedningsbaenk-kompakt": {
    "inkl": 6675,
@@ -196,7 +196,7 @@
   "omklaedningsskabe-fitness": {
    "inkl": 65700,
    "ex": 52560,
-   "gitter": "2026-10-27T21:28:43+00:00"
+   "gitter": "2026-11-08T10:23:18+00:00"
   },
   "opbevaringsbaenk-to-skuffer": {
    "inkl": 7425,
@@ -204,9 +204,9 @@
    "gitter": "2026-10-23T10:00:26+00:00"
   },
   "personaleskabe": {
-   "inkl": 44200,
-   "ex": 35360,
-   "gitter": "2026-10-27T21:28:43+00:00"
+   "inkl": 47800,
+   "ex": 38240,
+   "gitter": "2026-11-08T10:23:18+00:00"
   },
   "roedbrun-olie": {
    "inkl": 40125,
@@ -254,14 +254,14 @@
    "gitter": "2026-10-23T10:00:26+00:00"
   },
   "skolegang-siddepladser": {
-   "inkl": 166000,
-   "ex": 132800,
-   "gitter": "2026-10-27T21:28:43+00:00"
+   "inkl": 178000,
+   "ex": 142400,
+   "gitter": "2026-11-08T10:23:18+00:00"
   },
   "sportshal-huller-baenk": {
-   "inkl": 129875,
-   "ex": 103900,
-   "gitter": "2026-10-27T21:28:43+00:00"
+   "inkl": 137875,
+   "ex": 110300,
+   "gitter": "2026-11-08T10:23:18+00:00"
   },
   "to-skabe-birk-skovgroen": {
    "inkl": 29100,
