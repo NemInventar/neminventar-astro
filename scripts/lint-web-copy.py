@@ -6,7 +6,7 @@ Læser de samme views som sitet (v_web_landing_pages, v_web_cases, v_web_product
 Kør: python scripts/lint-web-copy.py        (exit 1 ved FEJL)
 Nøglen: SUPABASE_ANON_KEY (eller SUPABASE_SERVICE_ROLE_KEY) i miljøet, ellers --anon-key <nøgle>
 (den offentlige anon-nøgle — Claude henter den med Supabase MCP get_publishable_keys).
-Efter build: python scripts/lint-web-copy.py --dist dist   (kun ADVAR, fejler aldrig): et sagsnavn mere end 3 gange
+Efter build: python scripts/lint-web-copy.py --dist dist   FEJL hvis et link i KRAEVEDE_LINKS mangler, ADVAR: et sagsnavn mere end 3 gange
 i den synlige tekst på en side (Joachim 05-10-2026, opmærksomhedspunkt: "Mørkhøj skal nævnes, men ikke 28 gange").
 3 = projektkortet + én referencelinje + én sætning. Billedtekster og kortmærker skal ikke bære sagsnavnet.
 
@@ -55,11 +55,29 @@ def sagsnavne_i_dist(dist, cases):
                 n += 1
     return n
 
+# Links der skal stå på en bestemt side. FEJL i --dist, hvis de mangler: en omskrivning af siden
+# må ikke tabe dem (Joachim 08-11-2026 om /en/ og PR #58: "tjek at det ikke bliver fjernet").
+KRAEVEDE_LINKS = {
+    "en/index.html": ["/en/lockers/"],  # AI-test 08-11-2026: lockerkøbere i Finland/Norden spørger på engelsk
+}
+
+def kraevede_links_i_dist(dist):
+    n = 0
+    for side, links in KRAEVEDE_LINKS.items():
+        f = Path(dist) / side
+        html = f.read_text(encoding="utf-8", errors="ignore") if f.exists() else ""
+        for link in links:
+            if not re.search(rf'href="[^"]*{re.escape(link)}"', html):
+                print(f"FEJL html/{side} · mangler link til {link} (KRAEVEDE_LINKS i scripts/lint-web-copy.py)")
+                n += 1
+    return n
+
 if DIST:
+    n_fejl = kraevede_links_i_dist(DIST)
     n = sagsnavne_i_dist(DIST, json.loads(urllib.request.urlopen(urllib.request.Request(
         f"{URL}/rest/v1/v_web_cases?select=slug,name", headers={"apikey": KEY, "Authorization": "Bearer " + KEY}), timeout=60).read()))
-    print(f"\n0 fejl · {n} advarsler (sagsnavne i {DIST})")
-    sys.exit(0)
+    print(f"\n{n_fejl} fejl · {n} advarsler (krævede links og sagsnavne i {DIST})")
+    sys.exit(1 if n_fejl else 0)
 
 FEJL = [
     (r"\bKosovo\b|\bFerizaj\b|Korpus\s+SH", "produktionssted nævnes ikke udadtil — skriv 'egen produktion'"),
