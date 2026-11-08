@@ -63,6 +63,7 @@ export const GET: APIRoute = async ({ site }) => {
     '',
     '## English',
     `- [English overview](${abs('en/')}): Built-in joinery for schools, daycare centres and sports facilities in Denmark — what we make, how we work, documentation and contact.`,
+    `- [Custom plywood lockers](${abs('en/lockers/')}): Lockers made to measure in pine plywood, birch plywood and compact laminate (HPL) for schools, sports halls, swimming halls, staff rooms and offices, by Nem Inventar ApS, a Danish company. Locks: hasp for a padlock, key, code or electronic. Prices per compartment excl. VAT from the designer, with an approximate euro amount.`,
     '',
     '## Guides in English',
     ...guidesFor('en', pages).map((g) => `- [${g.h1}](${abs(guidePath('en', g.slug))}): ${g.lead ?? g.seo_description}`),

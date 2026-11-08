@@ -1,0 +1,350 @@
+---
+// Engelsk lockerside (AI-test 08-11-2026: engelske spørgsmål stillet fra Finland nævnte os i 12 af 22 svar i ChatGPT,
+// 4 i Perplexity og 0 i Gemini). Modstykke til /lockers/ (hreflang begge veje, EN_UDGAVE i src/pages/[slug].astro).
+// Første afsnit svarer direkte på "Who manufactures custom plywood lockers for schools in the Nordic countries?" og
+// "Which Danish company makes wooden lockers for schools and sports halls?".
+// Priser: regnet i designeren 08-11-2026, ekskl. moms, pr. rum, uden levering og montage. Hvert tal linker til netop
+// den konfiguration. EUR regnes her ud fra kursen nedenfor, så det aldrig er et håndtal.
+// Levering og montage uden for Danmark: kun det, de engelske sider allerede siger ("send us the drawings and we will
+// tell you what we can deliver"). Produktionsstedet nævnes ikke ("our own production"), og der står ikke "made in Denmark".
+// Sagsnavne højst 3 gange i den synlige tekst (scripts/lint-web-copy.py --dist): billedtekster bærer ikke sagsnavnet.
+import Base from '../../layouts/Base.astro';
+import ContactCta from '../../components/ContactCta.astro';
+import { cdn } from '../../lib/img';
+import { morkhoj } from '../../lib/catalog';
+import { DESIGNER_URL, eksempelLink } from '../../lib/forside';
+import { getWebLandingPages } from '../../lib/supabase';
+import { guidesFor, guidePath } from '../../lib/guides-i18n';
+import EKS from '../../data/designer-eksempler.json';
+
+const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
+const abs = (p: string) => new URL(base + p, site).href;
+const url = abs('en/lockers/');
+const designer = `${DESIGNER_URL ?? 'https://designer.neminventar.dk/designer.html'}?p=locker`;
+const contact = `${base}en/contact/?emne=${encodeURIComponent('Lockers')}`;
+
+// Engelske guides, der findes (de følger den danske side; afpubliceres den, forsvinder linket).
+const guides = guidesFor('en', await getWebLandingPages());
+const guide = (daSlug: string) => {
+  const g = guides.find((x) => x.da_slug === daSlug);
+  return g ? { href: base + guidePath('en', g.slug), t: g.nav_label } : null;
+};
+const gCompact = guide('kompaktlaminat-eller-laminat');
+const gQuote = guide('forespoergsel-paa-fast-inventar');
+
+// Priser fra designeren 08-11-2026, kr. pr. rum ekskl. moms. Linket åbner præcis den væg.
+const EUR_RATE = 7.46;
+const D = 'https://designer.neminventar.dk/designer?p=locker&t=';
+const P = {
+  pine: { dkk: 2300, link: D + 'eyJzb2VqbGVyIjo2LCJyYWVra2VyIjoyLCJiIjozMCwiaCI6NTAsImQiOjQ1LCJtYXQiOiJrcnlkcyIsImhhZW5nc2VsIjoiaW5zdGl0dXRpb24iLCJsYWFzIjoibm9lZ2xlIn0' },
+  birch: { dkk: 2540, link: D + 'eyJzb2VqbGVyIjo2LCJyYWVra2VyIjoyLCJiIjozMCwiaCI6NTAsImQiOjQ1LCJtYXQiOiJiaXJrIiwiaGFlbmdzZWwiOiJpbnN0aXR1dGlvbiIsImxhYXMiOiJub2VnbGUifQ' },
+  compact: { dkk: 2640, link: D + 'eyJzb2VqbGVyIjo2LCJyYWVra2VyIjoyLCJiIjozMCwiaCI6NTAsImQiOjQ1LCJtYXQiOiJrb21wYWt0IiwiaGFlbmdzZWwiOiJpbnN0aXR1dGlvbiIsImxhYXMiOiJub2VnbGUifQ' },
+  code: { dkk: 2640, link: D + 'eyJzb2VqbGVyIjo2LCJyYWVra2VyIjoyLCJiIjozMCwiaCI6NTAsImQiOjQ1LCJtYXQiOiJrcnlkcyIsImhhZW5nc2VsIjoiaW5zdGl0dXRpb24iLCJsYWFzIjoia29kZSJ9' },
+  electronic: { dkk: 3200, link: D + 'eyJzb2VqbGVyIjo2LCJyYWVra2VyIjoyLCJiIjozMCwiaCI6NTAsImQiOjQ1LCJtYXQiOiJrcnlkcyIsImhhZW5nc2VsIjoiaW5zdGl0dXRpb24iLCJsYWFzIjoiZWxla3Ryb25pc2sifQ' },
+  pupil: { dkk: 2000, link: D + 'eyJzb2VqbGVyIjo0LCJyYWVra2VyIjozLCJiIjozMCwiaCI6NDAsImQiOjQwLCJtYXQiOiJrcnlkcyIsImhhZW5nc2VsIjoiaW5zdGl0dXRpb24iLCJsYWFzIjoibm9lZ2xlIn0' },
+  tall30: { dkk: 3240, link: D + 'eyJzb2VqbGVyIjo2LCJyYWVra2VyIjoyLCJiIjozMCwiaCI6OTAsImQiOjUwLCJtYXQiOiJrcnlkcyIsImhhZW5nc2VsIjoiaW5zdGl0dXRpb24iLCJsYWFzIjoibm9lZ2xlIn0' },
+  tall40: { dkk: 3780, link: D + 'eyJzb2VqbGVyIjo0LCJyYWVra2VyIjoyLCJiIjo0MCwiaCI6OTAsImQiOjUwLCJtYXQiOiJrcnlkcyIsImhhZW5nc2VsIjoiaW5zdGl0dXRpb24iLCJsYWFzIjoibm9lZ2xlIn0' },
+  phone: { dkk: 1000, link: D + 'eyJzb2VqbGVyIjozLCJyYWVra2VyIjoxMCwiYiI6MjYsImgiOjE2LCJkIjoyOCwibWF0Ijoia3J5ZHMiLCJzb2trZWwiOiJ1ZGVuIiwibGFhcyI6ImhhZW5nZWxhYXMifQ' },
+  office: { dkk: 3000, link: D + 'eyJzb2VqbGVyIjo4LCJyYWVra2VyIjoyLCJiIjozNSwiaCI6NDUsImQiOjQ1LCJtYXQiOiJiaXJrIiwiaGFlbmdzZWwiOiJpbnN0aXR1dGlvbiIsImxhYXMiOiJrb2RlIn0' },
+};
+const num = (x: number) => x.toLocaleString('en-GB');
+const dkk = (x: number) => `${num(x)} DKK`;
+const eur = (x: number) => `€${num(Math.round(x / EUR_RATE))}`;
+const PHONE_COMPARTMENTS = 30;
+
+const tableMaterial = [
+  { t: 'Pine plywood, key lock', p: P.pine },
+  { t: 'Birch plywood, key lock', p: P.birch },
+  { t: 'Compact laminate, key lock', p: P.compact },
+  { t: 'Pine plywood, code lock', p: P.code },
+  { t: 'Pine plywood, electronic lock', p: P.electronic },
+];
+const tableSize = [
+  { t: '12 pupil lockers in three tiers, key lock', size: '30 × 40 cm', p: P.pupil },
+  { t: '12 tall lockers, key lock', size: '30 × 90 cm', p: P.tall30 },
+  { t: '8 tall lockers, key lock', size: '40 × 90 cm', p: P.tall40 },
+  { t: `${PHONE_COMPARTMENTS} phone lockers, hasp for a padlock`, size: '26 × 16 cm', p: P.phone },
+  { t: '16 office lockers in birch plywood, code lock', size: '35 × 45 cm', p: P.office },
+];
+
+// Rigtige fotos fra leverancer og visualiseringer fra designeren holdes adskilt og mærkes hver for sig.
+const photos = [
+  { src: morkhoj('20_lockere-roede-perforerede-laager-kodelaase-og-skohylder.jpg'), alt: 'Red plywood lockers with perforated doors and code locks above open shoe shelves in a school', cap: 'Code locks, perforated doors and shoe shelves', pos: '50% 50%' },
+  { src: morkhoj('26_garderobe-lockere-roede-med-baenk-og-skohylder.jpg'), alt: 'Red plywood lockers over a bench and open shoe shelves in a school cloakroom', cap: 'Lockers, bench and shoe shelves as one unit', pos: '50% 58%' },
+  { src: '/billeder/sundby/08_lockerskab-krydsfiner-og-vaegbaenk.jpg', alt: 'Plywood locker cabinet with many small lockable compartments in a tiled changing room', cap: 'Locker cabinet in a changing room', pos: '62% 55%' },
+  { src: '/billeder/mobil-lockers/mobil-lockers-krydsfiner-foto.jpg', alt: 'Plywood locker cabinet with 30 small compartments, each door with a turn lock and an eye for a padlock', cap: '30 small compartments, the type used for phone lockers', pos: '50% 40%' },
+];
+const VIS: { id: string; alt: string; cap: string }[] = [
+  { id: 'elevskabe-baenke-groenne-laager', alt: 'Pupil lockers in pine plywood with green doors and benches with backrest and cushion between the units', cap: 'Pupil lockers with benches' },
+  { id: 'mobil-lockers', alt: 'Wall-hung phone lockers in pine plywood with 30 small compartments and padlocks', cap: 'Phone lockers for a classroom' },
+  { id: 'lockers-kompakt', alt: 'Lockers in light grey compact laminate with 15 compartments and hasps for the user’s own padlock', cap: 'Compact laminate for changing rooms' },
+  { id: 'sportshal-huller-baenk', alt: 'Plywood lockers with ventilated doors and a bench with backrest and cushion between two units', cap: 'Ventilated doors and a bench' },
+  { id: 'personaleskabe', alt: 'Eight tall staff lockers in birch plywood with code locks', cap: 'Staff lockers in birch plywood, code locks' },
+  { id: 'lockers-kontor', alt: 'Eight tall office lockers in birch plywood with dark grey doors and electronic locks', cap: 'Office lockers with electronic locks' },
+];
+const visuals = VIS.flatMap((v) => {
+  const e = EKS.find((x) => x.id === v.id);
+  return e ? [{ ...v, src: `/billeder/designer-eksempler/${v.id}.jpg`, href: DESIGNER_URL ? eksempelLink(e) : null }] : [];
+});
+
+// Spørgsmål og svar. Links: [tekst](https://…) eller [tekst](/sti). Samme tekst går ud som FAQPage.
+const faq: { q: string; a: string }[] = [
+  {
+    q: 'Who manufactures custom plywood lockers for schools in the Nordic countries?',
+    a: `Nem Inventar ApS, a Danish company in Copenhagen, designs and builds lockers to measure in pine plywood, birch plywood and compact laminate for schools, sports halls and offices, in our own production. For Mørkhøj Skole we have made 342 plywood lockers with code locks and shoe shelves together with Ason A/S and Rønnow Arkitekter. Send drawings to tilbud@neminventar.dk, or build the lockers in our [designer](${designer}) and see the price. For projects outside Denmark, send us the drawings and we will tell you what we can deliver.`,
+  },
+  {
+    q: 'Which Danish company makes wooden lockers for schools and sports halls?',
+    a: 'Nem Inventar ApS in Copenhagen makes lockers in plywood for school corridors, cloakrooms and sports hall changing rooms, and in compact laminate where there is water. For the changing rooms at Sundby Idrætspark we are making lockers with 150 lockable compartments in lacquered plywood together with Ason A/S and WE Architecture.',
+  },
+  {
+    q: 'Can school lockers have a bench and a shoe shelf?',
+    a: 'Yes. Open shoe shelves can sit under the lockers with a bench in front, or a bench with backrest and cushion can stand between the units, so pupils can sit down to change shoes. See [lockers with bench](/en/lockers-with-bench/).',
+  },
+  {
+    q: 'What material should lockers in a swimming hall or changing room be made of?',
+    a: `Compact laminate (HPL) near the showers and in swimming halls. It is laminate all the way through and does not absorb water. Where the showers are in a separate room, oiled or lacquered plywood works, and ventilated doors let wet clothes dry. On a wall of 12 compartments, compact laminate costs ${dkk(P.compact.dkk)} per compartment excl. VAT against ${dkk(P.pine.dkk)} in pine plywood.`,
+  },
+  {
+    q: 'How much does a locker cost per compartment?',
+    a: `In our designer, a wall of 12 compartments, each 30 cm wide and 50 cm high, in pine plywood with key locks costs [${dkk(P.pine.dkk)} per compartment](${P.pine.link}) excl. VAT (about ${eur(P.pine.dkk)} at ${EUR_RATE} DKK to the euro), without delivery and installation. Birch plywood costs ${dkk(P.birch.dkk)}, compact laminate ${dkk(P.compact.dkk)}, a code lock ${dkk(P.code.dkk)} and an electronic lock ${dkk(P.electronic.dkk)} per compartment. The prices were calculated on 8 November 2026.`,
+  },
+  {
+    q: 'Are wooden lockers or steel lockers better for a school?',
+    a: 'Steel lockers are usually sold as finished modules in fixed sizes, often at a lower price per compartment, and steel takes knocks well. Plywood is quieter when a door is closed hard, a scratch in oiled plywood can be sanded and re-oiled on site, and lockers built to measure can fill the wall, also around columns and in niches, with doors in the school’s colours. Near showers we use compact laminate.',
+  },
+  {
+    q: 'Do you make staff lockers in birch plywood with code locks?',
+    a: `Yes. Staff lockers can be built in birch plywood with code locks, key locks or electronic locks. A tall compartment 40 cm wide and 90 cm high holds a jacket and a bag. Sixteen compartments 35 cm wide and 45 cm high in birch plywood with code locks cost [${dkk(P.office.dkk)} per compartment](${P.office.link}) excl. VAT.`,
+  },
+  {
+    q: 'Do you make phone lockers for classrooms?',
+    a: `Yes. A phone locker in plywood has ${PHONE_COMPARTMENTS} small compartments, one for each pupil’s phone, and hangs on the wall by the classroom door. With hasps for padlocks it costs [${dkk(P.phone.dkk)} per compartment](${P.phone.link}) excl. VAT, ${dkk(P.phone.dkk * PHONE_COMPARTMENTS)} for the cabinet. Code locks or key locks are an option.`,
+  },
+  {
+    q: 'Can office lockers have electronic locks?',
+    a: `Yes. The electronic lock opens with a tag or a card. On a wall of 12 compartments in pine plywood, it brings the price to [${dkk(P.electronic.dkk)} per compartment](${P.electronic.link}) excl. VAT, against ${dkk(P.pine.dkk)} with a key lock.`,
+  },
+  {
+    q: 'Can architects get an IFC model of the lockers for a tender?',
+    a: `Yes. Build the lockers in our [designer](${designer}) and download the model as IFC for Revit or ArchiCAD. On a project we model the lockers in 3D, and you approve the drawing before production.`,
+  },
+  {
+    q: 'Do you deliver and install lockers outside Denmark?',
+    a: 'In Denmark we deliver and install the lockers ourselves. For projects in other countries, send us the drawings and the address, and we will tell you what we can deliver. The prices on this page are without delivery and installation.',
+  },
+];
+const LINK = /\[([^\]]+)\]\(((?:https?:\/\/|\/)[^)\s]+)\)/g;
+const segs = (s: string) => {
+  const out: { t: string; href?: string }[] = [];
+  let last = 0;
+  for (const m of s.matchAll(LINK)) {
+    if (m.index! > last) out.push({ t: s.slice(last, m.index) });
+    out.push({ t: m[1], href: m[2].startsWith('/') ? base + m[2].slice(1) : m[2] });
+    last = m.index! + m[0].length;
+  }
+  if (last < s.length) out.push({ t: s.slice(last) });
+  return out;
+};
+const plain = (s: string) => s.replace(LINK, '$1');
+
+const h1 = 'Plywood lockers made to measure for schools, sports halls and offices';
+const description = 'Custom lockers in pine plywood, birch plywood and compact laminate (HPL) for schools, sports halls, swimming halls and offices, from a Danish company. Prices per compartment.';
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Nem Inventar', item: abs('en/') },
+      { '@type': 'ListItem', position: 2, name: 'Lockers', item: url },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: h1,
+    serviceType: 'Lockers made to measure',
+    description,
+    provider: { '@id': abs('') + '#virksomhed' },
+    areaServed: { '@type': 'Country', name: 'Denmark' },
+    url,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    inLanguage: 'en',
+    mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: plain(f.a) } })),
+  },
+];
+---
+<Base
+  lang="en"
+  title="Custom plywood lockers for schools, sports halls and offices | Nem Inventar"
+  description={description}
+  image={new URL(cdn(photos[0].src), site).href}
+  jsonLd={jsonLd}
+  alternates={[
+    { hreflang: 'da', href: abs('lockers/') },
+    { hreflang: 'en', href: url },
+  ]}>
+  <header class="hero2"><div class="wrap hero2-grid">
+    <div class="hero2-head">
+      <span class="label">Lockers made to measure</span>
+      <h1>Plywood lockers made to measure for schools, sports halls and <em>offices.</em></h1>
+    </div>
+    <div class="hero2-cta">
+      <a href={contact} class="btn btn-primary">Send drawings or quantities <span class="arr">→</span></a>
+      <a href={designer} class="btn btn-ghost" title="The designer is in Danish. It shows the price for delivery in Denmark.">Build your lockers in 3D (in Danish)</a>
+    </div>
+    <div class="duo" aria-label="Photos from our deliveries">
+      <div class="slot a">
+        <img class="is-on" src={cdn(photos[1].src)} alt={photos[1].alt} style={`--pos:${photos[1].pos}`} fetchpriority="high" />
+        <span class="img-tag"><b>Photo</b>{photos[1].cap}</span>
+      </div>
+      <div class="slot b">
+        <img class="is-on" src={cdn(photos[2].src)} alt={photos[2].alt} style={`--pos:${photos[2].pos}`} fetchpriority="high" />
+        <span class="img-tag"><b>Photo</b>{photos[2].cap}</span>
+      </div>
+    </div>
+    <div class="hero2-sub">
+      <p>Nem Inventar ApS is a Danish company in Copenhagen that designs and builds custom lockers for schools, sports halls, swimming halls, staff rooms and offices, in pine plywood, birch plywood and compact laminate. We model each wall of lockers in 3D, build it in our own production and, in Denmark, install it ourselves.</p>
+      <p style="margin-top:12px">For Mørkhøj Skole, together with Ason A/S and Rønnow Arkitekter, we have made 342 plywood lockers with code locks and shoe shelves; the first stage was handed over in 2026. For the changing rooms at Sundby Idrætspark, together with Ason A/S and WE Architecture, we are making lockers with 150 lockable compartments in lacquered plywood, which are being installed in 2026.</p>
+    </div>
+    <div class="facts2" aria-label="What you can choose">
+      <span class="fact2">Pine or birch plywood</span>
+      <span class="fact2">Compact laminate near showers</span>
+      <span class="fact2">Padlock, key, code or electronic lock</span>
+      <span class="fact2">3D drawing for approval</span>
+      <span class="fact2">IFC for Revit and ArchiCAD</span>
+      <span class="fact2">Prototype for series</span>
+    </div>
+  </div></header>
+
+  <section class="sec" id="lockers"><div class="wrap">
+    <div class="guide-aside">
+      <div class="prose lp-prose rv">
+        <h2 class="lp-h2">Lockers for schools, with bench and shoe shelf</h2>
+        <p>Pupil lockers have to be within reach of the youngest pupils and are opened many times a day. A compartment 30 cm wide and 40 cm high holds a school bag and a lunch box, and three tiers make a wall about 130 cm high. A wall of 12 such compartments in pine plywood with key locks costs <a href={P.pupil.link}>{dkk(P.pupil.dkk)} per compartment</a> excl. VAT (about {eur(P.pupil.dkk)}).</p>
+        <p>Open shoe shelves can sit under the lockers with a bench in front, so pupils can sit down to change shoes at their own locker. The bench can also stand between the units, with a backrest and a cushion. At Mørkhøj Skole the pupils’ lockers have code locks, so nobody has to keep track of keys. More on <a href={`${base}en/lockers-with-bench/`}>lockers with bench</a>.</p>
+
+        <h2 class="lp-h2">Phone lockers for classrooms</h2>
+        <p>Schools that collect phones during lessons can give each pupil a lockable compartment of their own. A phone locker has {PHONE_COMPARTMENTS} small compartments in three columns, hangs on the wall by the classroom door and is built in plywood like the pupils’ lockers. Each door has a hasp for a padlock, or a key lock or a code lock. With hasps it costs <a href={P.phone.link}>{dkk(P.phone.dkk)} per compartment</a> excl. VAT (about {eur(P.phone.dkk)}), or {dkk(P.phone.dkk * PHONE_COMPARTMENTS)} for the cabinet.</p>
+
+        <h2 class="lp-h2">Changing rooms and swimming halls: compact laminate (HPL)</h2>
+        <p>In a changing room, users come and go all day. A hasp for the user’s own padlock is the simplest lock there: nobody hands out or collects keys, and the compartment is free as soon as the padlock is off. Ventilated doors let air through, so wet clothes and towels can dry.</p>
+        <p>Near the showers and in swimming halls we build the lockers in compact laminate, which is high-pressure laminate (HPL) all the way through. There is no core that can absorb water and swell, so it stands up to water and daily washing. On a wall of 12 compartments it costs <a href={P.compact.link}>{dkk(P.compact.dkk)} per compartment</a> excl. VAT (about {eur(P.compact.dkk)}), against {dkk(P.pine.dkk)} in pine plywood.{gCompact && <> The difference from ordinary laminate is explained in our guide <a href={gCompact.href}>{gCompact.t}</a>.</>}</p>
+        <p>Where the showers are in a separate room, the lockers can be plywood, oiled or lacquered. The lockers with 150 compartments for the changing rooms at Sundby Idrætspark are in lacquered plywood.</p>
+
+        <h2 class="lp-h2">Staff lockers in birch plywood with code locks</h2>
+        <p>Staff rooms need a taller compartment with room for a jacket and a bag. A compartment 40 cm wide and 90 cm high holds both, and two tiers give two lockers per column. In pine plywood with key locks it costs <a href={P.tall40.link}>{dkk(P.tall40.dkk)} per compartment</a> excl. VAT (about {eur(P.tall40.dkk)}).</p>
+        <p>Birch plywood is lighter than pine and has a finer surface. When the same person uses the locker every day, a code lock or a key lock fits. On a wall of 12 compartments, birch adds {dkk(P.birch.dkk - P.pine.dkk)} per compartment to the price in pine, and a code lock adds {dkk(P.code.dkk - P.pine.dkk)} to the price with a key lock.</p>
+
+        <h2 class="lp-h2">Office lockers with electronic locks</h2>
+        <p>In an office with flexible desks, the locker is where the laptop, the bag and the papers stay overnight. A compartment 35 cm wide and 45 cm high takes a bag and a laptop. Sixteen such compartments in birch plywood with code locks cost <a href={P.office.link}>{dkk(P.office.dkk)} per compartment</a> excl. VAT (about {eur(P.office.dkk)}). The lockers can also have an electronic lock that opens with a tag or a card; on a wall of 12 compartments in pine plywood it costs <a href={P.electronic.link}>{dkk(P.electronic.dkk)} per compartment</a> (about {eur(P.electronic.dkk)}).</p>
+
+        <h2 class="lp-h2" id="price">Price per compartment</h2>
+        <p>Lockers are priced per compartment, meaning one door with one lock. The prices below were calculated in our designer on 8 November 2026, excluding VAT, delivery and installation. Each price links to that exact configuration in the designer, where you can change it. Euro amounts are approximate, at {EUR_RATE} DKK to the euro.</p>
+        <div class="lp-tabel"><table>
+          <thead><tr><th>Wall of 12 compartments, 30 × 50 cm</th><th>DKK per compartment, excl. VAT</th><th>Approx. EUR</th></tr></thead>
+          <tbody>{tableMaterial.map((r) => <tr><td>{r.t}</td><td><a href={r.p.link}>{num(r.p.dkk)}</a></td><td>{eur(r.p.dkk)}</td></tr>)}</tbody>
+        </table></div>
+        <div class="lp-tabel"><table>
+          <thead><tr><th>Size and type, pine plywood unless stated</th><th>Width × height</th><th>DKK per compartment, excl. VAT</th><th>Approx. EUR</th></tr></thead>
+          <tbody>{tableSize.map((r) => <tr><td>{r.t}</td><td>{r.size}</td><td><a href={r.p.link}>{num(r.p.dkk)}</a></td><td>{eur(r.p.dkk)}</td></tr>)}</tbody>
+        </table></div>
+        <p>The designer is in Danish and shows the price for delivery in Denmark. On a building project we price from the drawings and the joinery specification, item by item.</p>
+
+        <h2 class="lp-h2">Wood or steel</h2>
+        <p>Steel lockers are usually sold as finished modules in fixed sizes, and the price per compartment is then often lower than for lockers built to measure. Steel takes knocks well. Plywood is quieter when a door is closed hard, and a scratch in oiled plywood can be sanded and re-oiled on site instead of replacing the door. Lockers built to measure can fill the wall, also around columns and in niches, and the doors can be oiled in the school’s or the company’s colours. Near showers we use compact laminate.</p>
+
+        <h2 class="lp-h2">Locks, hinges and doors</h2>
+        <p>The lock decides who holds the key. The lockers can have a hasp for the user’s own padlock, a key lock, a code lock, or an electronic lock that opens with a tag or a card. The hinges are institutional hinges, made for doors that are opened many times a day for years. Doors can be plain or ventilated, and the carcass can stand in clear oil with the doors in a coloured oil.</p>
+
+        <h2 class="lp-h2">3D drawings and IFC models for architects</h2>
+        <p>We model the lockers in 3D from the room and the number of users. You approve the drawing before production, and the parts list for production comes from the same model, so a change follows all the way through. Architects can download the model as IFC for Revit and ArchiCAD from the <a href={designer}>designer</a> and use it in the tender documents.</p>
+        <p>Lockers are often a series of many identical compartments. Then we build a prototype first, so the lock and the hinges are tested before the rest goes into production. In a tender, send the drawings, the joinery specification and the bill of quantities, and you get a price per item.{gQuote && <> What to include is described in our guide <a href={gQuote.href}>{gQuote.t}</a>.</>}</p>
+
+        <h2 class="lp-h2">Delivery and installation</h2>
+        <p>In Denmark we deliver and install the lockers ourselves: we carry them in, put them up and adjust the doors. Delivery and installation are not included in the prices above. For projects outside Denmark, send us the drawings and we will tell you what we can deliver.</p>
+      </div>
+      <aside class="guide-cta rv">
+        <h3>Working on a tender or a specific room?</h3>
+        <p>Send the drawings, the number of users or the bill of quantities. We reply in English with questions and a price per item.</p>
+        <div class="detail-cta" style="flex-direction:column;align-items:stretch">
+          <a href={contact} class="btn btn-primary" style="justify-content:center">Send drawings or quantities <span class="arr">→</span></a>
+          <a href={designer} class="btn btn-ghost" style="justify-content:center">Build your lockers in 3D (in Danish)</a>
+          <a href="tel:+4542422684" class="btn btn-ghost" style="justify-content:center">+45 42 42 26 84</a>
+        </div>
+      </aside>
+    </div>
+  </div></section>
+
+  <section class="sec" style="padding-top:0"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">Photos</span>
+        <h2>From our <em>deliveries.</em></h2>
+      </div>
+    </div>
+    <div class="cd-gallery rv lk-photos">
+      {photos.map((p) => (
+        <figure class="gfig" style="cursor:default"><img src={cdn(p.src, 800)} alt={p.alt} loading="lazy" decoding="async" style={`object-position:${p.pos}`} /><figcaption class="img-tag"><b>Photo</b>{p.cap}</figcaption></figure>
+      ))}
+    </div>
+    <p class="cd-note rv">Photos from a school cloakroom and a sports hall changing room. We built the lockers; floors, tiles, walls and the other furniture are by others.</p>
+  </div></section>
+
+  {visuals.length > 0 && (
+    <section class="sec" style="padding-top:0"><div class="wrap">
+      <div class="sec-head rv">
+        <div>
+          <span class="label">3D visualisations</span>
+          <h2>Built in the <em>designer.</em></h2>
+          <p class="lede">These are visualisations from our designer, not photos. Open one to change the number of compartments, the material or the lock and see the price.</p>
+        </div>
+      </div>
+      <div class="cd-gallery rv">
+        {visuals.map((v) => v.href ? (
+          <a class="gfig" href={v.href} style="cursor:pointer"><img src={cdn(v.src, 800)} alt={v.alt} loading="lazy" decoding="async" /><span class="img-tag"><b>3D visualisation</b>{v.cap}</span></a>
+        ) : (
+          <figure class="gfig" style="cursor:default"><img src={cdn(v.src, 800)} alt={v.alt} loading="lazy" decoding="async" /><figcaption class="img-tag"><b>3D visualisation</b>{v.cap}</figcaption></figure>
+        ))}
+      </div>
+    </div></section>
+  )}
+
+  <section class="sec lp-faq" style="padding-top:0"><div class="wrap">
+    <span class="label">Questions and answers</span>
+    <h2>What people often <em>ask us.</em></h2>
+    <div class="faq-list rv">
+      {faq.map((f) => (
+        <details>
+          <summary>{f.q}</summary>
+          <p>{segs(f.a).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))}</p>
+        </details>
+      ))}
+    </div>
+  </div></section>
+
+  <section class="lp-related"><div class="wrap">
+    <div class="yd-row rv">
+      <span class="lbl">See also:</span>
+      <a class="pill" href={`${base}en/lockers-with-bench/`}>Lockers with bench</a>
+      <a class="pill" href={`${base}en/products/`}>All types</a>
+      {gCompact && <a class="pill" href={gCompact.href}>{gCompact.t}</a>}
+      {gQuote && <a class="pill" href={gQuote.href}>{gQuote.t}</a>}
+      <a class="pill" href={`${base}lockers/`} hreflang="da">Lockers (in Danish)</a>
+      <a class="pill" href={`${base}hvad-koster-lockers/`} hreflang="da">Locker prices (in Danish)</a>
+    </div>
+  </div></section>
+
+  <ContactCta lang="en" subject="Lockers" />
+
+  <style>
+    .lk-photos{grid-template-columns:repeat(4,1fr)}
+    @media(max-width:1020px){.lk-photos{grid-template-columns:1fr 1fr}}
+    .lp-tabel a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--warm);text-underline-offset:3px}
+    .lp-tabel td:first-child{white-space:normal}
+  </style>
+</Base>
