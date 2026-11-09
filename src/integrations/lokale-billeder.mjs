@@ -7,16 +7,20 @@
 // Sådan virker det (efter `astro build`, hook astro:build:done):
 //   1. Alle tekstfiler i dist (html, json, xml, txt, js, css) skannes for Supabase storage-URL'er
 //      (render/image = transform med width/quality, object = original). Formular-endpointet (functions/v1) røres ikke.
-//   2. Hvert billede hentes én gang med samme transform-parametre, højst SAMTIDIGE ad gangen:
-//      - på siden (img, srcset, data-src, CSS) som webp, ligesom browseren får det fra Supabase i dag
+//   2. Hvert billede hentes én gang som ORIGINAL (object-URL'en) og skaleres her med sharp efter URL'ens
+//      transform-parametre (width, height, resize, quality), højst SAMTIDIGE ad gangen:
+//      - på siden (img, srcset, data-src, CSS) som webp
 //      - i <meta> (og:image, twitter:image) og JSON-LD i originalformatet og med absolut URL, for delingstjenester
 //        og søgemaskiner, der ikke læser webp
+//      Supabase' render/image kaldes ALDRIG herfra (09-11-2026): hver unik original, der går gennem den, tæller
+//      i Pro-planens kvote på 100 billedtransformationer pr. måned, og buildet alene brugte ~200.
 //   3. Filnavnet er <originalnavn>-<kilde-id>-<bredde>.<ext>, fx 33_lockere-roede-ved-doer-til-klasserum-1a2b3c4d-w800.webp.
 //      Kilde-id'et er det samme for alle bredder af ét billede (testen "kortbillede = hovedbillede" bygger på det).
 //   4. Cache mellem builds i .cache/lokale-billeder (actions/cache i CI). Hvert billede genvalideres med ETag
 //      (Supabase svarer 304), så et udskiftet billede kommer med ved næste build.
 //
-// Fejler en hentning, beholdes den fjerne URL, og der skrives en advarsel. Buildet fejler ALDRIG på grund af et billede.
+// Fejler en hentning, peger URL'en på originalen hos Supabase (object, aldrig render/image), og der skrives en
+// advarsel. Buildet fejler ALDRIG på grund af et billede.
 // Slå det hele fra med LOKALE_BILLEDER=0.
 import { createHash } from 'node:crypto';
 import { promises as fs } from 'node:fs';
@@ -92,6 +96,54 @@ export function filnavn(url, contentType) {
   return `${stem}-${id}-${variant}.${ext}`;
 }
 
+/** Originalen bag en Supabase-URL: render/image → object, uden transform-parametre. */
+export function kildeAf(url) {
+  const u = new URL(url);
+  if (!u.pathname.includes('/storage/v1/render/image/')) return url;
+  u.pathname = u.pathname.replace('/storage/v1/render/image/', '/storage/v1/object/');
+  u.search = '';
+  return u.href;
+}
+
+/** Transform-parametrene fra en render/image-URL (null for en object-URL). Samme standarder som Supabase. */
+export function transformAf(url) {
+  const u = new URL(url);
+  if (!u.pathname.includes('/storage/v1/render/image/')) return null;
+  const q = u.searchParams;
+  const tal = (k) => { const n = Number(q.get(k)); return Number.isFinite(n) && n > 0 ? Math.round(n) : undefined; };
+  const resize = (q.get('resize') || 'cover').toLowerCase();
+  return { width: tal('width'), height: tal('height'), resize, quality: Math.min(100, tal('quality') ?? 80) };
+}
+
+const SHARP_FORMATER = new Set(['jpeg', 'png', 'webp', 'avif', 'tiff']);
+let sharpModul;
+const hentSharp = async () => (sharpModul ??= (await import('sharp')).default);
+
+/**
+ * Skalerer en original efter transform-parametrene, som Supabase ville have gjort:
+ *   resize=contain → passer inden for boksen (kun width: bredden styrer, højden følger), cover → beskæres i midten,
+ *   fill → strækkes. Aldrig større end originalen. EXIF-retningen respekteres.
+ * format 'web' → webp, 'org' → originalens format. SVG, GIF og video røres ikke.
+ */
+export async function skaler(data, type, t, format) {
+  const t0 = (type || '').split(';')[0].trim().toLowerCase();
+  if (!t || !/^image\/(jpeg|png|webp|avif|tiff)$/.test(t0)) return { data, type };
+  const sharp = await hentSharp();
+  let img = sharp(data, { failOn: 'none' }).rotate();
+  const meta = await img.metadata();
+  if (t.width || t.height) {
+    // Kun én side + cover: Supabase beholder originalens anden side og beskærer — det er aldrig ønsket på sitet
+    // (derfor resize=contain i cdn()); her skaleres proportionalt i det tilfælde.
+    const begge = Boolean(t.width && t.height);
+    const fit = !begge || t.resize === 'contain' ? 'inside' : t.resize === 'fill' ? 'fill' : 'cover';
+    img = img.resize({ width: t.width, height: t.height, fit, position: 'centre', withoutEnlargement: true });
+  }
+  const ud = format === 'web' ? 'webp' : SHARP_FORMATER.has(meta.format) ? meta.format : 'jpeg';
+  const opt = ud === 'png' ? {} : { quality: t.quality };
+  const buf = await img.toFormat(ud, opt).toBuffer();
+  return { data: buf, type: `image/${ud}` };
+}
+
 /** Erstatter fundene i teksten (bagfra, så positionerne holder). */
 export function erstat(tekst, fund, nyUrl) {
   let ud = tekst;
@@ -112,10 +164,10 @@ async function* filerI(mappe) {
 
 const vent = (ms) => new Promise((r) => setTimeout(r, ms));
 
-/** Henter ét billede. Med etag: 304 → { uaendret: true }. Kaster ved fejl. */
-async function hent(url, format, etag) {
+/** Henter ét billede (originalen). Med etag: 304 → { uaendret: true }. Kaster ved fejl. */
+async function hent(url, etag) {
+  if (url.includes('/storage/v1/render/image/')) throw new Error('render/image må ikke kaldes fra buildet (kvote)');
   const headers = { 'User-Agent': 'neminventar.dk-build (lokale-billeder)' };
-  if (format === 'web') headers.Accept = 'image/webp,image/*;q=0.8,*/*;q=0.5';
   if (etag) headers['If-None-Match'] = etag;
   let sidste, pause = 0;
   for (let i = 0; i <= PAUSER_429.length; i++) {
@@ -184,20 +236,22 @@ export async function lokaliser({ dist, cache, base = '/', site, log = console }
   const fejlede = [];
 
   await pulje([...jobs.entries()], SAMTIDIGE, async ([k, job]) => {
-    const kendt = indeks[k];
+    // v2 = skaleret her fra originalen. Ældre poster (hentet gennem render/image) har den forkerte etag: hent forfra.
+    const kendt = indeks[k]?.v === 2 ? indeks[k] : null;
     let harKopi = false;
     if (kendt) { try { await fs.access(path.join(filmappe, kendt.fil)); harKopi = true; } catch { /* filen er væk */ } }
     let fil;
     try {
-      const r = await hent(job.url, job.format, harKopi ? kendt.etag : null);
+      const r = await hent(kildeAf(job.url), harKopi ? kendt.etag : null);
       if (r.uaendret) { tal.uaendret++; fil = kendt.fil; }
       else {
-        fil = filnavn(job.url, r.type);
+        const s = await skaler(r.data, r.type, transformAf(job.url), job.format);
+        fil = filnavn(job.url, s.type);
         // Skriv til en midlertidig fil og omdøb: to job kan give samme filnavn (fx webp-original i begge formater)
         const tmp = path.join(filmappe, `${fil}.${process.pid}.${Math.random().toString(36).slice(2)}.tmp`);
-        await fs.writeFile(tmp, r.data);
+        await fs.writeFile(tmp, s.data);
         await fs.rename(tmp, path.join(filmappe, fil));
-        indeks[k] = { fil, etag: r.etag, type: r.type, hentet: nu };
+        indeks[k] = { v: 2, fil, etag: r.etag, type: s.type, hentet: nu };
         tal.hentet++;
       }
       indeks[k].brugt = nu;
@@ -231,7 +285,13 @@ export async function lokaliser({ dist, cache, base = '/', site, log = console }
   for (const { f, tekst, fund } of filer) {
     const ny = erstat(tekst, fund, (x) => {
       const job = jobs.get(`${x.format}|${x.url}`);
-      if (!job?.fil) return null;
+      if (!job?.fil) {
+        // Fejlet: originalen hos Supabase frem for render/image, så ingen besøgende bruger af transform-kvoten
+        const org = kildeAf(x.url);
+        if (org === x.url) return null;
+        omskrevet++;
+        return org;
+      }
       omskrevet++;
       return (x.absolut && absRod ? absRod : rod) + MAPPE + '/' + job.fil;
     });
