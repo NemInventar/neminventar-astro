@@ -1,5 +1,5 @@
 {
- "regnet": "2026-11-08T20:19:03+00:00",
+ "regnet": "2026-11-08T22:40:57+00:00",
  "kilde": "https://designer.neminventar.dk/designer.html",
  "note": "privat, inkl. moms, ekskl. levering — designerens egen prismodel (scripts/designer_eksempler.py)",
  "priser": {
@@ -48,6 +48,11 @@
    "ex": 6960,
    "gitter": "2026-10-23T10:00:26+00:00"
   },
+  "birk-cotton-white-personale": {
+   "inkl": 66900,
+   "ex": 53520,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
   "birk-hvide-laager": {
    "inkl": 46350,
    "ex": 37080,
@@ -68,6 +73,16 @@
    "ex": 91200,
    "gitter": "2026-11-08T10:23:18+00:00"
   },
+  "charcoal-indeliggende-klare": {
+   "inkl": 63750,
+   "ex": 51000,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
+  "cocoa-elevskabe-baenk-efter": {
+   "inkl": 137250,
+   "ex": 109800,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
   "dark-roast-lyse-laager": {
    "inkl": 85200,
    "ex": 68160,
@@ -81,6 +96,11 @@
   "elevskabe-baenke-groenne-laager": {
    "inkl": 77025,
    "ex": 61620,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
+  "elevskabe-paa-baenk-blaa": {
+   "inkl": 64800,
+   "ex": 51840,
    "gitter": "2026-11-08T10:23:18+00:00"
   },
   "elevskabe-roedbrun-hvide-laager": {
@@ -127,6 +147,11 @@
    "inkl": 11825,
    "ex": 9460,
    "gitter": "2026-10-23T10:00:26+00:00"
+  },
+  "fern-huller-top-klub": {
+   "inkl": 53700,
+   "ex": 42960,
+   "gitter": "2026-11-08T10:23:18+00:00"
   },
   "garderobe-boernevaerelse": {
    "inkl": 28350,
@@ -203,6 +228,11 @@
    "ex": 40200,
    "gitter": "2026-11-08T10:23:18+00:00"
   },
+  "lav-terra-spa": {
+   "inkl": 37200,
+   "ex": 29760,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
   "lockers": {
    "inkl": 41400,
    "ex": 33120,
@@ -236,6 +266,11 @@
   "mobil-lockers": {
    "inkl": 37500,
    "ex": 30000,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
+  "mobilskab-charcoal-40": {
+   "inkl": 53000,
+   "ex": 42400,
    "gitter": "2026-11-08T10:23:18+00:00"
   },
   "mobilskab-fern-32": {
@@ -293,6 +328,11 @@
    "ex": 110400,
    "gitter": "2026-11-08T10:23:18+00:00"
   },
+  "roedbrun-lockervaeg": {
+   "inkl": 63900,
+   "ex": 51120,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
   "roedbrun-olie": {
    "inkl": 40125,
    "ex": 32100,
@@ -348,6 +388,11 @@
    "ex": 142400,
    "gitter": "2026-11-08T10:23:18+00:00"
   },
+  "smalle-hoeje-birk-charcoal": {
+   "inkl": 100400,
+   "ex": 80320,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
   "spa-hoeje-terra": {
    "inkl": 82800,
    "ex": 66240,
@@ -371,6 +416,11 @@
   "udstyrsskabe-ventileret": {
    "inkl": 47500,
    "ex": 38000,
+   "gitter": "2026-11-08T10:23:18+00:00"
+  },
+  "vaerksted-udstyrsskabe": {
+   "inkl": 54700,
+   "ex": 43760,
    "gitter": "2026-11-08T10:23:18+00:00"
   }
  }

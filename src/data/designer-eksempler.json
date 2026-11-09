@@ -1664,6 +1664,231 @@
     }
   },
   {
+    "id": "elevskabe-paa-baenk-blaa",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Elevskabe på bænk med blå låger",
+    "tekst": "16 rum på 30 × 40 cm i fyrrekrydsfiner med blå låger, der står på en bænk med skorum under sædet. Eleverne kan sidde og skifte sko foran deres eget skab. Nøglelås og institutionshængsler.",
+    "st": {
+      "soejler": 8,
+      "raekker": 2,
+      "b": 30,
+      "h": 40,
+      "d": 40,
+      "mat": "kryds",
+      "front": "farve",
+      "farve": {
+        "kryds": "natur",
+        "laage": "blaa"
+      },
+      "sokkel": "baenk",
+      "skohylder": "en",
+      "saede": 35,
+      "laas": "noegle",
+      "haengsel": "institution"
+    }
+  },
+  {
+    "id": "cocoa-elevskabe-baenk-efter",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Elevskabe i Cocoa med en bænk efter hvert element",
+    "tekst": "36 rum på 30 × 40 cm i fyrrekrydsfiner med låger olieret i Cocoa, delt i elementer med en bænk på 120 cm med hynde efter hvert. Uden greb, med kodelås og institutionshængsler.",
+    "st": {
+      "soejler": 12,
+      "raekker": 3,
+      "b": 30,
+      "h": 40,
+      "d": 45,
+      "mat": "kryds",
+      "front": "farve",
+      "farve": {
+        "kryds": "natur",
+        "laage": "cocoa"
+      },
+      "baenke": "efter",
+      "blok": 6,
+      "bl": 120,
+      "hynde": "med",
+      "greb": "ingen",
+      "laas": "kode",
+      "haengsel": "institution"
+    }
+  },
+  {
+    "id": "charcoal-indeliggende-klare",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Charcoal-skab med indeliggende lyse låger",
+    "tekst": "15 rum i fyrrekrydsfiner, hvor skabet er olieret i Charcoal og lågerne i klar olie ligger inde i rammen. Uden greb, med kodelås og hængsler, der lukker blødt.",
+    "st": {
+      "soejler": 5,
+      "raekker": 3,
+      "b": 35,
+      "h": 45,
+      "d": 45,
+      "mat": "kryds",
+      "front": "farve",
+      "farve": {
+        "kryds": "charcoal",
+        "laage": "natur"
+      },
+      "placering": "inde",
+      "greb": "ingen",
+      "laas": "kode",
+      "haengsel": "luksus"
+    }
+  },
+  {
+    "id": "fern-huller-top-klub",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Grønne klublockers med huller i toppen",
+    "tekst": "12 rum i fyrrekrydsfiner olieret i Fern, med huller i toppen af lågen, så luften kan komme ind, en krog i hvert og beslag til hængelås. Institutionshængsler.",
+    "st": {
+      "soejler": 6,
+      "raekker": 2,
+      "b": 30,
+      "h": 80,
+      "d": 50,
+      "mat": "kryds",
+      "farve": {
+        "kryds": "fern"
+      },
+      "huller": "top",
+      "krog": "krog",
+      "laas": "haengelaas",
+      "haengsel": "institution"
+    }
+  },
+  {
+    "id": "mobilskab-charcoal-40",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Mobilskab i Charcoal med 40 rum",
+    "tekst": "40 små rum i fyrrekrydsfiner olieret i Charcoal, fem søjler og otte rækker, med hængelås. Til en årgang, der afleverer telefonerne om morgenen.",
+    "st": {
+      "soejler": 5,
+      "raekker": 8,
+      "b": 26,
+      "h": 16,
+      "d": 28,
+      "mat": "kryds",
+      "farve": {
+        "kryds": "charcoal"
+      },
+      "sokkel": "uden",
+      "laas": "haengelaas"
+    }
+  },
+  {
+    "id": "vaerksted-udstyrsskabe",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Høje udstyrsskabe til værksted og depot",
+    "tekst": "Fire rum på 50 × 180 cm og 60 cm dybe i fyrrekrydsfiner med to hylder og en krog i hvert, dæksider og beslag til hængelås. Til arbejdstøj, sikkerhedsudstyr og værktøj.",
+    "st": {
+      "soejler": 4,
+      "raekker": 1,
+      "b": 50,
+      "h": 180,
+      "d": 60,
+      "mat": "kryds",
+      "hylder": "to",
+      "krog": "krog",
+      "daekside": "begge",
+      "laas": "haengelaas",
+      "haengsel": "institution"
+    }
+  },
+  {
+    "id": "birk-cotton-white-personale",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Personaleskabe i birk med hvide låger",
+    "tekst": "12 skabe på 35 × 90 cm i birkekrydsfiner med låger olieret i Cotton White, rustfrie greb, nøglelås og en krog i hvert. Lågerne er hængt skiftevis til venstre og højre.",
+    "st": {
+      "soejler": 6,
+      "raekker": 2,
+      "b": 35,
+      "h": 90,
+      "d": 50,
+      "mat": "birk",
+      "front": "farve",
+      "farve": {
+        "laage": "cotton-white"
+      },
+      "greb": "rustfri",
+      "laas": "noegle",
+      "krog": "krog",
+      "side": "skift"
+    }
+  },
+  {
+    "id": "lav-terra-spa",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Lave skabe i mørk sten til spa og wellness",
+    "tekst": "Otte rum på 40 × 45 cm på én række i kompaktlaminat i Terra, en mørk stenfarve, med kodelås. Toppen kan bruges som hylde til håndklæder. Kompaktlaminat tåler vand og damp.",
+    "st": {
+      "soejler": 8,
+      "raekker": 1,
+      "b": 40,
+      "h": 45,
+      "d": 45,
+      "mat": "kompakt",
+      "farve": {
+        "kompakt": "terra"
+      },
+      "laas": "kode",
+      "haengsel": "institution"
+    }
+  },
+  {
+    "id": "roedbrun-lockervaeg",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Rødbrun lockervæg uden greb",
+    "tekst": "18 rum på 35 × 45 cm i fyrrekrydsfiner olieret rødbrunt på hele skabet. Uden greb, med kodelås og institutionshængsler.",
+    "st": {
+      "soejler": 6,
+      "raekker": 3,
+      "b": 35,
+      "h": 45,
+      "d": 45,
+      "mat": "kryds",
+      "farve": {
+        "kryds": "roedbrun"
+      },
+      "greb": "ingen",
+      "laas": "kode",
+      "haengsel": "institution"
+    }
+  },
+  {
+    "id": "smalle-hoeje-birk-charcoal",
+    "produkt": "locker",
+    "gruppe": "Lockers",
+    "titel": "Smalle høje skabe i birk med Charcoal-låger",
+    "tekst": "Otte skabe på 30 × 180 cm i birkekrydsfiner med låger olieret i Charcoal, designgreb, hængsler med blød lukning, elektronisk lås og en krog i hvert.",
+    "st": {
+      "soejler": 8,
+      "raekker": 1,
+      "b": 30,
+      "h": 180,
+      "d": 50,
+      "mat": "birk",
+      "front": "farve",
+      "farve": {
+        "laage": "charcoal"
+      },
+      "greb": "luksus",
+      "haengsel": "luksus",
+      "laas": "elektronisk",
+      "krog": "krog"
+    }
+  },
+  {
     "id": "akustikvaeg",
     "produkt": "akustik",
     "gruppe": "Akustik",
