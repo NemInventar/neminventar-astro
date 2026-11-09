@@ -4,11 +4,41 @@ import assert from 'node:assert/strict';
 import { promises as fs } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { findUrler, filnavn, erstat, lokaliser, slug } from './lokale-billeder.mjs';
+import sharp from 'sharp';
+import { findUrler, filnavn, erstat, lokaliser, slug, kildeAf, transformAf, skaler } from './lokale-billeder.mjs';
 
 const S = 'https://guhbrpektblabndqttgp.supabase.co';
 const R = (navn, w) => `${S}/storage/v1/render/image/public/quote-renders/a/${navn}?width=${w}&resize=contain&quality=72`;
 const FORM = `${S}/functions/v1/contact-form`;
+const billede = (w, h, fmt = 'jpeg') => sharp({ create: { width: w, height: h, channels: 3, background: '#a33' } }).toFormat(fmt).toBuffer();
+const maal = async (buf) => { const m = await sharp(buf).metadata(); return [m.format, m.width, m.height]; };
+
+test('kildeAf og transformAf: render/image → originalen + parametrene', () => {
+  assert.equal(kildeAf(R('x.jpg', 800)), `${S}/storage/v1/object/public/quote-renders/a/x.jpg`);
+  const o = `${S}/storage/v1/object/public/b/c.png`;
+  assert.equal(kildeAf(o), o);
+  assert.equal(transformAf(o), null);
+  assert.deepEqual(transformAf(R('x.jpg', 800)), { width: 800, height: undefined, resize: 'contain', quality: 72 });
+  assert.deepEqual(transformAf(`${S}/storage/v1/render/image/public/a/b.jpg?width=480&height=322`),
+    { width: 480, height: 322, resize: 'cover', quality: 80 });
+});
+
+test('skaler: som Supabase — contain, cover, aldrig større end originalen, webp eller originalformat', async () => {
+  const jpg = await billede(1600, 800);
+  assert.deepEqual(await maal((await skaler(jpg, 'image/jpeg', transformAf(R('x.jpg', 800)), 'web')).data), ['webp', 800, 400]);
+  const cover = await skaler(jpg, 'image/jpeg', { width: 480, height: 322, resize: 'cover', quality: 70 }, 'web');
+  assert.deepEqual(await maal(cover.data), ['webp', 480, 322]);
+  assert.deepEqual(await maal((await skaler(jpg, 'image/jpeg', transformAf(R('x.jpg', 3000)), 'web')).data), ['webp', 1600, 800]);
+  const org = await skaler(jpg, 'image/jpeg', transformAf(R('x.jpg', 1200)), 'org');
+  assert.equal(org.type, 'image/jpeg');
+  assert.deepEqual(await maal(org.data), ['jpeg', 1200, 600]);
+  const png = await skaler(await billede(400, 400, 'png'), 'image/png', transformAf(R('x.png', 200)), 'org');
+  assert.deepEqual(await maal(png.data), ['png', 200, 200]);
+  // object-URL (ingen parametre), svg og video røres ikke
+  assert.equal((await skaler(jpg, 'image/jpeg', null, 'web')).data, jpg);
+  const svg = Buffer.from('<svg/>');
+  assert.equal((await skaler(svg, 'image/svg+xml', transformAf(R('x.svg', 200)), 'web')).data, svg);
+});
 
 test('img, srcset og data-src: relativ webp; &amp; afkodes', () => {
   const u = R('x.jpg', 800).replaceAll('&', '&amp;');
@@ -71,19 +101,22 @@ test('lokaliser: 429 fra Supabase venter (Retry-After) og prøver igen', async (
   await fs.mkdir(dist, { recursive: true });
   await fs.writeFile(path.join(dist, 'index.html'), `<img src="${R('travl.jpg', 640)}">`);
   let n = 0;
+  const urler = [];
+  const jpg = await billede(1280, 640);
   const ægte = globalThis.fetch;
   t.after(() => { globalThis.fetch = ægte; });
-  globalThis.fetch = async () => (++n <= 2
+  globalThis.fetch = async (url) => (urler.push(url), ++n <= 2
     ? new Response('', { status: 429, headers: { 'retry-after': '1' } })
-    : new Response('WEBP', { status: 200, headers: { 'content-type': 'image/webp', etag: '"e"' } }));
+    : new Response(jpg, { status: 200, headers: { 'content-type': 'image/jpeg', etag: '"e"' } }));
   const r = await lokaliser({ dist, cache: path.join(tmp, 'cache'), site: 'https://neminventar.dk', log: { info() {}, warn() {} } });
   assert.equal(n, 3);
+  assert.ok(urler.every((u) => u.includes('/storage/v1/object/public/') && !u.includes('?')), 'kun originalen hentes');
   assert.equal(r.hentet, 1);
   assert.match(await fs.readFile(path.join(dist, 'index.html'), 'utf8'), /src="\/_b\/travl-[0-9a-f]{8}-w640\.webp"/);
   await fs.rm(tmp, { recursive: true, force: true });
 });
 
-test('lokaliser: henter, beholder fjern URL ved fejl, genbruger cache (304) og klarer Supabase nede', async (t) => {
+test('lokaliser: henter originalen, peger på originalen ved fejl, genbruger cache (304) og klarer Supabase nede', async (t) => {
   const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'lb-'));
   const dist = path.join(tmp, 'dist'), cache = path.join(tmp, 'cache');
   await fs.mkdir(path.join(dist, 'p'), { recursive: true });
@@ -95,6 +128,7 @@ test('lokaliser: henter, beholder fjern URL ved fejl, genbruger cache (304) og k
 
   const kald = [];
   let tilstand = 'oppe';
+  const jpg = await billede(1600, 800);
   const ægte = globalThis.fetch;
   t.after(() => { globalThis.fetch = ægte; });
   globalThis.fetch = async (url, { headers }) => {
@@ -102,8 +136,7 @@ test('lokaliser: henter, beholder fjern URL ved fejl, genbruger cache (304) og k
     if (tilstand === 'nede') throw new Error('ECONNRESET');
     if (url.includes('mangler')) return new Response('not found', { status: 404, headers: { 'content-type': 'application/json' } });
     if (headers['If-None-Match'] === '"e1"') return new Response(null, { status: 304 });
-    const webp = (headers.Accept || '').includes('webp');
-    return new Response(webp ? 'WEBP' : 'JPEG', { status: 200, headers: { 'content-type': webp ? 'image/webp' : 'image/jpeg', etag: '"e1"' } });
+    return new Response(jpg, { status: 200, headers: { 'content-type': 'image/jpeg', etag: '"e1"' } });
   };
   const stille = { info() {}, warn() {} };
   const opts = { dist, cache, base: '/', site: 'https://neminventar.dk', log: stille };
@@ -116,11 +149,15 @@ test('lokaliser: henter, beholder fjern URL ved fejl, genbruger cache (304) og k
   const html = await fs.readFile(path.join(dist, 'p', 'index.html'), 'utf8');
   assert.match(html, /content="https:\/\/neminventar\.dk\/_b\/god-[0-9a-f]{8}-w800\.jpg"/);
   assert.match(html, /<img src="\/_b\/god-[0-9a-f]{8}-w800\.webp">/);
-  assert.ok(html.includes(daarlig.replaceAll('&', '&amp;')), 'fejlet billede beholder sin fjerne URL');
+  assert.ok(html.includes(`<img src="${kildeAf(daarlig)}">`), 'fejlet billede peger på originalen, ikke render/image');
+  assert.ok(!html.includes('/render/image/'), 'ingen render/image-URL tilbage på siden');
   assert.ok(html.includes(FORM), 'formular-endpointet er urørt');
+  assert.ok(kald.every((k) => !k.url.includes('/render/image/')), 'buildet kalder aldrig render/image');
   const json = JSON.parse(await fs.readFile(path.join(dist, 'data.json'), 'utf8'));
   assert.match(json.img, /^https:\/\/neminventar\.dk\/_b\/god-[0-9a-f]{8}-w800\.webp$/);
-  assert.equal(await fs.readFile(path.join(dist, '_b', path.basename(json.img)), 'utf8'), 'WEBP');
+  assert.deepEqual(await maal(await fs.readFile(path.join(dist, '_b', path.basename(json.img)))), ['webp', 800, 400]);
+  const ogFil = html.match(/content="https:\/\/neminventar\.dk\/_b\/(god-[0-9a-f]{8}-w800\.jpg)"/)[1];
+  assert.deepEqual(await maal(await fs.readFile(path.join(dist, '_b', ogFil))), ['jpeg', 800, 400]);
 
   // nyt build med samme dist-indhold og varm cache: 304, ingen nye bytes
   await fs.rm(path.join(dist, '_b'), { recursive: true });
