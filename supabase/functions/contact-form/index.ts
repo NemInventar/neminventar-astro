@@ -30,13 +30,15 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 //     menneske kan se dem, og mistanke-grænsen for links er 6 i stedet for 3. Formularerne sender feltet som hp.
 //   v10 (07-11-2026): "ring tilbage"-pinget til Milot går via Teams (post-teams, to_email kontakt@) i stedet for
 //     Slack — Slack udfases (Joachim 07-11-2026). notify_failed bruger nu "teams" i stedet for "slack".
+//   v11 (10-11-2026, Joachim: "Vi skal lige have designeren til at sende en kopi af deres mail, til dem selv"): en besked,
+//     der bliver et lead, giver afsenderen en kopi med et "vi svarer inden for én arbejdsdag" og linket til designet.
 // Beskyttelse: fast modtager + honeypot + input-validering + origin-låst CORS + dedup/rate-limit
 // på opkald og leads + tidsfælde/linktæller før lead + filtype/størrelse/antal på upload.
 // verify_jwt=false (offentligt endpoint, ingen nøgle i klienten).
 // Deployes via Supabase MCP (deploy_edge_function, verify_jwt=false, filer: index.ts + lead.ts). Denne fil er kilden.
 import { byggLead, erMistaenkelig, kanalFraHost, mapKanal } from "./lead.ts";
 
-const VERSION = 10;
+const VERSION = 11;
 const SPOR = new Set(["besked", "skitse", "udbud", "designer", "variant"]);
 
 const TENANT_ID = Deno.env.get("MS_GRAPH_TENANT_ID") || "";
@@ -496,6 +498,26 @@ Deno.serve(async (req: Request) => {
   try {
     await sendMail(TO, subject, html, email);
     if (rowId) await admin().from(TABLE).update({ mail_sent: true }).eq("id", rowId);
+    // v11: kopi til afsenderen — kun når henvendelsen er blevet et lead (ikke mistænkelig, under loftet på 20 i timen), så
+    // formularen ikke kan bruges til at sende mail til fremmede. Best effort: fejler kopien, er vores mail og leadet sendt.
+    if (leadId) {
+      try {
+        const kopi = `<div style="font-family:Inter,Arial,sans-serif;font-size:15px;color:#17140E;max-width:620px">` +
+          `<p>Hej ${esc(name.split(" ")[0])},</p>` +
+          `<p>Tak for din henvendelse. Vi har fået den og svarer inden for én arbejdsdag.</p>` +
+          (permalink ? `<p><a href="${esc(permalink)}">Se dit design i designeren</a></p>` : "") +
+          `<p style="margin:16px 0 6px;color:#6b6253">Det skrev du</p>` +
+          `<div style="white-space:pre-wrap;border-left:3px solid #C8A86B;padding:8px 14px;background:#faf8f4">${esc(message)}</div>` +
+          (files.length ? `<p style="color:#6b6253">Vi har modtaget ${files.length} ${files.length === 1 ? "fil" : "filer"}.</p>` : "") +
+          `<p>Har du noget at tilføje, så svar bare på denne mail.</p>` +
+          `<p>Mvh<br>Nem Inventar</p>` +
+          `<p style="margin-top:20px;color:#9a917f;font-size:13px">Nem Inventar ApS · Mågevej 73, st. tv., 2400 København NV · tilbud@neminventar.dk</p>` +
+          `</div>`;
+        await sendMail([email], "Vi har fået din henvendelse", kopi, FROM);
+      } catch (e) {
+        console.error("contact-form: kopi til afsender fejlede", e);
+      }
+    }
     return new Response(JSON.stringify({ success: true, files: files.length }), { headers: json });
   } catch (e) {
     console.error("contact-form error:", e);
