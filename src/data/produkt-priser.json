@@ -1,5 +1,5 @@
 {
- "regnet": "2026-11-08T12:06:37+00:00",
+ "regnet": "2026-11-10T00:46:00+00:00",
  "note": "standardudgaven i designeren · privat, inkl. moms, ekskl. levering (scripts/produkt_priser.py)",
  "priser": {
   "garderobeskab-perforerede-lager": {
@@ -11,19 +11,19 @@
   "hoejskab-hpl-laager": {
    "inkl": 11500,
    "ex": 9200,
-   "gitter": "2026-10-23T10:00:26+00:00",
+   "gitter": "2026-11-09T23:37:36+00:00",
    "link": "https://designer.neminventar.dk/designer.html?p=hoejskab&t=eyJtYXQiOiJrcnlkcyIsImZyb250IjoibGFtaW5hdCJ9"
   },
   "hoejskab-kompaktlaminat": {
    "inkl": 18575,
    "ex": 14860,
-   "gitter": "2026-10-23T10:00:26+00:00",
+   "gitter": "2026-11-09T23:37:36+00:00",
    "link": "https://designer.neminventar.dk/designer.html?p=hoejskab&t=eyJtYXQiOiJrb21wYWt0In0"
   },
   "hoejskab-krydsfiner": {
    "inkl": 9950,
    "ex": 7960,
-   "gitter": "2026-10-23T10:00:26+00:00",
+   "gitter": "2026-11-09T23:37:36+00:00",
    "link": "https://designer.neminventar.dk/designer.html?p=hoejskab&t=eyJtYXQiOiJrcnlkcyIsImZhcnZlIjp7ImtyeWRzIjoibmF0dXIifX0"
   },
   "lockers-krydsfiner": {
@@ -59,13 +59,13 @@
   "opbevaringsskab-bejdset-krydsfiner": {
    "inkl": 9950,
    "ex": 7960,
-   "gitter": "2026-10-23T10:00:26+00:00",
+   "gitter": "2026-11-09T23:37:36+00:00",
    "link": "https://designer.neminventar.dk/designer.html?p=hoejskab&t=eyJtYXQiOiJrcnlkcyIsImZhcnZlIjp7ImtyeWRzIjoibmF0dXIifX0"
   },
   "opbevaringsskab-laminat-standard": {
    "inkl": 11500,
    "ex": 9200,
-   "gitter": "2026-10-23T10:00:26+00:00",
+   "gitter": "2026-11-09T23:37:36+00:00",
    "link": "https://designer.neminventar.dk/designer.html?p=hoejskab&t=eyJtYXQiOiJrcnlkcyIsImZyb250IjoibGFtaW5hdCJ9"
   }
  }
