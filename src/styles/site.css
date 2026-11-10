@@ -988,7 +988,7 @@ footer a:hover{color:var(--ink)}
 .guide-hero img.contain{object-fit:contain;background:#fff}
 .guide-hero .img-tag{right:auto;max-width:calc(100% - 28px)}
 .lp-facts.three{grid-template-columns:repeat(3,1fr);margin-top:28px}
-.lp-facts.three div:nth-child(odd){border-right:1px solid var(--line)}
+.lp-facts.three div,.lp-facts.three div:nth-child(odd){border-right:1px solid var(--line)}
 .lp-facts.three div:nth-child(3n){border-right:0}
 .lp-facts.three div:nth-last-child(-n+3){border-bottom:0}
 .guide .lp-prose{margin-top:48px}
