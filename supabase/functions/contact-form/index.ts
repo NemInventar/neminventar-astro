@@ -509,7 +509,7 @@ Deno.serve(async (req: Request) => {
           `<p style="margin:16px 0 6px;color:#6b6253">Det skrev du</p>` +
           `<div style="white-space:pre-wrap;border-left:3px solid #C8A86B;padding:8px 14px;background:#faf8f4">${esc(message)}</div>` +
           (files.length ? `<p style="color:#6b6253">Vi har modtaget ${files.length} ${files.length === 1 ? "fil" : "filer"}.</p>` : "") +
-          `<p>Har du noget at tilføje, så svar bare på denne mail.</p>` +
+          `<p>Har du noget at tilføje, så svar bare på denne mail. Kan du ikke vente på et svar, er du altid velkommen til at ringe på <a href="tel:+4542422684">+45 42 42 26 84</a>.</p>` +
           `<p>Mvh<br>Nem Inventar</p>` +
           `<p style="margin-top:20px;color:#9a917f;font-size:13px">Nem Inventar ApS · Mågevej 73, st. tv., 2400 København NV · tilbud@neminventar.dk</p>` +
           `</div>`;
