@@ -21,7 +21,7 @@ const base = import.meta.env.BASE_URL;
 const site = Astro.site!;
 const abs = (p: string) => new URL(base + p, site).href;
 const url = abs('en/lockers/');
-const designer = `${DESIGNER_URL ?? 'https://designer.neminventar.dk/designer.html'}?p=locker`;
+const designer = `${DESIGNER_URL ?? 'https://designer.neminventar.dk/designer.html'}?p=locker&lang=en`;
 const contact = `${base}en/contact/?emne=${encodeURIComponent('Lockers')}`;
 
 // Engelske guides, der findes (de følger den danske side; afpubliceres den, forsvinder linket).
@@ -35,7 +35,7 @@ const gQuote = guide('forespoergsel-paa-fast-inventar');
 
 // Priser fra designeren 08-11-2026, kr. pr. rum ekskl. moms. Linket åbner præcis den væg.
 const EUR_RATE = 7.46;
-const D = 'https://designer.neminventar.dk/designer?p=locker&t=';
+const D = 'https://designer.neminventar.dk/designer?lang=en&p=locker&t=';
 const P = {
   pine: { dkk: 2300, link: D + 'eyJzb2VqbGVyIjo2LCJyYWVra2VyIjoyLCJiIjozMCwiaCI6NTAsImQiOjQ1LCJtYXQiOiJrcnlkcyIsImhhZW5nc2VsIjoiaW5zdGl0dXRpb24iLCJsYWFzIjoibm9lZ2xlIn0' },
   birch: { dkk: 2540, link: D + 'eyJzb2VqbGVyIjo2LCJyYWVra2VyIjoyLCJiIjozMCwiaCI6NTAsImQiOjQ1LCJtYXQiOiJiaXJrIiwiaGFlbmdzZWwiOiJpbnN0aXR1dGlvbiIsImxhYXMiOiJub2VnbGUifQ' },
@@ -85,7 +85,7 @@ const VIS: { id: string; alt: string; cap: string }[] = [
 ];
 const visuals = VIS.flatMap((v) => {
   const e = EKS.find((x) => x.id === v.id);
-  return e ? [{ ...v, src: `/billeder/designer-eksempler/${v.id}.jpg`, href: DESIGNER_URL ? eksempelLink(e) : null }] : [];
+  return e ? [{ ...v, src: `/billeder/designer-eksempler/${v.id}.jpg`, href: DESIGNER_URL ? `${eksempelLink(e)}&lang=en` : null }] : [];
 });
 
 // Spørgsmål og svar. Links: [tekst](https://…) eller [tekst](/sti). Samme tekst går ud som FAQPage.
@@ -195,7 +195,7 @@ const jsonLd = [
     </div>
     <div class="hero2-cta">
       <a href={contact} class="btn btn-primary">Send drawings or quantities <span class="arr">→</span></a>
-      <a href={designer} class="btn btn-ghost" title="The designer is in Danish. It shows the price for delivery in Denmark.">Build your lockers in 3D (in Danish)</a>
+      <a href={designer} class="btn btn-ghost" title="The designer shows the price for delivery in Denmark.">Build your lockers in 3D</a>
     </div>
     <div class="duo" aria-label="Photos from our deliveries">
       <div class="slot a">
@@ -253,7 +253,7 @@ const jsonLd = [
           <thead><tr><th>Size and type, pine plywood unless stated</th><th>Width × height</th><th>DKK per compartment, excl. VAT</th><th>Approx. EUR</th></tr></thead>
           <tbody>{tableSize.map((r) => <tr><td>{r.t}</td><td>{r.size}</td><td><a href={r.p.link}>{num(r.p.dkk)}</a></td><td>{eur(r.p.dkk)}</td></tr>)}</tbody>
         </table></div>
-        <p>The designer is in Danish and shows the price for delivery in Denmark. On a building project we price from the drawings and the joinery specification, item by item.</p>
+        <p>The designer shows the price for delivery in Denmark. On a building project we price from the drawings and the joinery specification, item by item.</p>
 
         <h2 class="lp-h2">Wood or steel</h2>
         <p>Steel lockers are usually sold as finished modules in fixed sizes, and the price per compartment is then often lower than for lockers built to measure. Steel takes knocks well. Plywood is quieter when a door is closed hard, and a scratch in oiled plywood can be sanded and re-oiled on site instead of replacing the door. Lockers built to measure can fill the wall, also around columns and in niches, and the doors can be oiled in the school’s or the company’s colours. Near showers we use compact laminate.</p>
@@ -273,7 +273,7 @@ const jsonLd = [
         <p>Send the drawings, the number of users or the bill of quantities. We reply in English with questions and a price per item.</p>
         <div class="detail-cta" style="flex-direction:column;align-items:stretch">
           <a href={contact} class="btn btn-primary" style="justify-content:center">Send drawings or quantities <span class="arr">→</span></a>
-          <a href={designer} class="btn btn-ghost" style="justify-content:center">Build your lockers in 3D (in Danish)</a>
+          <a href={designer} class="btn btn-ghost" style="justify-content:center">Build your lockers in 3D</a>
           <a href="tel:+4542422684" class="btn btn-ghost" style="justify-content:center">+45 42 42 26 84</a>
         </div>
       </aside>
