@@ -61,23 +61,24 @@ jobs:
       - name: Test siderne (ingen inline-script, headere, tilstande, tekster)
         run: npm run test:konto-site
 
+      # Secrets følger med selve udgivelsen (--secrets-file): tokenet må udgive Workers, men ikke kalde secrets-endpointet.
+      # Kun staging får dem herfra; produktionens sættes i hånden ved udgivelsen.
       - name: Udgiv Workeren
         if: env.CLOUDFLARE_API_TOKEN != ''
         working-directory: konto/worker
-        run: npx --yes wrangler@4 deploy --env "$MILJOE" | tee ../../worker.log
-
-      - name: Secrets til staging-Workeren
-        if: env.CLOUDFLARE_API_TOKEN != '' && env.MILJOE == 'staging'
-        working-directory: konto/worker
         env:
-          BRO_HEMMELIGHED_1: ${{ secrets.KONTO_STAGING_BRO_HEMMELIGHED_1 }}
-          KODE_PEBER_1: ${{ secrets.KONTO_STAGING_KODE_PEBER_1 }}
-          TURNSTILE_SECRET: ${{ secrets.KONTO_STAGING_TURNSTILE_SECRET }}
-          NI_KONTO_SERVICE_KEY: ${{ secrets.KONTO_STAGING_NI_KONTO_SERVICE_KEY }}
+          BRO_HEMMELIGHED_1: ${{ env.MILJOE == 'staging' && secrets.KONTO_STAGING_BRO_HEMMELIGHED_1 || '' }}
+          KODE_PEBER_1: ${{ env.MILJOE == 'staging' && secrets.KONTO_STAGING_KODE_PEBER_1 || '' }}
+          TURNSTILE_SECRET: ${{ env.MILJOE == 'staging' && secrets.KONTO_STAGING_TURNSTILE_SECRET || '' }}
+          NI_KONTO_SERVICE_KEY: ${{ env.MILJOE == 'staging' && secrets.KONTO_STAGING_NI_KONTO_SERVICE_KEY || '' }}
         run: |
           jq -n 'env | with_entries(select(.key | IN("BRO_HEMMELIGHED_1","KODE_PEBER_1","TURNSTILE_SECRET","NI_KONTO_SERVICE_KEY")) | select(.value != ""))' > /tmp/secrets.json
-          echo "Sætter: $(jq -r 'keys | join(", ")' /tmp/secrets.json)"
-          if [ "$(jq 'length' /tmp/secrets.json)" -gt 0 ]; then npx --yes wrangler@4 secret bulk /tmp/secrets.json --env staging; fi
+          echo "Secrets med udgivelsen: $(jq -r 'keys | join(", ")' /tmp/secrets.json)"
+          if [ "$(jq 'length' /tmp/secrets.json)" -gt 0 ]; then
+            npx --yes wrangler@4 deploy --env "$MILJOE" --secrets-file /tmp/secrets.json | tee ../../worker.log
+          else
+            npx --yes wrangler@4 deploy --env "$MILJOE" | tee ../../worker.log
+          fi
           rm -f /tmp/secrets.json
 
       - name: Udgiv siderne (Pages ni-konto)
