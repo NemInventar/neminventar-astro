@@ -2,6 +2,7 @@
   "kilde": "ni-apps lib/webordre",
   "note": "Genereret af scripts/webordre-kopier.mjs. Ret kun i lib/webordre/ og kør scriptet igen. sha256 af indholdet med LF.",
   "filer": {
+    "alarmer.mjs": "ce8476aeb91da90dc446cc06a390b6efd7e81cb9a6b1a4c2c966b4edcc8ac3ee",
     "beloeb.mjs": "e9c43450aa1cca443dfc1d4666d071f012fe6523f3f26eaf860cc24947f5af0f",
     "datoer.mjs": "df9c6698d74fe74c75db4fe8a179fabc074eeed850e587d04517972b2f0b781f",
     "konto-mails.mjs": "1d7c72a184d44e083d951ceedff4a3b8a24ea63ee20feb1df62282efc390d653",
