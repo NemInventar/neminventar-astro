@@ -272,7 +272,10 @@ details.slet[open] summary::after{content:"–"}
   .tb,.fl,.form,.kv .aft,.skjult{box-shadow:none}
   .sec-h,.og .sec-h{font-size:18px;margin:22px 0 8px;break-after:avoid}
   .konto h1{font-size:26px}
-  details.mere summary::after{content:none}
+  details.mere summary::after,details.mere[open] summary::after{content:none}
+  /* totalen står én gang, efter leveringsrækken — ikke gentaget nederst på hver side; en række deles ikke over to sider */
+  .tb table.varer tfoot{display:table-row-group}
+  .tb table.varer tr{break-inside:avoid}
   /* "Mål og indretning" står åben i udskriften — også når browseren ikke sender beforeprint (fx "Gem som PDF" fra et værktøj) */
   details[data-print-aaben]::details-content{content-visibility:visible;display:block}
   .kun-print{display:block;margin-top:28px;padding-top:12px;border-top:1px solid #999;font-size:12px;color:#333}
