@@ -59,7 +59,7 @@ function bestillingerHtml(ordrer, sprog, nu) {
         + `<td class="nw">${o.bestilt ? esc(datoTekst(o.bestilt, sprog)) : ''}</td>`
         + `<td>${esc(linje)}${lev ? `<small>${esc(lev)}</small>` : ''}</td>`
         + `<td class="n">${Number.isSafeInteger(inkl) ? esc(beloeb(inkl, sprog)) : ''}</td>`
-        + `<td class="st">${statusHtml(statusTekst(o, nu, sprog))}</td></tr>`;
+        + `<td class="bst">${statusHtml(statusTekst(o, nu, sprog))}</td></tr>`;
     }).join('');
   }
   const kunDansk = t(sprog, 'best.kunDansk');
@@ -110,8 +110,8 @@ function designsHtml(designs, udenLogin, sprog, designerUrl) {
 
 function kontoHtml(email, sprog) {
   return `<section aria-labelledby="h-konto"><h2 class="sec-h" id="h-konto">${esc(t(sprog, 'konto.h2'))}</h2><div class="tb konto">`
-    + `<div class="rk"><span class="k">${esc(t(sprog, 'konto.email'))}</span><span class="v">${esc(email)}<small>${tHtml(sprog, 'konto.emailHjaelp')}</small></span><span></span></div>`
-    + `<div class="rk"><span class="k">${esc(t(sprog, 'konto.logUd'))}</span><span class="v muted">${esc(t(sprog, 'konto.logUdTekst'))}</span><span class="h"><button type="button" class="btn btn-ghost btn-s" data-handling="log-ud">${esc(t(sprog, 'konto.logUd'))}</button></span></div>`
+    + `<div class="rk"><span class="rk-k">${esc(t(sprog, 'konto.email'))}</span><span class="rk-v">${esc(email)}<small>${tHtml(sprog, 'konto.emailHjaelp')}</small></span><span></span></div>`
+    + `<div class="rk"><span class="rk-k">${esc(t(sprog, 'konto.logUd'))}</span><span class="rk-v muted">${esc(t(sprog, 'konto.logUdTekst'))}</span><span class="rk-h"><button type="button" class="btn btn-ghost btn-s" data-handling="log-ud">${esc(t(sprog, 'konto.logUd'))}</button></span></div>`
     + `<div class="rk" data-rk="alle">${renderLogUdAlle('start', sprog)}</div>`
     + `<details class="slet" data-slet><summary>${esc(t(sprog, 'konto.slet'))}</summary><div class="slet-in">`
     + `<p>${esc(t(sprog, 'konto.slet1'))}</p><p>${esc(t(sprog, 'konto.slet2'))}</p><p>${esc(t(sprog, 'konto.slet3'))}</p>`
@@ -123,11 +123,11 @@ function kontoHtml(email, sprog) {
 /** "Log ud alle steder" (Fable c7): start → spørgsmålet i rækken. */
 export function renderLogUdAlle(trin, sprog) {
   if (trin === 'spoerg') {
-    return `<span class="k">${esc(t(sprog, 'konto.logUdAlle'))}</span><span class="v">${esc(t(sprog, 'konto.logUdAlleSpoerg'))}</span>`
-      + `<span class="h knapper"><button type="button" class="btn btn-primary btn-s" data-handling="log-ud-alle-ja">${esc(t(sprog, 'konto.logUdAlleJa'))}</button><button type="button" class="btn btn-ghost btn-s" data-handling="log-ud-alle-fortryd">${esc(t(sprog, 'konto.fortryd'))}</button></span>`;
+    return `<span class="rk-k">${esc(t(sprog, 'konto.logUdAlle'))}</span><span class="rk-v">${esc(t(sprog, 'konto.logUdAlleSpoerg'))}</span>`
+      + `<span class="rk-h knapper"><button type="button" class="btn btn-primary btn-s" data-handling="log-ud-alle-ja">${esc(t(sprog, 'konto.logUdAlleJa'))}</button><button type="button" class="btn btn-ghost btn-s" data-handling="log-ud-alle-fortryd">${esc(t(sprog, 'konto.fortryd'))}</button></span>`;
   }
-  return `<span class="k">${esc(t(sprog, 'konto.logUdAlle'))}</span><span class="v muted">${esc(t(sprog, 'konto.logUdAlleTekst'))}</span>`
-    + `<span class="h"><button type="button" class="btn btn-ghost btn-s" data-handling="log-ud-alle">${esc(t(sprog, 'konto.logUdAlle'))}</button></span>`;
+  return `<span class="rk-k">${esc(t(sprog, 'konto.logUdAlle'))}</span><span class="rk-v muted">${esc(t(sprog, 'konto.logUdAlleTekst'))}</span>`
+    + `<span class="rk-h"><button type="button" class="btn btn-ghost btn-s" data-handling="log-ud-alle">${esc(t(sprog, 'konto.logUdAlle'))}</button></span>`;
 }
 
 /** "Slet konto" (Fable c6): start → kodefeltet i rækken. */

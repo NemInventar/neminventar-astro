@@ -7,7 +7,7 @@ const { lang = 'da' } = Astro.props as { lang?: 'da' | 'en' };
   <div class="lg-tekst" data-venstre set:html={renderEmailVenstre(lang)} />
   <div class="lg-form">
     <div data-hoejre set:html={renderEmailForm(lang)} />
-    <div id="turnstile" class="ts"></div>
+    <div id="konto-ts" class="ts"></div>
   </div>
 </div>
 <script>

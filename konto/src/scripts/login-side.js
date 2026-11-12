@@ -14,7 +14,7 @@ const TURNSTILE_JS = 'https://challenges.cloudflare.com/turnstile/v0/api.js?rend
 
 const venstre = document.querySelector('[data-venstre]');
 const hoejre = document.querySelector('[data-hoejre]');
-const tsEl = document.getElementById('turnstile');
+const tsEl = document.getElementById('konto-ts');   // ikke id="turnstile": så peger window.turnstile på elementet
 
 let email = '';
 let retur = null;
@@ -26,11 +26,12 @@ let widget = null;
 let venter = null;
 function hentTurnstile() {
   tsHent ??= new Promise((ok, nej) => {
-    if (window.turnstile) { ok(window.turnstile); return; }
+    const har = () => typeof window.turnstile?.render === 'function';
+    if (har()) { ok(window.turnstile); return; }
     const s = document.createElement('script');
     s.src = TURNSTILE_JS;
     s.async = true;
-    s.onload = () => (window.turnstile ? ok(window.turnstile) : nej(new Error('turnstile')));
+    s.onload = () => (har() ? ok(window.turnstile) : nej(new Error('turnstile')));
     s.onerror = () => { tsHent = null; nej(new Error('turnstile')); };
     document.head.appendChild(s);
   });

@@ -64,6 +64,7 @@ function base() {
 
 const AFHENT = { form: 'afhentning', tekst: 'Afhentning på Mågevej' };
 const AFHENT_LINJER = [{ tekst: 'Skabsvæg med 4 højskabe', antal: 1, beloeb_oere: 1426250 }];
+const AFHENT_TOTAL = { ex_oere: 1141000, moms_oere: 285250, inkl_oere: 1426250, valuta: 'DKK' };
 
 // nr → { navn, nu, h1, ordre(): fuld ordre (med login-felter + LÆK) }
 export const TILSTANDE = [
@@ -77,9 +78,9 @@ export const TILSTANDE = [
   { nr: 8, navn: 'Den aftalte dag', nu: '2026-12-15T07:00:00.000Z', h1: 'Vi leverer i dag', lav: (o) => ({ ...o, forloeb: [...o.forloeb, UGE51, DAG15] }) },
   { nr: 9, navn: 'Dagen passeret, ikke meldt leveret', nu: '2026-12-16T10:00:00.000Z', h1: 'Aftalt levering tirsdag 15. december', lav: (o) => ({ ...o, forloeb: [...o.forloeb, UGE51, DAG15] }) },
   { nr: 10, navn: 'Leveret', nu: '2026-12-16T10:00:00.000Z', h1: 'Leveret tirsdag 15. december', lav: (o) => ({ ...o, fortrydelsesret: true, forloeb: [...o.forloeb, UGE51, DAG15, LEVERET] }) },
-  { nr: 11, navn: 'Afhentning, ugen bekræftet', nu: '2026-11-12T10:00:00.000Z', h1: 'Klar til afhentning i uge 51 (14.–18. december 2026)', lav: (o) => ({ ...o, levering: AFHENT, linjer: AFHENT_LINJER, forloeb: [...o.forloeb, UGE51] }) },
-  { nr: 12, navn: 'Afhentning, klar', nu: '2026-12-14T12:00:00.000Z', h1: 'Klar til afhentning', lav: (o) => ({ ...o, levering: AFHENT, linjer: AFHENT_LINJER, forloeb: [...o.forloeb, UGE51, KLAR] }) },
-  { nr: 13, navn: 'Afhentning, hentet', nu: '2026-12-16T10:00:00.000Z', h1: 'Hentet tirsdag 15. december', lav: (o) => ({ ...o, levering: AFHENT, linjer: AFHENT_LINJER, forloeb: [...o.forloeb, UGE51, KLAR, HENTET] }) },
+  { nr: 11, navn: 'Afhentning, ugen bekræftet', nu: '2026-11-12T10:00:00.000Z', h1: 'Klar til afhentning i uge 51 (14.–18. december 2026)', lav: (o) => ({ ...o, levering: AFHENT, linjer: AFHENT_LINJER, total: AFHENT_TOTAL, forloeb: [...o.forloeb, UGE51] }) },
+  { nr: 12, navn: 'Afhentning, klar', nu: '2026-12-14T12:00:00.000Z', h1: 'Klar til afhentning', lav: (o) => ({ ...o, levering: AFHENT, linjer: AFHENT_LINJER, total: AFHENT_TOTAL, forloeb: [...o.forloeb, UGE51, KLAR] }) },
+  { nr: 13, navn: 'Afhentning, hentet', nu: '2026-12-16T10:00:00.000Z', h1: 'Hentet tirsdag 15. december', lav: (o) => ({ ...o, levering: AFHENT, linjer: AFHENT_LINJER, total: AFHENT_TOTAL, forloeb: [...o.forloeb, UGE51, KLAR, HENTET] }) },
   { nr: 14, navn: 'Annulleret', nu: '2026-11-11T10:00:00.000Z', h1: 'Bestillingen er annulleret', lav: (o) => ({ ...o, status: 'annulleret', betaling: { ...o.betaling, refunderet_oere: 1601250, refunderet_at: '2026-11-10T13:00:00.000Z' } }) },
   { nr: 15, navn: 'Fortrudt', nu: '2026-12-23T10:00:00.000Z', h1: 'Du har fortrudt købet', lav: (o) => ({ ...o, fortrydelsesret: true, forloeb: [...o.forloeb, UGE51, DAG15, LEVERET, FORTRUDT], betaling: { ...o.betaling, refunderet_oere: 1426250, refunderet_at: '2026-12-22T10:00:00.000Z' } }) },
   { nr: 16, navn: 'Delvis refusion (overskriften uændret)', nu: '2026-11-12T10:00:00.000Z', h1: 'Vi leverer i uge 51 (14.–18. december 2026)', grundNr: 3, lav: (o) => ({ ...o, forloeb: [...o.forloeb, UGE51], betaling: { ...o.betaling, refunderet_oere: 175000, refunderet_at: '2026-11-10T13:00:00.000Z' } }) },
