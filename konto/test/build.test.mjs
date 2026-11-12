@@ -96,7 +96,7 @@ test('udgivelse 2: log ind og Min side på dansk og engelsk, "Min side" i header
   assert.ok(forside.includes('class="nav-min"'), 'Min side i headeren');
   assert.ok(/<footer[\s\S]*<a href="https:\/\/konto\.neminventar\.dk\/"[^>]*>Min side<\/a>[\s\S]*<\/footer>/.test(forside), 'Min side i footeren');
   assert.ok(forside.includes('Log ind eller opret konto'), 'første trin står i HTML\'en');
-  assert.ok(forside.includes('data-turnstile="'), 'Turnstile-nøglen på log ind');
+  assert.ok(forside.includes('data-turnstile="1x00000000000000000000BB"'), 'Turnstile-nøglen på log ind (testnøglen uden krav)');
   assert.ok(!readFileSync(path.join(U2, 'ordre', 'index.html'), 'utf8').includes('data-turnstile'), 'ordresiden henter ikke Turnstile');
   const en = readFileSync(path.join(U2, 'en', 'index.html'), 'utf8');
   assert.ok(en.includes('<html lang="en">') && en.includes('Log in or create an account') && en.includes('My account'));
@@ -123,3 +123,12 @@ test('404: første sætning er overskriften, resten brødtekst — samme tekst i
   }
   assert.ok(existsSync(path.join(U2, '404.html')));
 });
+
+// Efter de andre (builds må ikke køre samtidig): produktionens krav (konto.yml sætter KONTO_KRAEV_TURNSTILE=1 på main)
+test('Turnstile i produktion: udgivelse 2 med kravet og uden KONTO_TURNSTILE_SITEKEY fejler — med nøglen står den rigtige på log ind', async () => {
+  await assert.rejects(byg({ udgivelse: 2, ud: path.join(MAPPE, 'u2-uden'), kraevTurnstile: true }), /KONTO_TURNSTILE_SITEKEY mangler/);
+  const ud = await byg({ udgivelse: 2, ud: path.join(MAPPE, 'u2-med'), kraevTurnstile: true, sitekey: '0x4AAAAAAAAAAAAAAAAAAAAA' });
+  const forside = readFileSync(path.join(ud, 'index.html'), 'utf8');
+  assert.ok(forside.includes('data-turnstile="0x4AAAAAAAAAAAAAAAAAAAAA"'));
+  assert.ok(!forside.includes('1x00000000000000000000BB'), 'aldrig testnøglen i produktionens build');
+}, { timeout: 240_000 });

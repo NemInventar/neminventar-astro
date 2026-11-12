@@ -19,6 +19,7 @@ import KontoFooter from '../../../src/components/KontoFooter.astro';
 import { DESIGNER_URL } from '../../../src/lib/forside';
 import { tHtml } from '../lib/tekst.mjs';
 import { PLAUSIBLE_DOMAENE } from '../lib/adresser.mjs';
+import { turnstileNoegle } from '../lib/turnstile.mjs';
 
 interface Props {
   titel: string;
@@ -27,10 +28,11 @@ interface Props {
 }
 const { titel, side, lang = 'da' } = Astro.props;
 const UDGIVELSE = process.env.KONTO_UDGIVELSE === '2' ? 2 : 1;
-// Cloudflares testnøgle (består altid, usynlig), indtil den rigtige er sat ved build
-const TURNSTILE_TEST = '1x00000000000000000000BB';
-const turnstile = side === 'login' ? (process.env.KONTO_TURNSTILE_SITEKEY || TURNSTILE_TEST) : undefined;
-if (side === 'login' && !process.env.KONTO_TURNSTILE_SITEKEY) {
+// Cloudflares testnøgle (består altid, usynlig), indtil den rigtige er sat ved build. Produktionen (KONTO_KRAEV_TURNSTILE=1 på
+// main, konto.yml) bygger ikke udgivelse 2 uden den rigtige nøgle — turnstileNoegle kaster, og buildet fejler (på hver side).
+const ts = turnstileNoegle(process.env);
+const turnstile = side === 'login' ? ts.sitekey : undefined;
+if (side === 'login' && ts.test) {
   console.warn('[konto] KONTO_TURNSTILE_SITEKEY mangler: log ind bruger Cloudflares testnøgle');
 }
 ---

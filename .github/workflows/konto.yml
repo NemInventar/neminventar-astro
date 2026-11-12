@@ -61,6 +61,8 @@ jobs:
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           KONTO_UDGIVELSE: ${{ vars.KONTO_UDGIVELSE || '1' }}
           KONTO_TURNSTILE_SITEKEY: ${{ vars.KONTO_TURNSTILE_SITEKEY }}
+          # main = produktion: udgivelse 2 bygges ikke med Cloudflares testnøgle (KontoLayout → turnstileNoegle kaster)
+          KONTO_KRAEV_TURNSTILE: ${{ github.ref_name == 'main' && '1' || '' }}
 
       - name: Test siderne (ingen inline-script, headere, tilstande, tekster)
         run: npm run test:konto-site
