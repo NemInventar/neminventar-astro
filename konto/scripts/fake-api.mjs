@@ -5,14 +5,16 @@
 //   const s = await startFake({ dist, port: 0 }); s.url; s.tilstand.session = {email}; await s.luk();
 //
 // Statusnøglerne er 22 tegn som de rigtige (kontrakter §4): `t03u` + x'er = tilstand 3 uden login, `t03m…` = med login.
-// Særlige nøgler: ukendt…, erstattet…, nede…, lukket… (fyldt op med x til 22 tegn).
+// Særlige nøgler: ukendt…, erstattet…, nede…, lukket… (fyldt op med x til 22 tegn). v05au… / v14um… = runde 4-varianterne.
 import http from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { ordreI, minSideData, EMAIL } from '../test/fixtures.mjs';
 
 export const noegle = (s) => s.padEnd(22, 'x');
-export const tilstandsNoegle = (nr, visning) => noegle(`t${String(nr).padStart(2, '0')}${visning === 'med_login' ? 'm' : 'u'}`);
+export const tilstandsNoegle = (nr, visning) => (typeof nr === 'string'
+  ? noegle(`v${nr}${visning === 'med_login' ? 'm' : 'u'}`)
+  : noegle(`t${String(nr).padStart(2, '0')}${visning === 'med_login' ? 'm' : 'u'}`));
 
 const TYPER = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
@@ -40,14 +42,17 @@ export async function startFake({ dist, port = 0 } = {}) {
     session: null,              // {email, ny}
     kontoAktiv: true,
     ordrestatusAktiv: true,
-    minSide: 'fuld',            // fuld | tom | nede
+    minSide: 'fuld',            // fuld | tom | nede (broen) | helt-nede (hele siden) | status (runde 4 statuskolonnen)
     refNr: 3,                   // tilstanden for /api/ordre-ref
+    handlingFejler: false,      // design- og "ikke min"-handlingerne svarer 500
     forkerte: 0,
     kald: [],                   // [{metode, sti, body}] — til tjek af, hvad siden sender
   };
 
   const json = (res, status, data) => {
-    res.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'private, no-store' });
+    // Workerens headere (SIKKERHEDSHEADERE i konto/worker/src/app.js) minus HSTS, der intet betyder lokalt over http
+    res.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'private, no-store',
+      'x-content-type-options': 'nosniff', 'content-security-policy': "default-src 'none'; frame-ancestors 'none'", 'referrer-policy': 'no-referrer' });
     res.end(JSON.stringify(data));
   };
 
@@ -63,14 +68,16 @@ export async function startFake({ dist, port = 0 } = {}) {
       case '/api/ordre': {
         if (!t.ordrestatusAktiv) return json(res, 503, { fejl: 'lukket' });
         const n = String(body.noegle ?? '');
-        if (!/^[A-Za-z0-9_-]{22}$/.test(n)) return json(res, 404, { fejl: 'ukendt' });
-        if (n.startsWith('erstattet')) return json(res, 410, { fejl: 'erstattet' });
+        // som Workeren (kontrakter §6, rettet 12-11): ukendt og erstattet er 200 med {fejl}
+        if (!/^[A-Za-z0-9_-]{22}$/.test(n)) return json(res, 200, { fejl: 'ukendt' });
+        if (n.startsWith('erstattet')) return json(res, 200, { fejl: 'erstattet' });
         if (n.startsWith('nede')) return json(res, 503, { fejl: 'nede' });
         if (n.startsWith('lukket')) return json(res, 503, { fejl: 'lukket' });
-        const m = /^t(\d\d)([um])/.exec(n);
-        if (!m) return json(res, 404, { fejl: 'ukendt' });
+        const v = /^v(\d\d[a-z])([um])/.exec(n);   // runde 4-varianterne (fixtures VARIANTER)
+        const m = v ?? /^t(\d\d)([um])/.exec(n);
+        if (!m) return json(res, 200, { fejl: 'ukendt' });
         const visning = m[2] === 'm' && t.kontoAktiv ? 'med_login' : 'uden_login';
-        return json(res, 200, { visning, ordre: ordreI(Number(m[1]), visning, { medLaek: false }) });
+        return json(res, 200, { visning, ordre: ordreI(v ? m[1] : Number(m[1]), visning, { medLaek: false }) });
       }
       case '/api/ordre-ref':
         if (!flagKonto() || !kraevSession()) return undefined;
@@ -91,7 +98,8 @@ export async function startFake({ dist, port = 0 } = {}) {
         return json(res, 400, { fejl: 'forkert', tilbage: 5 - t.forkerte });
       case '/api/min-side': {
         if (!flagKonto() || !kraevSession()) return undefined;
-        const d = minSideData({ tom: t.minSide === 'tom', nede: t.minSide === 'nede' });
+        if (t.minSide === 'helt-nede') return json(res, 503, { fejl: 'nede' });   // ni-konto nede: hele siden (side.nede)
+        const d = minSideData({ tom: t.minSide === 'tom', nede: t.minSide === 'nede', status: t.minSide === 'status' });
         return json(res, 200, { ...d, email: t.minSide === 'tom' ? d.email : t.session.email || EMAIL });
       }
       case '/api/log-ud':
@@ -107,6 +115,7 @@ export async function startFake({ dist, port = 0 } = {}) {
         return json(res, 200, { ok: true });
       case '/api/design/slet': case '/api/design/navn': case '/api/gemt-uden-login/skjul': case '/api/ikke-min':
         if (!flagKonto() || !kraevSession()) return undefined;
+        if (t.handlingFejler) return json(res, 500, { fejl: 'fejl' });   // side.fejl under handlingen
         return json(res, 200, { ok: true });
       default:
         return json(res, 404, { fejl: 'ukendt_sti' });

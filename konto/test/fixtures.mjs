@@ -35,7 +35,7 @@ function base() {
       { tekst: 'Skabsvæg med 4 højskabe', antal: 1, beloeb_oere: 1426250 },
       { tekst: 'Levering: samlet, båret ind', antal: 1, beloeb_oere: 175000 },
     ],
-    levering: { form: 'levering', tekst: 'Samlet, båret ind' },
+    levering: { form: 'baaret_ind', tekst: 'Samlet, båret ind' },   // som kernens leveringAf (kontrakter §5)
     total: { ex_oere: 1281000, moms_oere: 320250, inkl_oere: 1601250, valuta: 'DKK' },
     beskrivelse: [
       ['Bredde', '240 cm, fire skabe på 60 cm'],
@@ -62,7 +62,7 @@ function base() {
   };
 }
 
-const AFHENT = { form: 'afhentning', tekst: 'Afhentning på Mågevej' };
+const AFHENT = { form: 'afhentning', tekst: 'Flatpack, afhentning på Mågevej' };   // som kernens leveringAf (kontrakter §5)
 const AFHENT_LINJER = [{ tekst: 'Skabsvæg med 4 højskabe', antal: 1, beloeb_oere: 1426250 }];
 const AFHENT_TOTAL = { ex_oere: 1141000, moms_oere: 285250, inkl_oere: 1426250, valuta: 'DKK' };
 
@@ -104,9 +104,19 @@ export const UNDER = {
   15: 'Vi har tilbageført 14.262,50 kr. den 22. december. Hvornår beløbet står på din konto, afhænger af din bank.',
 };
 
-/** Ordren som broen/Workeren sender den i en visning. 'uden_login' = uden navn, gade, besked, permalink (kontrakter §5). */
+// Varianter ud over de 16 med Fables runde 4-tekster (afsnit 6 og 7). Kun skærmbillederne bruger dem (fake-api: nøglen
+// v05a…/v14u…); testene gennemløber TILSTANDE. nr = tilstanden, siden viser.
+export const VARIANTER = [
+  { id: '05a', nr: 5, navn: 'Afhentning, ugen gået uden "klar" (runde 4, afsnit 6)', nu: '2026-12-21T09:00:00.000Z', form: 'afhentning',
+    lav: (o) => ({ ...o, levering: AFHENT, linjer: AFHENT_LINJER, total: AFHENT_TOTAL, forloeb: [...o.forloeb, UGE51] }) },
+  { id: '14u', nr: 14, navn: 'Annulleret uden registreret tilbageførsel (runde 4, afsnit 7)', nu: '2026-11-11T10:00:00.000Z', form: 'levering',
+    lav: (o) => ({ ...o, status: 'annulleret' }) },
+];
+
+/** Ordren som broen/Workeren sender den i en visning. 'uden_login' = uden navn, gade, besked, permalink (kontrakter §5).
+ *  nr = 1–16 (TILSTANDE) eller en variants id ('05a', '14u'). */
 export function ordreI(nr, visning = 'med_login', { medLaek = true } = {}) {
-  const x = TILSTANDE.find((s) => s.nr === nr);
+  const x = typeof nr === 'string' ? VARIANTER.find((v) => v.id === nr) : TILSTANDE.find((s) => s.nr === nr);
   const o = x.lav(base());
   if (!medLaek) {
     for (const k of ['telefon', 'email', 'ansvarlig', 'stripe_session', 'noter']) delete o[k];
@@ -123,9 +133,26 @@ export function ordreI(nr, visning = 'med_login', { medLaek = true } = {}) {
   return o;
 }
 
+// Min side med en bestilling pr. ny statustekst (Fable runde 4, afsnit 5), set mandag 21. december 2026 (MIN_SIDE_STATUS_NU):
+// tilstand 9 (dagOver), afhentning med ugen gået (afhentUgeOver), afhentning i uge 2 (afhentUge) + leveret og annulleret.
+export const MIN_SIDE_STATUS_NU = '2026-12-21T09:00:00.000Z';
+function minSideStatusOrdrer() {
+  const m = (nr, ref, bestilt, ekstra = {}) => ({ ...ordreI(nr, 'med_login', { medLaek: false }), ref, bestilt, ...ekstra });
+  const uge2 = trin('uge_bekraeftet', { aar: 2027, uge: 2, praecis: true }, '2026-12-01T09:00:00.000Z');
+  const o11 = m(11, 'NI-4C83B2E5', '2026-11-20T09:00:00.000Z');
+  return [
+    m(9, 'NI-2A61F0C3', '2026-11-25T09:00:00.000Z'),
+    m('05a', 'NI-3B72A1D4', '2026-11-22T09:00:00.000Z'),
+    { ...o11, forloeb: [uge2].map(({ sat_af, ...f }) => f) },
+    m(10, 'NI-7C21E0B5', '2026-09-02T08:00:00.000Z'),
+    m('14u', 'NI-5D94C3F6', '2026-08-14T08:00:00.000Z'),
+  ];
+}
+
 // Min side: svaret fra GET /api/min-side (kontrakter §6)
-export function minSideData({ tom = false, nede = false } = {}) {
+export function minSideData({ tom = false, nede = false, status = false } = {}) {
   if (tom) return { email: 'jonas.berg@eksempel.dk', ordrer: [], designs: [], gemt_uden_login: [] };
+  if (status) return { ...minSideData(), ordrer: minSideStatusOrdrer() };
   const o3 = ordreI(3, 'med_login', { medLaek: false });
   const o10 = { ...ordreI(10, 'med_login', { medLaek: false }), ref: 'NI-7C21E0B5', bestilt: '2026-09-02T08:00:00.000Z' };
   return {
