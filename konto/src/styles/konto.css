@@ -1,0 +1,235 @@
+/* konto.neminventar.dk — ordresiden, log ind og Min side. Udseendet er mockup-runde3.html (Fable runde 3); farver, skrift,
+   .label og .btn kommer fra src/styles/site.css. Ingen inline-stil nogen steder (CSP uden 'unsafe-inline'). */
+
+/* ---------- fælles ---------- */
+.konto main.pg{max-width:1040px;margin:0 auto;padding:56px 28px 88px;min-height:52vh}
+.konto h1{font-size:44px;margin-top:14px;text-wrap:balance}
+.konto h1:focus{outline:none}
+.konto h2:focus{outline:none}
+.konto button{font:inherit;cursor:pointer}
+.konto button[disabled]{cursor:default}
+button.btn{border:0;font-family:inherit}
+button.btn.btn-ghost{border:1px solid var(--line)}
+.btn-s{padding:10px 18px;font-size:14px}
+.btn[disabled]{opacity:.45}
+.btn-ghost:hover{border-color:var(--ink)}
+.lnk{color:var(--ink);text-decoration:underline;text-decoration-color:var(--warm);text-underline-offset:3px}
+.lnk:hover{text-decoration-thickness:2px}
+.knap-lnk{background:none;border:0;padding:0;font:inherit;color:var(--ink);text-decoration:underline;text-decoration-color:var(--warm);text-underline-offset:3px}
+.knap-lnk[disabled]{opacity:.45;text-decoration-color:var(--line)}
+.go{font-weight:600;white-space:nowrap}
+.go i{font-style:normal;color:var(--warm);margin-left:6px;display:inline-block;transition:transform .25s}
+.go:hover i{transform:translateX(4px)}
+.muted{color:var(--muted)}
+.nob,.nw{white-space:nowrap}
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.label{margin:0}
+p.label{display:flex}
+.sub{margin-top:14px;font-size:18px;color:var(--muted);max-width:58ch;line-height:1.6}
+.sec-h{font-size:26px;margin:52px 0 14px}
+.under{margin-top:10px;font-size:13.5px;color:var(--muted);max-width:74ch}
+.lille{font-size:14px;color:var(--muted);margin-top:10px;line-height:1.6}
+.tekst{font-size:15px;line-height:1.65}
+.tekst+.tekst{margin-top:6px}
+.fri{white-space:pre-line;overflow-wrap:anywhere}
+.kun-print{display:none}
+.noscript{color:var(--ink)}
+.form-msg{margin-top:14px;font-size:14.5px;padding:12px 14px;border-radius:10px;line-height:1.55}
+.form-msg.ok{background:#EAF3EE;color:#1F6F5C;border:1px solid #BFE0D0}
+.form-msg.err{background:#FBEAEA;color:#9B2C2C;border:1px solid #F0C7C7}
+.form-msg .lnk{color:inherit}
+.form-msg[hidden]{display:none}
+.knapper{display:inline-flex;gap:8px;flex-wrap:wrap}
+
+/* ---------- tabeller (rækker, ikke kort) ---------- */
+.tb{border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden}
+.tb table{width:100%;border-collapse:collapse;font-size:15px;font-variant-numeric:tabular-nums}
+.tb th,.tb thead td{background:var(--soft);font-size:13px;font-weight:600;text-align:left;padding:10px 18px;white-space:nowrap}
+.tb td{padding:15px 18px;border-top:1px solid var(--line);vertical-align:middle}
+.tb tbody th,.tb tfoot th{background:none;font-size:15px;font-weight:inherit;padding:15px 18px;border-top:1px solid var(--line);white-space:normal}
+.tb .n{text-align:right;white-space:nowrap}
+.tb td small{display:block;color:var(--muted);font-size:13.5px;line-height:1.5}
+.tb tr.tot td,.tb tr.tot th{font-weight:600;background:var(--soft)}
+.tb tr.sub td,.tb tr.sub th{color:var(--muted);font-size:14px;padding-top:9px;padding-bottom:9px}
+.tb tr.fold td{border-top:0;padding-top:0}
+.tb tr.tom td{padding:22px 18px;color:var(--muted);font-size:15px}
+.tb tr.tom p+p{margin-top:6px;font-size:14px}
+.tb tr.tom .btn{margin-top:14px}
+.bst{font-weight:600}
+details.mere{margin-top:6px;font-size:13.5px}
+details.mere summary{cursor:pointer;color:var(--muted);list-style:none;display:inline-flex;gap:6px;align-items:center}
+details.mere summary::-webkit-details-marker{display:none}
+details.mere summary::after{content:"+";color:var(--warm);font-size:16px;line-height:1}
+details.mere[open] summary::after{content:"–"}
+details.mere .ind{margin-top:8px;display:flex;gap:8px 18px;flex-wrap:wrap;color:var(--ink)}
+details.mere dl{margin-top:10px;display:grid;grid-template-columns:minmax(110px,170px) 1fr;gap:5px 14px;color:var(--ink);max-width:600px}
+details.mere dt{color:var(--muted)}
+.mere-svar:empty{display:none}
+.mere-svar{margin-top:10px;font-size:14px}
+.mere-svar p{margin-bottom:8px}
+.mere-svar .form-msg{margin-top:0}
+.omdoeb{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.omdoeb input,.kopi{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:inherit;font-size:14px;background:var(--paper);color:var(--ink);min-width:0;flex:1 1 200px;max-width:100%}
+
+/* ---------- ordresiden ---------- */
+.crumb{display:inline-flex;gap:8px;color:var(--muted);font-size:14px;font-weight:500;margin-bottom:22px}
+.crumb:hover{color:var(--ink)}
+.ordre>.label{margin-top:0}
+.og{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:52px;align-items:start;margin-top:8px}
+.og .sec-h{font-size:22px;margin:44px 0 12px}
+.fl{list-style:none;border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden;font-size:15px}
+.fl li{display:grid;grid-template-columns:22px minmax(0,200px) minmax(0,1fr);gap:16px;align-items:start;padding:15px 18px;border-top:1px solid var(--line)}
+.fl li:first-child{border-top:0}
+.fl .ok,.fl .ej{width:22px;height:22px;border-radius:50%;display:grid;place-items:center}
+.fl .ok{background:var(--ink);color:var(--paper)}
+.fl .ej{border:1.5px solid #CDC3AE}
+.fl .fl-navn{font-weight:600}
+.fl li.ikke{color:var(--muted)}
+.fl li.ikke .fl-navn{font-weight:500}
+.fl small{display:block;color:var(--muted);font-size:13.5px;line-height:1.5}
+details.vent{margin-top:12px;font-size:14.5px}
+details.vent summary{cursor:pointer;font-weight:600;list-style:none;display:inline-flex;gap:8px}
+details.vent summary::-webkit-details-marker{display:none}
+details.vent summary::after{content:"+";color:var(--warm);font-size:18px;line-height:1.1}
+details.vent[open] summary::after{content:"–"}
+details.vent p{margin-top:8px;color:var(--muted);max-width:62ch;line-height:1.7}
+.efter{margin-top:14px;display:flex;gap:10px 22px;font-size:14.5px;flex-wrap:wrap;align-items:center}
+.kv{border-top:1px solid var(--line)}
+.kv>div{padding:13px 0;border-bottom:1px solid var(--line);font-size:15px}
+.kv dt{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--warm);font-weight:700;margin-bottom:3px}
+.kv dd{line-height:1.55}
+.kv .aft{background:#fff;border:1px solid var(--line);border-left:3px solid var(--warm);border-radius:10px;padding:12px 14px;margin:6px 0}
+.skjult{margin-top:12px;font-size:14.5px;line-height:1.6;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.kontotilbud{margin-top:36px;border-top:1px solid var(--line);padding-top:20px;display:flex;justify-content:space-between;align-items:center;gap:16px 20px;font-size:15px;flex-wrap:wrap}
+.kontotilbud p{flex:1 1 260px}
+.ikkemin{margin-top:36px;padding-top:16px;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted);display:flex;gap:10px 14px;align-items:center;flex-wrap:wrap}
+.ikkemin p{flex:1 1 100%}
+.ikkemin .form-msg{margin-top:0}
+.ordre-besked h1{font-size:36px;max-width:28ch}
+
+/* ---------- log ind ---------- */
+.lg{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:64px;align-items:start;padding-top:8px}
+.lg .lede{color:var(--muted);font-size:18px;line-height:1.7;margin-top:18px;max-width:46ch}
+.lg .lede .email{color:var(--ink);font-weight:600;overflow-wrap:anywhere}
+.hvad{margin-top:30px;border-top:1px solid var(--line)}
+.hvad div{display:grid;grid-template-columns:150px 1fr;gap:16px;padding:13px 0;border-bottom:1px solid var(--line);font-size:15px}
+.hvad b{font-weight:600}
+.hvad span{color:var(--muted)}
+.uden{margin-top:20px;font-size:14.5px;color:var(--muted)}
+.form{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:34px}
+.form>.form-msg:first-child{margin:0 0 18px}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;min-width:0}
+.field label{font-size:13.5px;font-weight:600}
+.field input{border:1px solid #CFC6B4;border-radius:10px;padding:12px 14px;font:inherit;font-size:16px;background:var(--paper);color:var(--ink);width:100%}
+.field input:focus-visible{outline:2px solid var(--warm);outline-offset:1px}
+.field input[aria-invalid="true"]{border-color:#C25450}
+.field small{font-size:13px;color:var(--muted);line-height:1.5}
+input.kode{font-family:'Archivo','Inter',sans-serif;font-size:30px;font-weight:600;letter-spacing:.32em;text-align:center;padding:14px 10px;font-variant-numeric:tabular-nums}
+.form .btn{width:100%;justify-content:center}
+.form-note{color:var(--muted);font-size:12.5px;line-height:1.6;margin-top:14px}
+.igen{display:flex;justify-content:space-between;gap:6px 12px;margin-top:16px;font-size:13.5px;color:var(--muted);flex-wrap:wrap;align-items:center}
+.igen [hidden]{display:none}
+.igen .btn{width:auto;margin-left:auto}
+.form .igen .knap-lnk{margin-left:auto}
+.ts:empty{display:none}
+.ts{margin-top:14px}
+
+/* ---------- Min side ---------- */
+.hvem{margin-top:12px;color:var(--muted);font-size:15px;overflow-wrap:anywhere}
+.minside .sec-h{scroll-margin-top:90px}
+.minside>[data-side-besked] .form-msg{display:inline-block}
+.th{width:76px;height:58px;border-radius:8px;background:var(--soft);border:1px solid var(--line);display:block}
+.th.ikon{display:grid;place-items:center;color:#9C907A}
+.tb td.th-c{width:112px}
+.ml-m{display:inline-block;border:1px solid var(--line);background:var(--soft);color:var(--muted);border-radius:999px;padding:1px 9px;font-size:12px;font-weight:600;margin-left:8px;white-space:nowrap;vertical-align:middle}
+.d-navn{font-weight:600}
+.rk{display:grid;grid-template-columns:200px minmax(0,1fr) auto;gap:20px;align-items:center;padding:16px 18px;border-top:1px solid var(--line);font-size:15px}
+.rk:first-child{border-top:0}
+.rk .rk-k{font-weight:600}
+.rk .rk-v{overflow-wrap:anywhere}
+.rk .rk-v small{display:block;color:var(--muted);font-size:13.5px;line-height:1.5}
+details.slet{border-top:1px solid var(--line);padding:16px 18px;font-size:15px}
+details.slet summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between}
+details.slet summary::-webkit-details-marker{display:none}
+details.slet summary::after{content:"+";color:var(--warm);font-size:20px;line-height:1}
+details.slet[open] summary::after{content:"–"}
+.slet-in{margin-top:12px;max-width:66ch}
+.slet-in>p{margin-bottom:10px;line-height:1.65}
+.slet-lbl{margin-top:16px;font-size:13.5px;font-weight:600}
+.slet-trin{margin-top:6px;display:flex;gap:10px 12px;align-items:center;flex-wrap:wrap}
+.slet-trin .field{width:220px;margin:0}
+.slet-trin input.kode{font-size:22px;padding:9px 10px}
+.slet-in .form-msg{max-width:60ch}
+
+/* ---------- tablet og telefon ---------- */
+@media (max-width:900px){
+  .og{grid-template-columns:minmax(0,1fr);gap:0}
+  .lg{grid-template-columns:minmax(0,1fr);gap:32px}
+}
+@media (max-width:680px){
+  .konto main.pg{padding:32px 20px 56px}
+  .konto h1{font-size:32px;margin-top:12px}
+  .ordre-besked h1{font-size:28px}
+  .sub{font-size:16px;margin-top:10px}
+  .lg .lede{font-size:16px}
+  .sec-h,.og .sec-h{font-size:22px;margin:36px 0 10px}
+  .form{padding:22px 18px}
+  .hvad div{grid-template-columns:1fr;gap:2px}
+  .tb th,.tb thead td{padding:9px 12px}
+  .tb td,.tb tbody th,.tb tfoot th{padding:12px}
+  .fl li{grid-template-columns:22px minmax(0,1fr);gap:4px 12px;padding:14px 16px}
+  .fl li .fl-tekst{grid-column:2}
+  details.mere dl{grid-template-columns:1fr;gap:0}
+  details.mere dd{margin-bottom:8px}
+  .kontotilbud{flex-direction:column;align-items:stretch;margin-top:28px}
+  .kontotilbud .btn{justify-content:center}
+  .rk{grid-template-columns:minmax(0,1fr);gap:6px;padding:14px 16px}
+  .rk .rk-h .btn{margin-top:4px}
+  details.slet{padding:14px 16px}
+  .slet-trin .field{width:100%}
+
+  /* Bestillinger og Gemte designs: hver række som en blok (stadig én række pr. emne, ingen kort) */
+  .tb table.best thead,.tb table.des thead{display:none}
+  .tb table.best,.tb table.best tbody,.tb table.des,.tb table.des tbody{display:block}
+  .tb table.best tr,.tb table.des tr{display:grid;border-top:1px solid var(--line);padding:14px 16px;gap:2px 12px}
+  .tb table.best tr:first-child,.tb table.des tr:first-child{border-top:0}
+  .tb table.best td,.tb table.des td{display:block;padding:0;border:0;text-align:left}
+  .tb table.best tr{grid-template-columns:minmax(0,1fr) auto}
+  .tb table.best td:nth-child(1){grid-column:1}
+  .tb table.best td:nth-child(4){grid-column:2;grid-row:1;font-weight:600}
+  .tb table.best td:nth-child(2){grid-column:1 / -1;grid-row:3;color:var(--muted);font-size:13.5px}
+  .tb table.best td:nth-child(3){grid-column:1 / -1;grid-row:2}
+  .tb table.best td:nth-child(5){grid-column:1 / -1;grid-row:4;margin-top:6px;white-space:normal}
+  .tb table.des tr{grid-template-columns:64px minmax(0,1fr) auto;gap:4px 12px}
+  .tb table.des td.th-c{grid-column:1;grid-row:1 / span 3;width:auto}
+  .tb table.des td:nth-child(2){grid-column:2 / -1;grid-row:1}
+  .tb table.des td:nth-child(5){grid-column:2 / -1;grid-row:3;margin-top:4px}
+  .tb table.des td:nth-child(3){grid-column:2;grid-row:2;color:var(--muted);font-size:14px}
+  .tb table.des td:nth-child(4){grid-column:3;grid-row:2;font-size:14px}
+  .tb table.des td.n{text-align:left}
+  .tb table.des .th{width:64px;height:50px}
+  .tb table.best tr.tom,.tb table.des tr.tom{display:block}
+}
+
+/* ---------- udskrift: kun bestillingen + sælgerlinjen (Fable b "Udskrift") ---------- */
+@media print{
+  nav.topnav,.ikke-print,noscript,.konto .ts{display:none!important}
+  body{background:#fff}
+  .konto main.pg{padding:0;max-width:none}
+  .og{grid-template-columns:minmax(0,1fr);gap:0}
+  .tb,.fl,.form,.kv .aft,.skjult{box-shadow:none}
+  .sec-h,.og .sec-h{font-size:18px;margin:22px 0 8px;break-after:avoid}
+  .konto h1{font-size:26px}
+  details.mere summary::after{content:none}
+  .kun-print{display:block;margin-top:28px;padding-top:12px;border-top:1px solid #999;font-size:12px;color:#333}
+  a{text-decoration:none}
+}
+
+@media (prefers-reduced-motion:reduce){.go i{transition:none}}
+
+/* Kontrast (axe color-contrast, WCAG 1.4.3): sitets --warm (#A2652A) giver 4,47:1 på papiret — lige under 4,5:1 for
+   lille tekst. Mærkaterne og dt'erne på konto-siderne får en lidt mørkere tone (4,95:1); ikoner og streger beholder --warm. */
+.konto{--warm-tekst:#9A5E24}
+.konto .label,.konto .kv dt{color:var(--warm-tekst)}
+.konto .label::before{background:var(--warm-tekst)}
+.konto .btn-primary:hover{background:var(--warm-tekst)}

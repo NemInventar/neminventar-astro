@@ -1,0 +1,15 @@
+---
+// Log ind eller opret konto (Fable c1, d1, d2). Første trin står i HTML'en fra buildet; scripts/login-side.js tager over.
+import { renderEmailVenstre, renderEmailForm } from '../lib/login-visning.mjs';
+const { lang = 'da' } = Astro.props as { lang?: 'da' | 'en' };
+---
+<div id="rod" class="lg">
+  <div class="lg-tekst" data-venstre set:html={renderEmailVenstre(lang)} />
+  <div class="lg-form">
+    <div data-hoejre set:html={renderEmailForm(lang)} />
+    <div id="konto-ts" class="ts"></div>
+  </div>
+</div>
+<script>
+  import '../scripts/login-side.js';
+</script>

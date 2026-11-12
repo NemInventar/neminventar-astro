@@ -1,0 +1,64 @@
+---
+// Skallen for konto.neminventar.dk (plan-teknik-v3 §2 "Kundeflade", review-samlet nr. 3): ingen is:inline, intet
+// inline-script, ingen inline-stil — siden kører med CSP uden 'unsafe-inline' (konto/public/_headers).
+// Headeren er sitets (Nav med origin = fulde adresser til neminventar.dk), footeren den korte KontoFooter (Fable b).
+// "Min side" i header og footer kun i udgivelse 2 (Fable e række 1). Siderne er noindex (Fable b).
+// Opsætning til browsermodulerne står som data-attributter på <body>.
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/inter/700.css';
+import '@fontsource/archivo/500.css';
+import '@fontsource/archivo/600.css';
+import '@fontsource/archivo/700.css';
+import '../../../src/styles/site.css';
+import '../../../src/styles/min-side.css';
+import '../styles/konto.css';
+import Nav from '../../../src/components/Nav.astro';
+import KontoFooter from '../../../src/components/KontoFooter.astro';
+import { DESIGNER_URL } from '../../../src/lib/forside';
+import { tHtml } from '../lib/tekst.mjs';
+import { PLAUSIBLE_DOMAENE } from '../lib/adresser.mjs';
+
+interface Props {
+  titel: string;
+  side: 'ordre' | 'login' | 'min-side' | '404';
+  lang?: 'da' | 'en';
+}
+const { titel, side, lang = 'da' } = Astro.props;
+const UDGIVELSE = process.env.KONTO_UDGIVELSE === '2' ? 2 : 1;
+// Cloudflares testnøgle (består altid, usynlig), indtil den rigtige er sat ved build
+const TURNSTILE_TEST = '1x00000000000000000000BB';
+const turnstile = side === 'login' ? (process.env.KONTO_TURNSTILE_SITEKEY || TURNSTILE_TEST) : undefined;
+if (side === 'login' && !process.env.KONTO_TURNSTILE_SITEKEY) {
+  console.warn('[konto] KONTO_TURNSTILE_SITEKEY mangler: log ind bruger Cloudflares testnøgle');
+}
+---
+<!doctype html>
+<html lang={lang}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="referrer" content="no-referrer" />
+  <title>{titel}</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="theme-color" content="#17140E" />
+</head>
+<body
+  class={`konto side-${side}`}
+  data-side={side}
+  data-udgivelse={UDGIVELSE}
+  data-sprog={lang}
+  data-designer={DESIGNER_URL ?? 'https://designer.neminventar.dk/designer.html'}
+  data-turnstile={turnstile}
+  data-plausible={PLAUSIBLE_DOMAENE}
+>
+  <Nav lang={lang} origin="https://neminventar.dk" visMinSide={UDGIVELSE === 2} />
+  <main id="indhold" class="pg">
+    {side !== '404' && <noscript><p class="sub noscript" set:html={tHtml(lang, 'noscript')} /></noscript>}
+    <slot />
+  </main>
+  <KontoFooter visMinSide={UDGIVELSE === 2} />
+</body>
+</html>
