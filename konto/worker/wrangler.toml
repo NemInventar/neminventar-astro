@@ -1,0 +1,80 @@
+# Worker ni-konto-backend: koder, sessioner, lofter, Turnstile og mail fra konto@ bag konto.neminventar.dk/api/*.
+# Ingen offentlig adresse: ingen workers.dev, ingen preview-URL'er, ingen routes. Nås kun gennem service binding fra
+# Pages-projektet ni-konto (konto/wrangler.toml → konto/functions/api/[[sti]].js).
+#
+#   Produktion: npx wrangler@4 deploy --env production   (flagene står på false — kontrakter §0, §8)
+#   Staging:    npx wrangler@4 deploy --env staging      (ni-konto-backend-staging; mails kun til TEST_HVIDLISTE)
+#
+# Secrets (wrangler secret put <NAVN> --env <miljø> — ALDRIG her):
+#   NI_KONTO_SERVICE_KEY  servernøglen til ni-konto (sb_secret_… eller service_role)
+#   KODE_PEBER_1          peber til koder og HMAC(e-mail) i log og lofter (≥ 32 tilfældige tegn)
+#   BRO_HEMMELIGHED_1     HMAC-hemmeligheden til konto-bro (samme værdi som i broens secrets)
+#   TURNSTILE_SECRET      Turnstile-widgettens hemmelige nøgle (widget på konto-værten, action "konto-kode")
+#   GRAPH_CERT_PEM + GRAPH_KEY_PEM (PKCS8)  certifikatet til Graph-appen "NI Konto" — eller GRAPH_CLIENT_SECRET
+#   TEAMS_ALARM_URL (+ TEAMS_ALARM_NOEGLE)  webhook til alarmerne (R19)
+# Rotation af peber: sæt KODE_PEBER_2, skift KODE_PEBER_V til "2", behold KODE_PEBER_1 i 24 timer (åbne koder bærer peber_v).
+
+name = "ni-konto-backend"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+workers_dev = false
+preview_urls = false
+
+[vars]
+MILJOE = "prod"
+ORDRESTATUS_AKTIV = "false"
+KONTO_AKTIV = "false"
+NI_KONTO_URL = ""
+BRO_URL = "https://guhbrpektblabndqttgp.supabase.co/functions/v1/konto-bro"
+BRO_V = "1"
+KODE_PEBER_V = "1"
+MAIL_FRA = "konto@neminventar.dk"
+MAIL_SVAR_TIL = "tilbud@neminventar.dk"
+GRAPH_TENANT = "NemInventarAps.onmicrosoft.com"
+GRAPH_CLIENT_ID = ""
+ALARM_TIL = "js@neminventar.dk"
+
+[observability]
+enabled = true
+
+[env.production]
+name = "ni-konto-backend"
+workers_dev = false
+preview_urls = false
+
+[env.production.vars]
+MILJOE = "prod"
+ORDRESTATUS_AKTIV = "false"
+KONTO_AKTIV = "false"
+NI_KONTO_URL = ""
+BRO_URL = "https://guhbrpektblabndqttgp.supabase.co/functions/v1/konto-bro"
+BRO_V = "1"
+KODE_PEBER_V = "1"
+MAIL_FRA = "konto@neminventar.dk"
+MAIL_SVAR_TIL = "tilbud@neminventar.dk"
+GRAPH_TENANT = "NemInventarAps.onmicrosoft.com"
+GRAPH_CLIENT_ID = ""
+ALARM_TIL = "js@neminventar.dk"
+
+[env.staging]
+name = "ni-konto-backend-staging"
+workers_dev = false
+preview_urls = false
+
+[env.staging.vars]
+MILJOE = "staging"
+ORDRESTATUS_AKTIV = "true"
+KONTO_AKTIV = "true"
+# Pages-preview af ni-konto (branchens alias). Origin og Turnstile-værten følger denne.
+KONTO_ORIGIN = "https://min-side.ni-konto.pages.dev"
+DESIGNER_ORIGIN = "https://designer.neminventar.dk"
+NI_KONTO_URL = ""
+BRO_URL = "https://guhbrpektblabndqttgp.supabase.co/functions/v1/konto-bro-staging"
+BRO_V = "1"
+KODE_PEBER_V = "1"
+MAIL_FRA = "konto@neminventar.dk"
+MAIL_SVAR_TIL = "tilbud@neminventar.dk"
+GRAPH_TENANT = "NemInventarAps.onmicrosoft.com"
+GRAPH_CLIENT_ID = ""
+TEST_HVIDLISTE = "js@neminventar.dk,kontakt@neminventar.dk,tilbud@neminventar.dk"
+ALARM_TIL = "js@neminventar.dk"
