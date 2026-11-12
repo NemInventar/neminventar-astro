@@ -1,0 +1,6 @@
+/* "Min side" i headeren (Nav.astro med visMinSide, Fable runde 3 afsnit b): person-ikon + tekst mellem telefonnummeret og
+   "Få en pris". Importeres af siden selv: af Base.astro, når Min side er slået til på neminventar.dk, og af
+   konto.neminventar.dk. Filen ligger for sig, så Nav og Footer kunne få props uden at ændre sitets CSS (12-11-2026).
+   Under 1180 px skjuler site.css linket i headeren (.nav-links a:not(.nav-cta):not(.nav-tel)); det står så øverst i menuen. */
+.nav-links .nav-min{display:inline-flex;align-items:center;gap:7px;color:var(--ink);font-weight:600}
+.nav-links .nav-min svg{color:var(--warm)}
