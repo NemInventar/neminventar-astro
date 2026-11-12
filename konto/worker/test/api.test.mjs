@@ -8,6 +8,7 @@ import { lavVerden, senesteKode, broOrdre, kodT, KONTO, DESIGNER, NOEGLE, NOEGLE
 import { broSignatur } from '../src/bro.js';
 import { b64url, fraB64url } from '../src/krypto.js';
 import { onRequest } from '../../functions/api/[[sti]].js';
+import { prisUdenLevering } from '../src/pris.js';
 
 const MIN = 60_000;
 const fil = (sti) => readFileSync(fileURLToPath(new URL(sti, import.meta.url)), 'utf8');
@@ -219,25 +220,43 @@ test('Visningsloftet: 300 ordreopslag pr. IP pr. time', async () => {
 });
 
 // ---------- gem og designs ----------
-test('Gem: prisen regnes af /pris (flatpack til kantsten), aldrig af klienten; uden pris gemmes "—"', async () => {
+test('pris_ved_gem = designets egen pris inkl. moms uden levering (som bjælken), i øre', () => {
+  // med afhentning (flatpack-produkter): afhentningens inkl, hvor leveringslinjen er 0 kr.
+  assert.equal(prisUdenLevering([
+    { form: 'flatpack', trin: 'afhent', inkl: 12200, linjer: [{ ex: 9760 }, { ex: 0 }] },
+    { form: 'flatpack', trin: 'kantsten', inkl: 12767.5, linjer: [{ ex: 9760 }, { ex: 454 }] },
+  ]), 12200);
+  // uden afhentning (lockers: kun samlet): til kantsten minus den sidste linje (leveringen), plus 25 % moms
+  assert.equal(prisUdenLevering([
+    { form: 'samlet', trin: 'kantsten', inkl: 44853.75, linjer: [{ ex: 35300 }, { ex: 583 }] },
+    { form: 'samlet', trin: 'baaret', inkl: 45498.75, linjer: [{ ex: 35300 }, { ex: 1099 }] },
+  ]), 44125);
+  // tvivl → null ("—"), aldrig en pris med levering
+  assert.equal(prisUdenLevering([{ form: 'flatpack', trin: 'afhent', inkl: 100, linjer: [{ ex: 70 }, { ex: 10 }] }]), null);
+  assert.equal(prisUdenLevering([{ form: 'samlet', trin: 'baaret', inkl: 100, linjer: [{ ex: 70 }, { ex: 10 }] }]), null);
+  assert.equal(prisUdenLevering([]), null);
+  assert.equal(prisUdenLevering(null), null);
+});
+
+test('Gem: prisen regnes af /pris (bjælkens grundlag), aldrig af klienten; uden pris gemmes "—"', async () => {
   const v = lavVerden();
   const { token } = await v.logInd();
   const t = kodT({ bredde: 60, hoejde: 220 });
   const r = await v.kald('POST', '/api/gem', { origin: DESIGNER, cookie: token, body: { produkt: 'hoejskab', t, pris_oere: 1, navn: '' } });
-  assert.deepEqual(r.json, { ok: true, id: r.json.id, pris_oere: 987550 });
+  assert.deepEqual(r.json, { ok: true, id: r.json.id, pris_oere: 1220000 });
   const u = v.pris.kald.at(-1);
   assert.equal(`${u.origin}${u.pathname}`, 'https://api.neminventar.dk/pris');
   assert.equal(u.searchParams.get('p'), 'hoejskab');
   assert.equal(u.searchParams.get('t'), t);
   assert.equal(u.searchParams.get('format'), 'json');
-  assert.deepEqual(v.bro.leads.at(-1), { handling: 'design_gemt', email: EJER, produkt: 'hoejskab', t, pris_oere: 987550 });
+  assert.deepEqual(v.bro.leads.at(-1), { handling: 'design_gemt', email: EJER, produkt: 'hoejskab', t, pris_oere: 1220000 });
 
   v.pris.status = 503;
   v.frem(1000);
   const uden = await v.kald('POST', '/api/gem', { cookie: token, body: { produkt: 'hoejskab', t, navn: 'Gangen' } });
   assert.equal(uden.json.pris_oere, null);
   const side = await v.kald('GET', '/api/min-side', { cookie: token });
-  assert.deepEqual(side.json.designs.map((d) => [d.navn, d.pris_oere, d.t]), [['Gangen', null, t], ['Højskab 60 × 220', 987550, t]]);
+  assert.deepEqual(side.json.designs.map((d) => [d.navn, d.pris_oere, d.t]), [['Gangen', null, t], ['Højskab 60 × 220', 1220000, t]]);
 
   assert.deepEqual((await v.kald('POST', '/api/gem', { cookie: token, body: { produkt: 'Hoejskab!', t } })).json, { fejl: 'design' });
   assert.deepEqual((await v.kald('POST', '/api/gem', { cookie: token, body: { produkt: 'hoejskab', t: 'ikke base64 {' } })).json, { fejl: 'design' });

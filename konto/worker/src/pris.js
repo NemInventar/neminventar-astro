@@ -1,8 +1,20 @@
 // "Gem design" (fable c3, c4): tilstanden renses for eget foto (R11), og prisen regnes af serveren via
 // api.neminventar.dk/pris (designer-ordre linkPris) — aldrig af klienten (kontrakter §6).
-// /pris?p=<produkt>&t=<t>&format=json → {ok, titel, varianter: [{form, trin, inkl, …}], …}. "Pris da du gemte" er
-// den pris, designeren viser i bjælken: flatpack til kantsten (core/levering.js), ellers samlet til kantsten.
+//
+// GRUNDLAGET for pris_oere (hovedsessionen 12-11-2026): samme tal som designerens bjælke — designets egen pris inkl. moms
+// UDEN levering (produkternes PR.vare(st, {kunde: 'privat'}).inkl, momsTekst "inkl. moms, ekskl. levering"), i øre som
+// heltal. Ellers viser banneret ved genåbning (fable c4) en falsk prisforskel.
+// /pris?p=<produkt>&t=<t>&format=json giver kun varianter MED levering: {varianter: [{form, trin, inkl, linjer: [{t, ex}]}]},
+// hvor formerne står i designerens rækkefølge (standardformen først: flatpack, hvis produktet kan fladpakkes, ellers
+// samlet). Varens pris uden levering findes sådan:
+//   1. Standardformen med trinnet "afhent" (Afhentning på Mågevej): leveringslinjen er 0 kr. (core/levering.js), så
+//      variantens inkl er præcis varens pris i bjælken.
+//   2. Uden afhentning (fx lockers, kun samlet): standardformen til kantsten minus den ene leveringslinje, som
+//      ordre() altid lægger til sidst (core/levering.js linjer(): kantsten = én linje). Moms 25 %.
+// Begge er efterprøvet mod produkternes vare() for hoejskab, baenk og locker (rapporten 12-11-2026).
 import { b64url, fraB64url } from './krypto.js';
+
+export const MOMS = 1.25;
 
 export const MAX_T = 6000;              // samme loft som designerens permalink (core/permalink.js MAX_T)
 const TIMEOUT_MS = 8_000;
@@ -39,15 +51,26 @@ export function rensT(t) {
   return st ? kod(utenFoto(st)) : null;
 }
 
-export function valgtVariant(varianter) {
-  if (!Array.isArray(varianter) || !varianter.length) return null;
-  return varianter.find((v) => v?.form === 'flatpack' && v?.trin === 'kantsten')
-    ?? varianter.find((v) => v?.trin === 'kantsten')
-    ?? varianter[0];
+const tal = (x) => (typeof x === 'number' && Number.isFinite(x) ? x : null);
+
+// Varens pris inkl. moms uden levering (kroner, ikke afrundet) ud fra /pris-svarets varianter. null = kan ikke afgøres.
+export function prisUdenLevering(varianter) {
+  if (!Array.isArray(varianter) || !varianter.length || !erObj(varianter[0])) return null;
+  const std = varianter[0].form;
+  const afhent = varianter.find((v) => erObj(v) && v.form === std && v.trin === 'afhent');
+  if (afhent) {
+    const leveringen = Array.isArray(afhent.linjer) ? afhent.linjer.at(-1) : null;
+    if (!erObj(leveringen) || leveringen.ex !== 0) return null;      // afhentningen skal stå til 0 kr.
+    return tal(afhent.inkl);
+  }
+  const kant = varianter.find((v) => erObj(v) && v.form === std && v.trin === 'kantsten');
+  if (!kant || !Array.isArray(kant.linjer) || kant.linjer.length < 2) return null;
+  const ex = kant.linjer.slice(0, -1).reduce((a, l) => (a === null || tal(l?.ex) === null ? null : a + l.ex), 0);
+  return ex === null ? null : ex * MOMS;
 }
 
-// → {pris_oere: heltal i øre inkl. moms | null, titel: string | null}. Fejler aldrig: kan prisen ikke regnes,
-// gemmes designet med "—" (pris null).
+// → {pris_oere: heltal i øre inkl. moms uden levering | null, titel: string | null}. Fejler aldrig: kan prisen ikke
+// regnes, gemmes designet med "—" (pris null).
 export async function prisVedGem(prisUrl, fetcher, produkt, t) {
   const tom = { pris_oere: null, titel: null };
   let res;
@@ -68,8 +91,7 @@ export async function prisVedGem(prisUrl, fetcher, produkt, t) {
   }
   const titel = typeof d?.titel === 'string' ? d.titel.slice(0, 80) : null;
   if (!erObj(d) || d.ok !== true) return { ...tom, titel };
-  const v = valgtVariant(d.varianter);
-  const inkl = Number(v?.inkl);
-  if (!Number.isFinite(inkl) || inkl < 0 || inkl > 10_000_000) return { ...tom, titel };
+  const inkl = prisUdenLevering(d.varianter);
+  if (inkl === null || inkl < 0 || inkl > 10_000_000) return { ...tom, titel };
   return { pris_oere: Math.round(inkl * 100), titel };
 }

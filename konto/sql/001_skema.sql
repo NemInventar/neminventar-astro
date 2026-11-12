@@ -103,7 +103,8 @@ revoke all on all sequences in schema public from public, anon, authenticated;
 alter default privileges in schema public revoke all on tables    from public, anon, authenticated;
 alter default privileges in schema public revoke all on sequences from public, anon, authenticated;
 alter default privileges in schema public revoke execute on functions from public, anon, authenticated;
-revoke usage on schema public from anon, authenticated;
+-- Postgres giver USAGE på public til PUBLIC (alle roller); anon og authenticated arver det. Det tages også.
+revoke usage on schema public from public, anon, authenticated;
 
 grant usage on schema public to service_role;
 grant select, insert, update, delete on all tables in schema public to service_role;

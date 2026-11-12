@@ -90,10 +90,11 @@ export function lavVerden({ start = Date.parse('2026-11-12T10:00:00Z'), env = {}
     graph: { nede: false, kald: 0, tokenKald: 0, sidste: null },
     turnstile: { svar: { success: true, action: 'konto-kode', hostname: 'konto.neminventar.dk' }, kald: 0, sidste: null },
     bro: { nede: false, kald: [], nonces: new Set(), ordrer: [broOrdre()], gemtUdenLogin: [], skjulte: [], ikkeMin: [], leads: [] },
+    // Som designer-ordre linkPris svarer: standardformen først, leveringen som sidste linje (afhentning = 0 kr.)
     pris: { kald: [], status: 200, svar: { ok: true, produkt: 'hoejskab', titel: 'Højskab 60 × 220', varianter: [
-      { form: 'flatpack', trin: 'afhent', inkl: 9000 },
-      { form: 'flatpack', trin: 'kantsten', inkl: 9875.5 },
-      { form: 'samlet', trin: 'kantsten', inkl: 11000 },
+      { form: 'flatpack', trin: 'afhent', inkl: 12200, ex: 9760, linjer: [{ t: 'Højskab', ex: 9760 }, { t: 'Afhentning på Mågevej efter aftale', ex: 0 }] },
+      { form: 'flatpack', trin: 'kantsten', inkl: 12767.5, ex: 10214, linjer: [{ t: 'Højskab', ex: 9760 }, { t: 'Levering til kantsten', ex: 454 }] },
+      { form: 'samlet', trin: 'kantsten', inkl: 13400, ex: 10720, linjer: [{ t: 'Højskab', ex: 10100 }, { t: 'Levering til kantsten', ex: 620 }] },
     ] } },
     alarmer: [],
     fremmede: [],
