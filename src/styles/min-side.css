@@ -4,3 +4,10 @@
    Under 1180 px skjuler site.css linket i headeren (.nav-links a:not(.nav-cta):not(.nav-tel)); det står så øverst i menuen. */
 .nav-links .nav-min{display:inline-flex;align-items:center;gap:7px;color:var(--ink);font-weight:600}
 .nav-links .nav-min svg{color:var(--warm)}
+/* Med "Min side" er linjen et link længere: afstanden 24 px over 1300 px og 16 px fra 1181 til 1300 px, så headeren holder sig
+   inden for rammen ved alle bredder over 1180 px (Fable port 3, nr. 14 — før sluttede "Få en pris" 18 px uden for rammen ved
+   1440 og ca. 30 px for tidligt ved 1181–1300). Uden "Min side" er afstanden sitets egen (30/20 px). */
+.nav-links:has(.nav-min){gap:24px}
+@media(max-width:1300px){.nav-links:has(.nav-min){gap:16px}}
+@media(max-width:1180px){.nav-links:has(.nav-min){gap:20px}}
+@media(max-width:680px){.nav-links:has(.nav-min){gap:10px}}

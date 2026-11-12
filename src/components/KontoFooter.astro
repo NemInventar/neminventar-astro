@@ -6,14 +6,21 @@
 // komponent-stil; konto-buildet bør sætte build.inlineStylesheets = 'never', så den lander i en .css-fil.
 //   visMinSide = "Min side ·" først i linkrækken (udgivelse 2). I udgivelse 1 peger intet på Min side.
 //   origin     = sitet, som de juridiske sider og "Til neminventar.dk" peger på (standard https://neminventar.dk).
-import { PHONE, PHONE_TEL, MIN_SIDE } from '../lib/contact';
-const { visMinSide = false, origin = 'https://neminventar.dk' } = Astro.props as { visMinSide?: boolean; origin?: string };
+//   lang       = 'en' på /en/ og /en/min-side/ (Fable port 3, nr. 18): linkene på engelsk, de juridiske tekster findes kun
+//                på dansk og siger det. Adresselinjen er uændret.
+import { PHONE, PHONE_TEL, MIN_SIDE, MIN_SIDE_EN } from '../lib/contact';
+const { visMinSide = false, origin = 'https://neminventar.dk', lang = 'da' } = Astro.props as { visMinSide?: boolean; origin?: string; lang?: 'da' | 'en' };
 const rod = `${origin.replace(/\/+$/, '')}/`;
 const aar = new Date().getFullYear();
+const en = lang === 'en';
+const T = en
+  ? { min: 'My account', minHref: MIN_SIDE_EN, hb: 'Terms for private customers (in Danish)', pp: 'Privacy policy (in Danish)', cp: 'Cookie policy (in Danish)', til: 'To neminventar.dk' }
+  : { min: 'Min side', minHref: MIN_SIDE, hb: 'Handelsbetingelser for private', pp: 'Privatlivspolitik', cp: 'Cookiepolitik', til: 'Til neminventar.dk' };
+const dansk = en ? 'da' : undefined;   // de juridiske sider er danske: hreflang på linket
 ---
 <footer class="kfoot"><div class="kfoot-in">
   <span>© {aar} Nem Inventar ApS · CVR 45085473 · Mågevej 73, st. tv., 2400 København NV · <a href={`tel:${PHONE_TEL}`}>{PHONE}</a> · <a href="mailto:tilbud@neminventar.dk">tilbud@neminventar.dk</a></span>
-  <span>{visMinSide && <><a href={MIN_SIDE}>Min side</a> · </>}<a href={`${rod}handelsbetingelser/`}>Handelsbetingelser for private</a> · <a href={`${rod}privatlivspolitik/`}>Privatlivspolitik</a> · <a href={`${rod}cookiepolitik/`}>Cookiepolitik</a> · <a href={rod}>Til neminventar.dk</a></span>
+  <span>{visMinSide && <><a href={T.minHref}>{T.min}</a> · </>}<a href={`${rod}handelsbetingelser/`} hreflang={dansk}>{T.hb}</a> · <a href={`${rod}privatlivspolitik/`} hreflang={dansk}>{T.pp}</a> · <a href={`${rod}cookiepolitik/`} hreflang={dansk}>{T.cp}</a> · <a href={en ? `${rod}en/` : rod}>{T.til}</a></span>
 </div></footer>
 
 <style>
