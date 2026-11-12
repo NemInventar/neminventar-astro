@@ -1,0 +1,95 @@
+# konto.neminventar.dk: kundefladen (Pages-projektet ni-konto) og Workeren ni-konto-backend (kontrakter.md §1, §8).
+#   branch → test:  Worker ni-konto-backend-staging (flag true, mails kun til hvidlisten) + Pages-preview
+#                   https://<branch>.ni-konto.pages.dev, bygget med KONTO_UDGIVELSE fra repo-variablen (standard 1)
+#   main   → prod:  Worker ni-konto-backend (flagene står på false i wrangler.toml) + Pages produktion
+# Workeren udgives før siderne, så service bindingen KONTO har noget at pege på.
+# Secrets til staging-Workeren (GitHub-secrets, sættes kun hvis de findes): KONTO_STAGING_BRO_HEMMELIGHED_1,
+# KONTO_STAGING_KODE_PEBER_1, KONTO_STAGING_TURNSTILE_SECRET, KONTO_STAGING_NI_KONTO_SERVICE_KEY.
+# Produktionens secrets sættes i hånden ved udgivelsen (plan-proces fase 0a), aldrig herfra.
+name: Konto (konto.neminventar.dk)
+
+on:
+  push:
+    paths:
+      - "konto/**"
+      - "astro.konto.config.mjs"
+      - "src/components/Nav.astro"
+      - "src/components/KontoFooter.astro"
+      - "src/styles/**"
+      - "package.json"
+      - ".github/workflows/konto.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: konto-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  konto:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      MILJOE: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install
+        run: npm ci
+
+      - name: Test Workeren (R1–R21)
+        run: npm run test:konto
+
+      - name: Byg siderne
+        run: npm run build:konto
+        env:
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          KONTO_UDGIVELSE: ${{ vars.KONTO_UDGIVELSE || '1' }}
+          KONTO_TURNSTILE_SITEKEY: ${{ vars.KONTO_TURNSTILE_SITEKEY }}
+
+      - name: Test siderne (ingen inline-script, headere, tilstande, tekster)
+        run: npm run test:konto-site
+
+      - name: Udgiv Workeren
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        working-directory: konto/worker
+        run: npx --yes wrangler@4 deploy --env "$MILJOE" | tee ../../worker.log
+
+      - name: Secrets til staging-Workeren
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.MILJOE == 'staging'
+        working-directory: konto/worker
+        env:
+          BRO_HEMMELIGHED_1: ${{ secrets.KONTO_STAGING_BRO_HEMMELIGHED_1 }}
+          KODE_PEBER_1: ${{ secrets.KONTO_STAGING_KODE_PEBER_1 }}
+          TURNSTILE_SECRET: ${{ secrets.KONTO_STAGING_TURNSTILE_SECRET }}
+          NI_KONTO_SERVICE_KEY: ${{ secrets.KONTO_STAGING_NI_KONTO_SERVICE_KEY }}
+        run: |
+          jq -n 'env | with_entries(select(.key | IN("BRO_HEMMELIGHED_1","KODE_PEBER_1","TURNSTILE_SECRET","NI_KONTO_SERVICE_KEY")) | select(.value != ""))' > /tmp/secrets.json
+          echo "Sætter: $(jq -r 'keys | join(", ")' /tmp/secrets.json)"
+          if [ "$(jq 'length' /tmp/secrets.json)" -gt 0 ]; then npx --yes wrangler@4 secret bulk /tmp/secrets.json --env staging; fi
+          rm -f /tmp/secrets.json
+
+      - name: Udgiv siderne (Pages ni-konto)
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        working-directory: konto
+        run: |
+          npx --yes wrangler@4 pages project create ni-konto --production-branch main >/dev/null 2>&1 || true
+          npx --yes wrangler@4 pages deploy ../dist-konto --project-name ni-konto --branch "$GITHUB_REF_NAME" --commit-dirty=true | tee ../pages.log
+          ALIAS=$(grep -oE 'https://[a-z0-9-]+\.ni-konto\.pages\.dev' ../pages.log | tail -1)
+          {
+            echo "### konto (\`$GITHUB_REF_NAME\` → $MILJOE)"
+            echo "- Siderne: $ALIAS"
+            echo "- Udgivelse: ${{ vars.KONTO_UDGIVELSE || '1' }}"
+            echo "- CNAME i M365 DNS (kun produktion): \`konto\` → \`ni-konto.pages.dev\`"
+          } >> "$GITHUB_STEP_SUMMARY"
