@@ -6,8 +6,11 @@
 .nav-links .nav-min svg{color:var(--warm)}
 /* Med "Min side" er linjen et link længere: afstanden 24 px over 1300 px og 16 px fra 1181 til 1300 px, så headeren holder sig
    inden for rammen ved alle bredder over 1180 px (Fable port 3, nr. 14 — før sluttede "Få en pris" 18 px uden for rammen ved
-   1440 og ca. 30 px for tidligt ved 1181–1300). Uden "Min side" er afstanden sitets egen (30/20 px). */
+   1440 og ca. 30 px for tidligt ved 1181–1300). Den engelske linje er længere ("Lockers with bench", "How we work") og stod
+   10 px uden for ved 1181 med 16 px: 14 px op til 1240 px (målt i konto-skærmbillederne, header-login-en).
+   Uden "Min side" er afstanden sitets egen (30/20 px). */
 .nav-links:has(.nav-min){gap:24px}
 @media(max-width:1300px){.nav-links:has(.nav-min){gap:16px}}
+@media(max-width:1240px){.nav-links:has(.nav-min){gap:14px}}
 @media(max-width:1180px){.nav-links:has(.nav-min){gap:20px}}
 @media(max-width:680px){.nav-links:has(.nav-min){gap:10px}}
