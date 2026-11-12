@@ -1,4 +1,4 @@
-// Tekstkataloget (konto/tekster/*.json): ordret fra Fable runde 3 d1–d4, samme nøgler på dansk og engelsk, ingen
+// Tekstkataloget (konto/tekster/*.json): ordret fra Fable runde 3 d1–d4 og runde 4, samme nøgler på dansk og engelsk, ingen
 // forbudte ord (kernens ordvagt = forbudslisten fra scripts/lint-web-copy.py + kontrakter §0), og TODO-TEKST kun dér,
 // hvor Fable mangler en tekst (konto/tekster/mangler.json). Ligger Fable-filen ved siden af (ni-apps-worktree'et),
 // sammenlignes hver tekst med Fables tabel.
@@ -119,8 +119,52 @@ function fableTabeller(md) {
 }
 const norm = (s) => (s === '(ingen)' ? '' : s.replace(/\{[^}]*\}/g, '{}').trim());
 
+// Fable runde 4 (tillæg til runde 3): tabellerne har kolonnerne Nøgle · Dansk · English · Hvor (eller kun Dansk / kun
+// English). "en:noscript" er den engelske noscript. Nøgler, kataloget ikke har (kernens ordre.status.*, designerens d.gem.*),
+// skrives andre steder og prøves dér.
+const FABLE4 = [
+  process.env.FABLE_RUNDE4,
+  path.resolve(fileURLToPath(new URL('../../', import.meta.url)), '../ni-apps-minside/docs/superpowers/specs/2026-11-12-min-side/fable-runde4.md'),
+  'C:/dev/ni-apps-minside/docs/superpowers/specs/2026-11-12-min-side/fable-runde4.md',
+].find((f) => f && existsSync(f));
+
+function fable4Tabeller(md) {
+  const ud = new Map();   // nøgle → { da?, en? }
+  let kol = null;
+  for (const linje of md.split(/\r?\n/)) {
+    if (!linje.startsWith('|')) { kol = null; continue; }
+    const celler = linje.slice(1, -1).split(' | ').map((c) => c.trim());
+    if (celler[0] === 'Nøgle') { kol = celler; continue; }
+    if (!kol || !celler[0].startsWith('`')) continue;
+    let k = /^`([^`]+)`/.exec(celler[0])?.[1];
+    if (!k) continue;
+    const r = {};
+    kol.forEach((navn, i) => {
+      const v = celler[i];
+      if (navn === 'Dansk') r.da = v;
+      if (navn === 'English' && v !== '(kun dansk)') r.en = v;
+    });
+    if (k.startsWith('en:')) k = k.slice(3);
+    ud.set(k, { ...(ud.get(k) ?? {}), ...r });
+  }
+  return ud;
+}
+
+test('ordret som i Fable runde 4 (de tekster, runde 3 manglede)', { skip: FABLE4 ? false : 'fable-runde4.md findes ikke ved siden af repoet' }, () => {
+  const f4 = fable4Tabeller(readFileSync(FABLE4, 'utf8'));
+  assert.ok(f4.size >= 18, `fandt ${f4.size} rækker`);
+  let i = 0;
+  for (const [k, f] of f4) {
+    const da = Object.hasOwn(ORDRE, k) ? ORDRE[k] : Object.hasOwn(DA, k) ? DA[k] : null;
+    if (f.da != null && da != null) { assert.equal(norm(da), norm(f.da), `da:${k}`); i++; }
+    if (f.en != null && Object.hasOwn(EN, k)) { assert.equal(norm(EN[k]), norm(f.en), `en:${k}`); i++; }
+  }
+  assert.ok(i >= 21, `${i} tekster sammenlignet`);
+});
+
 test('ordret som i Fable runde 3 d1–d4', { skip: FABLE ? false : 'fable-runde3.md findes ikke ved siden af repoet' }, () => {
   const { d13, d4 } = fableTabeller(readFileSync(FABLE, 'utf8'));
+  const f4 = FABLE4 ? fable4Tabeller(readFileSync(FABLE4, 'utf8')) : new Map();
   assert.ok(d13.size >= 90 && d4.size >= 55, `fandt ${d13.size} + ${d4.size} rækker`);
   for (const [k, f] of d13) {
     assert.ok(Object.hasOwn(DA, k), `d1–d3 ${k} mangler i da.json`);
@@ -132,9 +176,11 @@ test('ordret som i Fable runde 3 d1–d4', { skip: FABLE ? false : 'fable-runde3
     if (v === null) { assert.ok(KERNEN_SKRIVER.has(k), `d4 ${k} hverken i kataloget eller skrevet af kernen`); continue; }
     assert.equal(norm(v), norm(f.da), `d4 ${k}`);
   }
-  // Alt i kataloget, der ikke er TODO, stammer fra Fable
+  // Alt i kataloget, der ikke er TODO, stammer fra Fable (runde 3 eller runde 4)
   for (const [sp, k, v] of alle()) {
-    if (v.includes('TODO-TEKST') || (sp === 'en' && k === 'noscript')) continue;
-    assert.ok(d13.has(k) || d4.has(k), `${sp}:${k} findes ikke i Fable`);
+    if (v.includes('TODO-TEKST')) continue;
+    const i4 = f4.has(k) && f4.get(k)[sp] != null;
+    if (sp === 'en' && k === 'noscript') { assert.ok(i4 || !FABLE4, 'en:noscript findes ikke i Fable runde 4'); continue; }
+    assert.ok(d13.has(k) || d4.has(k) || i4 || !FABLE4, `${sp}:${k} findes ikke i Fable`);
   }
 });

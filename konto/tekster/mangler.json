@@ -1,26 +1,5 @@
 {
-  "note": "Tekster, kundefladen skal vise, men som Fable runde 3 ikke har skrevet. De står i katalogerne som TODO-TEKST:<nøgle> (kontrakter.md §0: opfindes ikke). konto/test/tekster.test.mjs melder dem som TODO; `npm run test:konto-udgiv` fejler, så længe én er tilbage. Fjern nøglen her, når teksten er skrevet ind.",
-  "mangler": {
-    "da:nede": "Broen/ERP nede. Plan-teknik-v3 §8 (linje 173) har kun brudstykket \"Vi kan ikke vise bestillingen lige nu …\" med telefon. Min side, afsnittet Bestillinger (samme linje).",
-    "en:nede": "Som da:nede, engelsk (Min side på /en/).",
-    "da:lukket": "Flaget er fra (503 {fejl:'lukket'}, plan-teknik R14 linje 109: \"503 med venlig side\"). Ingen tekst i Fable.",
-    "en:lukket": "Som da:lukket, engelsk.",
-    "da:side.404": "Ukendt adresse på konto.neminventar.dk. Ingen tekst i Fable.",
-    "en:side.404": "Som da:side.404, engelsk.",
-    "da:side.fejl": "En handling på Min side fejler (omdøb, slet design, log ud, \"Fjern fra Min side\", netværksfejl). Fable c1 (linje 121-132) har kun fejl ved log ind.",
-    "en:side.fejl": "Som da:side.fejl, engelsk.",
-    "da:best.status.dagOver": "Statuskolonnen på Min side i tilstand 9 (dagen passeret, ikke meldt leveret). Fable d3 (linje 262-272) har ingen nøgle; best.status.dag ville stå med en passeret dato (strider mod e regel 5).",
-    "en:best.status.dagOver": "Som da:best.status.dagOver, engelsk.",
-    "da:best.status.afhentUge": "Statuskolonnen i tilstand 11 (afhentning, ugen bekræftet). Fable d3 har kun best.status.afhent (= tilstand 12).",
-    "en:best.status.afhentUge": "Som da:best.status.afhentUge, engelsk.",
-    "da:best.status.afhentUgeOver": "Statuskolonnen, når en afhentningsuge er gået uden \"Klar til afhentning\" (kernens MANGLER.afhentUgeGaaet).",
-    "en:best.status.afhentUgeOver": "Som da:best.status.afhentUgeOver, engelsk.",
-    "en:noscript": "Fable b (linje 80) siger, at alle sider har noscript-teksten fra d4 (linje 377), men d4 er kun dansk. /en/ og /en/min-side/ mangler den engelske.",
-    "da:ordre.nede": "Ordresiden, når broen/ERP er nede ({fejl:'nede'}). Plan-teknik-v3 §8 (linje 173): kun brudstykket \"Vi kan ikke vise bestillingen lige nu …\" med telefon."
-  },
-  "kernen": {
-    "ordre.status.5.afhentning.h1": "Kernen (vendor/webordre/tilstand.mjs MANGLER.afhentUgeGaaet): afhentningsuge gået uden \"Klar til afhentning\". Fable e tilstand 5 (linje 987) gælder kun levering.",
-    "ordre.status.5.afhentning.under": "Som ovenfor, undersætningen.",
-    "ordre.status.14.udenBeloeb": "Kernen (MANGLER.annulleretUdenBeloeb): annulleret uden registreret tilbageførsel. Fable e tilstand 14 (linje 996) forudsætter et beløb."
-  }
+  "note": "Tekster, kundefladen skal vise, men som Fable ikke har skrevet. De står i katalogerne som TODO-TEKST:<nøgle> (kontrakter.md §0: opfindes ikke). konto/test/tekster.test.mjs melder dem som TODO; `npm run test:konto-udgiv` fejler, så længe én er tilbage. Fjern nøglen her, når teksten er skrevet ind. Tom siden Fable runde 4 (ni-apps docs/superpowers/specs/2026-11-12-min-side/fable-runde4.md).",
+  "mangler": {},
+  "kernen": {}
 }

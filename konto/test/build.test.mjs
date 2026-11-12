@@ -106,4 +106,20 @@ test('udgivelse 2: log ind og Min side på dansk og engelsk, "Min side" i header
 test('noscript-teksten (Fable d4) på siderne med JavaScript', () => {
   const h = readFileSync(path.join(U1, 'ordre', 'index.html'), 'utf8');
   assert.ok(h.includes('<noscript>') && h.includes('Siden kan ikke vises, fordi JavaScript er slået fra i din browser.'));
+  // engelsk på /en/ og /en/min-side/ (Fable runde 4, afsnit 10)
+  for (const s of ['en/index.html', 'en/min-side/index.html']) {
+    const en = readFileSync(path.join(U2, s), 'utf8');
+    assert.ok(en.includes('This page cannot be shown because JavaScript is turned off in your browser.'), s);
+  }
+});
+
+test('404: første sætning er overskriften, resten brødtekst — samme tekst i begge udgivelser (Fable runde 4, afsnit 3)', () => {
+  for (const dir of [U1, U2]) {
+    const f = path.join(dir, '404.html');
+    if (!existsSync(f)) continue;
+    const h = readFileSync(f, 'utf8');
+    assert.match(h, /<h1[^>]*>Siden findes ikke\.<\/h1>/, dir);
+    assert.ok(/<p class="sub"[^>]*>Leder du efter din bestilling, så brug linket i ordrebekræftelsen, eller ring på <a [^>]*>\+45 42 42 26 84<\/a>\.<\/p>/.test(h), dir);
+  }
+  assert.ok(existsSync(path.join(U2, '404.html')));
 });

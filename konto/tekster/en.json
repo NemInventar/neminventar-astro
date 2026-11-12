@@ -96,13 +96,14 @@
   "konto.sletKode": "Enter the code from the email to delete the account. It is valid for 10 minutes.",
   "konto.sletJa": "Delete my account",
 
-  "noscript": "TODO-TEKST:noscript",
+  "noscript": "This page cannot be shown because JavaScript is turned off in your browser. Call +45 42 42 26 84 or write to tilbud@neminventar.dk, and we will tell you how far your order has come.",
 
-  "nede": "TODO-TEKST:nede",
-  "lukket": "TODO-TEKST:lukket",
-  "side.404": "TODO-TEKST:side.404",
-  "side.fejl": "TODO-TEKST:side.fejl",
-  "best.status.dagOver": "TODO-TEKST:best.status.dagOver",
-  "best.status.afhentUge": "TODO-TEKST:best.status.afhentUge",
-  "best.status.afhentUgeOver": "TODO-TEKST:best.status.afhentUgeOver"
+  "nede": "We cannot show your orders right now. Nothing has happened to them. Try again in a moment, or call +45 42 42 26 84.",
+  "side.nede": "We cannot show My account right now. Try again in a moment. If you have a question about an order, call +45 42 42 26 84 or reply to your order confirmation.",
+  "lukket": "My account is not open right now. Your orders and saved designs are unchanged. If you have a question about an order, call +45 42 42 26 84 or write to tilbud@neminventar.dk.",
+  "side.404": "This page does not exist. If you are looking for your order, use the link in your order confirmation, or call +45 42 42 26 84.",
+  "side.fejl": "That did not work. Try again in a moment, or call us on +45 42 42 26 84.",
+  "best.status.dagOver": "Delivery agreed for {dag}",
+  "best.status.afhentUge": "Ready for collection in {uge}",
+  "best.status.afhentUgeOver": "Not ready for collection yet"
 }

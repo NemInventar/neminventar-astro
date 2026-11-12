@@ -34,11 +34,8 @@ export const TEKST = Object.freeze({
 const BETALINGSMIDDEL = Object.freeze({ card: 'kort', mobilepay: 'MobilePay' });
 
 // Tekster, Fable ikke har skrevet. Opfindes ikke (kontrakter §0): vises som TODO-TEKST:<nøgle> og er meldt.
-export const MANGLER = Object.freeze({
-  afhentUgeGaaet: ['ordre.status.5.afhentning.h1', 'ordre.status.5.afhentning.under'],
-  annulleretUdenBeloeb: 'ordre.status.14.udenBeloeb',
-});
-const todo = (noegle) => `TODO-TEKST:${noegle}`;
+// Tom siden Fable runde 4 (fable-runde4.md afsnit 6 og 7); konto/test/udgiv-tjek.mjs i neminventar-astro læser listen.
+export const MANGLER = Object.freeze({});
 
 const ringEllerSvar = `Ring på ${TELEFON}, eller svar på ordrebekræftelsen.`;
 const punktum = (s) => (/[.!?]$/.test(s) ? s : `${s}.`);
@@ -124,7 +121,7 @@ export function tilstand(ordre, nuIso, sprog = 'da') {
     nr = 14; h1 = 'Bestillingen er annulleret';
     under = refunderet > 0 && bet.refunderet_at
       ? `Vi har tilbageført ${kr(refunderet)} den ${kortDatoTekst(bet.refunderet_at, iDag)}. Hvornår beløbet står på din konto, afhænger af din bank.`
-      : todo(MANGLER.annulleretUdenBeloeb);
+      : `Beløbet og datoen står her, når vi har tilbageført pengene. Er der noget, så ring på ${TELEFON}.`;   // runde 4, 7
   } else if (s.lev) {
     nr = afhent ? 13 : 10;
     h1 = `${afhent ? 'Hentet' : 'Leveret'} ${dagTekst(s.lev.dato, iDag)}`;
@@ -133,7 +130,9 @@ export function tilstand(ordre, nuIso, sprog = 'da') {
     nr = 12; h1 = 'Klar til afhentning';
     under = `${AFHENT_ADRESSE}. Ring på ${TELEFON} og aftal et tidspunkt.`;
   } else if (afhent && s.uge && ugeGaaet) {
-    nr = 5; [h1, under] = MANGLER.afhentUgeGaaet.map(todo);
+    // Fable runde 4, afsnit 6: ugen er den senest bekræftede eller flyttede
+    nr = 5; h1 = 'Din bestilling er ikke klar til afhentning endnu';
+    under = `Den skulle have stået klar i uge ${s.uge.uge}. ${ringEllerSvar}`;
   } else if (afhent && s.uge) {
     nr = 11; h1 = `Klar til afhentning i ${uTekst}`;
     // Flyttet afhentningsuge: Fable har kun tilstand 4 (levering). Sammensat af 4's første sætning og 11's undersætning.

@@ -1,6 +1,6 @@
 // Log ind (Fable d1) og kode-trinnet (d2) som HTML. Samme side, to trin (c1): e-mail → "Skriv koden fra mailen".
 // Venstre spalte = overskrift og forklaring, højre = formularen. Turnstile-widgetten bor uden for begge (login-side.js).
-import { t, tHtml, esc, fedOgRest, medPolitikLink, sprogAf } from './tekst.mjs';
+import { t, tHtml, esc, fedOgRest, medPolitikLink, sprogAf, delOverskrift, tekstMedLinks } from './tekst.mjs';
 
 // Fable c3 + beslutning 11 (kontrakter linje 3: ja) — et gem med login giver en henvendelse, så noten nævner tilbuddet.
 export const NOTE_NOEGLE = 'login.noteLead';
@@ -51,10 +51,12 @@ export function renderKodeForm(sprog, { sek = 30 } = {}) {
     + '</form>';
 }
 
-// Flaget er fra (503 lukket). Første sætning som overskrift; en TODO-tekst står alene.
+// Flaget er fra (503 lukket). Første sætning som overskrift, resten brødtekst under den (Fable runde 4, "Fælles for 1–3").
 export function renderLoginLukket(sprog) {
   const sp = sprogAf(sprog);
-  return `<p class="label">${esc(t(sp, 'login.label'))}</p><h1 id="login-h1" tabindex="-1">${tHtml(sp, 'lukket')}</h1>`;
+  const [h1, rest] = delOverskrift(t(sp, 'lukket'));
+  return `<p class="label">${esc(t(sp, 'login.label'))}</p><h1 id="login-h1" tabindex="-1">${esc(h1)}</h1>`
+    + (rest ? `<p class="lede">${tekstMedLinks(rest)}</p>` : '');
 }
 
 /**

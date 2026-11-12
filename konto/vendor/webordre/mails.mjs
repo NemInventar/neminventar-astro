@@ -64,7 +64,8 @@ const ugeOk = (d, hvad) => (Number.isInteger(d?.aar) && Number.isInteger(d?.uge)
 export { klTekst }; // bor i datoer.mjs, så siden og mailen skriver klokkeslæt ens
 const tidsrum = (d) => {
   if (!d.fra && !d.til) return '';
-  if (!d.fra || !d.til) fejl('TODO-TEKST:mail.tidsrum.kun-fra-eller-til (d6 har kun "mellem kl. {fra} og {til}")');
+  // Fable runde 4, A: kun "fra" eller kun "til" får ingen tekst — formularen (/webordrer tidsrumFejl) kræver begge eller ingen
+  if (!d.fra || !d.til) fejl('tidsrummet skal have både fra og til, eller ingen af dem');
   return ` mellem kl. ${klTekst(d.fra)} og ${klTekst(d.til)}`;
 };
 
@@ -187,11 +188,18 @@ const BYG = {
   leveret: (o, d) => leveretEllerHentet(o, d, false),
   hentet: (o, d) => leveretEllerHentet(o, d, true),
 
-  // 9 · Ny leveringsuge ("Flyt uge"). Årsagen er påkrævet
+  // 9 · Ny leveringsuge ("Flyt uge"). Årsagen er påkrævet. Ved afhentning: Fable runde 4, afsnit 8
   uge_flyttet(o, d) {
     ugeOk(d, 'uge_flyttet'); ugeOk(d.fra, 'uge_flyttet.fra');
-    if (afhentning(o)) fejl('TODO-TEKST:mail.uge_flyttet.afhentning (d6 nr. 9 har kun teksten for levering)');
     const uge = ugeTekst(d.aar, d.uge), aarsag = kraevet(d.aarsag, 'Årsagen til den nye uge');
+    if (afhentning(o)) {
+      return statusmail(o, `Ny afhentningsuge for din bestilling ${refAf(o)}: ${uge}`, (link) => [
+        `Din bestilling bliver ikke klar til afhentning i uge ${d.fra.uge}, som vi har bekræftet. Den er klar til afhentning i ${uge}.`,
+        aarsag,
+        `Du får en mail, når den står klar. Er det et problem for dig, så svar på denne mail eller ring på ${TELEFON}.`,
+        foelg(link),
+      ]);
+    }
     return statusmail(o, `Ny leveringsuge for din bestilling ${refAf(o)}: ${uge}`, (link) => [
       `Vi kan ikke levere i uge ${d.fra.uge}, som vi har bekræftet. Vi leverer i ${uge}.`,
       aarsag,

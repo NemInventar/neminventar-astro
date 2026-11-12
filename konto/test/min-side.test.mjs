@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { renderMinSide, renderMinSideFejl, statusTekst, renderLogUdAlle, renderSletTrin, renderDesignSvar } from '../src/lib/min-side-visning.mjs';
-import { renderEmailVenstre, renderEmailForm, renderKodeVenstre, renderKodeForm, fejlBesked, beskedHtml } from '../src/lib/login-visning.mjs';
+import { renderEmailVenstre, renderEmailForm, renderKodeVenstre, renderKodeForm, renderLoginLukket, fejlBesked, beskedHtml } from '../src/lib/login-visning.mjs';
 import { t } from '../src/lib/tekst.mjs';
 import { TILSTANDE, ordreI, minSideData, EMAIL } from './fixtures.mjs';
 
@@ -20,7 +20,9 @@ const STATUS = {
   6: ['Leveres tirsdag 15. december', 'Delivery on Tuesday 15 December'],
   7: ['Leveres torsdag 17. december', 'Delivery on Thursday 17 December'],
   8: ['Leveres i dag', 'Delivery today'],
+  9: ['Aftalt levering tirsdag 15. december', 'Delivery agreed for Tuesday 15 December'],   // Fable runde 4, 5
   10: ['Leveret 15. december 2026', 'Delivered 15 December 2026'],
+  11: ['Klar til afhentning i uge 51 (14.–18. december 2026)', 'Ready for collection in week 51 (14–18 December 2026)'],
   12: ['Klar til afhentning', 'Ready for collection'],
   13: ['Hentet 15. december 2026', 'Collected 15 December 2026'],
   14: ['Annulleret', 'Cancelled'],
@@ -31,15 +33,17 @@ const STATUS = {
 for (const s of TILSTANDE) {
   test(`statuskolonnen, tilstand ${s.nr}`, () => {
     const o = ordreI(s.nr, 'med_login', { medLaek: false });
-    if (STATUS[s.nr]) {
-      assert.equal(statusTekst(o, s.nu, 'da'), STATUS[s.nr][0]);
-      assert.equal(statusTekst(o, s.nu, 'en'), STATUS[s.nr][1]);
-    } else {
-      // 9 og 11: Fable d3 har ingen nøgle (konto/tekster/mangler.json) — vises som TODO, opfindes ikke
-      assert.match(statusTekst(o, s.nu, 'da'), /^TODO-TEKST:best\.status\./);
-    }
+    assert.ok(STATUS[s.nr], `tilstand ${s.nr} har en status`);
+    assert.equal(statusTekst(o, s.nu, 'da'), STATUS[s.nr][0]);
+    assert.equal(statusTekst(o, s.nu, 'en'), STATUS[s.nr][1]);
   });
 }
+
+test('statuskolonnen, afhentningsugen gået uden "klar" (Fable runde 4, 5)', () => {
+  const o = ordreI(11, 'med_login', { medLaek: false });
+  assert.equal(statusTekst(o, '2026-12-21T09:00:00.000Z', 'da'), 'Ikke klar til afhentning endnu');
+  assert.equal(statusTekst(o, '2026-12-21T09:00:00.000Z', 'en'), 'Not ready for collection yet');
+});
 
 test('Min side: tre afsnit, bestillinger med link i første celle, nyeste øverst', () => {
   const h = renderMinSide({ data: minSideData(), sprog: 'da', nu: NU, designerUrl: DESIGNER, ny: true });
@@ -77,7 +81,7 @@ test('tom konto (Fable mockup 6): best.tom, best.tomHjaelp, design.tom og knappe
 
 test('broen nede: Bestillinger viser nede-linjen, designs og konto virker (plan §8)', () => {
   const h = renderMinSide({ data: minSideData({ nede: true }), sprog: 'da', nu: NU, designerUrl: DESIGNER });
-  assert.ok(h.includes(t('da', 'nede')));
+  assert.ok(tekstAf(h).includes(t('da', 'nede')));
   assert.ok(h.includes('Garderobe til soveværelset'));
   assert.ok(h.includes('data-handling="log-ud-alle"'));
 });
@@ -102,9 +106,23 @@ test('log ud alle steder og slet konto (Fable c6, c7)', () => {
   assert.ok(tekstAf(renderDesignSvar('slet', 'da', { navn: 'Bænk' })).includes('Slet "Bænk"? Det kan ikke fortrydes.'));
 });
 
-test('Min side kan ikke vises: lukket og nede', () => {
-  assert.ok(renderMinSideFejl('lukket', 'da').includes(t('da', 'lukket')));
-  assert.ok(renderMinSideFejl('nede', 'en').includes(t('en', 'nede')));
+test('Min side kan ikke vises: lukket og side.nede — første sætning er H1, resten brødtekst (Fable runde 4)', () => {
+  const h1Af = (h) => /<h1[^>]*>(.*?)<\/h1>/s.exec(h)?.[1];
+  const l = renderMinSideFejl('lukket', 'da');
+  assert.equal(h1Af(l), 'Min side er ikke åben lige nu.');
+  assert.equal(tekstAf(l), t('da', 'lukket'));
+  assert.ok(l.includes('href="tel:+4542422684"') && l.includes('href="mailto:tilbud@neminventar.dk"'));
+  const n = renderMinSideFejl('nede', 'en');
+  assert.equal(h1Af(n), 'We cannot show My account right now.');
+  assert.equal(tekstAf(n), t('en', 'side.nede'));
+  assert.ok(!n.includes(t('en', 'nede')), '`nede` er kun rækken i Bestillinger');
+});
+
+test('log ind, flaget fra: første sætning af `lukket` er H1, resten brødtekst (Fable runde 4)', () => {
+  const h = renderLoginLukket('da');
+  assert.equal(/<h1[^>]*>(.*?)<\/h1>/s.exec(h)?.[1], 'Min side er ikke åben lige nu.');
+  assert.ok(tekstAf(h).endsWith(t('da', 'lukket')));
+  assert.ok(tekstAf(renderLoginLukket('en')).endsWith(t('en', 'lukket')));
 });
 
 test('log ind (d1): overskrift, rækker, felt med hjælp, note med privatlivspolitik', () => {

@@ -1,8 +1,10 @@
 ---
-// Ukendt adresse på konto.neminventar.dk. Fable har ingen tekst (TODO-TEKST:side.404, konto/tekster/mangler.json).
+// Ukendt adresse på konto.neminventar.dk (Fable runde 4, afsnit 3: side.404, samme tekst i udgivelse 1 og 2).
+// Første sætning er overskriften, resten brødtekst under den ("Fælles for 1–3").
 import KontoLayout from '../layouts/KontoLayout.astro';
-import { tHtml } from '../lib/tekst.mjs';
+import { t, tekstMedLinks, delOverskrift } from '../lib/tekst.mjs';
+const [h1, rest] = delOverskrift(t('da', 'side.404'));
 ---
 <KontoLayout titel="Nem Inventar" side="404">
-  <div id="rod" class="ordre-besked"><h1 set:html={tHtml('da', 'side.404')} /></div>
+  <div id="rod" class="ordre-besked"><h1>{h1}</h1>{rest && <p class="sub" set:html={tekstMedLinks(rest)} />}</div>
 </KontoLayout>

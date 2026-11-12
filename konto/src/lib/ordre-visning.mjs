@@ -10,16 +10,17 @@
 // Aldrig på siden: kundens telefon og e-mail, og hvem hos os der har sat et trin. Renderen læser kun de felter, den
 // skal bruge; et felt, broen ved en fejl sender med, når aldrig HTML'en (konto/test/ordre.test.mjs prøver det).
 //
-// Valg, Fable ikke tager stilling til (meldt i rapporten):
-//   - "Hvad sker der, mens du venter?" og lev.aendre vises ikke, når bestillingen er færdig (leveret, hentet, klar til
-//     afhentning, annulleret, fortrudt) — teksterne lover noget, der ikke længere kan ske.
-//   - "Leveres til" og lev.skjult1 vises ikke ved afhentning (der leveres ikke til adressen).
+// "Hvad sker der, mens du venter?" og lev.aendre vises ikke, når der ikke længere bestilles plader: på leveringsdagen og
+// efter den (tilstand 8 og 9, Fable runde 4 svar G) og når bestillingen er færdig (leveret, hentet, klar til afhentning,
+// annulleret, fortrudt) — teksterne lover noget, der ikke længere kan ske.
+// Afhentning har egne tekster (Fable runde 4 afsnit 11): forloeb.mensTekstAfhentning og lev.skjultAfhentning.
+// "Leveres til" og lev.skjult1 vises ikke ved afhentning (der leveres ikke til adressen).
 import { tilstand } from '../../vendor/webordre/tilstand.mjs';
-import { t, tHtml, esc, tekstMedLinks, kolonner, beloeb, SITE } from './tekst.mjs';
+import { t, tHtml, esc, tekstMedLinks, kolonner, beloeb, SITE, delOverskrift } from './tekst.mjs';
 import { loginAdresse, designerLink } from './adresser.mjs';
 
 const DA = 'da';
-const FAERDIG = new Set([10, 12, 13, 14, 15]);
+const INGEN_VENTER = new Set([8, 9, 10, 12, 13, 14, 15]);
 
 export const udgaveAf = (udgivelse, visning) =>
   (Number(udgivelse) === 2 ? (visning === 'med_login' ? 'u2-med' : 'u2-uden') : 'u1');
@@ -104,9 +105,9 @@ function leveringHtml(ordre, s, udgave, ref) {
   if (udgave === 'u1' && levering) skjult = `<p class="skjult" data-felt="skjult">${esc(t(DA, 'lev.skjult1'))}</p>`;
   if (udgave === 'u2-uden') {
     const href = loginAdresse(`/ordre/?ref=${ref}`);
-    skjult = `<p class="skjult ikke-print" data-felt="skjult">${esc(t(DA, 'lev.skjult'))} <a class="lnk nob" href="${esc(href)}">${esc(t(DA, 'lev.skjultKnap'))}</a></p>`;
+    skjult = `<p class="skjult ikke-print" data-felt="skjult">${esc(t(DA, levering ? 'lev.skjult' : 'lev.skjultAfhentning'))} <a class="lnk nob" href="${esc(href)}">${esc(t(DA, 'lev.skjultKnap'))}</a></p>`;
   }
-  const aendre = FAERDIG.has(s.nr) ? '' : `<p class="lille">${tHtml(DA, 'lev.aendre')}</p>`;
+  const aendre = INGEN_VENTER.has(s.nr) ? '' : `<p class="lille">${tHtml(DA, 'lev.aendre')}</p>`;
   return `<h2 class="sec-h">${esc(t(DA, 'lev.h2'))}</h2>${kv.length ? `<dl class="kv">${kv.join('')}</dl>` : ''}${skjult}${aendre}`;
 }
 
@@ -126,8 +127,8 @@ export function renderOrdre({ ordre, visning, udgivelse, nu, designerUrl }) {
     + `<h1 id="ordre-h1" tabindex="-1">${h1Html(s.h1)}</h1>`
     + (s.under ? `<p class="sub">${tekstMedLinks(s.under)}</p>` : '');
 
-  const mens = FAERDIG.has(s.nr) ? ''
-    : `<details class="vent ikke-print"><summary>${esc(t(DA, 'forloeb.mens'))}</summary><p>${esc(t(DA, 'forloeb.mensTekst'))}</p></details>`;
+  const mens = INGEN_VENTER.has(s.nr) ? ''
+    : `<details class="vent ikke-print"><summary>${esc(t(DA, 'forloeb.mens'))}</summary><p>${esc(t(DA, s.form === 'afhentning' ? 'forloeb.mensTekstAfhentning' : 'forloeb.mensTekst'))}</p></details>`;
 
   const venstre = `<h2 class="sec-h">${esc(t(DA, 'forloeb.h2'))}</h2>${forloebHtml(s)}${mens}${varerHtml(ordre, udgave, designerUrl)}`;
 
@@ -170,11 +171,10 @@ export function renderIkkeBetalt(designerUrl) {
   };
 }
 
-// Første sætning som overskrift, resten under (begge ordret fra Fable). En TODO-tekst står alene.
+// Første sætning som overskrift, resten under (begge ordret fra Fable; runde 4 "Fælles for 1–3").
 function beskedHtml(s, { loginLink = false } = {}) {
-  const i = s.indexOf('. ');
-  const h1 = i > 0 ? s.slice(0, i + 1) : s;
-  let rest = i > 0 ? tekstMedLinks(s.slice(i + 2)) : '';
+  const [h1, efter] = delOverskrift(s);
+  let rest = efter ? tekstMedLinks(efter) : '';
   if (loginLink && rest) {
     rest = rest.replace(/log ind på Min side|log ind(?=\.$)/, (m) => `<a class="lnk" href="/">${m}</a>`);
   }
@@ -187,7 +187,7 @@ export function renderOrdreFejl(fejl, udgivelse) {
   let noegle;
   if (fejl === 'ukendt') noegle = u2 ? 'ordre.ikkeFundet' : 'ordre.ikkeFundet1';
   else if (fejl === 'erstattet') noegle = u2 ? 'ordre.erstattet' : 'ordre.erstattet1';
-  else if (fejl === 'lukket') noegle = 'lukket';
+  else if (fejl === 'lukket') noegle = 'ordre.lukket';   // egen nøgle: udgivelse 1 må ikke nævne Min side (runde 4, 2)
   else noegle = 'ordre.nede';   // nede, loft, netværk, ukendt svar
   return { titel: 'Nem Inventar', nr: null, fejl, html: beskedHtml(t(DA, noegle), { loginLink: u2 && (fejl === 'ukendt' || fejl === 'erstattet') }) };
 }

@@ -80,3 +80,10 @@ export function medPolitikLink(escaped, sprog) {
 
 // Vores telefonnummer i en tekst fra kernen (H1, undersætning) → link. Teksten escapes her.
 export const tekstMedLinks = (s, opts) => linkify(esc(s), opts);
+
+// En tekst, der vises som hel side (Fable runde 4, "Fælles for 1–3": nede, lukket, 404): første sætning er overskriften
+// (H1), resten er brødtekst under den. → [overskrift, resten] (resten '' når teksten er én sætning).
+export function delOverskrift(s) {
+  const i = String(s).indexOf('. ');
+  return i > 0 ? [s.slice(0, i + 1), s.slice(i + 2)] : [String(s), ''];
+}

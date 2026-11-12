@@ -45,8 +45,8 @@ for (const [id, titel, server, n, foer] of [
   ['ordre-ukendt-u2', 'Ukendt nøgle (ordre.ikkeFundet)', 'u2', noegle('ukendt')],
   ['ordre-erstattet-u1', 'Erstattet link (ordre.erstattet1)', 'u1', noegle('erstattet')],
   ['ordre-erstattet-u2', 'Erstattet link (ordre.erstattet)', 'u2', noegle('erstattet')],
-  ['ordre-nede', 'Broen nede (ordre.nede — TODO-TEKST)', 'u1', noegle('nede')],
-  ['ordre-lukket', '503, flaget fra (lukket — TODO-TEKST)', 'u1', noegle('t03u'), (st) => { st.ordrestatusAktiv = false; }],
+  ['ordre-nede', 'Broen nede (ordre.nede)', 'u1', noegle('nede')],
+  ['ordre-lukket', '503, flaget fra (ordre.lukket)', 'u1', noegle('t03u'), (st) => { st.ordrestatusAktiv = false; }],
 ]) {
   s({ id, gruppe: 'Ordresiden — fejl', titel, server, nu: NU, sti: `/ordre/#${n}`, noegle: n, foer, efter: klar });
 }
@@ -83,14 +83,14 @@ s({ id: 'kode-spaerret', gruppe: 'Log ind (udgivelse 2)', titel: 'Femte forkerte
     }
   } });
 s({ id: 'login-udloebet', gruppe: 'Log ind (udgivelse 2)', titel: 'Sessionen er udløbet (login.udloebet)', server: 'u2', nu: NU, sti: '/?udloebet=1&retur=%2Fmin-side%2F', efter: (p) => vent(p, '[data-besked-start]') });
-s({ id: 'login-lukket', gruppe: 'Log ind (udgivelse 2)', titel: '503, konto-flaget fra (lukket — TODO-TEKST)', server: 'u2', nu: NU, sti: '/', foer: (st) => { st.kontoAktiv = false; },
+s({ id: 'login-lukket', gruppe: 'Log ind (udgivelse 2)', titel: '503, konto-flaget fra (lukket)', server: 'u2', nu: NU, sti: '/', foer: (st) => { st.kontoAktiv = false; },
   efter: (p) => p.waitForFunction(() => !document.querySelector('form')) });
 
 s({ id: 'min-side', gruppe: 'Min side (udgivelse 2)', titel: 'Min side, første login ("Mere" foldet ud)', server: 'u2', nu: NU, sti: '/min-side/?ny=1', session: true,
   efter: async (p) => { await klar(p); await p.click('tr[data-design] details summary'); } });
 s({ id: 'min-side-en', gruppe: 'Min side (udgivelse 2)', titel: 'My account (engelsk)', server: 'u2', nu: NU, sti: '/en/min-side/', session: true, efter: klar });
 s({ id: 'min-side-tom', gruppe: 'Min side (udgivelse 2)', titel: 'Ny konto, intet endnu', server: 'u2', nu: NU, sti: '/min-side/', session: true, foer: (st) => { st.minSide = 'tom'; }, efter: klar });
-s({ id: 'min-side-nede', gruppe: 'Min side (udgivelse 2)', titel: 'Broen nede: Bestillinger (nede — TODO-TEKST), designs og konto virker', server: 'u2', nu: NU, sti: '/min-side/', session: true, foer: (st) => { st.minSide = 'nede'; }, efter: klar });
+s({ id: 'min-side-nede', gruppe: 'Min side (udgivelse 2)', titel: 'Broen nede: Bestillinger (nede), designs og konto virker', server: 'u2', nu: NU, sti: '/min-side/', session: true, foer: (st) => { st.minSide = 'nede'; }, efter: klar });
 s({ id: 'log-ud-alle', gruppe: 'Min side (udgivelse 2)', titel: 'Log ud alle steder: spørgsmålet (c7)', server: 'u2', nu: NU, sti: '/min-side/', session: true,
   efter: async (p) => { await klar(p); await p.click('[data-handling="log-ud-alle"]'); await vent(p, '[data-handling="log-ud-alle-ja"]'); } });
 s({ id: 'slet-konto', gruppe: 'Min side (udgivelse 2)', titel: 'Slet konto: koden er sendt (c6)', server: 'u2', nu: NU, sti: '/min-side/', session: true,
@@ -102,7 +102,7 @@ s({ id: 'slettet', gruppe: 'Min side (udgivelse 2)', titel: 'Kontoen er slettet 
     await klar(p); await p.click('details.slet summary'); await p.click('[data-handling="slet-kode"]'); await vent(p, '#slet-kode');
     await p.fill('#slet-kode', '123456'); await p.click('[data-handling="slet-ja"]'); await p.waitForURL((u) => u.pathname === '/'); await vent(p, '[data-besked-start]');
   } });
-s({ id: '404', gruppe: 'Øvrige', titel: '404 (side.404 — TODO-TEKST)', server: 'u2', nu: NU, sti: '/findes-ikke/' });
+s({ id: '404', gruppe: 'Øvrige', titel: '404 (side.404)', server: 'u2', nu: NU, sti: '/findes-ikke/' });
 
 // ---------- kør ----------
 mkdirSync(UD, { recursive: true });

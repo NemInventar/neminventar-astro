@@ -42,5 +42,8 @@
   "ordre.ikkeBetalt.tekst": "Der er ikke trukket penge. Du kan åbne designeren og bestille igen.",
   "ordre.ikkeBetalt.knap": "Åbn designeren",
 
-  "ordre.nede": "TODO-TEKST:ordre.nede"
+  "ordre.nede": "Vi kan ikke vise bestillingen lige nu. Der er ikke sket noget med din bestilling. Prøv igen om lidt, eller ring på +45 42 42 26 84.",
+  "ordre.lukket": "Siden er ikke åben lige nu. Der er ikke sket noget med din bestilling. Har du spørgsmål til den, så ring på +45 42 42 26 84, eller skriv til tilbud@neminventar.dk.",
+  "lev.skjultAfhentning": "Din besked til os står på Min side. Log ind med den e-mail, du bestilte med.",
+  "forloeb.mensTekstAfhentning": "Vi bestiller pladerne, skærer dem til efter dine mål og sætter kanter på. Du hører fra os, når ugen er bekræftet, når din bestilling står klar, og hvis noget ændrer sig."
 }

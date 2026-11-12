@@ -98,11 +98,12 @@
 
   "noscript": "Siden kan ikke vises, fordi JavaScript er slået fra i din browser. Ring på +45 42 42 26 84, eller skriv til tilbud@neminventar.dk, så fortæller vi dig, hvor langt din bestilling er.",
 
-  "nede": "TODO-TEKST:nede",
-  "lukket": "TODO-TEKST:lukket",
-  "side.404": "TODO-TEKST:side.404",
-  "side.fejl": "TODO-TEKST:side.fejl",
-  "best.status.dagOver": "TODO-TEKST:best.status.dagOver",
-  "best.status.afhentUge": "TODO-TEKST:best.status.afhentUge",
-  "best.status.afhentUgeOver": "TODO-TEKST:best.status.afhentUgeOver"
+  "nede": "Vi kan ikke vise dine bestillinger lige nu. Der er ikke sket noget med dem. Prøv igen om lidt, eller ring på +45 42 42 26 84.",
+  "side.nede": "Vi kan ikke vise Min side lige nu. Prøv igen om lidt. Har du spørgsmål til en bestilling, så ring på +45 42 42 26 84, eller svar på ordrebekræftelsen.",
+  "lukket": "Min side er ikke åben lige nu. Dine bestillinger og gemte designs er, som de var. Har du spørgsmål til en bestilling, så ring på +45 42 42 26 84, eller skriv til tilbud@neminventar.dk.",
+  "side.404": "Siden findes ikke. Leder du efter din bestilling, så brug linket i ordrebekræftelsen, eller ring på +45 42 42 26 84.",
+  "side.fejl": "Det gik ikke. Prøv igen om lidt, eller ring til os på +45 42 42 26 84.",
+  "best.status.dagOver": "Aftalt levering {dag}",
+  "best.status.afhentUge": "Klar til afhentning i {uge}",
+  "best.status.afhentUgeOver": "Ikke klar til afhentning endnu"
 }

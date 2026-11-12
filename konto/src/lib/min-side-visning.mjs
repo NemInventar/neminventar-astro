@@ -3,7 +3,7 @@
 // Statuskolonnen bygger på kernens tilstand(); datoer og uger skrives af kernen (dansk og engelsk).
 import { tilstand } from '../../vendor/webordre/tilstand.mjs';
 import { kbhDato, ugeFrist, ugeTekst, dagTekst, datoTekst } from '../../vendor/webordre/datoer.mjs';
-import { t, tHtml, esc, kolonner, beloeb, sprogAf } from './tekst.mjs';
+import { t, tHtml, esc, kolonner, beloeb, sprogAf, delOverskrift, tekstMedLinks } from './tekst.mjs';
 import { designerLink } from './adresser.mjs';
 
 export const PRODUKT_IKON = '<svg width="34" height="34" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M5 3h14v18H5zM12 3v18M9 11v2M15 11v2"/></svg>';
@@ -27,9 +27,9 @@ export function statusTekst(ordre, nu, sprog = 'da') {
     case 5: return s.form === 'afhentning' ? t(sp, 'best.status.afhentUgeOver') : t(sp, 'best.status.ugeOver', { nr: s.uge.uge });
     case 6: case 7: return t(sp, 'best.status.dag', { dag: dagTekst(s.dag.dato, s.iDag, sp) });
     case 8: return t(sp, 'best.status.idag');
-    case 9: return t(sp, 'best.status.dagOver');
+    case 9: return t(sp, 'best.status.dagOver', { dag: dagTekst(s.dag.dato, s.iDag, sp) });   // Fable runde 4, 5
     case 10: return t(sp, 'best.status.leveret', { dato: lev ? datoTekst(lev.iso, sp) : '' });
-    case 11: return t(sp, 'best.status.afhentUge');
+    case 11: return t(sp, 'best.status.afhentUge', { uge: ugeTekst(s.uge.aar, s.uge.uge, sp) });
     case 12: return t(sp, 'best.status.afhent');
     case 13: return t(sp, 'best.status.hentet', { dato: lev ? datoTekst(lev.iso, sp) : '' });
     case 14: return t(sp, 'best.status.annulleret');
@@ -171,8 +171,12 @@ export function renderMinSide({ data, sprog = 'da', nu, designerUrl, ny = false 
     + '</div>';
 }
 
-/** Hele Min side kan ikke vises: flaget er fra (lukket) eller konto-databasen er nede. */
+/**
+ * Hele Min side kan ikke vises: flaget er fra (lukket) eller siden kan ikke hentes (side.nede — `nede` er kun rækken i
+ * Bestillinger). Fable runde 4: første sætning er overskriften, resten brødtekst under den.
+ */
 export function renderMinSideFejl(fejl, sprog = 'da') {
   const sp = sprogAf(sprog);
-  return `<div class="minside"><h1 id="side-h1" tabindex="-1">${esc(t(sp, 'side.h1'))}</h1><p class="sub">${tHtml(sp, fejl === 'lukket' ? 'lukket' : 'nede')}</p></div>`;
+  const [h1, rest] = delOverskrift(t(sp, fejl === 'lukket' ? 'lukket' : 'side.nede'));
+  return `<div class="minside"><h1 id="side-h1" tabindex="-1">${esc(h1)}</h1>${rest ? `<p class="sub">${tekstMedLinks(rest)}</p>` : ''}</div>`;
 }

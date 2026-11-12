@@ -72,7 +72,8 @@ for (const s of TILSTANDE) {
       assert.equal(har(h, 'aftalt'), aftalt, 'Aftalt med dig');
       // Række 13: linjen om det, der ikke vises
       assert.equal(tekst.includes(t('da', 'lev.skjult1')), u.udgave === 'u1' && s.form === 'levering', 'lev.skjult1');
-      assert.equal(tekst.includes(t('da', 'lev.skjult')), u.udgave === 'u2-uden', 'lev.skjult');
+      assert.equal(tekst.includes(t('da', 'lev.skjult')), u.udgave === 'u2-uden' && s.form === 'levering', 'lev.skjult');
+      assert.equal(tekst.includes(t('da', 'lev.skjultAfhentning')), u.udgave === 'u2-uden' && s.form === 'afhentning', 'lev.skjultAfhentning (runde 4, 11)');
       // Række 15: tilbud om at logge ind — kun udgivelse 2 uden login
       assert.equal(har(h, 'konto-tilbud'), u.udgave === 'u2-uden', 'konto.tilbud');
       // Række 16: "Er det ikke din bestilling?" — kun med login
@@ -90,13 +91,32 @@ for (const s of TILSTANDE) {
   }
 }
 
-test('mens du venter og lev.aendre: kun mens der er noget at vente på', () => {
+test('mens du venter og lev.aendre: kun mens der er noget at vente på — ikke på leveringsdagen og efter (G)', () => {
   for (const s of TILSTANDE) {
     const h = renderOrdre({ ordre: ordreI(s.nr), visning: 'uden_login', udgivelse: 1, nu: s.nu, designerUrl: DESIGNER }).html;
-    const faerdig = [10, 12, 13, 14, 15].includes(s.nr);
-    assert.equal(h.includes(t('da', 'forloeb.mens')), !faerdig, `mens du venter, tilstand ${s.nr}`);
-    assert.equal(tekstAf(h).includes(t('da', 'lev.aendre')), !faerdig, `lev.aendre, tilstand ${s.nr}`);
+    const ingen = [8, 9, 10, 12, 13, 14, 15].includes(s.nr);
+    assert.equal(h.includes(t('da', 'forloeb.mens')), !ingen, `mens du venter, tilstand ${s.nr}`);
+    assert.equal(tekstAf(h).includes(t('da', 'lev.aendre')), !ingen, `lev.aendre, tilstand ${s.nr}`);
+    // Afhentning har sin egen tekst (Fable runde 4, afsnit 11)
+    if (!ingen) {
+      assert.equal(tekstAf(h).includes(t('da', 'forloeb.mensTekstAfhentning')), s.form === 'afhentning', `mensTekstAfhentning, tilstand ${s.nr}`);
+      assert.equal(tekstAf(h).includes(t('da', 'forloeb.mensTekst')), s.form === 'levering', `mensTekst, tilstand ${s.nr}`);
+    }
   }
+});
+
+test('afhentningsugen gået uden "klar" (Fable runde 4, afsnit 6): H1 og undersætning fra kernen', () => {
+  const h = renderOrdre({ ordre: ordreI(11), visning: 'uden_login', udgivelse: 1, nu: '2026-12-21T09:00:00.000Z', designerUrl: DESIGNER }).html;
+  assert.equal(h1Af(h), 'Din bestilling er ikke klar til afhentning endnu');
+  assert.equal(underAf(h), 'Den skulle have stået klar i uge 51. Ring på +45 42 42 26 84, eller svar på ordrebekræftelsen.');
+  assert.ok(tekstAf(h).includes(t('da', 'forloeb.mensTekstAfhentning')));
+});
+
+test('annulleret uden registreret tilbageførsel (Fable runde 4, afsnit 7)', () => {
+  const o = { ...ordreI(3), status: 'annulleret' };
+  const h = renderOrdre({ ordre: o, visning: 'uden_login', udgivelse: 1, nu: TILSTANDE[2].nu, designerUrl: DESIGNER }).html;
+  assert.equal(h1Af(h), 'Bestillingen er annulleret');
+  assert.equal(underAf(h), 'Beløbet og datoen står her, når vi har tilbageført pengene. Er der noget, så ring på +45 42 42 26 84.');
 });
 
 test('hjaelp.tekst med ordrenummeret, telefon og mail som links', () => {
@@ -139,7 +159,13 @@ test('fejlene har Fables tekster i begge udgivelser', () => {
   assert.equal(tekst('erstattet', 1), t('da', 'ordre.erstattet1'));
   assert.equal(tekst('erstattet', 2), t('da', 'ordre.erstattet'));
   assert.equal(tekst('nede', 1), t('da', 'ordre.nede'));
-  assert.equal(tekst('lukket', 1), t('da', 'lukket'));
+  assert.equal(h1Af(renderOrdreFejl('nede', 1).html), 'Vi kan ikke vise bestillingen lige nu.');
+  // Egen nøgle på ordresiden: udgivelse 1 må ikke nævne Min side (Fable runde 4, afsnit 2)
+  for (const u of [1, 2]) {
+    assert.equal(tekst('lukket', u), t('da', 'ordre.lukket'));
+    assert.ok(!/Min side/.test(tekst('lukket', u)));
+  }
+  assert.equal(h1Af(renderOrdreFejl('lukket', 1).html), 'Siden er ikke åben lige nu.');
   assert.ok(renderOrdreFejl('ukendt', 2).html.includes('href="/"'), 'udgivelse 2: "log ind på Min side" er et link');
   assert.ok(!renderOrdreFejl('ukendt', 1).html.includes('href="/"'), 'udgivelse 1: intet link til log ind');
 });
