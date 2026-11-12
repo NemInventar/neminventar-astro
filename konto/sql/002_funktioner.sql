@@ -313,7 +313,7 @@ end $$;
 
 -- Fable c3: gem et nyt design. Højst 50 pr. konto pr. døgn (værn mod en løbsk klient). → {ok, id} · {fejl:'loft'}
 create or replace function public.design_gem(
-  p_kunde_id uuid, p_produkt text, p_tilstand text, p_navn text, p_pris_oere bigint
+  p_kunde_id uuid, p_produkt text, p_tilstand text, p_navn text, p_pris_oere bigint, p_titel text default null
 ) returns jsonb
 language plpgsql set search_path = public, pg_temp as $$
 declare
@@ -326,8 +326,8 @@ begin
   if v_n is null then
     return jsonb_build_object('fejl', 'loft');
   end if;
-  insert into designs (kunde_id, produkt, tilstand, navn, pris_ved_gem)
-  values (p_kunde_id, p_produkt, p_tilstand, p_navn, p_pris_oere)
+  insert into designs (kunde_id, produkt, tilstand, navn, titel, pris_ved_gem)
+  values (p_kunde_id, p_produkt, p_tilstand, p_navn, nullif(left(p_titel, 160), ''), p_pris_oere)
   returning id into v_id;
   return jsonb_build_object('ok', true, 'id', v_id);
 end $$;
@@ -336,7 +336,8 @@ end $$;
 create or replace function public.design_liste(p_kunde_id uuid) returns jsonb
 language sql stable set search_path = public, pg_temp as $$
   select coalesce(jsonb_agg(jsonb_build_object(
-           'id', id, 'produkt', produkt, 'navn', navn, 't', tilstand, 'pris_oere', pris_ved_gem, 'gemt', oprettet)
+           'id', id, 'produkt', produkt, 'navn', navn, 'titel', titel, 't', tilstand, 'pris_oere', pris_ved_gem, 'gemt', oprettet,
+           'miniature', miniature)
            order by oprettet desc, id), '[]'::jsonb)
     from designs
    where kunde_id = p_kunde_id;

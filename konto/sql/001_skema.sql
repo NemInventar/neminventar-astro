@@ -71,8 +71,9 @@ create table public.designs (
   produkt       text not null check (produkt ~ '^[a-z][a-z0-9_-]{0,39}$'),
   tilstand      text not null check (length(tilstand) between 1 and 6000 and tilstand ~ '^[A-Za-z0-9_-]+$'),
   navn          text check (navn is null or length(navn) between 1 and 80),
+  titel         text check (titel is null or length(titel) between 1 and 160),   -- designets opsummering fra /pris ved gem (Fable port 3, nr. 15)
   pris_ved_gem  bigint check (pris_ved_gem is null or pris_ved_gem between 0 and 1000000000),
-  miniature     text,                                -- sti i en privat bucket (bruges ikke endnu)
+  miniature     text,                                -- sti på konto-værten (/api/…) til et lille billede (bruges ikke endnu)
   oprettet      timestamptz not null default now()
 );
 create index designs_kunde_idx on public.designs (kunde_id, oprettet desc);

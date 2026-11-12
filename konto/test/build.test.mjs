@@ -118,7 +118,7 @@ test('404: første sætning er overskriften, resten brødtekst — samme tekst i
     const f = path.join(dir, '404.html');
     if (!existsSync(f)) continue;
     const h = readFileSync(f, 'utf8');
-    assert.match(h, /<h1[^>]*>Siden findes ikke\.<\/h1>/, dir);
+    assert.match(h, /<h1[^>]*>Siden findes ikke<\/h1>/, dir);   // uden punktum (Fable port 3, nr. 9)
     assert.ok(/<p class="sub"[^>]*>Leder du efter din bestilling, så brug linket i ordrebekræftelsen, eller ring på <a [^>]*>\+45 42 42 26 84<\/a>\.<\/p>/.test(h), dir);
   }
   assert.ok(existsSync(path.join(U2, '404.html')));

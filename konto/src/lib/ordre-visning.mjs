@@ -16,7 +16,8 @@
 // Afhentning har egne tekster (Fable runde 4 afsnit 11): forloeb.mensTekstAfhentning og lev.skjultAfhentning.
 // "Leveres til" og lev.skjult1 vises ikke ved afhentning (der leveres ikke til adressen).
 import { tilstand } from '../../vendor/webordre/tilstand.mjs';
-import { t, tHtml, esc, tekstMedLinks, kolonner, beloeb, SITE, delOverskrift } from './tekst.mjs';
+import { varerOgLevering } from '../../vendor/webordre/levering.mjs';
+import { t, tHtml, esc, tekstMedLinks, kolonner, beloeb, SITE, delOverskrift, bindUger } from './tekst.mjs';
 import { loginAdresse, designerLink } from './adresser.mjs';
 
 const DA = 'da';
@@ -27,8 +28,16 @@ export const udgaveAf = (udgivelse, visning) =>
 
 const OK_IKON = '<svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-// Overskrift: en parentes (ugens datoer) brydes ikke midt i
-const h1Html = (s) => esc(s).replace(/\(([^)]*)\)/g, '<span class="nob">($1)</span>');
+// Overskrift: "uge 51" og ugens datoer bindes med hårde mellemrum, men parentesen kan brydes efter stregen — så den aldrig
+// løber ud over kanten på en telefon (Fable port 3, nr. 1; før var hele parentesen nowrap)
+const h1Html = (s) => bindUger(esc(s));
+
+// "Prøv igen" under en tekst, der beder kunden prøve igen om lidt (Fable port 3, nr. 24). Et rigtigt link til siden selv;
+// scriptet henter bestillingen igen uden at genindlæse (data-handling="igen").
+export const proevIgenHtml = (sprog = DA) => `<p class="igen-link"><a class="lnk" href="" data-handling="igen">${esc(t(sprog, 'side.proevIgen'))}</a></p>`;
+
+// Udskriften: ordmærket øverst som afsender (kun i print, Fable port 3, nr. 25) — som sitets logo i headeren
+const ORDMAERKE = '<p class="kun-print ordmaerke">NEM<b>·</b>INVENTAR</p>';
 
 const tekst = (x) => (typeof x === 'string' ? x.trim() : '');
 
@@ -52,25 +61,31 @@ export function beskrivelsePar(b, dybde = 0) {
   return [];
 }
 
+// Forløbet fra kernen: et sket trin har flueben og som regel en dato ("Annulleret" uden registreret tilbageførsel har ingen)
 function forloebHtml(s) {
   const li = s.forloeb.map((r) => (r.sket
-    ? `<li class="sket"><span class="ok">${OK_IKON}</span><span class="fl-navn">${esc(r.navn)}</span><span class="fl-tekst">${esc(r.dato)}${r.tekst ? `<small>${esc(r.tekst)}</small>` : ''}</span></li>`
+    ? `<li class="sket" data-trin="${esc(r.trin)}"><span class="ok">${OK_IKON}</span><span class="fl-navn">${esc(r.navn)}</span><span class="fl-tekst">${r.dato ? esc(r.dato) : ''}${r.tekst ? `<small>${esc(r.tekst)}</small>` : ''}</span></li>`
     : `<li class="ikke"><span class="ej"></span><span class="fl-navn">${esc(r.navn)}</span><span class="fl-tekst">${r.tekst ? esc(r.tekst) : ''}</span></li>`));
   return `<ol class="fl">${li.join('')}</ol>`;
 }
 
 function varerHtml(ordre, udgave, designerUrl) {
   const [kVare, kAntal, kPris] = kolonner(DA, 'varer.kol');
-  const linjer = Array.isArray(ordre.linjer) ? ordre.linjer : [];
+  // Leveringslinjen ("Levering til kantsten · 1 element") er vores ord: siden skriver selv "Levering: samlet, til kantsten"
+  // ud fra levering.tekst, uden antal, med linjens beløb (Fable port 3, nr. 5; kernens varerOgLevering)
+  const { varer: linjer, levering } = varerOgLevering(ordre);
   const par = beskrivelsePar(ordre.beskrivelse);
   const detaljer = par.length
-    ? `<tr class="fold"><td colspan="3"><details class="mere" data-print-aaben><summary>${esc(t(DA, 'varer.detaljer'))}</summary><dl>${par.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl></details></td></tr>`
+    ? `<tr class="fold"><td colspan="3"><details class="mere" data-print-aaben data-felt="maal"><summary>${esc(t(DA, 'varer.detaljer'))}</summary><dl>${par.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl></details></td></tr>`
     : '';
-  const raekker = linjer.map((l, i) => {
+  const raekker = (linjer.map((l, i) => {
     const antal = Number.isFinite(l?.antal) ? String(l.antal) : '';
     const pris = Number.isSafeInteger(l?.beloeb_oere) ? beloeb(l.beloeb_oere, DA) : '';
     return `<tr><td>${esc(tekst(l?.tekst))}</td><td class="n">${esc(antal)}</td><td class="n">${esc(pris)}</td></tr>${i === 0 ? detaljer : ''}`;
-  }).join('') || detaljer;
+  }).join('') || detaljer)
+    + (levering
+      ? `<tr data-felt="levering-linje"><td>${esc(t(DA, 'varer.levering', { levering: levering.ord }))}</td><td class="n"></td><td class="n">${Number.isSafeInteger(levering.beloeb_oere) ? esc(beloeb(levering.beloeb_oere, DA)) : ''}</td></tr>`
+      : '');
   const tot = ordre.total ?? {};
   const fod = [
     Number.isSafeInteger(tot.inkl_oere) ? `<tr class="tot"><th scope="row">${esc(t(DA, 'varer.ialt'))}</th><td></td><td class="n">${esc(beloeb(tot.inkl_oere, DA))}</td></tr>` : '',
@@ -86,6 +101,9 @@ function varerHtml(ordre, udgave, designerUrl) {
 }
 
 function leveringHtml(ordre, s, udgave, ref) {
+  // Annulleret (tilstand 14): der leveres ikke — hele afsnittet "Levering" skjules, også linjerne om Min side og beskeden
+  // (Fable port 3, nr. 4)
+  if (s.nr === 14) return '';
   const adr = ordre.adresse ?? {};
   const postBy = [tekst(adr.postnr), tekst(adr.by)].filter(Boolean).join(' ');
   const levering = s.form === 'levering';
@@ -108,7 +126,9 @@ function leveringHtml(ordre, s, udgave, ref) {
     skjult = `<p class="skjult ikke-print" data-felt="skjult">${esc(t(DA, levering ? 'lev.skjult' : 'lev.skjultAfhentning'))} <a class="lnk nob" href="${esc(href)}">${esc(t(DA, 'lev.skjultKnap'))}</a></p>`;
   }
   const aendre = INGEN_VENTER.has(s.nr) ? '' : `<p class="lille">${tHtml(DA, 'lev.aendre')}</p>`;
-  return `<h2 class="sec-h">${esc(t(DA, 'lev.h2'))}</h2>${kv.length ? `<dl class="kv">${kv.join('')}</dl>` : ''}${skjult}${aendre}`;
+  // Følger der intet under listen, har dens sidste række ingen bundstreg (Fable port 3, nr. 21)
+  const sidst = !skjult && !aendre ? ' sidst' : '';
+  return `<h2 class="sec-h">${esc(t(DA, 'lev.h2'))}</h2>${kv.length ? `<dl class="kv${sidst}">${kv.join('')}</dl>` : ''}${skjult}${aendre}`;
 }
 
 /**
@@ -147,7 +167,7 @@ export function renderOrdre({ ordre, visning, udgivelse, nu, designerUrl }) {
     + tilbud + ikkeMin;
 
   const html = `<div class="ordre" data-udgave="${udgave}" data-tilstand="${s.nr}" data-ref="${esc(ref)}"${s.delvisRefusion ? ' data-delvis="1"' : ''}>`
-    + top
+    + ORDMAERKE + top
     + `<div class="og"><div class="og-v">${venstre}</div><div class="og-h">${hoejre}</div></div>`
     + `<p class="kun-print saelger">${esc(t(DA, 'varer.saelger'))}</p></div>`;
   return { titel, html, nr: s.nr };
@@ -171,14 +191,15 @@ export function renderIkkeBetalt(designerUrl) {
   };
 }
 
-// Første sætning som overskrift, resten under (begge ordret fra Fable; runde 4 "Fælles for 1–3").
-function beskedHtml(s, { loginLink = false } = {}) {
+// Første sætning som overskrift (uden punktum, Fable port 3 nr. 9), resten under (ordret fra Fable; runde 4 "Fælles for 1–3").
+// Linkteksten "log ind" brydes ikke midt i (Fable port 3, nr. 30).
+function beskedHtml(s, { loginLink = false, igen = false } = {}) {
   const [h1, efter] = delOverskrift(s);
   let rest = efter ? tekstMedLinks(efter) : '';
   if (loginLink && rest) {
-    rest = rest.replace(/log ind på Min side|log ind(?=\.$)/, (m) => `<a class="lnk" href="/">${m}</a>`);
+    rest = rest.replace(/log ind på Min side|log ind(?=\.$)/, (m) => `<a class="lnk" href="/">${m.replace(/ /g, '&nbsp;')}</a>`);
   }
-  return `<div class="ordre ordre-besked"><h1 id="ordre-h1" tabindex="-1">${esc(h1)}</h1>${rest ? `<p class="sub">${rest}</p>` : ''}</div>`;
+  return `<div class="ordre ordre-besked"><h1 id="ordre-h1" tabindex="-1">${esc(h1)}</h1>${rest ? `<p class="sub">${rest}</p>` : ''}${igen ? proevIgenHtml() : ''}</div>`;
 }
 
 /** Fejlene fra /api/ordre og /api/ordre-ref (kontrakter §6) → { titel, html }. */
@@ -189,5 +210,5 @@ export function renderOrdreFejl(fejl, udgivelse) {
   else if (fejl === 'erstattet') noegle = u2 ? 'ordre.erstattet' : 'ordre.erstattet1';
   else if (fejl === 'lukket') noegle = 'ordre.lukket';   // egen nøgle: udgivelse 1 må ikke nævne Min side (runde 4, 2)
   else noegle = 'ordre.nede';   // nede, loft, netværk, ukendt svar
-  return { titel: 'Nem Inventar', nr: null, fejl, html: beskedHtml(t(DA, noegle), { loginLink: u2 && (fejl === 'ukendt' || fejl === 'erstattet') }) };
+  return { titel: 'Nem Inventar', nr: null, fejl, html: beskedHtml(t(DA, noegle), { loginLink: u2 && (fejl === 'ukendt' || fejl === 'erstattet'), igen: noegle === 'ordre.nede' }) };
 }

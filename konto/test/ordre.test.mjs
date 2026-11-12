@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { renderOrdre, renderOrdreFejl, beskrivelsePar, udgaveAf } from '../src/lib/ordre-visning.mjs';
 import { t } from '../src/lib/tekst.mjs';
-import { TILSTANDE, UNDER, ordreI, LAEK, REF } from './fixtures.mjs';
+import { TILSTANDE, UNDER, ordreI, LAEK, REF, UGE_VARIANTER, MAAL_VARIANTER } from './fixtures.mjs';
 
 const DESIGNER = 'https://designer.neminventar.dk/designer.html';
 const UDGAVER = [
@@ -14,7 +14,7 @@ const UDGAVER = [
 ];
 
 // HTML → synlig tekst (til at sammenligne med Fables ordlyd)
-const tekstAf = (html) => html.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+const tekstAf = (html) => html.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 const h1Af = (html) => tekstAf(/<h1[^>]*>(.*?)<\/h1>/s.exec(html)?.[1] ?? '');
 const underAf = (html) => tekstAf(/<p class="sub">(.*?)<\/p>/s.exec(html)?.[1] ?? '');
 const har = (html, felt) => html.includes(`data-felt="${felt}"`);
@@ -47,7 +47,10 @@ for (const s of TILSTANDE) {
       // Række 2: "← Min side" kun med login
       assert.equal(har(h, 'tilbage'), u.udgave === 'u2-med', '← Min side');
       // Række 4–7: forløb, varer, total, moms, udskriv — altid
-      assert.equal((h.match(/<li class="(sket|ikke)">/g) ?? []).length, 4, 'forløbet har fire rækker');
+      // annulleret og fortrudt: kun de skete trin og en række med flueben til sidst (Fable port 3, nr. 4)
+      const slut = s.nr === 14 || s.nr === 15;
+      assert.equal((h.match(/<li class="(sket|ikke)"/g) ?? []).length, s.nr === 14 ? 2 : s.nr === 15 ? 5 : 4, 'forløbets rækker');   // 14: betalt + annulleret · 15: betalt, uge, dag, leveret + fortrudt
+      if (slut) assert.ok(!h.includes('<li class="ikke"'), 'ingen tomme ringe efter annulleret/fortrudt');
       for (const k of ['forloeb.h2', 'varer.h2', 'varer.ialt', 'varer.moms', 'varer.udskriv', 'bet.h2', 'vilkaar.h2', 'hjaelp.h2', 'vilkaar.link']) {
         assert.ok(tekst.includes(t('da', k)), `altid: ${k}`);
       }
@@ -58,22 +61,32 @@ for (const s of TILSTANDE) {
       assert.equal(har(h, '3d'), u.udgave === 'u2-med', 'Se designet i 3D');
       assert.equal(tekst.includes(t('da', 'varer.design')), u.udgave === 'u2-med');
       // Række 9: Leveres til — postnummer og by; navn og gade kun med login (aldrig ved afhentning)
-      assert.equal(har(h, 'leveres-til'), s.form === 'levering', 'Leveres til');
-      if (s.form === 'levering') assert.ok(tekst.includes('2500 Valby'));
-      assert.equal(tekst.includes('Mette Holm'), u.udgave === 'u2-med' && s.form === 'levering', 'navn');
-      assert.equal(tekst.includes('Rosenvej 14'), u.udgave === 'u2-med' && s.form === 'levering', 'gade');
-      // Række 10: Sådan kommer det — altid
-      assert.ok(tekst.includes(t('da', 'lev.form')));
-      // Række 11: Din besked til os — kun med login
-      assert.equal(har(h, 'besked'), u.udgave === 'u2-med', 'Din besked til os');
-      assert.equal(tekst.includes('Vi bor på 2. sal'), u.udgave === 'u2-med');
+      // tilstand 14: hele afsnittet "Levering" er skjult (Fable port 3, nr. 4)
+      assert.equal(h.includes(`>${t('da', 'lev.h2')}</h2>`), s.nr !== 14, 'afsnittet Levering');
+      assert.equal(har(h, 'leveres-til'), s.form === 'levering' && s.nr !== 14, 'Leveres til');
+      if (s.form === 'levering' && s.nr !== 14) assert.ok(tekst.includes('2500 Valby'));
+      assert.equal(tekst.includes('Mette Holm'), u.udgave === 'u2-med' && s.form === 'levering' && s.nr !== 14, 'navn');
+      assert.equal(tekst.includes('Rosenvej 14'), u.udgave === 'u2-med' && s.form === 'levering' && s.nr !== 14, 'gade');
+      // Række 10: Sådan kommer det — altid (undtagen annulleret)
+      assert.equal(tekst.includes(t('da', 'lev.form')), s.nr !== 14);
+      // Række 11: Din besked til os — kun med login (og ikke ved annulleret)
+      assert.equal(har(h, 'besked'), u.udgave === 'u2-med' && s.nr !== 14, 'Din besked til os');
+      assert.equal(tekst.includes('Vi bor på 2. sal'), u.udgave === 'u2-med' && s.nr !== 14);
       // Række 12: Aftalt med dig — når der er aftalt noget
       const aftalt = s.nr >= 3 && s.nr !== 14 ? true : false;
       assert.equal(har(h, 'aftalt'), aftalt, 'Aftalt med dig');
       // Række 13: linjen om det, der ikke vises
-      assert.equal(tekst.includes(t('da', 'lev.skjult1')), u.udgave === 'u1' && s.form === 'levering', 'lev.skjult1');
-      assert.equal(tekst.includes(t('da', 'lev.skjult')), u.udgave === 'u2-uden' && s.form === 'levering', 'lev.skjult');
+      assert.equal(tekst.includes(t('da', 'lev.skjult1')), u.udgave === 'u1' && s.form === 'levering' && s.nr !== 14, 'lev.skjult1');
+      assert.equal(tekst.includes(t('da', 'lev.skjult')), u.udgave === 'u2-uden' && s.form === 'levering' && s.nr !== 14, 'lev.skjult');
       assert.equal(tekst.includes(t('da', 'lev.skjultAfhentning')), u.udgave === 'u2-uden' && s.form === 'afhentning', 'lev.skjultAfhentning (runde 4, 11)');
+      // Vilkår: annulleret eller fortrudt → kun linket (Fable port 3, nr. 3)
+      assert.equal(/fortrydelsesret|reklamationsret|fortryde til og med/i.test(tekst.slice(tekst.indexOf(t('da', 'vilkaar.h2')))), !slut, 'vilkår');
+      // Leveringslinjen: siden skriver selv "Levering: …" uden antal (Fable port 3, nr. 5)
+      assert.ok(!tekst.includes('Levering, båret ind · 4 skabe'), 'ordrens egen leveringslinje står ikke');
+      if (s.form === 'levering') assert.match(h, /<tr data-felt="levering-linje"><td>Levering: samlet, båret ind<\/td><td class="n"><\/td><td class="n">1\.750,00 kr\.<\/td><\/tr>/);
+      else assert.match(h, /<tr data-felt="levering-linje"><td>Levering: flatpack, afhentning på Mågevej<\/td><td class="n"><\/td><td class="n">0,00 kr\.<\/td><\/tr>/);
+      // Udskriften: ordmærket øverst, kun i print (Fable port 3, nr. 25)
+      assert.ok(h.includes('<p class="kun-print ordmaerke">NEM<b>·</b>INVENTAR</p>'));
       // Række 15: tilbud om at logge ind — kun udgivelse 2 uden login
       assert.equal(har(h, 'konto-tilbud'), u.udgave === 'u2-uden', 'konto.tilbud');
       // Række 16: "Er det ikke din bestilling?" — kun med login
@@ -90,6 +103,72 @@ for (const s of TILSTANDE) {
     });
   }
 }
+
+// ---------- Fable port 3 ----------
+test('port 3 nr. 1: uge og datoer bindes med hårde mellemrum — parentesen kan brydes efter stregen', () => {
+  const html = (id) => renderOrdre({ ordre: ordreI(id), visning: 'uden_login', udgivelse: 1, nu: '2026-11-12T10:00:00.000Z', designerUrl: DESIGNER }).html;
+  const h1 = (id) => /<h1[^>]*>(.*?)<\/h1>/s.exec(html(id))[1];
+  assert.equal(h1('03w49'), 'Vi leverer i uge&nbsp;49 (30.&nbsp;november–4.&nbsp;december&nbsp;2026)');
+  assert.equal(h1('03w53'), 'Vi leverer i uge&nbsp;53 (28.&nbsp;december&nbsp;2026–1.&nbsp;januar&nbsp;2027)');
+  assert.equal(h1('11w53'), 'Klar til afhentning i uge&nbsp;53 (28.&nbsp;december&nbsp;2026–1.&nbsp;januar&nbsp;2027)');
+  for (const v of UGE_VARIANTER) assert.equal(h1Af(html(v.id)), v.h1, v.id);
+  assert.ok(!/class="nob">\(/.test(html('03w53')), 'parentesen er ikke længere nowrap');
+});
+
+test('port 3 nr. 2: flyttet uge og dag — rækken har datoen for ændringen og siger "ændret fra"', () => {
+  const r = (nr) => tekstAf(renderOrdre({ ordre: ordreI(nr), visning: 'uden_login', udgivelse: 1, nu: TILSTANDE[nr - 1].nu, designerUrl: DESIGNER }).html);
+  assert.ok(r(4).includes('Leveringsuge bekræftet2. december 2026Uge 2 (11.–15. januar 2027), ændret fra uge 51'));
+  assert.ok(r(7).includes('Leveringsdag aftalt10. december 2026Torsdag 17. december, ændret fra tirsdag 15. december'));
+});
+
+test('port 3 nr. 4: annulleret slutter med "Annulleret" og beløbet; uden tilbageførsel uden dato og beløb', () => {
+  const h = (o, nu) => renderOrdre({ ordre: o, visning: 'uden_login', udgivelse: 1, nu, designerUrl: DESIGNER }).html;
+  const med = tekstAf(h(ordreI(14), TILSTANDE[13].nu));
+  assert.ok(med.includes('Annulleret10. november 202616.012,50 kr. tilbageført'));
+  const uden = h(ordreI('14u'), TILSTANDE[13].nu);
+  assert.match(uden, /<li class="sket" data-trin="annulleret">.*?<span class="fl-navn">Annulleret<\/span><span class="fl-tekst"><\/span><\/li><\/ol>/s);
+  const fortrudt = tekstAf(h(ordreI(15), TILSTANDE[14].nu));
+  assert.ok(fortrudt.includes('Fortrudt22. december 202614.262,50 kr. tilbageført'));
+});
+
+test('port 3 nr. 6: ingen tomme felter i forløbet', () => {
+  const tx = (nr, nu = TILSTANDE[nr - 1].nu) => tekstAf(renderOrdre({ ordre: ordreI(nr), visning: 'uden_login', udgivelse: 1, nu, designerUrl: DESIGNER }).html);
+  assert.ok(tx(2).includes('Leveringsuge bekræftetIkke bekræftet endnu.'));
+  assert.ok(tx(11).includes('HentetPå Mågevej 73, st. tv., 2400 København NV, efter aftale.'));
+  assert.ok(tx(12).includes('HentetRing på +45 42 42 26 84 og aftal et tidspunkt.'));
+  assert.ok(tekstAf(renderOrdre({ ordre: ordreI('05a'), visning: 'uden_login', udgivelse: 1, nu: '2026-12-21T09:00:00.000Z', designerUrl: DESIGNER }).html)
+    .includes('HentetPå Mågevej 73, st. tv., 2400 København NV, efter aftale.'));
+});
+
+test('port 3 nr. 11: "Mål og indretning" for tre forskellige ordrer — designerens beskrivelse, åben i udskriften', () => {
+  for (const v of MAAL_VARIANTER) {
+    const o = ordreI(v.id);
+    const h = renderOrdre({ ordre: o, visning: 'uden_login', udgivelse: 1, nu: v.nu, designerUrl: DESIGNER }).html;
+    assert.match(h, /<details class="mere" data-print-aaben data-felt="maal">/, v.id);
+    for (const [k, x] of o.beskrivelse) assert.ok(tekstAf(h).includes(`${k}${x}`), `${v.id}: ${k}`);
+    assert.match(tekstAf(h), /Levering: (samlet|flatpack), til kantsten/);
+  }
+});
+
+test('port 3 nr. 21: den sidste række i Levering har ingen bundstreg, når intet følger', () => {
+  const h = (nr, u) => renderOrdre({ ordre: ordreI(nr), visning: u === 'u1' ? 'uden_login' : 'med_login', udgivelse: u === 'u1' ? 1 : 2, nu: TILSTANDE[nr - 1].nu, designerUrl: DESIGNER }).html;
+  assert.ok(h(12, 'u2-med').includes('<dl class="kv sidst">'), 'afhentning, klar, med login: intet følger');
+  assert.ok(h(3, 'u1').includes('<dl class="kv">'), 'lev.skjult1 og lev.aendre følger');
+});
+
+test('port 3 nr. 22: "Betalt …" med punktum', () => {
+  const tx = tekstAf(renderOrdre({ ordre: ordreI(3), visning: 'uden_login', udgivelse: 1, nu: TILSTANDE[2].nu, designerUrl: DESIGNER }).html);
+  assert.ok(tx.includes('Betalt 7. november 2026 med kort.'));
+});
+
+test('port 3 nr. 9, 24 og 30: overskrift uden punktum, "Prøv igen" ved nede, "log ind" brydes ikke', () => {
+  const nede = renderOrdreFejl('nede', 1).html;
+  assert.equal(h1Af(nede), 'Vi kan ikke vise bestillingen lige nu');
+  assert.match(nede, /<p class="igen-link"><a class="lnk" href="" data-handling="igen">Prøv igen<\/a><\/p>/);
+  for (const f of ['ukendt', 'erstattet', 'lukket']) assert.ok(!renderOrdreFejl(f, 2).html.includes('data-handling="igen"'), f);
+  assert.ok(renderOrdreFejl('erstattet', 2).html.includes('>log&nbsp;ind</a>'));
+  assert.ok(renderOrdreFejl('ukendt', 2).html.includes('>log&nbsp;ind&nbsp;på&nbsp;Min&nbsp;side</a>'));
+});
 
 test('mens du venter og lev.aendre: kun mens der er noget at vente på — ikke på leveringsdagen og efter (G)', () => {
   for (const s of TILSTANDE) {
@@ -153,19 +232,20 @@ test('ikke betalt → ordre.ikkeBetalt (Fable d4)', () => {
 });
 
 test('fejlene har Fables tekster i begge udgivelser', () => {
-  const tekst = (f, u) => { const h = renderOrdreFejl(f, u).html; return [h1Af(h), underAf(h)].filter(Boolean).join(' '); };
+  // overskriften står uden sit punktum (port 3, nr. 9): det sættes på igen for at sammenligne med Fables hele tekst
+  const tekst = (f, u) => { const h = renderOrdreFejl(f, u).html; return [`${h1Af(h)}.`, underAf(h)].filter(Boolean).join(' '); };
   assert.equal(tekst('ukendt', 1), t('da', 'ordre.ikkeFundet1'));
   assert.equal(tekst('ukendt', 2), t('da', 'ordre.ikkeFundet'));
   assert.equal(tekst('erstattet', 1), t('da', 'ordre.erstattet1'));
   assert.equal(tekst('erstattet', 2), t('da', 'ordre.erstattet'));
   assert.equal(tekst('nede', 1), t('da', 'ordre.nede'));
-  assert.equal(h1Af(renderOrdreFejl('nede', 1).html), 'Vi kan ikke vise bestillingen lige nu.');
+  assert.equal(h1Af(renderOrdreFejl('nede', 1).html), 'Vi kan ikke vise bestillingen lige nu');   // uden punktum (port 3, nr. 9)
   // Egen nøgle på ordresiden: udgivelse 1 må ikke nævne Min side (Fable runde 4, afsnit 2)
   for (const u of [1, 2]) {
     assert.equal(tekst('lukket', u), t('da', 'ordre.lukket'));
     assert.ok(!/Min side/.test(tekst('lukket', u)));
   }
-  assert.equal(h1Af(renderOrdreFejl('lukket', 1).html), 'Siden er ikke åben lige nu.');
+  assert.equal(h1Af(renderOrdreFejl('lukket', 1).html), 'Siden er ikke åben lige nu');
   assert.ok(renderOrdreFejl('ukendt', 2).html.includes('href="/"'), 'udgivelse 2: "log ind på Min side" er et link');
   assert.ok(!renderOrdreFejl('ukendt', 1).html.includes('href="/"'), 'udgivelse 1: intet link til log ind');
 });

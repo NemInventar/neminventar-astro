@@ -105,5 +105,10 @@
   "side.fejl": "Det gik ikke. Prøv igen om lidt, eller ring til os på +45 42 42 26 84.",
   "best.status.dagOver": "Aftalt levering {dag}",
   "best.status.afhentUge": "Klar til afhentning i {uge}",
-  "best.status.afhentUgeOver": "Ikke klar til afhentning endnu"
+  "best.status.afhentUgeOver": "Ikke klar til afhentning endnu",
+
+  "best.bestiltMobil": "Bestilt {dato}",
+  "design.gemtMobil": "Gemt {dato}",
+  "design.prisMobil": "Pris da du gemte: {pris}",
+  "side.proevIgen": "Prøv igen"
 }

@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { renderMinSide, renderMinSideFejl, statusTekst, renderLogUdAlle, renderSletTrin, renderDesignSvar } from '../src/lib/min-side-visning.mjs';
 import { renderEmailVenstre, renderEmailForm, renderKodeVenstre, renderKodeForm, renderLoginLukket, fejlBesked, beskedHtml } from '../src/lib/login-visning.mjs';
 import { t } from '../src/lib/tekst.mjs';
+import { readFileSync } from 'node:fs';
 import { TILSTANDE, ordreI, minSideData, EMAIL } from './fixtures.mjs';
 
 const DESIGNER = 'https://designer.neminventar.dk/designer.html';
@@ -82,6 +83,7 @@ test('tom konto (Fable mockup 6): best.tom, best.tomHjaelp, design.tom og knappe
 test('broen nede: Bestillinger viser nede-linjen, designs og konto virker (plan §8)', () => {
   const h = renderMinSide({ data: minSideData({ nede: true }), sprog: 'da', nu: NU, designerUrl: DESIGNER });
   assert.ok(tekstAf(h).includes(t('da', 'nede')));
+  assert.ok(h.includes('data-handling="igen">Prøv igen</a>'), '"Prøv igen" under nede-linjen (port 3, nr. 24)');
   assert.ok(h.includes('Garderobe til soveværelset'));
   assert.ok(h.includes('data-handling="log-ud-alle"'));
 });
@@ -109,20 +111,22 @@ test('log ud alle steder og slet konto (Fable c6, c7)', () => {
 test('Min side kan ikke vises: lukket og side.nede — første sætning er H1, resten brødtekst (Fable runde 4)', () => {
   const h1Af = (h) => /<h1[^>]*>(.*?)<\/h1>/s.exec(h)?.[1];
   const l = renderMinSideFejl('lukket', 'da');
-  assert.equal(h1Af(l), 'Min side er ikke åben lige nu.');
-  assert.equal(tekstAf(l), t('da', 'lukket'));
+  assert.equal(h1Af(l), 'Min side er ikke åben lige nu');   // uden punktum (Fable port 3, nr. 9)
+  assert.equal(tekstAf(l), t('da', 'lukket').replace('lige nu.', 'lige nu'));
+  assert.ok(!l.includes('data-handling="igen"'), 'lukket: ingen "Prøv igen"');
   assert.ok(l.includes('href="tel:+4542422684"') && l.includes('href="mailto:tilbud@neminventar.dk"'));
   const n = renderMinSideFejl('nede', 'en');
-  assert.equal(h1Af(n), 'We cannot show My account right now.');
-  assert.equal(tekstAf(n), t('en', 'side.nede'));
+  assert.equal(h1Af(n), 'We cannot show My account right now');
+  assert.equal(tekstAf(n), `${t('en', 'side.nede').replace('right now.', 'right now')} Try again`, 'side.nede + "Prøv igen" (port 3, nr. 24)');
+  assert.ok(renderMinSideFejl('nede', 'da').includes('<a class="lnk" href="" data-handling="igen">Prøv igen</a>'));
   assert.ok(!n.includes(t('en', 'nede')), '`nede` er kun rækken i Bestillinger');
 });
 
 test('log ind, flaget fra: første sætning af `lukket` er H1, resten brødtekst (Fable runde 4)', () => {
   const h = renderLoginLukket('da');
-  assert.equal(/<h1[^>]*>(.*?)<\/h1>/s.exec(h)?.[1], 'Min side er ikke åben lige nu.');
-  assert.ok(tekstAf(h).endsWith(t('da', 'lukket')));
-  assert.ok(tekstAf(renderLoginLukket('en')).endsWith(t('en', 'lukket')));
+  assert.equal(/<h1[^>]*>(.*?)<\/h1>/s.exec(h)?.[1], 'Min side er ikke åben lige nu');   // uden punktum (port 3, nr. 9)
+  assert.ok(tekstAf(h).endsWith(t('da', 'lukket').replace('lige nu.', 'lige nu')));
+  assert.ok(tekstAf(renderLoginLukket('en')).endsWith(t('en', 'lukket').replace('right now.', 'right now')));
 });
 
 test('log ind (d1): overskrift, rækker, felt med hjælp, note med privatlivspolitik', () => {
@@ -164,4 +168,68 @@ test('fejl ved log ind → Fables tekster (c1-tabellen)', () => {
   assert.equal(b('kort'), t('da', 'kode.kort'));
   assert.equal(b('forkert', { tilbage: 4 }), t('da', 'kode.forkert'), 'første og andet forkerte forsøg: intet tal');
   assert.equal(b('forkert', { tilbage: 2 }), `${t('da', 'kode.forkert')} ${t('da', 'kode.forsoegTilbage', { n: 2 })}`, 'fra tredje forsøg');
+});
+
+// ---------- Fable port 3 ----------
+test('port 3 nr. 15: miniature på designs gemt med login, ikonet ved null og ved "Gemt uden login"; opsummering; rumbillede', () => {
+  const h = renderMinSide({ data: minSideData(), sprog: 'da', nu: NU, designerUrl: DESIGNER });
+  const raekke = (id) => new RegExp(`<tr data-design="${id}"[\\s\\S]*?</tr>`).exec(h)[0];
+  const g = raekke('0b9f6c1e-1f3a-4c55-9a77-1d2e3f4a5b6c');
+  assert.ok(g.includes('<img class="th" src="/api/design/miniature?id=0b9f6c1e-1f3a-4c55-9a77-1d2e3f4a5b6c" alt="" width="76" height="58"'));
+  assert.ok(!g.includes('th ikon'));
+  // målene og datoen brydes ikke midt i (intet løst "cm" eller "2." for enden af en linje)
+  assert.ok(g.includes('<small class="d-ops" data-felt="opsummering">Skabsvæg: 3 højskabe à 60&nbsp;×&nbsp;210&nbsp;×&nbsp;60&nbsp;cm</small>'));
+  assert.ok(g.includes('Rumbillede (AI-illustration) · gemt til 2.&nbsp;november&nbsp;2027</a>'));
+  assert.ok(g.includes('href="https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/designer-renders/eksempel.jpg" target="_blank" rel="noopener" data-felt="rumbillede"'));
+  const baenk = raekke('9a8b7c6d-5e4f-4a3b-2c1d-0e9f8a7b6c5d');
+  assert.ok(baenk.includes('<span class="th ikon">') && !baenk.includes('<img'), 'miniature null → produktets ikon');
+  assert.ok(!baenk.includes('data-felt="rumbillede"'));
+  const uden = raekke('4711');
+  assert.ok(uden.includes('<span class="th ikon">') && !uden.includes('data-felt="opsummering"'), 'gemt uden login: ikon, ingen opsummering');
+  // en opsummering, der er navnet, gentages ikke; en miniature uden for konto-værten vises aldrig
+  const d = minSideData();
+  d.designs = [{ ...d.designs[0], navn: d.designs[0].titel, miniature: 'https://evil.example/x.png', rumbillede: { url: 'javascript:alert(1)', gemt_til: '2027-01-01' } }];
+  const x = renderMinSide({ data: d, sprog: 'da', nu: NU, designerUrl: DESIGNER });
+  assert.ok(!x.includes('data-felt="opsummering"') && !x.includes('<img') && !x.includes('javascript:') && !x.includes('evil.example'));
+});
+
+test('port 3 nr. 16: på telefon "Bestilt {dato}", "Gemt {dato}" og "Pris da du gemte: {pris}" — uden pris ingen prislinje', () => {
+  const h = renderMinSide({ data: minSideData(), sprog: 'da', nu: NU, designerUrl: DESIGNER });
+  assert.ok(h.includes('<span class="kun-m">Bestilt </span>7. november 2026'));
+  assert.ok(h.includes('<span class="kun-m">Gemt </span>2. november 2026'));
+  assert.ok(h.includes('<span class="kun-m">Pris da du gemte: </span>21.487,50 kr.'));
+  assert.ok(/<td class="n ingen-pris">—<\/td>/.test(h), 'uden pris: cellen skjules på telefon');
+  const en = renderMinSide({ data: minSideData(), sprog: 'en', nu: NU, designerUrl: DESIGNER });
+  assert.ok(en.includes('<span class="kun-m">Ordered </span>7 November 2026'));
+  assert.ok(en.includes('<span class="kun-m">Saved </span>2 November 2026'));
+  assert.ok(en.includes('<span class="kun-m">Price when you saved: </span>DKK 21,487.50'));
+  const css = readFileSync(new URL('../src/styles/konto.css', import.meta.url), 'utf8');
+  assert.match(css, /\.kun-m\{display:none\}/);
+  assert.match(css, /@media \(max-width:680px\)\{[\s\S]*?\.kun-m\{display:inline\}/);
+  assert.match(css, /@media \(max-width:680px\),\(pointer:coarse\)\{[\s\S]*?details\.mere \.ind \.knap-lnk,details\.mere \.ind a\.lnk\{min-height:44px/, '44 px trykflade');
+});
+
+test('port 3 nr. 1: statuskolonnen binder uge og datoer, men kan brydes efter stregen', () => {
+  const h = renderMinSide({ data: minSideData(), sprog: 'da', nu: NU, designerUrl: DESIGNER });
+  assert.ok(h.includes('Leveres i uge&nbsp;51 (14.–18.&nbsp;december&nbsp;2026)'));
+  assert.ok(!h.includes('class="nob">('));
+});
+
+test('port 3 nr. 28 og 29: faste kolonnebredder; "Log ud" uden løs prik på telefon', () => {
+  const h = renderMinSide({ data: minSideData({ tom: true }), sprog: 'da', nu: NU, designerUrl: DESIGNER });
+  assert.ok(h.includes('<colgroup><col class="k-ordre">') && h.includes('<colgroup><col class="k-th">'), 'samme kolonner i tom og fyldt tabel');
+  assert.ok(h.includes('<span class="hvem-prik" aria-hidden="true"> · </span><button type="button" class="lnk knap-lnk" data-handling="log-ud">'));
+});
+
+test('port 3 nr. 13 og 27: fejlen står mellem feltet og knappen; nedtælling og "Send en ny kode" i samme række', () => {
+  for (const sp of ['da', 'en']) {
+    const e = renderEmailForm(sp);
+    assert.ok(e.indexOf('data-besked') > e.indexOf('id="email-hj"') && e.indexOf('data-besked') < e.indexOf('type="submit"'), `${sp}: e-mail`);
+    const k = renderKodeForm(sp);
+    assert.ok(k.indexOf('data-besked') > k.indexOf('id="kode"') && k.indexOf('data-besked') < k.indexOf('data-log-ind'), `${sp}: kode`);
+    assert.match(k, /<div class="igen" data-igen><span data-vent>[^<]*<\/span><button type="button" class="lnk knap-lnk" data-handling="ny-kode" disabled>/);
+  }
+  const js = readFileSync(new URL('../src/scripts/login-side.js', import.meta.url), 'utf8');
+  assert.match(js, /logIndKnap\.disabled = !logInd/, '"Log ind" er slået fra, til en ny kode er sendt');
+  assert.match(js, /fejl === 'laast' \|\| fejl === 'udloebet'\) \{\s*felt\.value = '';/, 'feltet tømmes ved spærret kode');
 });

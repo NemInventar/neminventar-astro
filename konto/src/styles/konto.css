@@ -2,8 +2,12 @@
    .label og .btn kommer fra src/styles/site.css. Ingen inline-stil nogen steder (CSP uden 'unsafe-inline'). */
 
 /* ---------- fælles ---------- */
-.konto main.pg{max-width:1040px;margin:0 auto;padding:56px 28px 88px;min-height:52vh}
-.konto h1{font-size:44px;margin-top:14px;text-wrap:balance}
+/* Siden fylder mindst skærmens højde, og footeren står nederst — også på korte sider (Fable port 3, nr. 10). main har fuld
+   bredde (en flex-kolonne ville ellers gøre den smal af margin:auto) og samme maksimale bredde som før. */
+body.konto{display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
+.konto main.pg{flex:1 0 auto;width:100%;max-width:1040px;margin:0 auto;padding:56px 28px 88px}
+/* overflow-wrap som sikring: intet i en overskrift må give vandret scroll (Fable port 3, nr. 1) */
+.konto h1{font-size:44px;margin-top:14px;text-wrap:balance;overflow-wrap:anywhere}
 .konto h1:focus{outline:none}
 .konto h2:focus{outline:none}
 .konto button{font:inherit;cursor:pointer}
@@ -33,6 +37,8 @@ p.label{display:flex}
 .tekst+.tekst{margin-top:6px}
 .fri{white-space:pre-line;overflow-wrap:anywhere}
 .kun-print{display:none}
+.kun-m{display:none}   /* etiketter, der kun står på telefon (Fable port 3, nr. 16) */
+.igen-link{margin-top:16px;font-size:15px}
 .noscript{color:var(--ink)}
 .form-msg{margin-top:14px;font-size:14.5px;padding:12px 14px;border-radius:10px;line-height:1.55}
 .form-msg.ok{background:#EAF3EE;color:#1F6F5C;border:1px solid #BFE0D0}
@@ -96,6 +102,7 @@ details.vent p{margin-top:8px;color:var(--muted);max-width:62ch;line-height:1.7}
 .efter{margin-top:14px;display:flex;gap:10px 22px;font-size:14.5px;flex-wrap:wrap;align-items:center}
 .kv{border-top:1px solid var(--line)}
 .kv>div{padding:13px 0;border-bottom:1px solid var(--line);font-size:15px}
+.kv.sidst>div:last-child{border-bottom:0;padding-bottom:0}   /* intet følger under listen (Fable port 3, nr. 21) */
 .kv dt{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--warm);font-weight:700;margin-bottom:3px}
 .kv dd{line-height:1.55}
 .kv .aft{background:#fff;border:1px solid var(--line);border-left:3px solid var(--warm);border-radius:10px;padding:12px 14px;margin:6px 0}
@@ -126,11 +133,15 @@ details.vent p{margin-top:8px;color:var(--muted);max-width:62ch;line-height:1.7}
 .field small{font-size:13px;color:var(--muted);line-height:1.5}
 input.kode{font-family:'Archivo','Inter',sans-serif;font-size:30px;font-weight:600;letter-spacing:.32em;text-align:center;padding:14px 10px;font-variant-numeric:tabular-nums}
 .form .btn{width:100%;justify-content:center}
+.form .felt-fejl{margin:0 0 16px}   /* fejlen under feltet, over knappen (Fable port 3, nr. 13) */
 .form-note{color:var(--muted);font-size:12.5px;line-height:1.6;margin-top:14px}
-.igen{display:flex;justify-content:space-between;gap:6px 12px;margin-top:16px;font-size:13.5px;color:var(--muted);flex-wrap:wrap;align-items:center}
+/* Nedtællingen og "Send en ny kode" på samme linje (Fable port 3, nr. 27); som hovedknap fuld bredde under nedtællingen */
+.igen{display:flex;justify-content:space-between;gap:6px 14px;margin-top:14px;font-size:13.5px;color:var(--muted);align-items:center}
 .igen [hidden]{display:none}
-.igen .btn{width:auto;margin-left:auto}
-.form .igen .knap-lnk{margin-left:auto}
+.igen [data-vent]{flex:1 1 auto;min-width:0}
+.form .igen .knap-lnk{flex:none;margin-left:auto;min-height:44px}
+.igen.hoved{flex-direction:column;align-items:stretch}
+.form .igen.hoved .btn{width:100%;margin-left:0}
 .ts:empty{display:none}
 .ts{margin-top:14px}
 
@@ -139,8 +150,23 @@ input.kode{font-family:'Archivo','Inter',sans-serif;font-size:30px;font-weight:6
 .minside .sec-h{scroll-margin-top:90px}
 .minside>[data-side-besked] .form-msg{display:inline-block}
 .th{width:76px;height:58px;border-radius:8px;background:var(--soft);border:1px solid var(--line);display:block}
+img.th{object-fit:cover}
 .th.ikon{display:grid;place-items:center;color:#9C907A}
-.tb td.th-c{width:112px}
+.tb td.th-c{width:112px;vertical-align:top}   /* billedet flugter med rækkens top, også når "Mere" er foldet ud (port 3, nr. 31) */
+.tb table.des td{vertical-align:top}
+.tb table.des td.nw,.tb table.des td.n{padding-top:33px}   /* teksten ud for billedets midte, når rækken er lukket */
+.d-c .d-ops{display:block;color:var(--muted);font-size:13.5px;line-height:1.5;margin-top:1px}   /* designets opsummering (port 3, nr. 15) */
+a.rumbillede{font-size:13.5px}
+/* Faste kolonnebredder i begge tabeller; indholdet får resten og mindst 240 px (Fable port 3, nr. 28). Først fra 1000 px, hvor
+   der er plads til dem (984 px indhold: 984 − 740 = 244 px i Bestillinger og 984 − 672 = 312 px i Gemte designs); smallere
+   fordeler tabellen selv, og under 680 px er hver række en blok. */
+@media (min-width:1000px){
+  .tb table.best,.tb table.des{table-layout:fixed}
+  .best col.k-ordre{width:145px} .best col.k-dato{width:175px} .best col.k-beloeb{width:140px} .best col.k-status{width:280px}
+  .des col.k-th{width:112px} .des col.k-dato{width:175px} .des col.k-pris{width:175px} .des col.k-aabn{width:210px}
+  .tb table.best td,.tb table.des td{overflow-wrap:anywhere}
+  .tb table.best td.nw,.tb table.des td.nw,.tb table.des td.n{overflow-wrap:normal}
+}
 .ml-m{display:inline-block;border:1px solid var(--line);background:var(--soft);color:var(--muted);border-radius:999px;padding:1px 9px;font-size:12px;font-weight:600;margin-left:8px;white-space:nowrap;vertical-align:middle}
 .d-navn{font-weight:600}
 .rk{display:grid;grid-template-columns:200px minmax(0,1fr) auto;gap:20px;align-items:center;padding:16px 18px;border-top:1px solid var(--line);font-size:15px}
@@ -164,7 +190,23 @@ details.slet[open] summary::after{content:"–"}
 /* ---------- tablet og telefon ---------- */
 @media (max-width:900px){
   .og{grid-template-columns:minmax(0,1fr);gap:0}
-  .lg{grid-template-columns:minmax(0,1fr);gap:32px}
+  /* Log ind: mærkat, overskrift, forklaring, formularen — og først derefter de to rækker og "login.uden", så feltet og
+     "Send kode" (og bekræftelserne "Du er logget ud." m.fl. i formularen) ses uden at rulle (Fable port 3, nr. 12) */
+  .lg{display:flex;flex-direction:column;gap:0}
+  .lg-tekst{display:contents}
+  .lg-tekst>.label{order:1}
+  .lg-tekst>h1{order:2}
+  .lg-tekst>.lede{order:3}
+  .lg-form{order:4;margin-top:24px}
+  .lg-tekst>.hvad{order:5}
+  .lg-tekst>.uden{order:6}
+}
+/* Trykflader på telefon og andre berøringsskærme: mindst 44 px høje med luft imellem (Fable port 3, nr. 16) */
+@media (max-width:680px),(pointer:coarse){
+  details.mere summary,details.vent summary{min-height:44px}
+  .efter .knap-lnk[data-handling="udskriv"]{min-height:44px}
+  details.mere .ind{gap:0 20px}
+  details.mere .ind .knap-lnk,details.mere .ind a.lnk{min-height:44px;display:inline-flex;align-items:center}
 }
 @media (max-width:680px){
   .konto main.pg{padding:32px 20px 56px}
@@ -181,8 +223,12 @@ details.slet[open] summary::after{content:"–"}
   .fl li .fl-tekst{grid-column:2}
   details.mere dl{grid-template-columns:1fr;gap:0}
   details.mere dd{margin-bottom:8px}
-  .kontotilbud{flex-direction:column;align-items:stretch;margin-top:28px}
+  .kontotilbud{flex-direction:column;align-items:stretch;margin-top:28px;gap:14px}
+  .kontotilbud p{flex:0 0 auto}   /* ellers blev flex-basis 260px en højde i kolonnen: 110 px tomt hul (port 3, nr. 17) */
   .kontotilbud .btn{justify-content:center}
+  .kun-m{display:inline}
+  .hvem-prik{display:none}   /* "Log ud" på egen linje uden prikken (port 3, nr. 29) */
+  .hvem .knap-lnk{display:block;min-height:44px;margin-top:2px}
   .rk{grid-template-columns:minmax(0,1fr);gap:6px;padding:14px 16px}
   .rk .rk-h .btn{margin-top:4px}
   details.slet{padding:14px 16px}
@@ -200,15 +246,21 @@ details.slet[open] summary::after{content:"–"}
   .tb table.best td:nth-child(2){grid-column:1 / -1;grid-row:3;color:var(--muted);font-size:13.5px}
   .tb table.best td:nth-child(3){grid-column:1 / -1;grid-row:2}
   .tb table.best td:nth-child(5){grid-column:1 / -1;grid-row:4;margin-top:6px;white-space:normal}
-  .tb table.des tr{grid-template-columns:64px minmax(0,1fr) auto;gap:4px 12px}
-  .tb table.des td.th-c{grid-column:1;grid-row:1 / span 3;width:auto}
-  .tb table.des td:nth-child(2){grid-column:2 / -1;grid-row:1}
-  .tb table.des td:nth-child(5){grid-column:2 / -1;grid-row:3;margin-top:4px}
+  /* Gemte designs: navnet (og "Mere"), "Gemt {dato}", "Pris da du gemte: {pris}" på egen linje og "Åbn i designeren" —
+     uden pris står prislinjen ikke (port 3, nr. 16) */
+  .tb table.des tr{grid-template-columns:64px minmax(0,1fr);gap:2px 12px}
+  .tb table.des td.th-c{grid-column:1;grid-row:1 / span 4;width:auto}
+  .tb table.des td:nth-child(2){grid-column:2;grid-row:1}
   .tb table.des td:nth-child(3){grid-column:2;grid-row:2;color:var(--muted);font-size:14px}
-  .tb table.des td:nth-child(4){grid-column:3;grid-row:2;font-size:14px}
-  .tb table.des td.n{text-align:left}
+  .tb table.des td:nth-child(4){grid-column:2;grid-row:3;font-size:14px}
+  .tb table.des td:nth-child(5){grid-column:2;grid-row:4;margin-top:4px}
+  .tb table.des td.ingen-pris{display:none}
+  .tb table.des td.nw,.tb table.des td.n{padding-top:0;text-align:left}
   .tb table.des .th{width:64px;height:50px}
   .tb table.best tr.tom,.tb table.des tr.tom{display:block}
+}
+@media (max-width:480px){
+  .konto h1{font-size:28px}   /* Fable port 3, nr. 1: overskriften med ugen holder sig inden for 320–375 px */
 }
 
 /* ---------- udskrift: kun bestillingen + sælgerlinjen (Fable b "Udskrift") ---------- */
@@ -221,7 +273,12 @@ details.slet[open] summary::after{content:"–"}
   .sec-h,.og .sec-h{font-size:18px;margin:22px 0 8px;break-after:avoid}
   .konto h1{font-size:26px}
   details.mere summary::after{content:none}
+  /* "Mål og indretning" står åben i udskriften — også når browseren ikke sender beforeprint (fx "Gem som PDF" fra et værktøj) */
+  details[data-print-aaben]::details-content{content-visibility:visible;display:block}
   .kun-print{display:block;margin-top:28px;padding-top:12px;border-top:1px solid #999;font-size:12px;color:#333}
+  /* ordmærket som afsender øverst (Fable port 3, nr. 25) */
+  .kun-print.ordmaerke{margin:0 0 18px;padding:0;border:0;font-family:'Inter',sans-serif;font-weight:700;font-size:18px;letter-spacing:-.03em;color:#17140E}
+  .kun-print.ordmaerke b{color:#A2652A;font-weight:700}
   a{text-decoration:none}
 }
 

@@ -32,6 +32,19 @@ function laesHeaders(tekst) {
   }
   return regler;
 }
+// En miniature som designeren kunne tegne den: n højskabe forfra med låger, greb og sokkel på papirfarvet bund (76 × 58)
+export function miniatureSvg(n) {
+  const b = 76, h = 58, skab = Math.min(15, 56 / n), x0 = (b - skab * n) / 2, top = 8, hoej = 40;
+  const skabe = Array.from({ length: n }, (_, i) => {
+    const x = x0 + i * skab;
+    return `<rect x="${x}" y="${top}" width="${skab}" height="${hoej}" fill="#D8C3A0" stroke="#8C6D45" stroke-width=".6"/>`
+      + `<rect x="${x + skab - 3}" y="${top + hoej / 2 - 3}" width=".9" height="6" fill="#3A3226"/>`;
+  }).join('');
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${b}" height="${h}" viewBox="0 0 ${b} ${h}"><rect width="${b}" height="${h}" fill="#F1EDE3"/>`
+    + `<rect x="0" y="${top + hoej + 2}" width="${b}" height="${h - top - hoej - 2}" fill="#E5DFD2"/>${skabe}`
+    + `<rect x="${x0}" y="${top + hoej}" width="${skab * n}" height="2.5" fill="#6E5A3E"/></svg>`;
+}
+
 const passer = (moenster, sti) => new RegExp(`^${moenster.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*')}$`).test(sti);
 
 export async function startFake({ dist, port = 0 } = {}) {
@@ -73,7 +86,7 @@ export async function startFake({ dist, port = 0 } = {}) {
         if (n.startsWith('erstattet')) return json(res, 200, { fejl: 'erstattet' });
         if (n.startsWith('nede')) return json(res, 503, { fejl: 'nede' });
         if (n.startsWith('lukket')) return json(res, 503, { fejl: 'lukket' });
-        const v = /^v(\d\d[a-z])([um])/.exec(n);   // runde 4-varianterne (fixtures VARIANTER)
+        const v = /^v(\d\d[a-z][a-z0-9]*?)([um])x*$/.exec(n);   // varianterne (fixtures VARIANTER, UGE_VARIANTER, MAAL_VARIANTER)
         const m = v ?? /^t(\d\d)([um])/.exec(n);
         if (!m) return json(res, 200, { fejl: 'ukendt' });
         const visning = m[2] === 'm' && t.kontoAktiv ? 'med_login' : 'uden_login';
@@ -113,6 +126,14 @@ export async function startFake({ dist, port = 0 } = {}) {
         if (String(body.kode) !== '123456') return json(res, 400, { fejl: 'forkert', tilbage: 4 });
         t.session = null;
         return json(res, 200, { ok: true });
+      case '/api/design/miniature': {
+        // Miniaturen (kontrakter §6): en lille tegning forfra af skabene i designet — her tegnet af fixturens titel
+        if (!kraevSession()) return undefined;
+        const d = minSideData().designs.find((x) => x.id === new URL(req.url, 'http://lokal').searchParams.get('id'));
+        if (!d) return json(res, 404, { fejl: 'ukendt' });
+        res.writeHead(200, { 'content-type': 'image/svg+xml', 'cache-control': 'private, no-store', 'x-content-type-options': 'nosniff' });
+        return res.end(miniatureSvg(Number(/(\d+) højskabe/.exec(d.titel ?? '')?.[1] ?? 1)));
+      }
       case '/api/design/slet': case '/api/design/navn': case '/api/gemt-uden-login/skjul': case '/api/ikke-min':
         if (!flagKonto() || !kraevSession()) return undefined;
         if (t.handlingFejler) return json(res, 500, { fejl: 'fejl' });   // side.fejl under handlingen

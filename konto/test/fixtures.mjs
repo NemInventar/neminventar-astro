@@ -33,7 +33,8 @@ function base() {
     produkt: 'hoejskab',
     linjer: [
       { tekst: 'Skabsvæg med 4 højskabe', antal: 1, beloeb_oere: 1426250 },
-      { tekst: 'Levering: samlet, båret ind', antal: 1, beloeb_oere: 175000 },
+      // designerens egen leveringslinje, som broen sender den (siden skriver selv "Levering: samlet, båret ind", port 3 nr. 5)
+      { tekst: 'Levering, båret ind · 4 skabe', antal: 1, beloeb_oere: 175000 },
     ],
     levering: { form: 'baaret_ind', tekst: 'Samlet, båret ind' },   // som kernens leveringAf (kontrakter §5)
     total: { ex_oere: 1281000, moms_oere: 320250, inkl_oere: 1601250, valuta: 'DKK' },
@@ -113,10 +114,52 @@ export const VARIANTER = [
     lav: (o) => ({ ...o, status: 'annulleret' }) },
 ];
 
+// Fable port 3, nr. 1: overskrifter med de længste uger (over månedsskiftet og over nytår), til 320, 360 og 375 px
+const ugeTrin = (aar, uge) => trin('uge_bekraeftet', { aar, uge, praecis: true }, '2026-11-09T08:30:00.000Z');
+export const UGE_VARIANTER = [
+  { id: '03w49', nr: 3, navn: 'Ugen bekræftet: uge 49 (over månedsskiftet)', nu: '2026-11-12T10:00:00.000Z', form: 'levering',
+    h1: 'Vi leverer i uge 49 (30. november–4. december 2026)', lav: (o) => ({ ...o, forloeb: [...o.forloeb, ugeTrin(2026, 49)] }) },
+  { id: '03w53', nr: 3, navn: 'Ugen bekræftet: uge 53 (over nytår)', nu: '2026-11-12T10:00:00.000Z', form: 'levering',
+    h1: 'Vi leverer i uge 53 (28. december 2026–1. januar 2027)', lav: (o) => ({ ...o, forloeb: [...o.forloeb, ugeTrin(2026, 53)] }) },
+  { id: '11w53', nr: 11, navn: 'Afhentning i uge 53 (over nytår)', nu: '2026-11-12T10:00:00.000Z', form: 'afhentning',
+    h1: 'Klar til afhentning i uge 53 (28. december 2026–1. januar 2027)',
+    lav: (o) => ({ ...o, levering: AFHENT, linjer: AFHENT_LINJER, total: AFHENT_TOTAL, forloeb: [...o.forloeb, ugeTrin(2026, 53)] }) },
+];
+
+// Fable port 3, nr. 11: "Mål og indretning" foldet ud på tre forskellige ordrer. Beskrivelserne er designerens egne (ni-apps
+// scripts/designer/ordre-pris.js beskrivelseAf for standardtilstanden — det, designer-ordre fryser ved betaling), og linjerne og
+// beløbene er serverPris for samme tilstand (inkl. moms i øre, som broen sender linjer.stripe). Ordrerne er i tilstand 3.
+const maal = (produkt, linjer, inkl, levering, beskrivelse) => (o) => ({
+  ...o, produkt, linjer: linjer.map(([tekst, beloeb_oere]) => ({ tekst, antal: 1, beloeb_oere })), levering, beskrivelse,
+  total: { ex_oere: inkl - inkl / 5, moms_oere: inkl / 5, inkl_oere: inkl, valuta: 'DKK' }, forloeb: [...o.forloeb, UGE51],
+});
+export const MAAL_VARIANTER = [
+  { id: '03m1', nr: 3, navn: 'Skabsvæg med 2 højskabe (designerens specifikation)', nu: '2026-11-12T10:00:00.000Z', form: 'levering',
+    lav: maal('hoejskab', [['Skabsvæg: 2 højskabe à 60 × 210 × 60 cm, 1 låge pr. skab, garderobe pr. skab — Egetræsfinér, klar olie', 1925000], ['Levering til kantsten · 2 skabe, fladpakket', 73875]],
+      1998875, { form: 'kantsten', tekst: 'Flatpack, til kantsten' }, [
+        ['Mål (b × h × d)', '120 × 210 × 60 cm'], ['Samlet højde', '225 cm inkl. sokkel på 15 cm'], ['Materiale', 'Egetræsfinér, klar olie'],
+        ['Låger', '2 låger, udenpåliggende, hængsler i yderkanterne'], ['Lågernes overflade', 'Som skabet'],
+        ['Hængsler', '4 pr. låge · institutionshængsel, EN 15570 niveau 3'], ['Greb', 'Standardgreb i børstet stål'], ['Indretning', 'Hattehylde og bøjlestang']]) },
+  { id: '03m2', nr: 3, navn: 'To lockers 4 × 2 (to af samme vare)', nu: '2026-11-12T10:00:00.000Z', form: 'levering',
+    lav: maal('locker', [['2 × Lockers 4 × 2, 8 rum', 5040000], ['Levering til kantsten · 2 elementer', 65375]],
+      5105375, { form: 'kantsten', tekst: 'Samlet, til kantsten' }, [
+        ['Vare', '2 × Lockers 4 × 2'], ['Antal rum', '8 (4 i bredden × 2 i højden)'], ['Rum (c/c)', '30 × 80 × 40 cm'],
+        ['Samlet', '122 × 173 cm inkl. sokkel 11 cm'], ['Elementer', '1 element'], ['Materiale', 'Krydsfiner, klar olie'],
+        ['Låger', 'udenpåliggende, som skabet'], ['Bagplade', 'Krydsfiner 6,5 mm'], ['Hængsler', 'Standardhængsel, venstre'],
+        ['Greb', 'Fræset greb'], ['Lås', 'Cylinderlås'], ['I rummet', 'tomt']]) },
+  { id: '03m3', nr: 3, navn: 'Bænk med skuffer og hynde', nu: '2026-11-12T10:00:00.000Z', form: 'levering',
+    lav: maal('baenk', [['Bænk 100 × 42 × 40 cm', 692500], ['Levering til kantsten · 1 bænk, fladpakket', 35250]],
+      727750, { form: 'kantsten', tekst: 'Flatpack, til kantsten' }, [
+        ['Mål (b × h × d)', '100 × 42 × 40 cm'], ['Sædehøjde', '42 cm, 48 cm med hynde · sokkel 15 cm'], ['Materiale', 'Egetræsfinér, klar olie'],
+        ['Under sædet', '2 skuffer side om side under sædet'], ['Greb', 'Fræset greb i skuffernes front'],
+        ['Hynde', '6 cm koldskum i et aftageligt betræk med lynlås af Kvadrat Field 2 0132, grå. To rækker burrebånd holder hynden fast på sædet, så den ikke skrider, og betrækket kan tages af og renses']]) },
+];
+const ALLE_VARIANTER = [...VARIANTER, ...UGE_VARIANTER, ...MAAL_VARIANTER];
+
 /** Ordren som broen/Workeren sender den i en visning. 'uden_login' = uden navn, gade, besked, permalink (kontrakter §5).
  *  nr = 1–16 (TILSTANDE) eller en variants id ('05a', '14u'). */
 export function ordreI(nr, visning = 'med_login', { medLaek = true } = {}) {
-  const x = typeof nr === 'string' ? VARIANTER.find((v) => v.id === nr) : TILSTANDE.find((s) => s.nr === nr);
+  const x = typeof nr === 'string' ? ALLE_VARIANTER.find((v) => v.id === nr) : TILSTANDE.find((s) => s.nr === nr);
   const o = x.lav(base());
   if (!medLaek) {
     for (const k of ['telefon', 'email', 'ansvarlig', 'stripe_session', 'noter']) delete o[k];
@@ -158,10 +201,15 @@ export function minSideData({ tom = false, nede = false, status = false } = {}) 
   return {
     email: EMAIL,
     ordrer: nede ? { fejl: 'nede' } : [o10, o3],
+    // titel = designets opsummering fra /pris ved gem; miniature = sti på konto-værten (fake-api tegner den); rumbillede = link
+    // og dato (kontrakter §6, Fable port 3 nr. 15). Bænken har ingen miniature: siden viser produktets ikon.
     designs: [
-      { id: '0b9f6c1e-1f3a-4c55-9a77-1d2e3f4a5b6c', produkt: 'hoejskab', navn: 'Garderobe til soveværelset', t: 'eyJiIjoxODB9', pris_oere: 2148750, gemt: '2026-11-02T15:20:00.000Z' },
-      { id: '3c1d2e4f-5a6b-4c7d-8e9f-0a1b2c3d4e5f', produkt: 'hoejskab', navn: 'Skabsvæg, udgave med skuffer', t: 'eyJiIjoyNDB9', pris_oere: 1518750, gemt: '2026-10-30T10:00:00.000Z' },
-      { id: '9a8b7c6d-5e4f-4a3b-2c1d-0e9f8a7b6c5d', produkt: 'baenk', navn: 'Bænk til entréen', t: 'eyJiIjoxNDB9', pris_oere: 624375, gemt: '2026-10-18T09:00:00.000Z' },
+      { id: '0b9f6c1e-1f3a-4c55-9a77-1d2e3f4a5b6c', produkt: 'hoejskab', navn: 'Garderobe til soveværelset', titel: 'Skabsvæg: 3 højskabe à 60 × 210 × 60 cm', t: 'eyJiIjoxODB9', pris_oere: 2148750, gemt: '2026-11-02T15:20:00.000Z',
+        miniature: '/api/design/miniature?id=0b9f6c1e-1f3a-4c55-9a77-1d2e3f4a5b6c', rumbillede: { url: 'https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/designer-renders/eksempel.jpg', gemt_til: '2027-11-02' } },
+      { id: '3c1d2e4f-5a6b-4c7d-8e9f-0a1b2c3d4e5f', produkt: 'hoejskab', navn: 'Skabsvæg, udgave med skuffer', titel: 'Skabsvæg: 4 højskabe à 60 × 210 × 60 cm', t: 'eyJiIjoyNDB9', pris_oere: 1518750, gemt: '2026-10-30T10:00:00.000Z',
+        miniature: '/api/design/miniature?id=3c1d2e4f-5a6b-4c7d-8e9f-0a1b2c3d4e5f', rumbillede: null },
+      { id: '9a8b7c6d-5e4f-4a3b-2c1d-0e9f8a7b6c5d', produkt: 'baenk', navn: 'Bænk til entréen', titel: 'Bænk 140 × 42 × 40 cm', t: 'eyJiIjoxNDB9', pris_oere: 624375, gemt: '2026-10-18T09:00:00.000Z',
+        miniature: null, rumbillede: null },
     ],
     gemt_uden_login: [
       { id: 4711, produkt: 'locker', titel: 'Lockerskab', dato: '2026-10-09T12:00:00.000Z', permalink: 'https://designer.neminventar.dk/designer?p=locker&t=eyJzb2VqbGVyIjozfQ', pris_oere: null },

@@ -95,9 +95,11 @@ export const fortrydelseTekst = (fortrydelse) => (fortrydelse
 function fristLoefte(o, iDag) {
   if (!o?.uge_frist_at) return '';
   const frist = kbhDato(o.uge_frist_at);
-  const ugeSat = (o.forloeb ?? []).some((f) => f?.trin === 'uge_bekraeftet' || f?.trin === 'uge_flyttet');
-  return ugeSat || frist < iDag ? '' : `Vi bekræfter leveringsugen senest ${dagTekst(frist, iDag)}. `;
+  return ugeSat(o) || frist < iDag ? '' : `Vi bekræfter leveringsugen senest ${dagTekst(frist, iDag)}. `;
 }
+
+// Fable port 3, nr. 23: når ugen allerede er sat (fx "Nyt link" efter bekræftelsen), lover siden ikke længere ugen
+const ugeSat = (o) => (o?.forloeb ?? []).some((f) => f?.trin === 'uge_bekraeftet' || f?.trin === 'uge_flyttet');
 
 function ordrebekraeftelse(o, d, { nytLink = false } = {}) {
   const ref = refAf(o), link = linkAf(o), iDag = iDagAf(o, d), t = o?.total ?? {};
@@ -108,9 +110,10 @@ function ordrebekraeftelse(o, d, { nytLink = false } = {}) {
     nytLink ? 'Her er et nyt link til din bestilling. Det gamle virker ikke længere.' : null,
     `Tak for din bestilling. Vi har modtaget din betaling på ${kr(t.inkl_oere)} inkl. moms.`,
     [`Ordre: ${ref}`, ...linjer, `I alt: ${kr(t.inkl_oere)} inkl. moms (heraf moms ${kr(t.moms_oere)})`].join('\n'),
-    `Levering til: ${adresseAf(o)}`,
+    // Fable port 3, nr. 7: ved afhentning står afhentningsstedet, og kundens adresse kræves kun ved levering
+    afhentning(o) ? `Afhentning: ${AFHENTNINGSSTED}, efter aftale.` : `Levering til: ${adresseAf(o)}`,
     `${fristLoefte(o, iDag)}Vi laver det, du har bestilt, på vores eget værksted efter det, du har tegnet.`,
-    `Følg din bestilling her: ${link}\nSiden viser leveringsugen, så snart den er bekræftet, og det, du har bestilt.`,
+    `Følg din bestilling her: ${link}\n${ugeSat(o) ? 'Siden viser leveringen og det, du har bestilt.' : 'Siden viser leveringsugen, så snart den er bekræftet, og det, du har bestilt.'}`,
     fortrydelseTekst(!!o.fortrydelsesret),
     'Har du spørgsmål, så svar på denne mail eller ring til os.',
     HILSEN.da,
@@ -132,8 +135,9 @@ const BYG = {
     if (d.praecis !== true && d.praecis !== false) fejl('uge_bekraeftet kræver data.praecis');
     const uge = ugeTekst(d.aar, d.uge), afh = afhentning(o), lev = leveringTekst(o);
     const aftalt = d.praecis === false ? `Aftalt med dig: ${kraevet(d.aftalt?.tekst, 'Aftalt med dig')}` : null;
-    return statusmail(o, afh ? `Din bestilling ${refAf(o)} er klar til afhentning i ${uge}` : `Din bestilling ${refAf(o)} leveres i ${uge}`, (link) => [
-      afh ? `Din bestilling er klar til afhentning i ${uge}. Du får en mail, når den står klar.`
+    // Fable port 3, nr. 8: "bliver klar" — på en telefon skæres emnet af efter "klar til afhentning", som mail nr. 7
+    return statusmail(o, afh ? `Din bestilling ${refAf(o)} bliver klar til afhentning i ${uge}` : `Din bestilling ${refAf(o)} leveres i ${uge}`, (link) => [
+      afh ? `Din bestilling bliver klar til afhentning i ${uge}. Du får en mail, når den står klar.`
         : `Vi leverer din bestilling i ${uge}. Vi aftaler leveringsdagen med dig.`,
       [afh ? null : `Leveres til: ${adresseAf(o)}`, lev ? `Sådan kommer det: ${lev}` : null].filter(Boolean).join('\n'),
       aftalt,
@@ -194,7 +198,7 @@ const BYG = {
     const uge = ugeTekst(d.aar, d.uge), aarsag = kraevet(d.aarsag, 'Årsagen til den nye uge');
     if (afhentning(o)) {
       return statusmail(o, `Ny afhentningsuge for din bestilling ${refAf(o)}: ${uge}`, (link) => [
-        `Din bestilling bliver ikke klar til afhentning i uge ${d.fra.uge}, som vi har bekræftet. Den er klar til afhentning i ${uge}.`,
+        `Din bestilling bliver ikke klar til afhentning i uge ${d.fra.uge}, som vi har bekræftet. Den bliver klar til afhentning i ${uge}.`,   // Fable port 3, nr. 8
         aarsag,
         `Du får en mail, når den står klar. Er det et problem for dig, så svar på denne mail eller ring på ${TELEFON}.`,
         foelg(link),

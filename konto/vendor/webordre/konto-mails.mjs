@@ -96,5 +96,17 @@ export function kontoMail(type, data = {}, sprog = 'da') {
   if (!byg) fejl(`ukendt mailtype ${type}`);
   const [emne, afsnit] = byg(data ?? {});
   // Kun varslet nævner adressen; den gøres klikbar i HTML-udgaven
-  return mailUd(emne, [...afsnit, HILSEN[s]], type === 'varsel' ? [KONTO[s]] : []);
+  const m = mailUd(emne, [...afsnit, HILSEN[s]], type === 'varsel' ? [KONTO[s]] : []);
+  return type === 'kode' || type === 'slette_kode' ? { ...m, html: kodeLinje(m.html, kodeTekst(data.kode)) } : m;
+}
+
+// Fable port 3, nr. 33: i HTML-delen står koden med fed skrift og 22 px på sin egen linje ("Din kode er" / "482 913").
+// Teksten og emnet er uændrede. En blok i samme afsnit (ikke et nyt <p>), så HTML og tekst stadig siger præcis det samme;
+// en mailklient uden display:block viser koden fed og stor i linjen. Koden er seks cifre og et mellemrum og står sidst i
+// sit afsnit, så den kan ikke ramme andet i mailen.
+export const KODE_STIL = 'display:block;margin-top:6px;font-size:22px;font-weight:700;letter-spacing:.06em';
+function kodeLinje(html, k) {
+  const foer = ` ${k}</p>`;
+  if (!html.includes(foer)) fejl('koden står ikke sidst i sit afsnit');
+  return html.replace(foer, ` <strong style="${KODE_STIL}">${k}</strong></p>`);
 }

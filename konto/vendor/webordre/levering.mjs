@@ -33,3 +33,23 @@ export function leveringAf(ordre) {
     || (pris.length ? pris.some((l) => FLADPAKKET.test(String(l?.t ?? ''))) : tv?.form === 'flatpack');
   return { form, tekst: `${PAKNING[fladpakket ? 'flatpack' : 'samlet']}, ${TRIN_ORD[form]}` };
 }
+
+// Ordrens linjer (OrdreUdenLogin.linjer, kontrakter §5) delt i varerne og leveringen (Fable port 3, nr. 5). Leveringslinjen
+// i ordren er designerens prislinje ("Levering til kantsten · 1 element", "Levering, båret ind · 3 skabe, fladpakket",
+// "Levering med to mand, ca. 2 timer · …", og uden STEP også "Båret ind" — core/levering.js linjer). Den er vores ord, ikke
+// kundens: siden skriver selv rækken "Levering: samlet, til kantsten" ud fra levering.tekst, uden antal, med linjernes beløb.
+// Afhentning (0 kr.) står ikke på betalingen (designer-ordre stripeLinjer) og har derfor ingen linje: beløbet er 0.
+//   varerOgLevering(ordre) -> { varer: [linje …], levering: { ord: 'samlet, til kantsten', beloeb_oere } | null }
+// ord = levering.tekst med lille begyndelsesbogstav (efter kolon i Fables varer.levering "Levering: {…}").
+const LEVERINGSLINJE = /^(levering\b|båret ind\b)/i;
+export const erLeveringslinje = (tekst) => LEVERINGSLINJE.test(String(tekst ?? '').trim());
+export function varerOgLevering(ordre) {
+  const linjer = Array.isArray(ordre?.linjer) ? ordre.linjer : [];
+  const varer = linjer.filter((l) => !erLeveringslinje(l?.tekst));
+  const lev = linjer.filter((l) => erLeveringslinje(l?.tekst));
+  const tekst = String(ordre?.levering?.tekst ?? '').trim();
+  if (!tekst) return { varer: linjer, levering: null };
+  const sum = lev.reduce((a, l) => (a === null || !Number.isSafeInteger(l?.beloeb_oere) ? null : a + l.beloeb_oere), 0);
+  const beloeb = lev.length ? sum : ordre?.levering?.form === 'afhentning' ? 0 : null;
+  return { varer, levering: { ord: `${tekst[0].toLowerCase()}${tekst.slice(1)}`, beloeb_oere: beloeb } };
+}

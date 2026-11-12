@@ -6,25 +6,36 @@ import { loginAdresse } from '../lib/adresser.mjs';
 
 const rod = document.getElementById('rod');
 const NOEGLE = 'ni-ordre-noegle';
+// Nøglen huskes også i fanen her (uden sessionStorage, fx i et privat vindue), så "Prøv igen" kan hente bestillingen igen
+let iHukommelse = null;
+let spores = true;
 
-koerOrdre({
-  hash: location.hash,
-  search: location.search,
-  pathname: location.pathname,
-  udgivelse: cfg.udgivelse,
-  designerUrl: cfg.designerUrl,
-  nu: () => Date.now(),
-  rydAdresse: (url) => history.replaceState(history.state, '', url),
-  husk: { hent: () => lager.hent(NOEGLE), gem: (n) => lager.gem(NOEGLE, n), glem: () => lager.slet(NOEGLE) },
-  sporing: spor,
-  api,
-  vis: ({ titel, html }) => {
-    document.title = titel;
-    vis(rod, html);
-  },
-  tilLogin: (url) => location.assign(url),
-  harHaftSession: () => lager.hent(SESSION) === '1',
-});
+function hent({ hash, search }) {
+  return koerOrdre({
+    hash,
+    search,
+    pathname: location.pathname,
+    udgivelse: cfg.udgivelse,
+    designerUrl: cfg.designerUrl,
+    nu: () => Date.now(),
+    rydAdresse: (url) => history.replaceState(history.state, '', url),
+    husk: {
+      hent: () => lager.hent(NOEGLE) ?? iHukommelse,
+      gem: (n) => { iHukommelse = n; lager.gem(NOEGLE, n); },
+      glem: () => { iHukommelse = null; lager.slet(NOEGLE); },
+    },
+    sporing: () => { if (spores) spor(); spores = false; },   // én sidevisning, også når "Prøv igen" henter igen
+    api,
+    vis: ({ titel, html }) => {
+      document.title = titel;
+      vis(rod, html);
+    },
+    tilLogin: (url) => location.assign(url),
+    harHaftSession: () => lager.hent(SESSION) === '1',
+  });
+}
+
+hent({ hash: location.hash, search: location.search });
 
 // Et nyt fragment på samme side (fx et link til en anden bestilling) læses forfra
 window.addEventListener('hashchange', () => location.reload());
@@ -44,6 +55,12 @@ rod.addEventListener('click', async (e) => {
   switch (knap.dataset.handling) {
     case 'udskriv':
       window.print();
+      break;
+    case 'igen':
+      // "Prøv igen" (Fable port 3, nr. 24): hent bestillingen igen — adressen bærer ikke længere nøglen (R10)
+      e.preventDefault();
+      rod.setAttribute('aria-busy', 'true');
+      hent({ hash: location.hash, search: location.search });
       break;
     case 'ikke-min':
       boks.innerHTML = renderIkkeMin('spoerg');

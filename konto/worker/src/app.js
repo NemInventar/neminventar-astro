@@ -435,11 +435,18 @@ async function minSide(k) {
     email: s.email,
     ordrer,
     designs: designs.filter(erObj).map((d) => ({
-      id: d.id, produkt: d.produkt, navn: d.navn ?? null, t: d.t, pris_oere: d.pris_oere ?? null, gemt: d.gemt,
+      id: d.id, produkt: d.produkt, navn: d.navn ?? null, titel: typeof d.titel === 'string' ? d.titel : null, t: d.t,
+      pris_oere: d.pris_oere ?? null, gemt: d.gemt, miniature: miniatureUd(d.miniature),
+      // Rumbilledet (Fable port 3, nr. 15): designeren sender endnu ikke rumbilledets id med ved gem — indtil da null
+      rumbillede: null,
     })),
     gemt_uden_login: b ? filtrerGemtUdenLogin(b.gemt_uden_login) : [],
   };
 }
+
+// Miniaturen (kontrakter §6, Fable port 3, nr. 15): kun en sti på konto-værten (/api/…, sidens CSP har img-src 'self').
+// Alt andet — også en sti i en bucket — bliver null, og siden viser produktets ikon.
+export const miniatureUd = (m) => (typeof m === 'string' && /^\/api\/[A-Za-z0-9/_?=&.%-]{1,300}$/.test(m) && !m.includes('..') ? m : null);
 
 async function gem(k) {
   const s = await k.kraevSession();
@@ -456,8 +463,10 @@ async function gem(k) {
   const pris = await prisVedGem(prisUrl, k.fetch, b.produkt, t);
   let r;
   try {
+    // titel = designets opsummering, som /pris regner den (samme tekst som designerens gem-dialog) — vises under navnet
     r = await k.db.rpc('design_gem', {
       p_kunde_id: s.kunde_id, p_produkt: b.produkt, p_tilstand: t, p_navn: navn ?? pris.titel, p_pris_oere: pris.pris_oere,
+      p_titel: pris.titel,
     });
   } catch {
     throw new Svar(503, { fejl: 'nede' });

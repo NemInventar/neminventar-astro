@@ -105,5 +105,10 @@
   "side.fejl": "That did not work. Try again in a moment, or call us on +45 42 42 26 84.",
   "best.status.dagOver": "Delivery agreed for {dag}",
   "best.status.afhentUge": "Ready for collection in {uge}",
-  "best.status.afhentUgeOver": "Not ready for collection yet"
+  "best.status.afhentUgeOver": "Not ready for collection yet",
+
+  "best.bestiltMobil": "Ordered {dato}",
+  "design.gemtMobil": "Saved {dato}",
+  "design.prisMobil": "Price when you saved: {pris}",
+  "side.proevIgen": "Try again"
 }

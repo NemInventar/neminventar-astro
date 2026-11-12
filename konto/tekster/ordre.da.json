@@ -7,6 +7,7 @@
   "varer.h2": "Det har du bestilt",
   "varer.kol": "Vare · Antal · Pris",
   "varer.detaljer": "Mål og indretning",
+  "varer.levering": "Levering: {levering}",
   "varer.ialt": "I alt inkl. moms",
   "varer.moms": "Heraf moms",
   "varer.udskriv": "Udskriv",

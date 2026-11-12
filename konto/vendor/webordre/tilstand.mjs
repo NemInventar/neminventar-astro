@@ -26,6 +26,13 @@ export const TEKST = Object.freeze({
   'forloeb.dagVenter': 'Vi aftaler leveringsdagen med dig.',
   'forloeb.afhentVenter': 'Du får en mail, når din bestilling står klar.',
   'forloeb.leveretVenter': 'Du får en mail, når vi har leveret.',
+  // Fable port 3 (12-11-2026), nr. 4 og 6: tomme felter i forløbet ligner en fejl, og en annulleret bestilling slutter med
+  // en række med flueben
+  'forloeb.ugeIkke': 'Ikke bekræftet endnu.',
+  'forloeb.hentetVenter': 'På Mågevej 73, st. tv., 2400 København NV, efter aftale.',
+  'forloeb.hentetKlar': 'Ring på +45 42 42 26 84 og aftal et tidspunkt.',
+  'forloeb.annulleret': 'Annulleret',
+  'forloeb.fortrudt': 'Fortrudt',
   'vilkaar.fortrydNej': 'Lavet efter dine mål. Derfor er der ingen fortrydelsesret.',
   'vilkaar.fortrydJa': '14 dages fortrydelsesret fra den dag, du modtager varen.',
   'vilkaar.reklamation': 'To års reklamationsret efter købeloven.',
@@ -158,35 +165,60 @@ export function tilstand(ordre, nuIso, sprog = 'da') {
   }
 
   // ---------- forløbets fire rækker ----------
-  const slut = nr === 14 || nr === 15;   // intet mere sker: ikke-skete trin får ingen tekst
+  // Annulleret og fortrudt (Fable port 3, nr. 4): kun de trin, der er sket, og til sidst en række med flueben.
   const raekke = (trin, navnNoegle, sket, iso, tekst, venter) => (sket
     ? { trin, navn: TEKST[navnNoegle], sket: true, iso, dato: datoTekst(iso), tekst: tekst ?? null }
-    : { trin, navn: TEKST[navnNoegle], sket: false, tekst: slut ? null : (venter ?? null) });
+    : { trin, navn: TEKST[navnNoegle], sket: false, tekst: venter ?? null });
   const middel = BETALINGSMIDDEL[bet.betalingsmiddel] ?? null;
   const inkl = ordre.total?.inkl_oere;
-  const forloeb = [
+  // En flyttet uge eller dag (Fable port 3, nr. 2): rækken viser datoen for den seneste ændring og siger, at den er ændret
+  const ugeIso = s.ugeFlyttet ? kbhDato(s.ugeFlyttet.tid) : s.ugeFoerst ? kbhDato(s.ugeFoerst) : null;
+  const ugeRaekkeTekst = uTekst
+    ? `${stort(uTekst)}${s.ugeFlyttet?.fra?.uge != null ? `, ændret fra uge ${s.ugeFlyttet.fra.uge}` : ''}` : null;
+  const dagIso = s.dagFlyttet ? kbhDato(s.dagFlyttet.tid) : s.dagFoerst ? kbhDato(s.dagFoerst) : null;
+  const dagRaekkeTekst = s.dag
+    ? `${stort(dagTekst(s.dag.dato, iDag))}${s.dagFlyttet?.tidligere ? `, ændret fra ${dagTekst(s.dagFlyttet.tidligere, iDag)}` : ''}` : null;
+  const ugeVenter = s.lev ? null
+    : nr === 1 ? `Vi bekræfter ugen senest ${dagTekst(fristDato, iDag)}. Du får en mail.`
+      : nr === 2 ? TEKST['forloeb.ugeIkke'] : null;
+  let forloeb = [
     raekke('betalt', 'forloeb.betalt', !!betaltAt, betaltAt ? kbhDato(betaltAt) : null,
       Number.isSafeInteger(Number(inkl)) && inkl != null ? `${kr(inkl)}${middel ? ` med ${middel}` : ''}` : null),
-    raekke('uge', 'forloeb.uge', !!s.uge, s.ugeFoerst ? kbhDato(s.ugeFoerst) : null, uTekst ? stort(uTekst) : null,
-      s.lev ? null : nr === 1 ? `Vi bekræfter ugen senest ${dagTekst(fristDato, iDag)}. Du får en mail.` : null),
+    raekke('uge', 'forloeb.uge', !!s.uge, ugeIso, ugeRaekkeTekst, ugeVenter),
   ];
   if (afhent) {
     forloeb.push(raekke('afhentKlar', 'forloeb.afhentKlar', !!s.klar, s.klar ? kbhDato(s.klar.tid) : null, null,
       s.lev ? null : TEKST['forloeb.afhentVenter']));
-    forloeb.push(raekke('hentet', 'forloeb.hentet', !!s.lev, s.lev ? s.lev.dato : null, null, null));
+    forloeb.push(raekke('hentet', 'forloeb.hentet', !!s.lev, s.lev ? s.lev.dato : null, null,
+      s.lev ? null : s.klar ? TEKST['forloeb.hentetKlar'] : TEKST['forloeb.hentetVenter']));
   } else {
-    forloeb.push(raekke('dag', 'forloeb.dag', !!s.dag, s.dagFoerst ? kbhDato(s.dagFoerst) : null, s.dag ? stort(dagTekst(s.dag.dato, iDag)) : null,
-      s.lev ? null : TEKST['forloeb.dagVenter']));
+    forloeb.push(raekke('dag', 'forloeb.dag', !!s.dag, dagIso, dagRaekkeTekst, s.lev ? null : TEKST['forloeb.dagVenter']));
     forloeb.push(raekke('leveret', 'forloeb.leveret', !!s.lev, s.lev ? s.lev.dato : null, null, TEKST['forloeb.leveretVenter']));
+  }
+  if (nr === 14) {
+    // "Annulleret" · datoen · "{beløb} tilbageført" — uden registreret tilbageførsel uden dato og beløb
+    const medBeloeb = refunderet > 0 && bet.refunderet_at;
+    forloeb = forloeb.filter((r) => r.sket);
+    forloeb.push(medBeloeb
+      ? { trin: 'annulleret', navn: TEKST['forloeb.annulleret'], sket: true, iso: kbhDato(bet.refunderet_at), dato: datoTekst(kbhDato(bet.refunderet_at)), tekst: `${kr(refunderet)} tilbageført` }
+      : { trin: 'annulleret', navn: TEKST['forloeb.annulleret'], sket: true, tekst: null });
+  } else if (nr === 15) {
+    forloeb = forloeb.filter((r) => r.sket);
+    const b = Number(s.fortrudt.beloeb_oere);
+    forloeb.push({ trin: 'fortrudt', navn: TEKST['forloeb.fortrudt'], sket: true, iso: s.fortrudt.dato, dato: datoTekst(s.fortrudt.dato),
+      tekst: Number.isSafeInteger(b) ? `${kr(b)} tilbageført` : null });
   }
 
   // ---------- betaling og vilkår (samme kalenderregler som overskriften) ----------
   const betaling = {
-    betalt: betaltAt ? `Betalt ${datoTekst(betaltAt)}${middel ? ` med ${middel}` : ''}` : null,
+    // med punktum som linjerne omkring den (Fable port 3, nr. 22)
+    betalt: betaltAt ? `Betalt ${datoTekst(betaltAt)}${middel ? ` med ${middel}` : ''}.` : null,
     refunderet: refunderet > 0 && bet.refunderet_at ? `Tilbageført ${datoTekst(bet.refunderet_at)}: ${kr(refunderet)}` : null,
   };
   let vilkaar;
-  if (!ordre.fortrydelsesret) vilkaar = [TEKST['vilkaar.fortrydNej'], TEKST['vilkaar.reklamation']];
+  // Annulleret eller fortrudt (Fable port 3, nr. 3): kun linket til handelsbetingelserne (siden sætter det selv)
+  if (nr === 14 || nr === 15) vilkaar = [];
+  else if (!ordre.fortrydelsesret) vilkaar = [TEKST['vilkaar.fortrydNej'], TEKST['vilkaar.reklamation']];
   else if (!s.lev) vilkaar = [TEKST['vilkaar.fortrydJa'], TEKST['vilkaar.reklamation']];
   else if (s.lev.fortryd_til && iDag <= s.lev.fortryd_til) {
     vilkaar = [TEKST['vilkaar.fortrydJa'], `Du kan fortryde til og med ${datoTekst(s.lev.fortryd_til)}.`, TEKST['vilkaar.reklamation']];

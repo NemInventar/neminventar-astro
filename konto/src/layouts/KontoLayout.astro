@@ -61,6 +61,6 @@ if (side === 'login' && ts.test) {
     {side !== '404' && <noscript><p class="sub noscript" set:html={tHtml(lang, 'noscript')} /></noscript>}
     <slot />
   </main>
-  <KontoFooter visMinSide={UDGIVELSE === 2} />
+  <KontoFooter visMinSide={UDGIVELSE === 2} lang={lang} />
 </body>
 </html>

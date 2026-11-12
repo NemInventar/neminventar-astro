@@ -117,10 +117,12 @@ async function omdoeb(form) {
 }
 
 // ---------- start ----------
+let spores = true;
 async function start() {
   const ny = new URLSearchParams(location.search).get('ny') === '1';
   if (location.search) history.replaceState(history.state, '', location.pathname);
-  spor();
+  if (spores) spor();   // én sidevisning, også når "Prøv igen" henter igen
+  spores = false;
   const r = await api('/min-side');
   if (r.status === 401) {
     const havde = lager.hent(SESSION) === '1';
@@ -185,6 +187,12 @@ rod.addEventListener('click', (e) => {
     case 'slet-design-nej':
       svar.innerHTML = '';
       raekke.querySelector('[data-handling="slet-design"]').focus();
+      break;
+    case 'igen':
+      // "Prøv igen" (Fable port 3, nr. 24): hent Min side igen uden at genindlæse
+      e.preventDefault();
+      rod.setAttribute('aria-busy', 'true');
+      start();
       break;
     default: break;
   }

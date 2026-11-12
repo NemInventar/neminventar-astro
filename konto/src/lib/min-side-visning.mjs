@@ -3,13 +3,28 @@
 // Statuskolonnen bygger på kernens tilstand(); datoer og uger skrives af kernen (dansk og engelsk).
 import { tilstand } from '../../vendor/webordre/tilstand.mjs';
 import { kbhDato, ugeFrist, ugeTekst, dagTekst, datoTekst } from '../../vendor/webordre/datoer.mjs';
-import { t, tHtml, esc, kolonner, beloeb, sprogAf, delOverskrift, tekstMedLinks } from './tekst.mjs';
+import { t, tHtml, esc, raa, kolonner, beloeb, sprogAf, delOverskrift, tekstMedLinks, bindUger, bindMaal } from './tekst.mjs';
 import { designerLink } from './adresser.mjs';
+import { proevIgenHtml } from './ordre-visning.mjs';
 
 export const PRODUKT_IKON = '<svg width="34" height="34" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M5 3h14v18H5zM12 3v18M9 11v2M15 11v2"/></svg>';
 
 const tekst = (x) => (typeof x === 'string' ? x.trim() : '');
 const tid = (x) => { const ms = Date.parse(x ?? ''); return Number.isFinite(ms) ? ms : 0; };
+
+// Miniaturen: kun en sti på konto-værten (CSP img-src 'self', kontrakter §6) — alt andet giver produktets ikon
+export const miniatureOk = (u) => typeof u === 'string' && /^\/api\/[A-Za-z0-9/_?=&.%-]{1,300}$/.test(u) && !u.includes('..');
+// Rumbilledet: et https-link til billedet og datoen, det slettes (kontrakter §6)
+const rumbilledeOk = (r) => r && typeof r === 'object' && typeof r.url === 'string' && /^https:\/\/[a-z0-9.-]+\/[^\s"'<>\\]*$/i.test(r.url)
+  && /^\d{4}-\d{2}-\d{2}$/.test(String(r.gemt_til ?? ''));
+
+// En celle med en etiket, der kun står på telefon, hvor kolonneoverskrifterne er væk (Fable port 3, nr. 16): skabelonen
+// "Bestilt {dato}" deles om pladsholderen, og teksten før og efter står i et <span class="kun-m">. Værdien er allerede HTML.
+function medMobilEtiket(sprog, noegle, navn, vaerdiHtml) {
+  const [foer, efter = ''] = raa(sprog, noegle).split(`{${navn}}`);
+  const del = (s) => (s ? `<span class="kun-m">${esc(s)}</span>` : '');
+  return `${del(foer)}${vaerdiHtml}${del(efter)}`;
+}
 
 /** Statuskolonnen for én bestilling (Fable d3 best.status.*). */
 export function statusTekst(ordre, nu, sprog = 'da') {
@@ -38,15 +53,20 @@ export function statusTekst(ordre, nu, sprog = 'da') {
   }
 }
 
-// Ugen i parentes brydes ikke midt i (som i mockuppen)
-const statusHtml = (s) => esc(s).replace(/\(([^)]*)\)/g, '<span class="nob">($1)</span>');
+// "uge 51" og ugens datoer bindes, men parentesen kan brydes efter stregen (Fable port 3, nr. 1 — samme som ordresidens H1)
+const statusHtml = (s) => bindUger(esc(s));
+
+// Faste kolonnebredder i begge tabeller, så kolonnerne ikke flytter sig mellem en tom og en fyldt tabel, og indholdet får
+// mindst 240 px (Fable port 3, nr. 28). Bredderne står i konto.css (col.k-…).
+const BEST_KOL = '<colgroup><col class="k-ordre"><col class="k-dato"><col class="k-indhold"><col class="k-beloeb"><col class="k-status"></colgroup>';
+const DES_KOL = '<colgroup><col class="k-th"><col class="k-design"><col class="k-dato"><col class="k-pris"><col class="k-aabn"></colgroup>';
 
 function bestillingerHtml(ordrer, sprog, nu) {
   const kol = kolonner(sprog, 'best.kol');
-  const hoved = `<thead><tr>${kol.map((k, i) => `<th scope="col"${i === 3 ? ' class="n"' : ''}>${esc(k)}</th>`).join('')}</tr></thead>`;
+  const hoved = `${BEST_KOL}<thead><tr>${kol.map((k, i) => `<th scope="col"${i === 3 ? ' class="n"' : ''}>${esc(k)}</th>`).join('')}</tr></thead>`;
   let krop;
   if (!Array.isArray(ordrer)) {
-    krop = `<tr class="tom"><td colspan="5"><p>${tHtml(sprog, 'nede')}</p></td></tr>`;
+    krop = `<tr class="tom"><td colspan="5"><p>${tHtml(sprog, 'nede')}</p>${proevIgenHtml(sprog)}</td></tr>`;
   } else if (!ordrer.length) {
     krop = `<tr class="tom"><td colspan="5"><p>${esc(t(sprog, 'best.tom'))}</p><p>${esc(t(sprog, 'best.tomHjaelp'))}</p></td></tr>`;
   } else {
@@ -56,7 +76,7 @@ function bestillingerHtml(ordrer, sprog, nu) {
       const lev = tekst(o.levering?.tekst);
       const inkl = o.total?.inkl_oere;
       return `<tr><td class="nw"><a class="lnk" href="/ordre/#${esc(ref)}" aria-label="${esc(t(sprog, 'best.linkLabel', { ref }))}"><b>${esc(ref)}</b></a></td>`
-        + `<td class="nw">${o.bestilt ? esc(datoTekst(o.bestilt, sprog)) : ''}</td>`
+        + `<td class="nw">${o.bestilt ? medMobilEtiket(sprog, 'best.bestiltMobil', 'dato', esc(datoTekst(o.bestilt, sprog))) : ''}</td>`
         + `<td>${esc(linje)}${lev ? `<small>${esc(lev)}</small>` : ''}</td>`
         + `<td class="n">${Number.isSafeInteger(inkl) ? esc(beloeb(inkl, sprog)) : ''}</td>`
         + `<td class="bst">${statusHtml(statusTekst(o, nu, sprog))}</td></tr>`;
@@ -69,31 +89,43 @@ function bestillingerHtml(ordrer, sprog, nu) {
     + '</section>';
 }
 
+// Én række i Gemte designs (Fable b, d3; port 3 nr. 15): miniaturen af designet, når det er gemt med login og har en — ellers
+// produktets ikon (altid ved "Gemt uden login"). Under navnet designets egen opsummering (titel, som i designerens
+// gem-dialog), når den siger noget andet end navnet. Rumbilledet som link under "Mere".
 function designRaekke(d, sprog, designerUrl) {
   const uden = d.slags === 'uden';
   const navn = uden ? tekst(d.titel) : tekst(d.navn);
+  const opsummering = uden ? '' : tekst(d.titel);
   const dato = uden ? tekst(d.dato) : tekst(d.gemt);
   const datoKbh = dato ? kbhDato(dato) : null;
-  const pris = Number.isSafeInteger(d.pris_oere) ? beloeb(d.pris_oere, sprog) : '—';
+  const harPris = Number.isSafeInteger(d.pris_oere);
   const aabn = designerLink(designerUrl, {
     produkt: d.produkt, t: d.t, permalink: uden ? d.permalink : null, prisOere: d.pris_oere, dato: datoKbh, sprog,
   });
+  const rb = !uden && rumbilledeOk(d.rumbillede) ? d.rumbillede : null;
   const mere = `<details class="mere" data-mere><summary>${esc(t(sprog, 'design.mere'))}</summary><div class="ind">`
     + (uden ? '' : `<button type="button" class="lnk knap-lnk" data-handling="omdoeb">${esc(t(sprog, 'design.omdoeb'))}</button>`
       + `<button type="button" class="lnk knap-lnk" data-handling="kopier">${esc(t(sprog, 'design.link'))}</button>`)
     + `<button type="button" class="lnk knap-lnk" data-handling="slet-design">${esc(t(sprog, 'design.slet'))}</button>`
+    + (rb ? `<a class="lnk rumbillede" href="${esc(rb.url)}" target="_blank" rel="noopener" data-felt="rumbillede">${bindMaal(esc(t(sprog, 'design.rumbillede', { dato: datoTekst(rb.gemt_til, sprog) })))}</a>` : '')
     + '</div><div class="mere-svar" data-svar></div></details>';
+  const billede = !uden && miniatureOk(d.miniature)
+    ? `<img class="th" src="${esc(d.miniature)}" alt="" width="76" height="58" loading="lazy" decoding="async" data-felt="miniature">`
+    : `<span class="th ikon">${PRODUKT_IKON}</span>`;
   return `<tr data-design="${esc(String(d.id))}" data-slags="${uden ? 'uden' : 'konto'}" data-navn="${esc(navn)}"${uden ? '' : ` data-kopi="${esc(designerLink(designerUrl, { produkt: d.produkt, t: d.t, sprog, medGemt: false }) ?? '')}"`}>`
-    + `<td class="th-c"><span class="th ikon">${PRODUKT_IKON}</span></td>`
-    + `<td><b class="d-navn">${esc(navn || '—')}</b>${uden ? `<span class="ml-m">${esc(t(sprog, 'design.udenLogin'))}</span><small>${esc(t(sprog, 'design.udenLoginHjaelp'))}</small>` : ''}${mere}</td>`
-    + `<td class="nw">${datoKbh ? esc(datoTekst(datoKbh, sprog)) : ''}</td>`
-    + `<td class="n">${esc(pris)}</td>`
+    + `<td class="th-c">${billede}</td>`
+    + `<td class="d-c"><b class="d-navn">${esc(navn || '—')}</b>`
+    + (opsummering && opsummering !== navn ? `<small class="d-ops" data-felt="opsummering">${bindMaal(esc(opsummering))}</small>` : '')
+    + `${uden ? `<span class="ml-m">${esc(t(sprog, 'design.udenLogin'))}</span><small>${esc(t(sprog, 'design.udenLoginHjaelp'))}</small>` : ''}${mere}</td>`
+    + `<td class="nw">${datoKbh ? medMobilEtiket(sprog, 'design.gemtMobil', 'dato', esc(datoTekst(datoKbh, sprog))) : ''}</td>`
+    // på telefon "Pris da du gemte: …" på egen linje — uden pris står prislinjen ikke (Fable port 3, nr. 16)
+    + `<td class="n${harPris ? '' : ' ingen-pris'}">${harPris ? medMobilEtiket(sprog, 'design.prisMobil', 'pris', esc(beloeb(d.pris_oere, sprog))) : '—'}</td>`
     + `<td class="n">${aabn ? `<a class="go" href="${esc(aabn)}">${esc(t(sprog, 'design.aabn'))}<i aria-hidden="true">→</i></a>` : ''}</td></tr>`;
 }
 
 function designsHtml(designs, udenLogin, sprog, designerUrl) {
   const kol = kolonner(sprog, 'design.kol');
-  const hoved = `<thead><tr><td></td><th scope="col">${esc(kol[0])}</th><th scope="col">${esc(kol[1])}</th><th scope="col" class="n">${esc(kol[2])}</th><td></td></tr></thead>`;
+  const hoved = `${DES_KOL}<thead><tr><td></td><th scope="col">${esc(kol[0])}</th><th scope="col">${esc(kol[1])}</th><th scope="col" class="n">${esc(kol[2])}</th><td></td></tr></thead>`;
   const alle = [
     ...(Array.isArray(designs) ? designs : []).map((d) => ({ ...d, slags: 'konto' })).sort((a, b) => tid(b.gemt) - tid(a.gemt)),
     ...(Array.isArray(udenLogin) ? udenLogin : []).map((d) => ({ ...d, slags: 'uden' })).sort((a, b) => tid(b.dato) - tid(a.dato)),
@@ -163,7 +195,8 @@ export function renderMinSide({ data, sprog = 'da', nu, designerUrl, ny = false 
   const email = tekst(data?.email);
   return '<div class="minside">'
     + `<h1 id="side-h1" tabindex="-1">${esc(t(sp, 'side.h1'))}</h1>`
-    + `<p class="hvem">${esc(t(sp, 'side.loggetInd', { email }))} · <button type="button" class="lnk knap-lnk" data-handling="log-ud">${esc(t(sp, 'side.logUd'))}</button></p>`
+    // på telefon står "Log ud" på egen linje uden prikken (Fable port 3, nr. 29)
+    + `<p class="hvem">${esc(t(sp, 'side.loggetInd', { email }))}<span class="hvem-prik" aria-hidden="true"> · </span><button type="button" class="lnk knap-lnk" data-handling="log-ud">${esc(t(sp, 'side.logUd'))}</button></p>`
     + `<div data-side-besked>${ny ? `<p class="form-msg ok" role="status">${esc(t(sp, 'kode.oprettet'))}</p>` : ''}</div>`
     + bestillingerHtml(data?.ordrer, sp, nu)
     + designsHtml(data?.designs, data?.gemt_uden_login, sp, designerUrl)
@@ -177,6 +210,8 @@ export function renderMinSide({ data, sprog = 'da', nu, designerUrl, ny = false 
  */
 export function renderMinSideFejl(fejl, sprog = 'da') {
   const sp = sprogAf(sprog);
-  const [h1, rest] = delOverskrift(t(sp, fejl === 'lukket' ? 'lukket' : 'side.nede'));
-  return `<div class="minside"><h1 id="side-h1" tabindex="-1">${esc(h1)}</h1>${rest ? `<p class="sub">${tekstMedLinks(rest)}</p>` : ''}</div>`;
+  const lukket = fejl === 'lukket';
+  const [h1, rest] = delOverskrift(t(sp, lukket ? 'lukket' : 'side.nede'));
+  // side.nede beder kunden prøve igen om lidt: et link, der henter siden igen (Fable port 3, nr. 24)
+  return `<div class="minside"><h1 id="side-h1" tabindex="-1">${esc(h1)}</h1>${rest ? `<p class="sub">${tekstMedLinks(rest)}</p>` : ''}${lukket ? '' : proevIgenHtml(sp)}</div>`;
 }

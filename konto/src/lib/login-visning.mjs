@@ -19,12 +19,13 @@ export function renderEmailVenstre(sprog) {
 export function renderEmailForm(sprog, { email = '', besked = null } = {}) {
   const sp = sprogAf(sprog);
   const b = besked ? `<p class="form-msg ${besked.slags === 'err' ? 'err' : 'ok'}" role="status" data-besked-start>${tHtml(sp, besked.noegle, besked.vars ?? {})}</p>` : '';
+  // Fejlen står under feltet og dets hjælpetekst, over knappen (Fable c1; port 3, nr. 13 — på mobil lå den under tastaturet)
   return `<form class="form" data-trin="email" novalidate>${b}`
     + `<div class="field"><label for="email">${esc(t(sp, 'login.email'))}</label>`
     + `<input id="email" name="email" type="email" autocomplete="email" inputmode="email" spellcheck="false" autocapitalize="off" maxlength="254" value="${esc(email)}" aria-describedby="email-hj">`
     + `<small id="email-hj">${esc(t(sp, 'login.emailHjaelp'))}</small></div>`
+    + '<p class="form-msg err felt-fejl" role="alert" data-besked hidden></p>'
     + `<button class="btn btn-primary" type="submit"><span data-knap>${esc(t(sp, 'login.knap'))}</span> <span aria-hidden="true">→</span></button>`
-    + '<p class="form-msg err" role="alert" data-besked hidden></p>'
     + `<p class="form-note">${medPolitikLink(esc(t(sp, NOTE_NOEGLE)), sp)}</p>`
     + '</form>';
 }
@@ -39,14 +40,16 @@ export function renderKodeVenstre(sprog, email) {
 
 export function renderKodeForm(sprog, { sek = 30 } = {}) {
   const sp = sprogAf(sprog);
+  // Fejlen mellem feltet og "Log ind" (port 3, nr. 13). Nedtællingen og "Send en ny kode" står på samme linje lige under
+  // knappen; som hovedknap (spærret eller udløbet kode) får "Send en ny kode" fuld bredde som "Log ind" (port 3, nr. 27).
   return '<form class="form" data-trin="kode" novalidate>'
     + `<div class="field"><label for="kode">${esc(t(sp, 'kode.felt'))}</label>`
     + '<input id="kode" name="kode" class="kode" inputmode="numeric" autocomplete="one-time-code" maxlength="11" spellcheck="false" aria-describedby="kode-hj"></div>'
+    + '<p class="form-msg err felt-fejl" role="alert" data-besked hidden></p>'
     + `<button class="btn btn-primary" type="submit" data-log-ind><span data-knap>${esc(t(sp, 'kode.knap'))}</span> <span aria-hidden="true">→</span></button>`
-    + '<p class="form-msg err" role="alert" data-besked hidden></p>'
-    + `<p class="form-note" id="kode-hj">${esc(t(sp, 'kode.hjaelp'))}</p>`
-    + `<div class="igen"><span data-vent>${esc(t(sp, 'kode.vent', { n: sek }))}</span>`
+    + `<div class="igen" data-igen><span data-vent>${esc(t(sp, 'kode.vent', { n: sek }))}</span>`
     + `<button type="button" class="lnk knap-lnk" data-handling="ny-kode" disabled>${esc(t(sp, 'kode.ny'))}</button></div>`
+    + `<p class="form-note" id="kode-hj">${esc(t(sp, 'kode.hjaelp'))}</p>`
     + '<p class="sr" role="status" data-ny-klar></p>'
     + '</form>';
 }

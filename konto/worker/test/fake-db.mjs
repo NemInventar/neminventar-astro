@@ -171,19 +171,19 @@ export function lavFakeDb(nu) {
       return { ok: true };
     },
 
-    design_gem({ p_kunde_id, p_produkt, p_tilstand, p_navn, p_pris_oere }) {
+    design_gem({ p_kunde_id, p_produkt, p_tilstand, p_navn, p_pris_oere, p_titel = null }) {
       if (!s.kunder.has(p_kunde_id)) throw new DbFejl('http_409');
       const t = nu();
       if (taelMedLoft(`gem:${p_kunde_id}:${dag(t)}`, 50, doegnSlut(t)) === null) return { fejl: 'loft' };
       const id = crypto.randomUUID();
-      s.designs.set(id, { id, kunde_id: p_kunde_id, produkt: p_produkt, tilstand: p_tilstand, navn: p_navn ?? null, pris_ved_gem: p_pris_oere ?? null, oprettet: t });
+      s.designs.set(id, { id, kunde_id: p_kunde_id, produkt: p_produkt, tilstand: p_tilstand, navn: p_navn ?? null, titel: p_titel ?? null, pris_ved_gem: p_pris_oere ?? null, miniature: null, oprettet: t });
       return { ok: true, id };
     },
 
     design_liste({ p_kunde_id }) {
       return [...s.designs.values()].filter((d) => d.kunde_id === p_kunde_id)
         .sort((a, b) => b.oprettet - a.oprettet || (a.id < b.id ? -1 : 1))
-        .map((d) => ({ id: d.id, produkt: d.produkt, navn: d.navn, t: d.tilstand, pris_oere: d.pris_ved_gem, gemt: iso(d.oprettet) }));
+        .map((d) => ({ id: d.id, produkt: d.produkt, navn: d.navn, titel: d.titel ?? null, t: d.tilstand, pris_oere: d.pris_ved_gem, gemt: iso(d.oprettet), miniature: d.miniature ?? null }));
     },
 
     design_slet({ p_kunde_id, p_id }) {

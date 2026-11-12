@@ -99,8 +99,36 @@ const KERNEN_SKRIVER = new Set([
   'forloeb.betalt', 'forloeb.uge', 'forloeb.dag', 'forloeb.leveret', 'forloeb.afhentKlar', 'forloeb.hentet',
   'forloeb.ugeVenter', 'forloeb.dagVenter', 'forloeb.afhentVenter', 'forloeb.leveretVenter',
   'bet.betalt', 'bet.refunderet', 'vilkaar.fortrydNej', 'vilkaar.fortrydJa', 'vilkaar.fortrydDato', 'vilkaar.reklamation',
-  'varer.levering',
 ]);
+
+// Fable port 3 (kvalitetsporten 12-11-2026, C:\tmp\kundelogin\fable-port3.md): tekster i fundenes "Præcis rettelse".
+// nr = fundets nummer. "Try again" står ikke i port 3 (Fable skrev kun den danske "Prøv igen"); den er Fables egen engelske
+// formulering fra side.nede/nede/side.fejl ("Try again in a moment") — testen holder, at den står dér.
+const PORT3 = new Map([
+  ['da:best.bestiltMobil', { nr: 16, fable: 'Bestilt 7. november 2026', vars: { dato: '7. november 2026' } }],
+  ['en:best.bestiltMobil', { nr: 16, fable: 'Ordered 7 November 2026', vars: { dato: '7 November 2026' } }],
+  ['da:design.gemtMobil', { nr: 16, fable: 'Gemt 2. november 2026', vars: { dato: '2. november 2026' } }],
+  ['en:design.gemtMobil', { nr: 16, fable: 'Saved 2 November 2026', vars: { dato: '2 November 2026' } }],
+  ['da:design.prisMobil', { nr: 16, fable: 'Pris da du gemte: 21.487,50 kr.', vars: { pris: '21.487,50 kr.' } }],
+  ['en:design.prisMobil', { nr: 16, fable: 'Price when you saved: DKK 21,487.50', vars: { pris: 'DKK 21,487.50' } }],
+  ['da:side.proevIgen', { nr: 24, fable: 'Prøv igen', vars: {} }],
+  ['en:side.proevIgen', { nr: 24, fraEgenEngelsk: 'side.nede' }],
+]);
+const PORT3_FIL = [process.env.FABLE_PORT3, 'C:/tmp/kundelogin/fable-port3.md'].find((f) => f && existsSync(f));
+
+test('Fable port 3: de nye tekster står i fundene (eller i Fables egen engelske tekst)', () => {
+  const port3 = PORT3_FIL ? readFileSync(PORT3_FIL, 'utf8') : null;
+  for (const [noegle, p] of PORT3) {
+    const [sp, k] = noegle.split(':');
+    const v = (sp === 'en' ? EN : DA)[k];
+    assert.equal(typeof v, 'string', `${noegle} mangler`);
+    if (p.fraEgenEngelsk) { assert.ok(EN[p.fraEgenEngelsk].includes(v), `${noegle}: "${v}" står ikke i en:${p.fraEgenEngelsk}`); continue; }
+    // pladsholderen udfyldt med Fables eksempel = Fables tekst
+    const udfyldt = v.replace(/\{(\w+)\}/g, (m, n) => p.vars[n] ?? m);
+    assert.equal(udfyldt, p.fable, `${noegle} (port 3 nr. ${p.nr})`);
+    if (port3) assert.ok(port3.includes(p.fable), `${noegle}: "${p.fable}" står ikke i fable-port3.md`);
+  }
+});
 
 function fableTabeller(md) {
   const ud = { d13: new Map(), d4: new Map() };
@@ -181,6 +209,7 @@ test('ordret som i Fable runde 3 d1–d4', { skip: FABLE ? false : 'fable-runde3
     if (v.includes('TODO-TEKST')) continue;
     const i4 = f4.has(k) && f4.get(k)[sp] != null;
     if (sp === 'en' && k === 'noscript') { assert.ok(i4 || !FABLE4, 'en:noscript findes ikke i Fable runde 4'); continue; }
+    if (PORT3.has(`${sp}:${k}`)) continue;   // prøvet i testen ovenfor
     assert.ok(d13.has(k) || d4.has(k) || i4 || !FABLE4, `${sp}:${k} findes ikke i Fable`);
   }
 });

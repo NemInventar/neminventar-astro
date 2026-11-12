@@ -161,16 +161,19 @@ function visKode() {
   form.querySelector('#kode').focus();
 }
 
-// "Send en ny kode" bliver hovedknap, når koden er spærret eller udløbet (Fable c1)
+// "Send en ny kode" bliver hovedknap, når koden er spærret eller udløbet (Fable c1): fuld bredde som "Log ind", og "Log ind"
+// er slået fra, til en ny kode er sendt (Fable port 3, nr. 27 — før så "Log ind" aktiv ud med den spærrede kode i feltet)
 function gorLogIndTilHovedknap(form, logInd) {
   const logIndKnap = form.querySelector('[data-log-ind]');
   const ny = form.querySelector('[data-handling="ny-kode"]');
   logIndKnap.classList.toggle('btn-primary', logInd);
   logIndKnap.classList.toggle('btn-ghost', !logInd);
+  logIndKnap.disabled = !logInd;
   ny.classList.toggle('lnk', logInd);
   ny.classList.toggle('knap-lnk', logInd);
   ny.classList.toggle('btn', !logInd);
   ny.classList.toggle('btn-primary', !logInd);
+  form.querySelector('[data-igen]').classList.toggle('hoved', !logInd);
 }
 
 function stopNedtaelling() {
@@ -225,6 +228,7 @@ async function tjekKode(form) {
     felt.value = '';
     felt.focus();
   } else if (fejl === 'laast' || fejl === 'udloebet') {
+    felt.value = '';   // den spærrede eller udløbne kode bliver ikke stående (port 3, nr. 27)
     gorLogIndTilHovedknap(form, false);
     const ny = form.querySelector('[data-handling="ny-kode"]');
     if (!ny.disabled) ny.focus();

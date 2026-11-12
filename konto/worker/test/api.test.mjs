@@ -9,6 +9,7 @@ import { broSignatur } from '../src/bro.js';
 import { b64url, fraB64url } from '../src/krypto.js';
 import { onRequest } from '../../functions/api/[[sti]].js';
 import { prisUdenLevering } from '../src/pris.js';
+import { miniatureUd } from '../src/app.js';
 
 const MIN = 60_000;
 const fil = (sti) => readFileSync(fileURLToPath(new URL(sti, import.meta.url)), 'utf8');
@@ -258,12 +259,22 @@ test('Gem: prisen regnes af /pris (bjælkens grundlag), aldrig af klienten; uden
   assert.equal(uden.json.pris_oere, null);
   const side = await v.kald('GET', '/api/min-side', { cookie: token });
   assert.deepEqual(side.json.designs.map((d) => [d.navn, d.pris_oere, d.t]), [['Gangen', null, t], ['Højskab 60 × 220', 1220000, t]]);
+  // Fable port 3, nr. 15 (kontrakter §6): titel = opsummeringen fra /pris ved gem, miniature og rumbillede null, til de findes
+  assert.deepEqual(side.json.designs.map((d) => [d.titel, d.miniature, d.rumbillede]), [[null, null, null], ['Højskab 60 × 220', null, null]]);
+  assert.deepEqual(Object.keys(side.json.designs[0]).sort(), ['gemt', 'id', 'miniature', 'navn', 'pris_oere', 'produkt', 'rumbillede', 't', 'titel']);
 
   assert.deepEqual((await v.kald('POST', '/api/gem', { cookie: token, body: { produkt: 'Hoejskab!', t } })).json, { fejl: 'design' });
   assert.deepEqual((await v.kald('POST', '/api/gem', { cookie: token, body: { produkt: 'hoejskab', t: 'ikke base64 {' } })).json, { fejl: 'design' });
   assert.deepEqual((await v.kald('POST', '/api/gem', { cookie: token, body: { produkt: 'hoejskab', t, navn: 'x'.repeat(81) } })).json, { fejl: 'navn' });
   const ud = await v.kald('POST', '/api/gem', { origin: DESIGNER, body: { produkt: 'hoejskab', t } });
   assert.deepEqual([ud.status, ud.json], [401, { fejl: 'login' }]);
+});
+
+test('Miniaturen: kun en sti på konto-værten (/api/…) går videre — alt andet bliver null (CSP img-src \'self\')', () => {
+  assert.equal(miniatureUd('/api/design/miniature?id=0b9f6c1e-1f3a-4c55-9a77-1d2e3f4a5b6c'), '/api/design/miniature?id=0b9f6c1e-1f3a-4c55-9a77-1d2e3f4a5b6c');
+  for (const x of [null, undefined, '', 'designs/abc.png', 'https://evil.example/x.png', '//evil.example/x', '/api/../x', '/api/x"onerror=1', 'javascript:alert(1)', 42]) {
+    assert.equal(miniatureUd(x), null, String(x));
+  }
 });
 
 test('Designs: omdøb og slet kun egne (ejerskabet ligger i forespørgslen)', async () => {
