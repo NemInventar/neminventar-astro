@@ -49,7 +49,7 @@ export function broOrdre(over = {}) {
     sprog: 'da',
     produkt: 'hoejskab',
     linjer: [{ tekst: 'Højskab', antal: 1, beloeb_oere: 1601250, intern: 'x' }],
-    levering: { form: 'levering', tekst: 'Samlet, båret ind', lastbil: 'intern' },
+    levering: { form: 'baaret_ind', tekst: 'Samlet, båret ind', lastbil: 'intern' },
     total: { ex_oere: 1281000, moms_oere: 320250, inkl_oere: 1601250, valuta: 'DKK' },
     beskrivelse: { maal: 'Bredde 60', felter: [{ k: 'Dybde', v: '60', sat_af: 'milot@neminventar.dk' }] },
     forloeb: [

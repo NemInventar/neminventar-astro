@@ -54,6 +54,8 @@ export async function koerOrdre(m) {
   if (ref && Number(m.udgivelse) !== 2) return m.vis(renderOrdreFejl('ukendt', m.udgivelse));
 
   const svar = noegle ? await m.api('/ordre', { noegle }) : await m.api('/ordre-ref', { ref });
+  // Kun svarets indhold tæller, ikke HTTP-status: /api/ordre svarer 200 med {fejl: 'ukendt'|'erstattet'} (kontrakter §6,
+  // rettet 12-11, så konsollen ikke viser en rød linje). En ældre Worker svarede 404/410 med samme indhold — samme tekst.
   const d = svar?.data ?? {};
   if (d.ordre && typeof d.ordre === 'object') {
     return m.vis(renderOrdre({ ordre: d.ordre, visning: d.visning, udgivelse: m.udgivelse, nu: m.nu(), designerUrl: m.designerUrl }));

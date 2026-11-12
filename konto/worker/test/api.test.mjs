@@ -156,12 +156,13 @@ test('Broen: signatur over POST\\n/konto-bro\\n<tid>\\n<nonce>\\n<body>, ny nonc
   assert.deepEqual((await w.kald('POST', '/api/ordre', { body: { noegle: NOEGLE } })).json, { fejl: 'nede' });
 });
 
-test('Ordresiden: ukendt → 404, erstattet → 410, med login kun når e-mailen passer', async () => {
+test('Ordresiden: ukendt og erstattet → 200 med {fejl} (ingen rød linje i konsollen), med login kun når e-mailen passer', async () => {
   const v = lavVerden();
-  assert.deepEqual((await v.kald('POST', '/api/ordre', { body: { noegle: 'xxxxxxxxxxxxxxxxxxxxxx' } })).json, { fejl: 'ukendt' });
-  const e = await v.kald('POST', '/api/ordre', { body: { noegle: NOEGLE_ERSTATTET } });
-  assert.deepEqual([e.status, e.json], [410, { fejl: 'erstattet' }]);
-  assert.deepEqual((await v.kald('POST', '/api/ordre', { body: {} })).json, { fejl: 'ukendt' });
+  // kontrakter §6 (rettet 12-11): et ukendt eller erstattet link er et svar, ikke en HTTP-fejl
+  for (const [noegle, fejl] of [['xxxxxxxxxxxxxxxxxxxxxx', 'ukendt'], [NOEGLE_ERSTATTET, 'erstattet'], [undefined, 'ukendt'], ['for-kort', 'ukendt'], ['NI-1D078A14', 'ukendt']]) {
+    const r = await v.kald('POST', '/api/ordre', { body: noegle === undefined ? {} : { noegle } });
+    assert.deepEqual([r.status, r.json], [200, { fejl }], String(noegle));
+  }
 
   const fremmed = await v.logInd('fremmed@example.com');
   const r1 = await v.kald('POST', '/api/ordre', { cookie: fremmed.token, body: { noegle: NOEGLE } });
@@ -213,7 +214,7 @@ test('ni-konto nede: ordresiden virker (loftet fejler åbent), login fejler lukk
 
 test('Visningsloftet: 300 ordreopslag pr. IP pr. time', async () => {
   const v = lavVerden();
-  for (let i = 0; i < 300; i++) assert.equal((await v.kald('POST', '/api/ordre', { body: { noegle: 'yyyyyyyyyyyyyyyyyyyyyy' } })).status, 404);
+  for (let i = 0; i < 300; i++) assert.deepEqual((await v.kald('POST', '/api/ordre', { body: { noegle: 'yyyyyyyyyyyyyyyyyyyyyy' } })).json, { fejl: 'ukendt' });
   const r = await v.kald('POST', '/api/ordre', { body: { noegle: NOEGLE } });
   assert.deepEqual([r.status, r.json], [429, { fejl: 'loft' }]);
   assert.equal((await v.kald('POST', '/api/ordre', { ip: '198.51.100.200', body: { noegle: NOEGLE } })).status, 200);

@@ -3,6 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { koerOrdre, laesAdresse } from '../src/lib/ordre-start.mjs';
+import { renderOrdreFejl } from '../src/lib/ordre-visning.mjs';
 import { sidevisningData, sidevisning, PLAUSIBLE_EVENT } from '../src/lib/adresser.mjs';
 import { ordreI, TILSTANDE, REF } from './fixtures.mjs';
 
@@ -72,12 +73,18 @@ test('genindlæsning: nøglen huskes i fanen, ikke i adressen', async () => {
   assert.ok(!b.log.some((x) => x[0] === 'ryd'), 'intet at rydde');
 });
 
-test('erstattet og ukendt: nøglen glemmes, Fables tekst vises', async () => {
+test('erstattet og ukendt: nøglen glemmes, Fables tekst vises — svaret er 200 (kontrakter §6), og en ældre Worker med 404/410 giver samme tekst', async () => {
   for (const fejl of ['erstattet', 'ukendt']) {
-    const { m, log, husk } = verden({ hash: `#${NOEGLE}`, svar: { status: fejl === 'erstattet' ? 410 : 404, data: { fejl } } });
-    await koerOrdre(m);
-    assert.equal(husk(), null);
-    assert.deepEqual(log.at(-1), ['vis', 'Nem Inventar', fejl]);
+    for (const status of [200, fejl === 'erstattet' ? 410 : 404]) {
+      const { m, log, husk } = verden({ hash: `#${NOEGLE}`, svar: { status, data: { fejl } } });
+      let html = null;
+      const vis = m.vis;
+      m.vis = (r) => { html = r.html; vis(r); };
+      await koerOrdre(m);
+      assert.equal(husk(), null, `${fejl} ${status}: nøglen glemmes`);
+      assert.deepEqual(log.at(-1), ['vis', 'Nem Inventar', fejl]);
+      assert.equal(html, renderOrdreFejl(fejl, 1).html, `${fejl} ${status}: Fables tekst (ordre.ikkeFundet1 / ordre.erstattet1)`);
+    }
   }
 });
 

@@ -7,6 +7,7 @@ import { lavVerden, senesteKode, tokenAf, broOrdre, kodT, afkodT, KONTO, DESIGNE
 import { nyKode, KODE_GRAENSE, hmacHex, sha256Hex } from '../src/krypto.js';
 import { rensRetur, LOFT, PROD_ORIGINS } from '../src/regler.js';
 import { filtrerOrdre } from '../src/bro.js';
+import { RUTER, SIKKERHEDSHEADERE } from '../src/app.js';
 
 const MIN = 60_000;
 const DAG = 24 * 60 * MIN;
@@ -326,7 +327,7 @@ test('R10 statusnøglen sendes i POST-body; et ordrenummer er ikke en nøgle og 
   assert.equal(r.json.visning, 'uden_login');
   const b0 = v.bro.kald.length;
   const ref = await v.kald('POST', '/api/ordre', { body: { noegle: REF } });
-  assert.deepEqual([ref.status, ref.json], [404, { fejl: 'ukendt' }]);
+  assert.deepEqual([ref.status, ref.json], [200, { fejl: 'ukendt' }]);   // kontrakter §6: ukendt er et svar (200), ikke en HTTP-fejl
   assert.equal(v.bro.kald.length, b0, 'et ordrenummer sendes ikke til broen som nøgle');
   const udenLogin = await v.kald('POST', '/api/ordre-ref', { body: { ref: REF } });
   assert.deepEqual([udenLogin.status, udenLogin.json], [401, { fejl: 'login' }]);
@@ -371,7 +372,7 @@ test('R12 kun betalte og annullerede ordrer vises; tilbageført beløb vises und
 const FORVENTET_UDEN = {
   ref: 'NI-1A2B3C4D', bestilt: '2026-11-06T09:12:00.000Z', status: 'betalt', sprog: 'da', produkt: 'hoejskab',
   linjer: [{ tekst: 'Højskab', antal: 1, beloeb_oere: 1601250 }],
-  levering: { form: 'levering', tekst: 'Samlet, båret ind' },
+  levering: { form: 'baaret_ind', tekst: 'Samlet, båret ind' },
   total: { ex_oere: 1281000, moms_oere: 320250, inkl_oere: 1601250, valuta: 'DKK' },
   beskrivelse: { maal: 'Bredde 60', felter: [{ k: 'Dybde', v: '60' }] },
   forloeb: [{ trin: 'uge_bekraeftet', data: { aar: 2026, uge: 51, praecis: false, aftalt: { tekst: 'Uden sokkel' } }, tid: '2026-11-09T08:00:00.000Z' }],
@@ -489,6 +490,46 @@ test('R18 Cache-Control: private, no-store på alle svar, også fejl og prefligh
     assert.equal(r.headers.get('content-type'), 'application/json; charset=utf-8');
   }
   assert.deepEqual(svar.map((r) => r.status), [200, 200, 415, 404, 405, 204, 401]);
+});
+
+// Pages' _headers gælder ikke for Pages Functions: Workeren sætter selv sikkerhedsheaderne på /api/* (ét sted, lavSvar)
+test('Sikkerhedsheadere på alle API-svar: HSTS, nosniff, CSP uden indhold og rammer, ingen referrer — også fejl, preflight og 500', async () => {
+  const v = lavVerden();
+  const FORVENTET = {
+    'strict-transport-security': 'max-age=31536000; includeSubDomains',
+    'x-content-type-options': 'nosniff',
+    'content-security-policy': "default-src 'none'; frame-ancestors 'none'",
+    'referrer-policy': 'no-referrer',
+    'cache-control': 'private, no-store',
+  };
+  const { token } = await v.logInd();
+  const svar = [
+    await v.kald('GET', '/api/mig'),
+    await v.kald('GET', '/api/mig', { origin: DESIGNER }),
+    await v.kald('POST', '/api/ordre', { body: { noegle: NOEGLE } }),
+    await v.kald('POST', '/api/ordre', { body: { noegle: 'xxxxxxxxxxxxxxxxxxxxxx' } }),
+    await v.kald('POST', '/api/kode/tjek', { body: { email: 'mette@eksempel.dk', kode: '000000' } }),
+    await v.kald('GET', '/api/min-side', { cookie: token }),
+    await v.kald('POST', '/api/kode', { type: 'text/plain', raa: 'x' }),
+    await v.kald('POST', '/api/ordre', { origin: 'https://ond.example', body: { noegle: NOEGLE } }),
+    await v.kald('GET', '/api/findes-ikke'),
+    await v.kald('PUT', '/api/kode'),
+    await v.kald('OPTIONS', '/api/gem', { origin: DESIGNER, headers: { 'access-control-request-method': 'POST' } }),
+    await v.kald('GET', '/api/min-side'),
+  ];
+  for (const r of svar) for (const [h, val] of Object.entries(FORVENTET)) assert.equal(r.headers.get(h), val, `${h} på ${r.status}`);
+  assert.deepEqual(svar.map((r) => r.status), [200, 200, 200, 200, 400, 200, 415, 403, 404, 405, 204, 401]);
+  assert.deepEqual(Object.keys(SIKKERHEDSHEADERE).sort(), Object.keys(FORVENTET).filter((h) => h !== 'cache-control').sort());
+  // en uventet fejl i en handler (500) får dem også
+  const foer = RUTER['/api/mig'].h;
+  RUTER['/api/mig'].h = () => { throw new TypeError('bum'); };
+  try {
+    const r = await v.kald('GET', '/api/mig');
+    assert.deepEqual([r.status, r.json], [500, { fejl: 'fejl' }]);
+    for (const [h, val] of Object.entries(FORVENTET)) assert.equal(r.headers.get(h), val, `${h} på 500`);
+  } finally {
+    RUTER['/api/mig'].h = foer;
+  }
 });
 
 // ---------- R19 ----------

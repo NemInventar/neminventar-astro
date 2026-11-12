@@ -333,10 +333,12 @@ async function slet(k) {
 
 // ---------- ordrer (gennem broen) ----------
 
+// Ukendt og erstattet nøgle er et svar, ikke en HTTP-fejl (kontrakter §6, rettet 12-11): status 200 med {fejl}, så
+// browserens konsol ikke viser en rød linje for et gammelt eller forkert link. Siden læser kun fejl-feltet (ordre-start.mjs).
 async function ordre(k) {
   const noegle = k.body.noegle;
   // R10: kun en statusnøgle (22 tegn). Et ordrenummer går gennem /api/ordre-ref med login.
-  if (!erNoegle(noegle)) throw new Svar(404, { fejl: 'ukendt' });
+  if (!erNoegle(noegle)) return { fejl: 'ukendt' };
   // Plan §8: loftet på visning fejler åbent (ordresiden virker, selv om ni-konto eller peberen mangler)
   let fuldt = false;
   if (k.ip) {
@@ -354,9 +356,9 @@ async function ordre(k) {
   } catch {
     throw new Svar(503, { fejl: 'nede' });
   }
-  if (b.fejl === 'erstattet') throw new Svar(410, { fejl: 'erstattet' });
+  if (b.fejl === 'erstattet') return { fejl: 'erstattet' };
   const uden = filtrerOrdre(b.ordre, 'uden_login');
-  if (!uden) throw new Svar(404, { fejl: 'ukendt' });
+  if (!uden) return { fejl: 'ukendt' };
   // Med session og passende e-mail → med login (broen afgør, om e-mailen passer)
   if (flag(k.env, 'KONTO_AKTIV')) {
     let s = null;
@@ -516,15 +518,23 @@ export const RUTER = {
   '/api/slet': { metode: 'POST', flag: 'KONTO_AKTIV', h: slet },
 };
 
-// R18: alle svar er JSON med Cache-Control: private, no-store
+// Sikkerhedsheaderne på hvert API-svar. Pages' _headers gælder ikke for svar fra Pages Functions (/api/* går gennem
+// konto/functions/api/[[sti]].js til denne Worker), så de sættes her — ét sted, også på fejl, 404 og preflight.
+export const SIKKERHEDSHEADERE = Object.freeze({
+  'strict-transport-security': 'max-age=31536000; includeSubDomains',
+  'x-content-type-options': 'nosniff',
+  'content-security-policy': "default-src 'none'; frame-ancestors 'none'",
+  'referrer-policy': 'no-referrer',
+});
+
+// R18: alle svar er JSON med Cache-Control: private, no-store (+ sikkerhedsheaderne, som intet kan overskrive)
 function lavSvar(k, status, body, ekstra = {}) {
   const h = new Headers({
     'content-type': 'application/json; charset=utf-8',
-    'cache-control': 'private, no-store',
-    'x-content-type-options': 'nosniff',
-    'referrer-policy': 'no-referrer',
     vary: 'Origin, Cookie',
     ...ekstra,
+    'cache-control': 'private, no-store',
+    ...SIKKERHEDSHEADERE,
   });
   if (k?.cors) {
     h.set('access-control-allow-origin', k.cors);
