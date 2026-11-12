@@ -5,7 +5,10 @@
 // Min side, trin 1 (udgivelse 1, ordresiden; Fable runde 3 d7, Joachim 12-11-2026): "Siden, hvor du følger din bestilling",
 // Google og Meta i "Kort fortalt", Gemini ved rumbilledet, "Hvem hjælper os" (e-conomic afventer beslutning 10) og
 // knappen hedder "Gem design" (ikke "Send på mail") siden 27-10.
+// Min side, trin 2 (udgivelse 2, Fable d7 trin 2): "Når du opretter en konto", kontoen i "Kort fortalt", formål og opbevaring,
+// og Supabase-linjen nævner kontodatabasen (EU, Tyskland).
 import Base from '../layouts/Base.astro';
+import { MIN_SIDE } from '../lib/contact';
 const base = import.meta.env.BASE_URL;
 ---
 <Base title="Privatlivspolitik — Nem Inventar" description="Privatlivspolitik for Nem Inventar ApS — hvordan vi behandler personoplysninger.">
@@ -22,7 +25,8 @@ const base = import.meta.env.BASE_URL;
         <li>Vi bruger ikke cookies til analyse, markedsføring eller sporing.</li>
         <li>Vi bruger ikke din mail til nyhedsbreve eller markedsføring.</li>
         <li>Du kan altid få at vide, hvad vi har gemt om dig, og få det rettet eller slettet.</li>
-        <li>Det, du tegner i designeren, sletter vi efter 12 måneder. Har du købt hos os, gemmer vi ordren og fakturaen i 5 år, som bogføringsloven kræver.</li>
+        <li>Det, du tegner i designeren, og rumbilleder sletter vi efter 12 måneder. Designs, du gemmer på Min side, beholder vi, så længe du har kontoen. Har du købt hos os, gemmer vi ordren og fakturaen i 5 år, som bogføringsloven kræver.</li>
+        <li>Opretter du en konto på Min side, gemmer vi din e-mail og sætter én cookie, der holder dig logget ind. Du kan selv slette kontoen.</li>
       </ul>
     </section>
 
@@ -72,6 +76,16 @@ const base = import.meta.env.BASE_URL;
     <p>I ordrebekræftelsen står et link til en side, der viser din bestilling og leveringen. Siden kan åbnes af alle, der har linket. Derfor viser den kun postnummer og by, ikke dit navn, din adresse, dit telefonnummer, din e-mail eller din besked til os.</p>
     <p>Vi sender dig en mail, når leveringsugen er bekræftet, når leveringsdagen er aftalt, når vi har leveret, og hvis noget ændrer sig.</p>
 
+    <h3>Når du opretter en konto</h3>
+    <p>Du kan oprette en konto på Min side (<a href={MIN_SIDE}>konto.neminventar.dk</a>). Det er frivilligt, og du kan købe og følge din bestilling uden.</p>
+    <p>En konto er din e-mail og ikke andet. Du logger ind med en kode, vi sender til din e-mail, så vi gemmer ingen adgangskode. Vi gemmer, hvornår kontoen er oprettet, og hvornår du sidst har været logget ind.</p>
+    <p>Din konto ligger i en database for sig. Billeder og bestillinger ligger i vores kundesystem.</p>
+    <p>Når du er logget ind, viser Min side de bestillinger og gemte designs, der hører til din e-mail. Det gælder også det, du har bestilt eller gemt, før du oprettede kontoen. Hele adressen og din besked til os på en bestilling vises kun, når du er logget ind.</p>
+    {/* Sidste sætning står, fordi et gem med login giver en henvendelse (Fable spørgsmål 4; Joachim 12-11-2026, beslutning 11 = ja) */}
+    <p>Vi bruger din e-mail til koder og til beskeder om dine bestillinger. Vi bruger den ikke til nyhedsbreve eller markedsføring. Gemmer du et design, kan vi kontakte dig om et tilbud på det.</p>
+    <p>Mens du er logget ind, ligger der én cookie i din browser. Den er beskrevet i vores <a href={`${base}cookiepolitik`}>cookiepolitik</a>.</p>
+    <p>Du kan slette kontoen på Min side. Så sletter vi dit login og dine gemte designs med det samme. Rumbilleder sletter vi 12 måneder efter, de er lavet, uanset om du har en konto. Dine bestillinger skal vi gemme i 5 år efter regnskabsårets udgang, som bogføringsloven kræver. Har du ikke været logget ind i to år, sletter vi kontoen. Du får en mail 30 dage før.</p>
+
     <h3>Nul Meta-pixel eller sporing – kun praktisk info mellem dig og os</h3>
     <p>Udfylder du formularen i en af vores annoncer på Facebook eller Instagram, får vi de svar, du giver: hvilket rum, cirka hvor bred væggen er, hvornår skabet skal stå færdigt, dit postnummer, navn, telefonnummer og e-mail.</p>
     <p>Formularen vises og opbevares af Meta Platforms Ireland Ltd., som behandler oplysningerne efter sin egen privatlivspolitik.</p>
@@ -85,7 +99,7 @@ const base = import.meta.env.BASE_URL;
     <h3>Hvem hjælper os</h3>
     <p>Vi bruger disse leverandører. De behandler kun dine oplysninger på vores vegne:</p>
     <ul>
-      <li>Supabase: databasen bag vores kundesystem med henvendelser, bestillinger, det, du har tegnet, og rumbilleder. Den ligger i EU (Irland).</li>
+      <li>Supabase: databasen bag vores kundesystem med henvendelser, bestillinger, det, du har tegnet, og rumbilleder (EU, Irland), og databasen med din konto og dine gemte designs på Min side (EU, Tyskland).</li>
       <li>GitHub: viser neminventar.dk.</li>
       <li>Cloudflare: viser designeren og siden, hvor du følger din bestilling, og tjekker, at det er et menneske, der sender en formular.</li>
       <li>Microsoft: sender og modtager vores mails.</li>
@@ -102,6 +116,7 @@ const base = import.meta.env.BASE_URL;
       <li>Levering af inventar til byggeprojekter og til private kunder</li>
       <li>Kommunikation om projekter og tilbud</li>
       <li>Ordrer og betaling, når du køber i designeren</li>
+      <li>Din konto på Min side og beskeder om dine bestillinger</li>
       <li>Kundeservice og support</li>
       <li>Opfyldelse af lovpligtige forpligtelser</li>
       <li>Forbedring af vores hjemmeside og services</li>
@@ -119,6 +134,7 @@ const base = import.meta.env.BASE_URL;
     <p>Vi opbevarer dine personoplysninger kun så længe, det er nødvendigt for at opfylde de formål, hvortil oplysningerne blev indsamlet, eller som krævet af lovgivningen.</p>
     <ul>
       <li>Det, du har tegnet i designeren, billeder herfra og e-mails fra "Gem design" sletter vi efter 12 måneder, medmindre du har bedt om et tilbud eller købt hos os.</li>
+      <li>Din konto og de designs, du har gemt på Min side, beholder vi, til du sletter kontoen, eller til du ikke har været logget ind i to år.</li>
       <li>Henvendelser og tilbud gemmer vi, så længe det er nødvendigt for at følge op på dem.</li>
       <li>Ordrer, fakturaer og andre regnskabsbilag gemmer vi i 5 år efter udgangen af regnskabsåret, som bogføringsloven kræver.</li>
     </ul>

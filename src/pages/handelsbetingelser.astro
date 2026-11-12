@@ -8,10 +8,11 @@
 // Mariannes gennemlæsning 26-10-2026 + Joachims svar 27-10-2026: faktura også med kort/MobilePay, "tæt på" = ca. 25 m
 // (ellers aftales en løsning, ekstra bæring efter timepris), risikoen går over ved kantsten / når varen står på plads.
 // Min side, trin 1 (udgivelse 1, ordresiden; Fable runde 3 d9): punkt 6 nævner linket i ordrebekræftelsen.
+// Trin 2 (udgivelse 2): "… eller på Min side".
 import Base from '../layouts/Base.astro';
-import { PHONE, PHONE_TEL } from '../lib/contact';
+import { PHONE, PHONE_TEL, MIN_SIDE } from '../lib/contact';
 const base = import.meta.env.BASE_URL;
-// Pladsholder (Fable d9): "Gældende fra" = dagen, udgivelse 1 går ud. Sættes til datoen, når den merges, fx '1. december 2026'.
+// Pladsholder (Fable d9 trin 2): "Gældende fra" = dagen, udgivelse 2 går ud. Sættes til datoen, når den merges, fx '1. februar 2027'.
 const GAELDENDE_FRA = '{GÆLDENDE_FRA}';
 ---
 <Base title="Handelsbetingelser for private — Nem Inventar" description="Handelsbetingelser for private kunder hos Nem Inventar ApS: tilbud, betaling, levering, montage, fortrydelsesret og reklamation.">
@@ -53,7 +54,7 @@ const GAELDENDE_FRA = '{GÆLDENDE_FRA}';
     <h2>6. Levering</h2>
     <p>Vi leverer til din adresse i Danmark. Vi leverer ikke til Færøerne og Grønland.</p>
     <p><strong>Køb efter tilbud.</strong> Leveringstiden står i ordrebekræftelsen og er normalt 8–10 uger, fra du har godkendt tegningen.</p>
-    <p><strong>Køb i designeren.</strong> Vi meddeler dig leveringsugen inden for én arbejdsdag efter bestillingen. Du kan følge din bestilling på linket i ordrebekræftelsen. Vi aftaler leveringsdagen med dig.</p>
+    <p><strong>Køb i designeren.</strong> Vi meddeler dig leveringsugen inden for én arbejdsdag efter bestillingen. Du kan følge din bestilling på linket i ordrebekræftelsen eller på <a href={MIN_SIDE}>Min side</a>. Vi aftaler leveringsdagen med dig.</p>
     <p><strong>Alle køb.</strong> Du vælger selv, hvor langt vi bringer produktet: til kantstenen, hvor du selv bærer ind, eller båret ind til det rum, det skal stå i. Du kan også efter aftale hente din bestilling som flatpack hos os på Mågevej 73. Valget og prisen er tydeligt angivet i tilbuddet eller i designeren.</p>
     <p>Der skal være adgang, så den varebil eller lastbil, der leverer dit produkt, kan holde tæt på din adresse, det vil sige inden for ca. 25 meter fra indgangen. Kan bilen ikke det, kontakter vi dig før leveringen og aftaler en løsning. Ekstra bæring afregnes efter vores timepris.</p>
     <p><strong>Risikoen for varen.</strong> Ved levering til kantsten går risikoen over til dig, når varen er læsset af og stillet på kantstenen eller i indkørslen. Herefter bærer du selv ansvaret for varen, fx for regn, frost og tyveri. Er du ikke hjemme, må vi kun stille varen, hvis vi skriftligt har aftalt det på forhånd. Ved levering med indbæring bærer vi risikoen, indtil varen er båret ind og stillet på det aftalte sted. Henter du selv, går risikoen over, når varen er udleveret til dig. Se varen efter for synlige transportskader, når du modtager den.</p>
