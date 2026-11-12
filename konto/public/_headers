@@ -1,0 +1,13 @@
+# konto.neminventar.dk — headere på de statiske sider (Pages-projektet ni-konto). API-svarene (/api/*) sætter Workeren selv.
+# plan-teknik-v3 §2 "Kundeflade" + R18, review-samlet nr. 3. Testet af konto/test/headers.test.mjs (præcis disse headere).
+#   script-src  'self' + Turnstile (kun log ind henter den)      connect-src  'self' + Plausible via api.neminventar.dk
+#   frame-src   Turnstile                                          ingen 'unsafe-inline' nogen steder
+/*
+  Content-Security-Policy: default-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self' https://api.neminventar.dk; frame-src https://challenges.cloudflare.com; form-action 'self'; base-uri 'none'; manifest-src 'self'; frame-ancestors 'none'
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Referrer-Policy: no-referrer
+  X-Content-Type-Options: nosniff
+  X-Robots-Tag: noindex, nofollow
+
+/ordre/*
+  Cache-Control: private, no-store

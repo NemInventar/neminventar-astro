@@ -9,7 +9,11 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "build:konto": "astro build --config astro.konto.config.mjs",
+    "test:konto-site": "node --test \"konto/test/*.test.mjs\"",
+    "test:konto-udgiv": "node konto/test/udgiv-tjek.mjs",
+    "skaermbilleder:konto": "node konto/scripts/skaermbilleder.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^5.0.7",

@@ -1,0 +1,11 @@
+---
+// konto.neminventar.dk/ordre/#<nøgle> (udgivelse 1) og /ordre/#NI-XXXXXXXX (udgivelse 2, med login). Kun dansk (Fable d4).
+// Siden er en tom skal; scripts/ordre-side.js læser fragmentet, fjerner nøglen (R10) og henter bestillingen.
+import KontoLayout from '../../layouts/KontoLayout.astro';
+---
+<KontoLayout titel="Nem Inventar" side="ordre">
+  <div id="rod" aria-busy="true"></div>
+</KontoLayout>
+<script>
+  import '../../scripts/ordre-side.js';
+</script>

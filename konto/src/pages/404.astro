@@ -1,0 +1,8 @@
+---
+// Ukendt adresse på konto.neminventar.dk. Fable har ingen tekst (TODO-TEKST:side.404, konto/tekster/mangler.json).
+import KontoLayout from '../layouts/KontoLayout.astro';
+import { tHtml } from '../lib/tekst.mjs';
+---
+<KontoLayout titel="Nem Inventar" side="404">
+  <div id="rod" class="ordre-besked"><h1 set:html={tHtml('da', 'side.404')} /></div>
+</KontoLayout>
