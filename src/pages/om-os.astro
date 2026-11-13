@@ -25,18 +25,18 @@ const FASER = [
   { n: '01', fase: 'Før tilbud', h: 'Prisen regnes af dem, der skal bygge.', p: 'Tilbuddet bygger på vores egne timer og de materialer, vi selv køber ind, og leveringstiden på vores egen produktionsplan: typisk 8–12 uger fra ordre.',
     kan: [{ b: 'Bestemme alle mål.', p: 'Bredde, højde og dybde tegnes efter jeres rum.' }, { b: 'Kræve certificeret træ.', p: 'Vi køber selv pladerne og leverer FSC eller PEFC, når udbuddet kræver det.' }] },
   { n: '02', fase: 'Under tegning', h: 'Designet låses, når I er sikre.', p: 'I godkender 3D-modellen og renderne. Derefter trækker vi værkstedstegninger og styklister ud af samme model, så det, I har sagt ja til, er det, der bliver skåret.',
-    kan: [{ b: 'Se det i rummet.', p: 'Vi tager Apple Vision Pro med ud og viser inventaret i fuld størrelse i det rum, hvor det skal stå.' }, { b: 'Vælge kuløren.', p: 'Vi bruger hårdvoksolie fra Rubio Monocoat og kan få en kulør blandet til jeres byggeri.' }] },
+    kan: [{ b: 'Se det i rummet.', p: 'Vi tager Apple Vision Pro med ud og viser inventaret i fuld størrelse i det rum, hvor det skal stå.' }, { b: 'Vælge farven.', p: 'Vi bruger hårdvoksolie fra Rubio Monocoat og kan få en farve blandet til jeres byggeri.' }] },
   { n: '03', fase: 'Under produktion', h: 'Bygget præcis, som I godkendte det.', p: 'Vores egne folk skærer, olierer og samler efter tegningerne, så det er os, der står inde for kvalitet og tidsplan.',
     kan: [{ b: 'Godkende et prøveemne.', p: 'Ved større leverancer bygger vi ét eksemplar først, og når I har godkendt det i hånden, bygges serien magen til.' }] },
   { n: '04', fase: 'Ved levering', h: 'Leveret i den rækkefølge, byggeriet skal bruge det.', p: 'Vi pakker selv. Fordi vi også køber materialerne, følger datablade, indeklimadokumentation og de EPD’er, der findes, med i afleveringen.',
     kan: [{ b: 'Få det i etaper.', p: 'Rum for rum eller etage for etage, i takt med byggeriet.' }, { b: 'Få det monteret.', p: 'Vi monterer også, hvis I ønsker det, så én svarer for inventaret, til det sidste skab sidder fast.' }] },
   { n: '05', fase: 'Efter aflevering', h: 'Vi kan bygge det samme igen.', p: 'Vi gemmer 3D-modellen. Slid på olien udbedres pletvis, uden at hele fladen skal slibes.',
-    kan: [{ b: 'Bestille reservedele.', p: 'En ny låge eller hylde laves fra den gemte model, i samme kulør.' }, { b: 'Bygge videre.', p: 'Flere enheder i samme mål og kulør, når der bliver brug for dem.' }] },
+    kan: [{ b: 'Bestille reservedele.', p: 'En ny låge eller hylde laves fra den gemte model, i samme farve.' }, { b: 'Bygge videre.', p: 'Flere enheder i samme mål og farve, når der bliver brug for dem.' }] },
 ];
 ---
 <Base
   title="Om os — Nem Inventar"
-  description="Nem Inventar tegner fast inventar i 3D og bygger det i egen produktion: frie mål, design set i rummet, før det låses, prøveemner og reservedele fra samme model.">
+  description="Vi bygger fast inventar i vores egenproduktion efter egne 3D-tegninger på jeres mål. Fra samme model kommer visualiseringer, prøveemner og reservedele.">
 
   <!-- ============ TOPPEN (tekst-først, intet der bevæger sig) ============ -->
   <header class="about-top" id="top"><div class="wrap">
@@ -150,7 +150,7 @@ const FASER = [
     <div class="ref-grid rv">
       <div class="ref-text">
         <p>Et helt byggeri er den ene vej ind: udbud, tilbudsliste, materialegodkendelser og delleverancer, der følger byggepladsens tidsplan. Den anden vej er mindre: vi laver også den enkelte bænk eller reol.</p>
-        <p>Begge dele tegnes i 3D og bygges i vores egen produktion — med samme kulører, samme dokumentation og samme kontakt hele vejen.</p>
+        <p>Begge dele tegnes i 3D og bygges i vores egen produktion — med samme farver, samme dokumentation og samme kontakt hele vejen.</p>
       </div>
       {reference && <ProjectCard c={reference} />}
     </div>
