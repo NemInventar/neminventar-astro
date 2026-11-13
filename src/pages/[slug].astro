@@ -63,10 +63,11 @@ const tabel = (s: string) => {
 // deles op, så læseren og AI-motorerne kan finde afsnittet om fx materialer eller låger).
 const overskrift = (s: string) => (s.startsWith('## ') ? plain(s.slice(3).trim()) : null);
 // Billeder, der står forrest (src/data/landing-forrest.json): de samme, som annoncen viser, så klikket lander på det, man trykkede på.
-const RENDER = 'https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_';
-const forrest: WebImage[] = (((FORREST as unknown as Record<string, { id: string; alt: string; caption: string }[]>)[page.slug]) ?? [])
-  .map((f) => ({ src: `${RENDER}${f.id}.jpg`, alt: f.alt, caption: f.caption, kind: 'visualisering' }) as WebImage);
-const images = [...forrest, ...(page.images ?? []).filter((im) => im.kind !== 'video')];
+// pris + href = prisen på det, billedet viser, og linket til præcis det design (Annoncer/lav_forrest.py).
+type Billede = WebImage & { pris?: string; href?: string };
+const forrest: Billede[] = (((FORREST as unknown as Record<string, Omit<Billede, 'kind'>[]>)[page.slug]) ?? [])
+  .map((f) => ({ ...f, kind: 'visualisering' }) as Billede);
+const images: Billede[] = [...forrest, ...(page.images ?? []).filter((im) => im.kind !== 'video')];
 // Brødteksten deles ved mellemoverskrifterne: indledningen står åben, hvert afsnit foldes ud ved klik (teksten står stadig i HTML'en).
 const blokke: { h: string | null; afsnit: string[] }[] = [{ h: null, afsnit: [] }];
 for (const para of (page.body ?? '').split('\n\n').filter(Boolean)) {
@@ -211,6 +212,9 @@ const jsonLd = [
               <figcaption id="main-cap" class="img-tag">{hero.caption}</figcaption>
             </figure>
           )}
+          {hero?.pris && hero.href && (
+            <p class="lp-pris"><span>{hero.pris}</span><a href={hero.href} data-geks="annoncebillede" data-side={page.slug}>Byg en tilsvarende i designeren →</a></p>
+          )}
           {heroEks && (
             <a class="btn btn-ghost lp-eks" href={heroEks.href} data-geks={heroEks.id} data-produkt={heroEks.produkt} data-side={page.slug}>Byg videre på denne i designeren <span class="arr">→</span></a>
           )}
@@ -234,7 +238,8 @@ const jsonLd = [
             <figure class={`gfig${im.kind === 'tegning' ? ' contain' : ''}`}>
               <img src={cdn(im.src, 800)} alt={im.alt} loading="lazy" decoding="async" />
               {ex && <a class="ptag lp-byg" href={ex.href} data-geks={ex.id} data-produkt={ex.produkt} data-side={page.slug}>Åbn i designeren →</a>}
-              <figcaption class="img-tag"><b>{imgLabel(im.kind)}</b><span>{im.caption}</span></figcaption>
+              {im.pris && im.href && <a class="ptag lp-byg" href={im.href} data-geks="annoncebillede" data-side={page.slug}>Byg en tilsvarende →</a>}
+              <figcaption class="img-tag"><b>{imgLabel(im.kind)}</b><span>{im.caption}{im.pris && <em> · {im.pris}</em>}</span></figcaption>
             </figure>
           ); })}
         </div>
@@ -388,6 +393,10 @@ const jsonLd = [
   </script>
   <style>
     .lp-eks{margin-top:12px}
+    .lp-pris{margin-top:12px;display:flex;gap:8px 18px;flex-wrap:wrap;justify-content:space-between;font-size:15px;color:var(--muted)}
+    .lp-pris span{color:var(--ink);font-weight:600}
+    .lp-pris a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--warm);text-underline-offset:3px}
+    .lp-billeder .img-tag em{font-style:normal;color:var(--ink);font-weight:600}
     .pd-main{aspect-ratio:16/10}
     .detail-body .detail-cta{margin-top:28px}
     .lp-billeder{margin-top:28px}

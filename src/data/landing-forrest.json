@@ -1,16 +1,87 @@
 {
-  "_note": "Billeder, der står forrest på en landingsside (før landing_web.images). Kampagnen Erhverv - lockers viser de samme billeder i annoncen, så den, der klikker, genkender det, de trykkede på. Flyttes ind i landing_web_2026_09_24.images, når forsøget er godkendt.",
+  "_note": "Billeder, der står forrest på en landingsside (før landing_web.images): de samme, som annoncerne viser, så klikket lander på det, man trykkede på. pris + href = prisen på det, billedet viser, og linket til præcis det design i designeren. Skrives af Annoncer/lav_forrest.py ud fra billedpriser.mjs — ret aldrig i hånden, og kør scriptet igen, når prisgitteret eller en online-faktor ændres.",
   "lockers": [
-    { "id": "1794344779048", "alt": "Lockervæg med blå olierede låger og birkekanter over en bænk i et lyst kontor", "caption": "Blå olierede låger med birkekanter" },
-    { "id": "1794344827146", "alt": "Lang lockervæg, hvor lågerne går fra blå over grøn til rødbrun", "caption": "Låger fra blå over grøn til rødbrun" },
-    { "id": "1794344810108", "alt": "Lockers med grønne olierede låger ved siden af en bænk og planter", "caption": "Grønne olierede låger" },
-    { "id": "1794344796089", "alt": "Lang lockervæg i rødbrun olie på en gang", "caption": "Lang væg i rødbrun olie" },
-    { "id": "1794344858656", "alt": "Lockervæg med blå og hvide låger i skakbrætmønster i et atrium", "caption": "Blå og hvide låger i mønster" }
+    {
+      "src": "https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1794344779048.jpg",
+      "alt": "Lockervæg med blå olierede låger og birkekanter over en bænk i et lyst kontor",
+      "caption": "Blå olierede låger med birkekanter",
+      "pris": "40 rum som disse: 2.920 kr. pr. rum ekskl. moms",
+      "href": "https://designer.neminventar.dk/designer?p=locker&t=eyJzb2VqbGVyIjoxMCwicmFla2tlciI6NCwiYiI6NDAsImgiOjQ1LCJkIjo0NSwibWF0IjoiYmlyayIsImZyb250IjoiZmFydmUiLCJmYXJ2ZSI6eyJiaXJrIjoibmF0dXIiLCJsYWFnZSI6ImJsYWEifSwiaGFlbmdzZWwiOiJzdGFuZGFyZCIsImdyZWIiOiJmcmFlc2V0IiwibGFhcyI6ImtvZGUifQ&kunde=erhverv"
+    },
+    {
+      "src": "https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1794344827146.jpg",
+      "alt": "Lang lockervæg, hvor lågerne går fra blå over grøn til rødbrun",
+      "caption": "Låger fra blå over grøn til rødbrun",
+      "pris": "56 rum som disse: 2.620 kr. pr. rum ekskl. moms",
+      "href": "https://designer.neminventar.dk/designer?p=locker&t=eyJzb2VqbGVyIjoxNCwicmFla2tlciI6NCwiYiI6NDAsImgiOjQ1LCJkIjo0NSwibWF0IjoiYmlyayIsImZyb250IjoiZmFydmUiLCJmYXJ2ZSI6eyJiaXJrIjoibmF0dXIiLCJsYWFnZSI6ImJsYWEifSwiaGFlbmdzZWwiOiJzdGFuZGFyZCIsImdyZWIiOiJmcmFlc2V0IiwibGFhcyI6ImhhZW5nZWxhYXMifQ&kunde=erhverv"
+    },
+    {
+      "src": "https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1794344810108.jpg",
+      "alt": "Lockers med grønne olierede låger ved siden af en bænk og planter",
+      "caption": "Grønne olierede låger",
+      "pris": "10 rum som disse: 4.380 kr. pr. rum ekskl. moms",
+      "href": "https://designer.neminventar.dk/designer?p=locker&t=eyJzb2VqbGVyIjo1LCJyYWVra2VyIjoyLCJiIjo0MCwiaCI6OTAsImQiOjUwLCJtYXQiOiJiaXJrIiwiZnJvbnQiOiJmYXJ2ZSIsImZhcnZlIjp7ImJpcmsiOiJuYXR1ciIsImxhYWdlIjoiZmVybiJ9LCJoYWVuZ3NlbCI6InN0YW5kYXJkIiwiZ3JlYiI6ImZyYWVzZXQiLCJsYWFzIjoiaGFlbmdlbGFhcyJ9&kunde=erhverv"
+    },
+    {
+      "src": "https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1794344796089.jpg",
+      "alt": "Lang lockervæg i rødbrun olie på en gang",
+      "caption": "Lang væg i rødbrun olie"
+    },
+    {
+      "src": "https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1794344858656.jpg",
+      "alt": "Lockervæg med blå og hvide låger i skakbrætmønster i et atrium",
+      "caption": "Blå og hvide låger i mønster"
+    }
   ],
   "omklaedningsskabe": [
-    { "id": "1794340185082", "alt": "Omklædning med høje skabe med sorte låger og egekanter og en bænk i midten", "caption": "Sorte låger med egekanter" },
-    { "id": "1794340233887", "alt": "Høje skabe uden greb i mørkt olieret eg i en omklædning med badekåber", "caption": "Høje skabe i mørkt olieret eg" },
-    { "id": "1794341246169", "alt": "Høje skabe i rødbrun olieret birk med bænk i et klubhus", "caption": "Rødbrun olieret birk" },
-    { "id": "1794344841321", "alt": "Omklædningsskabe med terrakottafarvede låger og en bænk i eg", "caption": "Terrakottafarvede låger og bænk i eg" }
+    {
+      "src": "https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1794340185082.jpg",
+      "alt": "Omklædning med skabe med mørkegrå låger og birkekanter og en bænk i midten",
+      "caption": "Mørkegrå låger og greb i bronze",
+      "pris": "20 rum som disse: 5.720 kr. pr. rum ekskl. moms",
+      "href": "https://designer.neminventar.dk/designer?p=locker&t=eyJzb2VqbGVyIjoxMCwicmFla2tlciI6MiwiYiI6NDAsImgiOjkwLCJkIjo1MCwibWF0IjoiYmlyayIsImZyb250IjoiZmFydmUiLCJmYXJ2ZSI6eyJiaXJrIjoibmF0dXIiLCJsYWFnZSI6ImNoYXJjb2FsIn0sImhhZW5nc2VsIjoibHVrc3VzIiwiZ3JlYiI6Imx1a3N1cyIsImxhYXMiOiJub2VnbGUifQ&kunde=erhverv"
+    },
+    {
+      "src": "https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1794340233887.jpg",
+      "alt": "Høje skabe uden greb i mørkt olieret birk i en omklædning med badekåber",
+      "caption": "Høje skabe i mørk olie med elektronisk lås",
+      "pris": "10 rum som disse: 11.220 kr. pr. rum ekskl. moms",
+      "href": "https://designer.neminventar.dk/designer?p=locker&t=eyJzb2VqbGVyIjoxMCwicmFla2tlciI6MSwiYiI6NDUsImgiOjE4MCwiZCI6NTAsIm1hdCI6ImJpcmsiLCJmcm9udCI6InNvbSIsImZhcnZlIjp7ImJpcmsiOiJjb2NvYSJ9LCJoYWVuZ3NlbCI6Imx1a3N1cyIsImdyZWIiOiJpbmdlbiIsImxhYXMiOiJlbGVrdHJvbmlzayJ9&kunde=erhverv"
+    },
+    {
+      "src": "https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1794341246169.jpg",
+      "alt": "Høje skabe i rødbrun olieret birk med bænk i et klubhus",
+      "caption": "Høje skabe i rødbrun olieret birk på bænk",
+      "pris": "8 rum som disse: 12.760 kr. pr. rum ekskl. moms",
+      "href": "https://designer.neminventar.dk/designer?p=locker&t=eyJzb2VqbGVyIjo4LCJyYWVra2VyIjoxLCJiIjo0NSwiaCI6MTgwLCJkIjo1MCwibWF0IjoiYmlyayIsImZyb250Ijoic29tIiwiZmFydmUiOnsiYmlyayI6InJvZWRicnVuIn0sImhhZW5nc2VsIjoic3RhbmRhcmQiLCJncmViIjoiZnJhZXNldCIsImxhYXMiOiJoYWVuZ2VsYWFzIiwic29ra2VsIjoiYmFlbmsifQ&kunde=erhverv"
+    },
+    {
+      "src": "https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1794344841321.jpg",
+      "alt": "Omklædningsskabe med terrakottafarvede låger og en bænk",
+      "caption": "Terrakottafarvede låger"
+    }
+  ],
+  "garderobeskab": [
+    {
+      "src": "https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/designer/2026-11/fda562ab-29f9-4918-bfce-a0d024725fc8-maerket.jpg",
+      "alt": "Tre garderobeskabe i mørkt olieret egetræsfinér med greb i træ",
+      "caption": "Egetræsfinér i mørk olie",
+      "pris": "3 skabe som disse: 39.000 kr. inkl. moms",
+      "href": "https://designer.neminventar.dk/designer?p=hoejskab&t=eyJiIjo2MCwiZCI6NjAsImgiOjIzMCwibiI6MywidCI6InNrYWIiLCJoeSI6NCwib2IiOjEsInNvIjoxLCJic2siOjIsImhuZyI6MCwiaHkxIjo0LCJoeTIiOjQsIm1hdCI6ImVnIiwicmFtIjowLCJ0b3AiOjAsImZmaW4iOiJlZyIsImZrcnkiOiJrcnlkcyIsImZtYXQiOiJlZyIsImdyZWIiOiJ0cmFlIiwiaW5kZSI6ImdhcmRlcm9iZSIsImluZGwiOjAsIm1pZHQiOjAsImZhcnZlIjp7ImVnIjoiY29jb2EiLCJhc2siOiJuYXR1ciIsImJpcmsiOiJuYXR1ciIsImJvZWciOiJuYXR1ciIsImRla29yIjoibHlzLWVnIiwia3J5ZHMiOiJuYXR1ciIsImxhYWdlIjoiYmxhYSIsImtvbXBha3QiOiJsaWdodC1ncmV5IiwibGFtaW5hdCI6ImxpZ2h0LWdyZXkiLCJzaGlubm9raSI6Im5hdHVyYWwtb2FrIn0sImZyb250Ijoic29tIiwiaHluZGUiOjEsImluZGUxIjoiaHlsZGVyIiwiaW5kZTIiOiJnYXJkZXJvYmUiLCJza3VmZmUiOiJzdGFuZGFyZCIsInNrdWZmZTEiOiJzdGFuZGFyZCIsInNrdWZmZTIiOiJzdGFuZGFyZCIsImhhZW5nc2VsIjoidiIsIm1vbnRlcmluZyI6ImZyaSJ9"
+    },
+    {
+      "src": "https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/designer/2026-11/5f0b8898-4e85-43c1-b2bd-970060c07519-maerket.jpg",
+      "alt": "Fire høje garderobeskabe i røget valnøddefinér",
+      "caption": "Røget valnøddefinér",
+      "pris": "4 skabe som disse: 95.300 kr. inkl. moms",
+      "href": "https://designer.neminventar.dk/designer?p=hoejskab&t=eyJiIjo2MCwiZCI6NjAsImgiOjI0MCwibiI6NCwidCI6InNrYWIiLCJoeSI6NCwib2IiOjEsInNvIjoxLCJic2siOjIsImhuZyI6MCwiaHkxIjo0LCJoeTIiOjQsIm1hdCI6InNoaW5ub2tpIiwicmFtIjowLCJ0b3AiOjAsImZmaW4iOiJlZyIsImZrcnkiOiJrcnlkcyIsImZtYXQiOiJlZyIsImdyZWIiOiJzbGlkcyIsImluZGUiOiJnYXJkZXJvYmUiLCJpbmRsIjowLCJtaWR0IjowLCJmYXJ2ZSI6eyJlZyI6Im5hdHVyIiwiYXNrIjoibmF0dXIiLCJiaXJrIjoibmF0dXIiLCJib2VnIjoibmF0dXIiLCJkZWtvciI6Imx5cy1lZyIsImtyeWRzIjoibmF0dXIiLCJsYWFnZSI6ImJsYWEiLCJrb21wYWt0IjoibGlnaHQtZ3JleSIsImxhbWluYXQiOiJsaWdodC1ncmV5Iiwic2hpbm5va2kiOiJzbW9rZWQtd2FsbnV0In0sImZyb250Ijoic29tIiwiaHluZGUiOjEsImluZGUxIjoiaHlsZGVyIiwiaW5kZTIiOiJnYXJkZXJvYmUiLCJza3VmZmUiOiJzdGFuZGFyZCIsInNrdWZmZTEiOiJzdGFuZGFyZCIsInNrdWZmZTIiOiJzdGFuZGFyZCIsImhhZW5nc2VsIjoidiIsIm1vbnRlcmluZyI6ImZyaSJ9"
+    },
+    {
+      "src": "https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/designer/2026-11/9cb8bf2b-89c1-416f-941a-7e7103e67495-maerket.jpg",
+      "alt": "Tre garderobeskabe i sort olieret askefinér uden greb",
+      "caption": "Askefinér i sort olie",
+      "pris": "3 skabe som disse: 37.425 kr. inkl. moms",
+      "href": "https://designer.neminventar.dk/designer?p=hoejskab&t=eyJiIjo1MCwiZCI6NjAsImgiOjIyMCwibiI6MywidCI6InNrYWIiLCJoeSI6NCwib2IiOjEsInNvIjoxLCJic2siOjIsImhuZyI6MCwiaHkxIjo0LCJoeTIiOjQsIm1hdCI6ImFzayIsInJhbSI6MCwidG9wIjowLCJmZmluIjoiZWciLCJma3J5Ijoia3J5ZHMiLCJmbWF0IjoiZWciLCJncmViIjoicHVzaCIsImluZGUiOiJnYXJkZXJvYmVfc2t1ZmZlciIsImluZGwiOjAsIm1pZHQiOjAsImZhcnZlIjp7ImVnIjoibmF0dXIiLCJhc2siOiJjaGFyY29hbCIsImJpcmsiOiJuYXR1ciIsImJvZWciOiJuYXR1ciIsImRla29yIjoibHlzLWVnIiwia3J5ZHMiOiJuYXR1ciIsImxhYWdlIjoiYmxhYSIsImtvbXBha3QiOiJsaWdodC1ncmV5IiwibGFtaW5hdCI6ImxpZ2h0LWdyZXkiLCJzaGlubm9raSI6Im5hdHVyYWwtb2FrIn0sImZyb250Ijoic29tIiwiaHluZGUiOjEsImluZGUxIjoiaHlsZGVyIiwiaW5kZTIiOiJnYXJkZXJvYmUiLCJza3VmZmUiOiJzdGFuZGFyZCIsInNrdWZmZTEiOiJzdGFuZGFyZCIsInNrdWZmZTIiOiJzdGFuZGFyZCIsImhhZW5nc2VsIjoidiIsIm1vbnRlcmluZyI6ImZyaSJ9"
+    }
   ]
 }
