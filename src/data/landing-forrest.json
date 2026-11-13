@@ -1,0 +1,16 @@
+{
+  "_note": "Billeder, der står forrest på en landingsside (før landing_web.images). Kampagnen Erhverv - lockers viser de samme billeder i annoncen, så den, der klikker, genkender det, de trykkede på. Flyttes ind i landing_web_2026_09_24.images, når forsøget er godkendt.",
+  "lockers": [
+    { "id": "1794344779048", "alt": "Lockervæg med blå olierede låger og birkekanter over en bænk i et lyst kontor", "caption": "Blå olierede låger med birkekanter" },
+    { "id": "1794344827146", "alt": "Lang lockervæg, hvor lågerne går fra blå over grøn til rødbrun", "caption": "Låger fra blå over grøn til rødbrun" },
+    { "id": "1794344810108", "alt": "Lockers med grønne olierede låger ved siden af en bænk og planter", "caption": "Grønne olierede låger" },
+    { "id": "1794344796089", "alt": "Lang lockervæg i rødbrun olie på en gang", "caption": "Lang væg i rødbrun olie" },
+    { "id": "1794344858656", "alt": "Lockervæg med blå og hvide låger i skakbrætmønster i et atrium", "caption": "Blå og hvide låger i mønster" }
+  ],
+  "omklaedningsskabe": [
+    { "id": "1794340185082", "alt": "Omklædning med høje skabe med sorte låger og egekanter og en bænk i midten", "caption": "Sorte låger med egekanter" },
+    { "id": "1794340233887", "alt": "Høje skabe uden greb i mørkt olieret eg i en omklædning med badekåber", "caption": "Høje skabe i mørkt olieret eg" },
+    { "id": "1794341246169", "alt": "Høje skabe i rødbrun olieret birk med bænk i et klubhus", "caption": "Rødbrun olieret birk" },
+    { "id": "1794344841321", "alt": "Omklædningsskabe med terrakottafarvede låger og en bænk i eg", "caption": "Terrakottafarvede låger og bænk i eg" }
+  ]
+}
