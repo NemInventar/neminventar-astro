@@ -17,7 +17,7 @@
 // "Leveres til" og lev.skjult1 vises ikke ved afhentning (der leveres ikke til adressen).
 import { tilstand } from '../../vendor/webordre/tilstand.mjs';
 import { varerOgLevering } from '../../vendor/webordre/levering.mjs';
-import { t, tHtml, esc, tekstMedLinks, kolonner, beloeb, SITE, delOverskrift, bindUger } from './tekst.mjs';
+import { t, tHtml, esc, tekstMedLinks, kolonner, beloeb, SITE, delOverskrift, bindUger, bindMaal, bindBeloeb } from './tekst.mjs';
 import { loginAdresse, designerLink } from './adresser.mjs';
 
 const DA = 'da';
@@ -62,9 +62,12 @@ export function beskrivelsePar(b, dybde = 0) {
 }
 
 // Forløbet fra kernen: et sket trin har flueben og som regel en dato ("Annulleret" uden registreret tilbageførsel har ingen)
+// Underlinjen binder ugen som H1'en, og en uge i én måned brydes slet ikke (Fable port 3 runde 2, R6: før "30. november–4." /
+// "december 2026"); datoen ("10. november 2026") holdes samlet.
+const flTekst = (x) => bindUger(bindMaal(esc(x)), { helParentes: true });
 function forloebHtml(s) {
   const li = s.forloeb.map((r) => (r.sket
-    ? `<li class="sket" data-trin="${esc(r.trin)}"><span class="ok">${OK_IKON}</span><span class="fl-navn">${esc(r.navn)}</span><span class="fl-tekst">${r.dato ? esc(r.dato) : ''}${r.tekst ? `<small>${esc(r.tekst)}</small>` : ''}</span></li>`
+    ? `<li class="sket" data-trin="${esc(r.trin)}"><span class="ok">${OK_IKON}</span><span class="fl-navn">${esc(r.navn)}</span><span class="fl-tekst">${r.dato ? flTekst(r.dato) : ''}${r.tekst ? `<small>${flTekst(r.tekst)}</small>` : ''}</span></li>`
     : `<li class="ikke"><span class="ej"></span><span class="fl-navn">${esc(r.navn)}</span><span class="fl-tekst">${r.tekst ? esc(r.tekst) : ''}</span></li>`));
   return `<ol class="fl">${li.join('')}</ol>`;
 }
@@ -81,10 +84,14 @@ function varerHtml(ordre, udgave, designerUrl) {
   const raekker = (linjer.map((l, i) => {
     const antal = Number.isFinite(l?.antal) ? String(l.antal) : '';
     const pris = Number.isSafeInteger(l?.beloeb_oere) ? beloeb(l.beloeb_oere, DA) : '';
-    return `<tr><td>${esc(tekst(l?.tekst))}</td><td class="n">${esc(antal)}</td><td class="n">${esc(pris)}</td></tr>${i === 0 ? detaljer : ''}`;
+    // antallet er kernens (vareLinje): "2 × Lockers …" med antal 1 står som "Lockers …" · 2 (Fable port 3 runde 2, R1)
+    return `<tr><td>${bindMaal(esc(tekst(l?.tekst)))}</td><td class="n">${esc(antal)}</td><td class="n">${bindBeloeb(esc(pris))}</td></tr>${i === 0 ? detaljer : ''}`;
   }).join('') || detaljer)
+    // Leveringsrækken har intet antal: dens første celle spænder over Vare og Antal, så teksten ikke presses sammen af en tom
+    // celle på en telefon (Fable port 3 runde 2, R7 — før "Levering:" / "flatpack," / "afhentning på" / "Mågevej"). Bredere ser
+    // det ud som før: Antal-cellen var tom.
     + (levering
-      ? `<tr data-felt="levering-linje"><td>${esc(t(DA, 'varer.levering', { levering: levering.ord }))}</td><td class="n"></td><td class="n">${Number.isSafeInteger(levering.beloeb_oere) ? esc(beloeb(levering.beloeb_oere, DA)) : ''}</td></tr>`
+      ? `<tr data-felt="levering-linje"><td colspan="2">${esc(t(DA, 'varer.levering', { levering: levering.ord }))}</td><td class="n">${Number.isSafeInteger(levering.beloeb_oere) ? bindBeloeb(esc(beloeb(levering.beloeb_oere, DA))) : ''}</td></tr>`
       : '');
   const tot = ordre.total ?? {};
   const fod = [

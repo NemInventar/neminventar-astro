@@ -104,8 +104,18 @@ export function bindMaal(escaped) {
     .replace(/(\d{1,2}\.?) ([a-zæøå]+) (\d{4})/gi, '$1&nbsp;$2&nbsp;$3');
 }
 
-export function bindUger(escaped) {
+// helParentes (Fable port 3 runde 2, R6 — forløbets underlinje og statusteksten på Min side, ikke H1'en): ligger ugen i én
+// måned ("(14.–18. december 2026)", "(14–18 December 2026)"), brydes parentesen slet ikke — den står i <span class="nw">. Ugen
+// over to måneder kan stadig kun brydes efter stregen.
+const EN_MAANED = /^\d{1,2}\.?–\d{1,2}\.?&nbsp;[^&\s–]+&nbsp;\d{4}$/;
+export function bindUger(escaped, { helParentes = false } = {}) {
   return String(escaped)
     .replace(/\b(uge|week) (\d{1,2})\b/gi, '$1&nbsp;$2')
-    .replace(/\(([^()]*\d{4})\)/g, (m, ind) => `(${ind.replace(/ /g, '&nbsp;')})`);
+    .replace(/\(([^()]*\d{4})\)/g, (m, ind) => {
+      const bundet = ind.replace(/ /g, '&nbsp;');
+      return helParentes && EN_MAANED.test(bundet) ? `<span class="nw">(${bundet})</span>` : `(${bundet})`;
+    });
 }
+
+// Et beløb ("21.487,50 kr.", "DKK 21,487.50") holdes samlet: kun hårde mellemrum (runde 2, R3). Escapet tekst ind og ud.
+export const bindBeloeb = (escaped) => String(escaped).replace(/ /g, '&nbsp;');

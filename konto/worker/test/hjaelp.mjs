@@ -206,10 +206,14 @@ export function lavVerden({ start = Date.parse('2026-11-12T10:00:00Z'), env = {}
       fetch: v.fetch, db: v.db, nu: v.nu, ...(standardLog ? {} : { log: (type, f) => v.logs.push({ type, ...f }) }),
     });
     await Promise.all(ventende);
-    const tekst = await res.text();
+    // Et billede (miniaturen) kommer som bytes; alt andet er JSON
+    const erJson = /^application\/json/.test(res.headers.get('content-type') ?? '') || !res.headers.get('content-type');
+    const bytes = erJson ? null : new Uint8Array(await res.arrayBuffer());
+    const tekst = erJson ? await res.text() : '';
     return {
       status: res.status,
       json: tekst ? JSON.parse(tekst) : null,
+      bytes,
       headers: res.headers,
       setCookie: res.headers.getSetCookie(),
     };

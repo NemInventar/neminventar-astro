@@ -133,7 +133,7 @@ details.vent p{margin-top:8px;color:var(--muted);max-width:62ch;line-height:1.7}
 .field small{font-size:13px;color:var(--muted);line-height:1.5}
 input.kode{font-family:'Archivo','Inter',sans-serif;font-size:30px;font-weight:600;letter-spacing:.32em;text-align:center;padding:14px 10px;font-variant-numeric:tabular-nums}
 .form .btn{width:100%;justify-content:center}
-.form .felt-fejl{margin:0 0 16px}   /* fejlen under feltet, over knappen (Fable port 3, nr. 13) */
+.form .felt-fejl{margin:0 0 14px}   /* fejlen under feltet, 14 px over knappen (Fable port 3, nr. 13; runde 2, R9) */
 .form-note{color:var(--muted);font-size:12.5px;line-height:1.6;margin-top:14px}
 /* Nedtællingen og "Send en ny kode" på samme linje (Fable port 3, nr. 27); som hovedknap fuld bredde under nedtællingen */
 .igen{display:flex;justify-content:space-between;gap:6px 14px;margin-top:14px;font-size:13.5px;color:var(--muted);align-items:center}
@@ -249,10 +249,15 @@ details.slet[open] summary::after{content:"–"}
   /* Gemte designs: navnet (og "Mere"), "Gemt {dato}", "Pris da du gemte: {pris}" på egen linje og "Åbn i designeren" —
      uden pris står prislinjen ikke (port 3, nr. 16) */
   .tb table.des tr{grid-template-columns:64px minmax(0,1fr);gap:2px 12px}
-  .tb table.des td.th-c{grid-column:1;grid-row:1 / span 4;width:auto}
-  .tb table.des td:nth-child(2){grid-column:2;grid-row:1}
+  .tb table.des td.th-c{grid-column:1;grid-row:1 / span 5;width:auto}
+  /* Rækkefølgen (Fable port 3 runde 2, R10): navn og opsummering, "Gemt …", "Pris da du gemte: …", "Åbn i designeren" og til
+     sidst "Mere" — cellen med navnet folder sig ud i rækkens gitter, så "Mere" kan stå nederst */
+  .tb table.des td.d-c{display:contents}
+  .tb table.des td.d-c>.d-hoved{grid-column:2;grid-row:1}
+  .tb table.des td.d-c>details.mere{grid-column:2;grid-row:5;margin-top:2px}
   .tb table.des td:nth-child(3){grid-column:2;grid-row:2;color:var(--muted);font-size:14px}
-  .tb table.des td:nth-child(4){grid-column:2;grid-row:3;font-size:14px}
+  /* prislinjen må brydes efter kolon — aldrig midt i beløbet, der er bundet med hårde mellemrum (R3) */
+  .tb table.des td:nth-child(4){grid-column:2;grid-row:3;font-size:14px;white-space:normal}
   .tb table.des td:nth-child(5){grid-column:2;grid-row:4;margin-top:4px}
   .tb table.des td.ingen-pris{display:none}
   .tb table.des td.nw,.tb table.des td.n{padding-top:0;text-align:left}
@@ -273,9 +278,12 @@ details.slet[open] summary::after{content:"–"}
   .sec-h,.og .sec-h{font-size:18px;margin:22px 0 8px;break-after:avoid}
   .konto h1{font-size:26px}
   details.mere summary::after,details.mere[open] summary::after{content:none}
-  /* totalen står én gang, efter leveringsrækken — ikke gentaget nederst på hver side; en række deles ikke over to sider */
-  .tb table.varer tfoot{display:table-row-group}
+  /* totalen står én gang, efter leveringsrækken — ikke gentaget nederst på hver side; en række deles ikke over to sider.
+     Overskriften gentages ikke på næste side, totalen holdes samlet, og leveringsrækken følger totalen (runde 2, R5) */
+  .tb table.varer thead{display:table-row-group}
+  .tb table.varer tfoot{display:table-row-group;break-inside:avoid}
   .tb table.varer tr{break-inside:avoid}
+  .tb table.varer tbody tr:last-child{break-after:avoid}
   /* "Mål og indretning" står åben i udskriften — også når browseren ikke sender beforeprint (fx "Gem som PDF" fra et værktøj) */
   details[data-print-aaben]::details-content{content-visibility:visible;display:block}
   .kun-print{display:block;margin-top:28px;padding-top:12px;border-top:1px solid #999;font-size:12px;color:#333}

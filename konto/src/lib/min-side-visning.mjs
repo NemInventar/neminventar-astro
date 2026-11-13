@@ -3,7 +3,7 @@
 // Statuskolonnen bygger på kernens tilstand(); datoer og uger skrives af kernen (dansk og engelsk).
 import { tilstand } from '../../vendor/webordre/tilstand.mjs';
 import { kbhDato, ugeFrist, ugeTekst, dagTekst, datoTekst } from '../../vendor/webordre/datoer.mjs';
-import { t, tHtml, esc, raa, kolonner, beloeb, sprogAf, delOverskrift, tekstMedLinks, bindUger, bindMaal } from './tekst.mjs';
+import { t, tHtml, esc, raa, kolonner, beloeb, sprogAf, delOverskrift, tekstMedLinks, bindUger, bindMaal, bindBeloeb } from './tekst.mjs';
 import { designerLink } from './adresser.mjs';
 import { proevIgenHtml } from './ordre-visning.mjs';
 
@@ -53,8 +53,9 @@ export function statusTekst(ordre, nu, sprog = 'da') {
   }
 }
 
-// "uge 51" og ugens datoer bindes, men parentesen kan brydes efter stregen (Fable port 3, nr. 1 — samme som ordresidens H1)
-const statusHtml = (s) => bindUger(esc(s));
+// "uge 51" og ugens datoer bindes, og parentesen kan kun brydes efter stregen (Fable port 3, nr. 1 — samme som ordresidens H1).
+// Ligger ugen i én måned, brydes parentesen slet ikke (runde 2, R6: før "Leveres i uge 51 (14.–" / "18. december 2026)").
+const statusHtml = (s) => bindUger(esc(s), { helParentes: true });
 
 // Faste kolonnebredder i begge tabeller, så kolonnerne ikke flytter sig mellem en tom og en fyldt tabel, og indholdet får
 // mindst 240 px (Fable port 3, nr. 28). Bredderne står i konto.css (col.k-…).
@@ -78,7 +79,7 @@ function bestillingerHtml(ordrer, sprog, nu) {
       return `<tr><td class="nw"><a class="lnk" href="/ordre/#${esc(ref)}" aria-label="${esc(t(sprog, 'best.linkLabel', { ref }))}"><b>${esc(ref)}</b></a></td>`
         + `<td class="nw">${o.bestilt ? medMobilEtiket(sprog, 'best.bestiltMobil', 'dato', esc(datoTekst(o.bestilt, sprog))) : ''}</td>`
         + `<td>${esc(linje)}${lev ? `<small>${esc(lev)}</small>` : ''}</td>`
-        + `<td class="n">${Number.isSafeInteger(inkl) ? esc(beloeb(inkl, sprog)) : ''}</td>`
+        + `<td class="n">${Number.isSafeInteger(inkl) ? bindBeloeb(esc(beloeb(inkl, sprog))) : ''}</td>`
         + `<td class="bst">${statusHtml(statusTekst(o, nu, sprog))}</td></tr>`;
     }).join('');
   }
@@ -114,12 +115,14 @@ function designRaekke(d, sprog, designerUrl) {
     : `<span class="th ikon">${PRODUKT_IKON}</span>`;
   return `<tr data-design="${esc(String(d.id))}" data-slags="${uden ? 'uden' : 'konto'}" data-navn="${esc(navn)}"${uden ? '' : ` data-kopi="${esc(designerLink(designerUrl, { produkt: d.produkt, t: d.t, sprog, medGemt: false }) ?? '')}"`}>`
     + `<td class="th-c">${billede}</td>`
-    + `<td class="d-c"><b class="d-navn">${esc(navn || '—')}</b>`
+    // navn og opsummering i én blok, "Mere" for sig: på telefon står "Mere" sidst i rækken (Fable port 3 runde 2, R10)
+    + `<td class="d-c"><div class="d-hoved"><b class="d-navn">${bindMaal(esc(navn || '—'))}</b>`
     + (opsummering && opsummering !== navn ? `<small class="d-ops" data-felt="opsummering">${bindMaal(esc(opsummering))}</small>` : '')
-    + `${uden ? `<span class="ml-m">${esc(t(sprog, 'design.udenLogin'))}</span><small>${esc(t(sprog, 'design.udenLoginHjaelp'))}</small>` : ''}${mere}</td>`
+    + `${uden ? `<span class="ml-m">${esc(t(sprog, 'design.udenLogin'))}</span><small>${esc(t(sprog, 'design.udenLoginHjaelp'))}</small>` : ''}</div>${mere}</td>`
     + `<td class="nw">${datoKbh ? medMobilEtiket(sprog, 'design.gemtMobil', 'dato', esc(datoTekst(datoKbh, sprog))) : ''}</td>`
-    // på telefon "Pris da du gemte: …" på egen linje — uden pris står prislinjen ikke (Fable port 3, nr. 16)
-    + `<td class="n${harPris ? '' : ' ingen-pris'}">${harPris ? medMobilEtiket(sprog, 'design.prisMobil', 'pris', esc(beloeb(d.pris_oere, sprog))) : '—'}</td>`
+    // på telefon "Pris da du gemte: …" på egen linje — uden pris står prislinjen ikke (Fable port 3, nr. 16). Beløbet er bundet
+    // med hårde mellemrum, så linjen kun kan brydes efter kolon — aldrig midt i beløbet (runde 2, R3)
+    + `<td class="n${harPris ? '' : ' ingen-pris'}">${harPris ? medMobilEtiket(sprog, 'design.prisMobil', 'pris', bindBeloeb(esc(beloeb(d.pris_oere, sprog)))) : '—'}</td>`
     + `<td class="n">${aabn ? `<a class="go" href="${esc(aabn)}">${esc(t(sprog, 'design.aabn'))}<i aria-hidden="true">→</i></a>` : ''}</td></tr>`;
 }
 

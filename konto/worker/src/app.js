@@ -3,7 +3,7 @@
 // haandter(req, env, ctx, deps) — deps = {fetch, db, nu, log} kan erstattes i testene (fake-db, fake Graph, Turnstile, bro).
 import {
   LOFT, SESSION, DESIGNER_RUTER, PRIS_URL, origins, flag, normEmail, rensKode, rensRetur, erNoegle, normRef,
-  erUuid, erMailId, erProdukt, rensNavn,
+  erUuid, erMailId, erProdukt, rensNavn, rensMiniature, MINIATURE_TYPE,
 } from './regler.js';
 import { hmacHex, sha256Hex, nyKode, nyToken, erToken } from './krypto.js';
 import { lavDb, DbFejl } from './db.js';
@@ -15,12 +15,22 @@ import { rensT, prisVedGem } from './pris.js';
 import { alarm } from './alarm.js';
 
 const MAKS_BODY = 16 * 1024;
+// "gem" bærer designerens miniature (højst 150 kB som base64 ≈ 200 kB) ud over t (højst 6.000 tegn) — kun den rute får mere
+const MAKS_BODY_GEM = 224 * 1024;
 
 // Et svar, der kastes fra en handler: {status, body}
 class Svar {
   constructor(status, body) {
     this.status = status;
     this.body = body;
+  }
+}
+
+// Et billede fra en handler (miniaturen): bytes og type — sendes som det er, ikke som JSON
+class Billede {
+  constructor(bytes, type) {
+    this.bytes = bytes;
+    this.type = type;
   }
 }
 
@@ -436,7 +446,8 @@ async function minSide(k) {
     ordrer,
     designs: designs.filter(erObj).map((d) => ({
       id: d.id, produkt: d.produkt, navn: d.navn ?? null, titel: typeof d.titel === 'string' ? d.titel : null, t: d.t,
-      pris_oere: d.pris_oere ?? null, gemt: d.gemt, miniature: miniatureUd(d.miniature),
+      // miniaturen (R4): adressen på konto-værten, når designet har et billede — ellers null (siden viser produktets ikon)
+      pris_oere: d.pris_oere ?? null, gemt: d.gemt, miniature: d.har_miniature === true && erUuid(d.id) ? miniatureUd(miniatureSti(d.id)) : null,
       // Rumbilledet (Fable port 3, nr. 15): designeren sender endnu ikke rumbilledets id med ved gem — indtil da null
       rumbillede: null,
     })),
@@ -447,6 +458,7 @@ async function minSide(k) {
 // Miniaturen (kontrakter §6, Fable port 3, nr. 15): kun en sti på konto-værten (/api/…, sidens CSP har img-src 'self').
 // Alt andet — også en sti i en bucket — bliver null, og siden viser produktets ikon.
 export const miniatureUd = (m) => (typeof m === 'string' && /^\/api\/[A-Za-z0-9/_?=&.%-]{1,300}$/.test(m) && !m.includes('..') ? m : null);
+export const miniatureSti = (id) => `/api/design/miniature?id=${id}`;
 
 async function gem(k) {
   const s = await k.kraevSession();
@@ -459,6 +471,9 @@ async function gem(k) {
     navn = rensNavn(b.navn);
     if (!navn) throw new Svar(400, { fejl: 'navn' });
   }
+  // Miniaturen (R4): en JPEG under loftet gemmes med designet; en ugyldig afvises stille — designet gemmes uden billede
+  const mini = b.miniature === undefined || b.miniature === null ? null : rensMiniature(b.miniature);
+  if (b.miniature != null && !mini) k.log('miniature_afvist', {});
   const prisUrl = k.env.MILJOE !== 'prod' && k.env.PRIS_URL ? k.env.PRIS_URL : PRIS_URL;
   const pris = await prisVedGem(prisUrl, k.fetch, b.produkt, t);
   let r;
@@ -466,7 +481,7 @@ async function gem(k) {
     // titel = designets opsummering, som /pris regner den (samme tekst som designerens gem-dialog) — vises under navnet
     r = await k.db.rpc('design_gem', {
       p_kunde_id: s.kunde_id, p_produkt: b.produkt, p_tilstand: t, p_navn: navn ?? pris.titel, p_pris_oere: pris.pris_oere,
-      p_titel: pris.titel,
+      p_titel: pris.titel, p_miniature: mini ? mini.b64 : null, p_miniature_type: mini ? MINIATURE_TYPE : null,
     });
   } catch {
     throw new Svar(503, { fejl: 'nede' });
@@ -477,6 +492,25 @@ async function gem(k) {
   k.baggrund(k.bro('design_gemt', { email: s.email, produkt: b.produkt, t, pris_oere: pris.pris_oere }));
   k.haendelse('design_gemt');
   return { ok: true, id: r.id, pris_oere: pris.pris_oere };
+}
+
+// GET /api/design/miniature?id=… (R4, kontrakter §6): billedet af et design, kun til kontoens egen session (ejerskabet ligger i
+// forespørgslen, design_miniature). Fra konto-værten selv (sidens CSP img-src 'self'), aldrig fra designeren. Et andet designs id,
+// et design uden billede og et ugyldigt id giver samme 404.
+async function designMiniature(k) {
+  const s = await k.kraevSession();
+  const id = new URL(k.req.url).searchParams.get('id');
+  if (!erUuid(id)) throw new Svar(404, { fejl: 'ukendt' });
+  let r;
+  try {
+    r = await k.db.rpc('design_miniature', { p_kunde_id: s.kunde_id, p_id: id });
+  } catch {
+    throw new Svar(503, { fejl: 'nede' });
+  }
+  const b64 = typeof r?.b64 === 'string' ? r.b64.replace(/\s+/g, '') : '';   // Postgres' encode(…, 'base64') bryder linjerne
+  const mini = r?.type === MINIATURE_TYPE ? rensMiniature(b64) : null;
+  if (!mini) throw new Svar(404, { fejl: 'ukendt' });
+  return new Billede(mini.bytes, MINIATURE_TYPE);
 }
 
 async function designSlet(k) {
@@ -517,7 +551,8 @@ export const RUTER = {
   '/api/kode': { metode: 'POST', flag: 'KONTO_AKTIV', h: kode },
   '/api/kode/tjek': { metode: 'POST', flag: 'KONTO_AKTIV', h: kodeTjek },
   '/api/min-side': { metode: 'GET', flag: 'KONTO_AKTIV', h: minSide },
-  '/api/gem': { metode: 'POST', flag: 'KONTO_AKTIV', h: gem },
+  '/api/gem': { metode: 'POST', flag: 'KONTO_AKTIV', h: gem, maksBody: MAKS_BODY_GEM },
+  '/api/design/miniature': { metode: 'GET', flag: 'KONTO_AKTIV', h: designMiniature },
   '/api/design/slet': { metode: 'POST', flag: 'KONTO_AKTIV', h: designSlet },
   '/api/design/navn': { metode: 'POST', flag: 'KONTO_AKTIV', h: designNavn },
   '/api/gemt-uden-login/skjul': { metode: 'POST', flag: 'KONTO_AKTIV', h: skjul },
@@ -553,13 +588,27 @@ function lavSvar(k, status, body, ekstra = {}) {
   return new Response(body === null ? null : JSON.stringify(body), { status, headers: h });
 }
 
-async function laesBody(req) {
+// Et billede (miniaturen, R4): privat cache i et døgn — kun i kundens egen browser (designet ændrer aldrig billede; slettes
+// designet, står det højst et døgn i browserens cache) — og sikkerhedsheaderne som på alle svar. Kun samme origin må vise det.
+function lavBilledSvar(k, b) {
+  const h = new Headers({
+    'content-type': b.type,
+    vary: 'Cookie',
+    'cache-control': 'private, max-age=86400',
+    'cross-origin-resource-policy': 'same-origin',
+    ...SIKKERHEDSHEADERE,
+  });
+  if (k?.cookie) h.append('set-cookie', k.cookie);
+  return new Response(b.bytes, { status: 200, headers: h });
+}
+
+async function laesBody(req, maks = MAKS_BODY) {
   const ct = req.headers.get('content-type') ?? '';
   if (!/^application\/json\s*(;|$)/i.test(ct)) throw new Svar(415, { fejl: 'type' });
   const len = Number(req.headers.get('content-length'));
-  if (Number.isFinite(len) && len > MAKS_BODY) throw new Svar(413, { fejl: 'stor' });
+  if (Number.isFinite(len) && len > maks) throw new Svar(413, { fejl: 'stor' });
   const tekst = await req.text();
-  if (tekst.length > MAKS_BODY) throw new Svar(413, { fejl: 'stor' });
+  if (tekst.length > maks) throw new Svar(413, { fejl: 'stor' });
   let b;
   try {
     b = JSON.parse(tekst || '{}');
@@ -600,11 +649,12 @@ export async function haandter(req, env, ctx, deps = {}) {
     if (origin !== null && origin !== k.origins.konto && !fraDesigner) throw new Svar(403, { fejl: 'origin' });
     if (origin === null && req.method !== 'GET') throw new Svar(403, { fejl: 'origin' });
     if (fraDesigner) k.cors = origin;
-    if (req.method === 'POST') k.body = await laesBody(req);   // R8: kun application/json (ellers 415)
+    if (req.method === 'POST') k.body = await laesBody(req, rute.maksBody ?? MAKS_BODY);   // R8: kun application/json (ellers 415)
 
     if (rute.flag && !flag(env, rute.flag)) throw new Svar(503, { fejl: 'lukket' });   // R14
 
-    res = lavSvar(k, 200, await rute.h(k));
+    const ud = await rute.h(k);
+    res = ud instanceof Billede ? lavBilledSvar(k, ud) : lavSvar(k, 200, ud);
   } catch (e) {
     if (e instanceof Svar) {
       res = lavSvar(k, e.status, e.body);

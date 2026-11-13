@@ -95,9 +95,10 @@ s({ id: 'smal-logget-ud', gruppe: `${P3}nr. 12, 13 og 16 — log ind og Min side
 s({ id: 'smal-min-side', gruppe: `${P3}nr. 12, 13 og 16 — log ind og Min side ved 320 og 360 px`, titel: 'Min side ("Mere" foldet ud på det første design)', server: 'u2', nu: NU, sti: '/min-side/', session: true, bredder: ['360', '320'], rul: 'tr[data-design] details[open]',
   efter: async (p) => { await klar(p); await p.click('tr[data-design] details summary'); } });
 // nr. 15: Gemte designs med miniaturer, opsummering og rumbillede
-s({ id: 'min-side-designs', gruppe: `${P3}nr. 15 — Gemte designs: miniature, opsummering, rumbillede`, titel: 'Gemte designs ("Mere" med rumbilledet foldet ud) — bænken har ingen miniature (null → produktets ikon)', server: 'u2', nu: NU, sti: '/min-side/', session: true, rul: '#h-design', rulBlok: 'start',
+// runde 2, R3 og R10: prisen skæres aldrig af (320 px dansk, 320 og 375 px engelsk), og "Mere" står sidst i rækken på telefon
+s({ id: 'min-side-designs', gruppe: `${P3}nr. 15 — Gemte designs: miniature, opsummering, rumbillede`, titel: 'Gemte designs ("Mere" med rumbilledet foldet ud) — bænken har ingen miniature (null → produktets ikon)', server: 'u2', nu: NU, sti: '/min-side/', session: true, rul: '#h-design', rulBlok: 'start', bredder: ['1440', '375', '360', '320'],
   efter: async (p) => { await klar(p); await p.click('tr[data-design] details summary'); await p.waitForFunction(() => [...document.querySelectorAll('img.th')].every((i) => i.complete && i.naturalWidth > 0)); } });
-s({ id: 'min-side-designs-en', gruppe: `${P3}nr. 15 — Gemte designs: miniature, opsummering, rumbillede`, titel: 'Saved designs (engelsk)', server: 'u2', nu: NU, sti: '/en/min-side/', session: true, rul: '#h-design', rulBlok: 'start',
+s({ id: 'min-side-designs-en', gruppe: `${P3}nr. 15 — Gemte designs: miniature, opsummering, rumbillede`, titel: 'Saved designs (engelsk)', server: 'u2', nu: NU, sti: '/en/min-side/', session: true, rul: '#h-design', rulBlok: 'start', bredder: ['1440', '375', '360', '320'],
   efter: async (p) => { await klar(p); await p.waitForFunction(() => [...document.querySelectorAll('img.th')].every((i) => i.complete && i.naturalWidth > 0)); } });
 for (const [id, titel, server, n, foer] of [
   ['ordre-ukendt-u1', 'U1 · Ukendt nøgle (ordre.ikkeFundet1) — svaret er 200', 'u1', noegle('ukendt')],
@@ -252,8 +253,13 @@ for (const [b, sk] of KOERSLER) {
         header = { cta: Math.round(c.right), ramme: Math.round(r.right - parseFloat(cs.paddingRight)), over: Math.round(c.right - (r.right - parseFloat(cs.paddingRight))),
           luft: brand && foerste ? Math.round(foerste.getBoundingClientRect().left - brand.getBoundingClientRect().right) : null };
       }
-      return { vandret: Math.max(0, d.scrollWidth - d.clientWidth), header };
-    }).catch(() => ({ vandret: null, header: null }));
+      // Fable port 3 runde 2, R3: en celle, der skærer sit indhold af (scrollWidth > clientWidth), fanges ikke af "vandret scroll",
+      // når siden ikke kan rulles — så hver synlig celle i tabellerne måles for sig (1 px tolerance for afrunding)
+      const afskaaret = [...document.querySelectorAll('.tb td, .tb th')]
+        .filter((c) => c.getClientRects().length && getComputedStyle(c).display !== 'contents' && c.scrollWidth > c.clientWidth + 1)
+        .map((c) => `${c.textContent.replace(/\s+/g, ' ').trim().slice(0, 60)} (${c.scrollWidth} > ${c.clientWidth})`);
+      return { vandret: Math.max(0, d.scrollWidth - d.clientWidth), header, afskaaret };
+    }).catch(() => ({ vandret: null, header: null, afskaaret: [] }));
     await page.screenshot({ path: path.join(UD, fil), fullPage: true });
     // Det synlige vindue: øverst — eller rullet til handlingen (sk.rul), så det, skærmen handler om, står i billedet
     if (sk.rul) await page.evaluate(([sel, blok]) => document.querySelector(sel)?.scrollIntoView({ block: blok, behavior: 'instant' }), [sk.rul, sk.rulBlok ?? 'center']).catch(() => {});
@@ -283,8 +289,8 @@ for (const [b, sk] of KOERSLER) {
       adresselinje: page.url(),
     } : null;
     const h1 = await page.evaluate(() => document.querySelector('h1')?.textContent.replace(/\s+/g, ' ').trim() ?? null).catch(() => null);
-    resultat.push({ id: sk.id, gruppe: sk.gruppe, titel: sk.titel, server: sk.server, bredde: b.navn, fil, synligt, pdf, h1, fejl, konsol, http, axe, r10, vandret: maal.vandret, header: maal.header, todo: (await page.content()).includes('TODO-TEKST') });
-    console.log(`${fejl ? '✖' : '✔'} ${b.navn} ${sk.id}${fejl ? ` — ${fejl}` : ''}${konsol.length ? ` — konsol: ${konsol.length}` : ''}${axe?.length ? ` — axe: ${axe.length}` : ''}${maal.vandret ? ` — VANDRET SCROLL ${maal.vandret} px` : ''}${maal.header && maal.header.over > 0 ? ` — HEADER ${maal.header.over} px UDEN FOR` : ''}`);
+    resultat.push({ id: sk.id, gruppe: sk.gruppe, titel: sk.titel, server: sk.server, bredde: b.navn, fil, synligt, pdf, h1, fejl, konsol, http, axe, r10, vandret: maal.vandret, header: maal.header, afskaaret: maal.afskaaret ?? [], todo: (await page.content()).includes('TODO-TEKST') });
+    console.log(`${fejl ? '✖' : '✔'} ${b.navn} ${sk.id}${fejl ? ` — ${fejl}` : ''}${konsol.length ? ` — konsol: ${konsol.length}` : ''}${axe?.length ? ` — axe: ${axe.length}` : ''}${maal.vandret ? ` — VANDRET SCROLL ${maal.vandret} px` : ''}${maal.afskaaret?.length ? ` — AFSKÅRET: ${maal.afskaaret.join(' | ')}` : ''}${maal.header && maal.header.over > 0 ? ` — HEADER ${maal.header.over} px UDEN FOR` : ''}`);
     await ctx.close();
   }
 }
@@ -297,7 +303,7 @@ writeFileSync(path.join(UD, 'resultat.json'), JSON.stringify(resultat, null, 2))
 writeFileSync(path.join(UD, 'index.html'), kontaktark(resultat));
 const axeFejl = resultat.filter((r) => r.axe?.length);
 const r10Fejl = resultat.filter((r) => r.r10 && (r.r10.adresser || r.r10.plausible));
-console.log(`\n${SKAERME.length} skærme i ${resultat.length} bredder × 2 (synligt + hele siden) = ${resultat.length * 2} billeder. Fejlede: ${resultat.filter((r) => r.fejl).length}. axe: ${axeFejl.length} sider med fund. R10-brud: ${r10Fejl.length}. Konsolfejl: ${resultat.filter((r) => r.konsol.length).length}. Vandret scroll: ${resultat.filter((r) => r.vandret).length}. Header uden for rammen: ${resultat.filter((r) => r.header?.over > 0).length}. Kontaktark: ${path.join(UD, 'index.html')}`);
+console.log(`\n${SKAERME.length} skærme i ${resultat.length} bredder × 2 (synligt + hele siden) = ${resultat.length * 2} billeder. Fejlede: ${resultat.filter((r) => r.fejl).length}. axe: ${axeFejl.length} sider med fund. R10-brud: ${r10Fejl.length}. Konsolfejl: ${resultat.filter((r) => r.konsol.length).length}. Vandret scroll: ${resultat.filter((r) => r.vandret).length}. Afskårne celler: ${resultat.filter((r) => r.afskaaret.length).length}. Header uden for rammen: ${resultat.filter((r) => r.header?.over > 0).length}. Kontaktark: ${path.join(UD, 'index.html')}`);
 
 function kontaktark(res) {
   const esc = (x) => String(x ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -346,6 +352,7 @@ ${grupper.map((g) => `<h2 id="${anker(g)}">${esc(g)}</h2>${ider(g).map((id) => {
 <h2>Headeren (Fable port 3, nr. 14): højre kant af "Få en pris" mod rammens indre højre kant</h2><p class="l">Målt i browseren på de skærme, der har headerens fulde linje (over 1180 px). "Over" ≤ 0 = inden for rammen.</p>
 <table><tr><th>Skærm</th><th class="n">Bredde</th><th class="n">"Få en pris" slutter</th><th class="n">Rammen slutter</th><th class="n">Over</th><th class="n">Luft fra logoet til første link</th></tr>${headerRaekker}</table>
 <h2>Vandret scroll på telefon (Fable port 3, nr. 1)</h2><p class="l">document.scrollWidth − clientWidth for alle ${smalle.length} skærme ved 320, 360 og 375 px (skal være 0). Med fund: ${smalle.filter((r) => r.vandret).map((r) => `${esc(r.id)} ${r.bredde} (${r.vandret} px)`).join(', ') || 'ingen'}.</p>
+<h2>Afskårne celler (Fable port 3 runde 2, R3)</h2><p class="l">Hver synlig celle i tabellerne på alle ${res.length} skærme: scrollWidth &gt; clientWidth betyder, at indholdet er skåret af (fanges ikke af "vandret scroll", når siden ikke kan rulles). Skal være 0. Med fund: ${res.filter((r) => r.afskaaret?.length).map((r) => `${esc(r.id)} ${r.bredde}: ${esc(r.afskaaret.join(' | '))}`).join('; ') || 'ingen'}.</p>
 <h2>Ukendt og erstattet link: ingen HTTP-fejl i konsollen</h2><p class="l">Kontrakter §6 (rettet 12-11): /api/ordre svarer 200 med {fejl}. Overskriften er Fables, og browseren har ingen "Failed to load resource" (skal være 0).</p>
 <table><tr><th>Side</th><th>H1</th><th class="n">HTTP-fejl i konsollen</th><th class="n">Andre konsolfejl</th></tr>${ordreFejl}</table>
 <h2>axe-core (1440 px)</h2><table><tr><th>Side</th><th class="n">Fund</th><th>Regel</th></tr>${axeRaekker}</table>

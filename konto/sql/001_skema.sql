@@ -73,8 +73,13 @@ create table public.designs (
   navn          text check (navn is null or length(navn) between 1 and 80),
   titel         text check (titel is null or length(titel) between 1 and 160),   -- designets opsummering fra /pris ved gem (Fable port 3, nr. 15)
   pris_ved_gem  bigint check (pris_ved_gem is null or pris_ved_gem between 0 and 1000000000),
-  miniature     text,                                -- sti på konto-værten (/api/…) til et lille billede (bruges ikke endnu)
-  oprettet      timestamptz not null default now()
+  -- Miniaturen fra designeren ved gem (Fable port 3 runde 2, R4): en JPEG på 224 × 168, højst 150 kB (= Workerens MINIATURE_MAKS).
+  -- Ingen bucket: billedet følger designet (slettes med det) og udleveres kun af Workeren til kontoens egen session
+  -- (GET /api/design/miniature, kontrakter §6). Begge felter eller ingen af dem.
+  miniature       bytea check (miniature is null or octet_length(miniature) between 4 and 150000),
+  miniature_type  text  check (miniature_type is null or miniature_type = 'image/jpeg'),
+  oprettet      timestamptz not null default now(),
+  check ((miniature is null) = (miniature_type is null))
 );
 create index designs_kunde_idx on public.designs (kunde_id, oprettet desc);
 comment on table public.designs is 'Designs gemt med login. Slettes af kunden (design_slet) eller med kontoen (on delete cascade).';

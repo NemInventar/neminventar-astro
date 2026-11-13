@@ -111,6 +111,27 @@ export const erMailId = (x) => erUuid(x) || (typeof x === 'number' && Number.isS
 
 export const erProdukt = (x) => typeof x === 'string' && /^[a-z][a-z0-9_-]{0,39}$/.test(x);
 
+// Miniaturen fra designeren ved "gem" (Fable port 3 runde 2, R4; kontrakter §6): ren base64 af en JPEG (starter med FF D8 FF,
+// slutter med FF D9), højst MINIATURE_MAKS bytes (= designerens core/konto.js MINIATURE.maksBytes og designs-kolonnens check i
+// konto/sql/001). → { bytes: Uint8Array, b64 } eller null (ingen eller ugyldig: designet gemmes uden billede).
+export const MINIATURE_MAKS = 150_000;
+export const MINIATURE_TYPE = 'image/jpeg';
+export function rensMiniature(x) {
+  if (typeof x !== 'string' || x.length < 8 || x.length > Math.ceil(MINIATURE_MAKS / 3) * 4) return null;
+  if (!/^[A-Za-z0-9+/]+={0,2}$/.test(x) || x.length % 4 !== 0) return null;
+  let bin;
+  try {
+    bin = atob(x);
+  } catch {
+    return null;
+  }
+  if (bin.length < 4 || bin.length > MINIATURE_MAKS) return null;
+  const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+  const n = bytes.length;
+  if (bytes[0] !== 0xff || bytes[1] !== 0xd8 || bytes[2] !== 0xff || bytes[n - 2] !== 0xff || bytes[n - 1] !== 0xd9) return null;
+  return { bytes, b64: x };
+}
+
 // Designnavn: 1–80 tegn, ingen kontroltegn, mellemrum samlet
 export function rensNavn(x) {
   if (typeof x !== 'string') return null;

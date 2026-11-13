@@ -171,19 +171,33 @@ export function lavFakeDb(nu) {
       return { ok: true };
     },
 
-    design_gem({ p_kunde_id, p_produkt, p_tilstand, p_navn, p_pris_oere, p_titel = null }) {
+    // miniaturen (R4): base64 ind (som PostgREST giver den til 002's decode), bytes i "kolonnen", kun JPEG under 150 kB
+    design_gem({ p_kunde_id, p_produkt, p_tilstand, p_navn, p_pris_oere, p_titel = null, p_miniature = null, p_miniature_type = null }) {
       if (!s.kunder.has(p_kunde_id)) throw new DbFejl('http_409');
+      let mini = null;
+      if (p_miniature != null || p_miniature_type != null) {
+        const b = Buffer.from(String(p_miniature ?? ''), 'base64');
+        if (p_miniature_type !== 'image/jpeg' || b.length < 4 || b.length > 150000) throw new DbFejl('http_400');   // = 001's check
+        mini = b;
+      }
       const t = nu();
       if (taelMedLoft(`gem:${p_kunde_id}:${dag(t)}`, 50, doegnSlut(t)) === null) return { fejl: 'loft' };
       const id = crypto.randomUUID();
-      s.designs.set(id, { id, kunde_id: p_kunde_id, produkt: p_produkt, tilstand: p_tilstand, navn: p_navn ?? null, titel: p_titel ?? null, pris_ved_gem: p_pris_oere ?? null, miniature: null, oprettet: t });
+      s.designs.set(id, { id, kunde_id: p_kunde_id, produkt: p_produkt, tilstand: p_tilstand, navn: p_navn ?? null, titel: p_titel ?? null, pris_ved_gem: p_pris_oere ?? null, miniature: mini, miniature_type: mini ? p_miniature_type : null, oprettet: t });
       return { ok: true, id };
     },
 
     design_liste({ p_kunde_id }) {
       return [...s.designs.values()].filter((d) => d.kunde_id === p_kunde_id)
         .sort((a, b) => b.oprettet - a.oprettet || (a.id < b.id ? -1 : 1))
-        .map((d) => ({ id: d.id, produkt: d.produkt, navn: d.navn, titel: d.titel ?? null, t: d.tilstand, pris_oere: d.pris_ved_gem, gemt: iso(d.oprettet), miniature: d.miniature ?? null }));
+        .map((d) => ({ id: d.id, produkt: d.produkt, navn: d.navn, titel: d.titel ?? null, t: d.tilstand, pris_oere: d.pris_ved_gem, gemt: iso(d.oprettet), har_miniature: d.miniature != null }));
+    },
+
+    // som Postgres' encode(…, 'base64'): linjeskift for hver 76 tegn
+    design_miniature({ p_kunde_id, p_id }) {
+      const d = s.designs.get(p_id);
+      if (!d || d.kunde_id !== p_kunde_id || !d.miniature) return { fejl: 'ukendt' };
+      return { type: d.miniature_type, b64: d.miniature.toString('base64').replace(/.{76}/g, '$&\n') };
     },
 
     design_slet({ p_kunde_id, p_id }) {

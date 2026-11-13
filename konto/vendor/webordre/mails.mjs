@@ -15,6 +15,7 @@
 // Mangler en tekst eller et påkrævet felt, kaster funktionen, så mailen aldrig går ud halv.
 import { kbhDato, ugeTekst, dagTekst, datoTekst, klTekst } from './datoer.mjs';
 import { kr } from './beloeb.mjs';
+import { vareLinje } from './levering.mjs';
 
 export const TELEFON = '+45 42 42 26 84';
 export const SVAR_ADRESSE = 'tilbud@neminventar.dk';
@@ -95,7 +96,11 @@ export const fortrydelseTekst = (fortrydelse) => (fortrydelse
 function fristLoefte(o, iDag) {
   if (!o?.uge_frist_at) return '';
   const frist = kbhDato(o.uge_frist_at);
-  return ugeSat(o) || frist < iDag ? '' : `Vi bekræfter leveringsugen senest ${dagTekst(frist, iDag)}. `;
+  if (ugeSat(o) || frist < iDag) return '';
+  // Fable port 3 runde 2, R8: ved afhentning er det ugen, bestillingen bliver klar til afhentning (som mail nr. 18)
+  return afhentning(o)
+    ? `Vi bekræfter senest ${dagTekst(frist, iDag)}, hvilken uge din bestilling bliver klar til afhentning. `
+    : `Vi bekræfter leveringsugen senest ${dagTekst(frist, iDag)}. `;
 }
 
 // Fable port 3, nr. 23: når ugen allerede er sat (fx "Nyt link" efter bekræftelsen), lover siden ikke længere ugen
@@ -104,7 +109,8 @@ const ugeSat = (o) => (o?.forloeb ?? []).some((f) => f?.trin === 'uge_bekraeftet
 function ordrebekraeftelse(o, d, { nytLink = false } = {}) {
   const ref = refAf(o), link = linkAf(o), iDag = iDagAf(o, d), t = o?.total ?? {};
   if (!Number.isFinite(t.inkl_oere) || !Number.isFinite(t.moms_oere)) fejl('ordren mangler totalen');
-  const linjer = (o.linjer ?? []).map((l) => `${Number(l.antal) > 1 ? `${l.antal} × ` : ''}${fri(l.tekst)}: ${kr(l.beloeb_oere)}`);
+  // Antallet læses af linjen én gang (kernens vareLinje, R1): "2 × Lockers …" med antal 1 og antal 2 giver samme linje
+  const linjer = (o.linjer ?? []).map(vareLinje).map((l) => `${Number(l.antal) > 1 ? `${l.antal} × ` : ''}${fri(l.tekst)}: ${kr(l.beloeb_oere)}`);
   return mailUd(nytLink ? `Nyt link til din bestilling ${ref}` : `Ordrebekræftelse ${ref} fra Nem Inventar`, [
     `Hej ${navnAf(o)}`,
     nytLink ? 'Her er et nyt link til din bestilling. Det gamle virker ikke længere.' : null,
@@ -113,7 +119,7 @@ function ordrebekraeftelse(o, d, { nytLink = false } = {}) {
     // Fable port 3, nr. 7: ved afhentning står afhentningsstedet, og kundens adresse kræves kun ved levering
     afhentning(o) ? `Afhentning: ${AFHENTNINGSSTED}, efter aftale.` : `Levering til: ${adresseAf(o)}`,
     `${fristLoefte(o, iDag)}Vi laver det, du har bestilt, på vores eget værksted efter det, du har tegnet.`,
-    `Følg din bestilling her: ${link}\n${ugeSat(o) ? 'Siden viser leveringen og det, du har bestilt.' : 'Siden viser leveringsugen, så snart den er bekræftet, og det, du har bestilt.'}`,
+    `Følg din bestilling her: ${link}\n${ugeSat(o) ? 'Siden viser leveringen og det, du har bestilt.' : afhentning(o) ? 'Siden viser ugen, så snart den er bekræftet, og det, du har bestilt.' : 'Siden viser leveringsugen, så snart den er bekræftet, og det, du har bestilt.'}`,
     fortrydelseTekst(!!o.fortrydelsesret),
     'Har du spørgsmål, så svar på denne mail eller ring til os.',
     HILSEN.da,

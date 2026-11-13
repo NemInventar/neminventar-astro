@@ -71,7 +71,9 @@ async function turnstileToken() {
 // ---------- beskeder ----------
 function besked(form, liste, slags = 'err') {
   const el = form.querySelector('[data-besked]');
-  el.className = `form-msg ${slags}`;
+  // felt-fejl bevares: den giver 14 px luft ned til knappen (Fable port 3 runde 2, R9 — før blev klassen skrevet over, og boksen
+  // stødte op til knappen)
+  el.className = `form-msg ${slags} felt-fejl`;
   el.innerHTML = beskedHtml(sp, liste);
   el.hidden = false;
 }

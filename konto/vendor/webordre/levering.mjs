@@ -40,11 +40,27 @@ export function leveringAf(ordre) {
 // kundens: siden skriver selv rækken "Levering: samlet, til kantsten" ud fra levering.tekst, uden antal, med linjernes beløb.
 // Afhentning (0 kr.) står ikke på betalingen (designer-ordre stripeLinjer) og har derfor ingen linje: beløbet er 0.
 //   varerOgLevering(ordre) -> { varer: [linje …], levering: { ord: 'samlet, til kantsten', beloeb_oere } | null }
+//   (varerne med antallet ud af teksten, se vareLinje herunder)
 // ord = levering.tekst med lille begyndelsesbogstav (efter kolon i Fables varer.levering "Levering: {…}").
 const LEVERINGSLINJE = /^(levering\b|båret ind\b)/i;
 export const erLeveringslinje = (tekst) => LEVERINGSLINJE.test(String(tekst ?? '').trim());
+
+// Antallet i en varelinje (Fable port 3 runde 2, R1). Designeren skriver antallet i linjens tekst ("2 × Lockers 4 × 2, 8 rum",
+// produkternes pris.js: `${a} × …` med beløbet for dem alle), og broen og /webordrer sender hver linje med antal 1. Begynder
+// teksten med "N × " (N ≥ 2), og er antal 1 eller ukendt, er antallet N og teksten resten: { tekst: 'Lockers 4 × 2, 8 rum',
+// antal: 2, beloeb_oere } — beløbet er stadig linjens (alle N). Mål inde i teksten ("4 × 2") røres ikke. Bruges af ordresiden
+// (varerOgLevering) og ordrebekræftelsen (mails.mjs), så "2 × …" aldrig står ud for Antal 1, og antallet aldrig står to gange.
+const ANTAL_FORAN = /^(\d{1,3})\s*×\s*(\S[\s\S]*)$/;
+export function vareLinje(l) {
+  if (!l || typeof l !== 'object') return l;
+  const m = ANTAL_FORAN.exec(String(l.tekst ?? '').trim());
+  const n = m ? Number(m[1]) : 0;
+  if (!m || n < 2 || (l.antal != null && Number(l.antal) !== 1)) return l;
+  return { ...l, tekst: m[2].trim(), antal: n };
+}
+
 export function varerOgLevering(ordre) {
-  const linjer = Array.isArray(ordre?.linjer) ? ordre.linjer : [];
+  const linjer = (Array.isArray(ordre?.linjer) ? ordre.linjer : []).map(vareLinje);
   const varer = linjer.filter((l) => !erLeveringslinje(l?.tekst));
   const lev = linjer.filter((l) => erLeveringslinje(l?.tekst));
   const tekst = String(ordre?.levering?.tekst ?? '').trim();

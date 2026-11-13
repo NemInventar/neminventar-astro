@@ -84,6 +84,15 @@ await beggeKunde('design_navn', (s) => ({ p_id: s ? gid.sql : gid.fake, p_navn: 
 await beggeKunde('design_slet', (s) => ({ p_id: U(5) }), 'design_slet ukendt');
 await beggeKunde('design_slet', (s) => ({ p_id: s ? gid.sql : gid.fake }), 'design_slet egen');
 void g;
+// miniaturen (R4): base64 ind, bytea i kolonnen, base64 ud (Postgres bryder linjerne for hver 76 tegn — fake-db'en gør det samme)
+const JPEG_B64 = Buffer.from([0xff, 0xd8, 0xff, 0xe0, ...Array.from({ length: 120 }, (_, i) => i), 0xff, 0xd9]).toString('base64');
+await beggeKunde('design_gem', () => ({ p_produkt: 'hoejskab', p_tilstand: 'eyJ9', p_navn: 'Med billede', p_pris_oere: 1, p_miniature: JPEG_B64, p_miniature_type: 'image/jpeg' }), 'design_gem med miniature');
+const mid = { sql: (await sqlRaa("select id from designs where navn = 'Med billede'"))[0].id, fake: [...fake.s.designs.values()].find((d) => d.navn === 'Med billede').id };
+await beggeKunde('design_liste', () => ({}), 'design_liste med har_miniature');
+await beggeKunde('design_miniature', (s) => ({ p_id: s ? mid.sql : mid.fake }), 'design_miniature egen');
+await begge('design_miniature', { p_kunde_id: U(77), p_id: mid.sql }, 'design_miniature fremmed');
+await beggeKunde('design_miniature', () => ({ p_id: U(5) }), 'design_miniature ukendt');
+console.log('miniature tilbage = sendt:', (await sql('design_miniature', { p_kunde_id: kundeSql, p_id: mid.sql })).b64.replace(/\s+/g, '') === JPEG_B64);
 
 // 4. andet login (ny = false), log ud alle
 await begge('kode_opret', { ...opret(11, F), p_email_hmac: H('b') }, 'kode_opret f 2');

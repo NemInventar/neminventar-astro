@@ -3,13 +3,13 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { renderMinSide, renderMinSideFejl, statusTekst, renderLogUdAlle, renderSletTrin, renderDesignSvar } from '../src/lib/min-side-visning.mjs';
 import { renderEmailVenstre, renderEmailForm, renderKodeVenstre, renderKodeForm, renderLoginLukket, fejlBesked, beskedHtml } from '../src/lib/login-visning.mjs';
-import { t } from '../src/lib/tekst.mjs';
+import { t, bindUger, bindBeloeb } from '../src/lib/tekst.mjs';
 import { readFileSync } from 'node:fs';
 import { TILSTANDE, ordreI, minSideData, EMAIL } from './fixtures.mjs';
 
 const DESIGNER = 'https://designer.neminventar.dk/designer.html';
 const NU = '2026-11-12T10:00:00.000Z';
-const tekstAf = (html) => html.replace(/<(div|p|td|th|tr|small)\b[^>]*>/g, ' ').replace(/<[^>]+>/g, '').replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
+const tekstAf = (html) => html.replace(/<(div|p|td|th|tr|small)\b[^>]*>/g, ' ').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
 
 // Statuskolonnen (Fable d3 best.status.*) — ordret på dansk og engelsk
 const STATUS = {
@@ -62,7 +62,7 @@ test('Min side: tre afsnit, bestillinger med link i første celle, nyeste øvers
 
 test('Gemte designs: pris og link med gemt pris og dato; "Gemt uden login" uden billede, navn og pris', () => {
   const h = renderMinSide({ data: minSideData(), sprog: 'da', nu: NU, designerUrl: DESIGNER });
-  assert.ok(h.includes('21.487,50 kr.'));
+  assert.ok(h.includes('21.487,50&nbsp;kr.'));
   assert.ok(h.includes('gemt_pris=2148750&amp;gemt_dato=2026-11-02'));
   const uden = /<tr data-design="4711"[\s\S]*?<\/tr>/.exec(h)[0];
   assert.ok(uden.includes(t('da', 'design.udenLogin')));
@@ -197,22 +197,61 @@ test('port 3 nr. 16: på telefon "Bestilt {dato}", "Gemt {dato}" og "Pris da du 
   const h = renderMinSide({ data: minSideData(), sprog: 'da', nu: NU, designerUrl: DESIGNER });
   assert.ok(h.includes('<span class="kun-m">Bestilt </span>7. november 2026'));
   assert.ok(h.includes('<span class="kun-m">Gemt </span>2. november 2026'));
-  assert.ok(h.includes('<span class="kun-m">Pris da du gemte: </span>21.487,50 kr.'));
+  // beløbet er bundet med hårde mellemrum: linjen kan kun brydes efter kolon (runde 2, R3)
+  assert.ok(h.includes('<span class="kun-m">Pris da du gemte: </span>21.487,50&nbsp;kr.'));
   assert.ok(/<td class="n ingen-pris">—<\/td>/.test(h), 'uden pris: cellen skjules på telefon');
   const en = renderMinSide({ data: minSideData(), sprog: 'en', nu: NU, designerUrl: DESIGNER });
   assert.ok(en.includes('<span class="kun-m">Ordered </span>7 November 2026'));
   assert.ok(en.includes('<span class="kun-m">Saved </span>2 November 2026'));
-  assert.ok(en.includes('<span class="kun-m">Price when you saved: </span>DKK 21,487.50'));
+  assert.ok(en.includes('<span class="kun-m">Price when you saved: </span>DKK&nbsp;21,487.50'));
   const css = readFileSync(new URL('../src/styles/konto.css', import.meta.url), 'utf8');
   assert.match(css, /\.kun-m\{display:none\}/);
   assert.match(css, /@media \(max-width:680px\)\{[\s\S]*?\.kun-m\{display:inline\}/);
   assert.match(css, /@media \(max-width:680px\),\(pointer:coarse\)\{[\s\S]*?details\.mere \.ind \.knap-lnk,details\.mere \.ind a\.lnk\{min-height:44px/, '44 px trykflade');
 });
 
-test('port 3 nr. 1: statuskolonnen binder uge og datoer, men kan brydes efter stregen', () => {
+test('port 3 nr. 1 og runde 2 R6: statuskolonnen binder uge og datoer; en uge i én måned brydes slet ikke', () => {
   const h = renderMinSide({ data: minSideData(), sprog: 'da', nu: NU, designerUrl: DESIGNER });
-  assert.ok(h.includes('Leveres i uge&nbsp;51 (14.–18.&nbsp;december&nbsp;2026)'));
+  assert.ok(h.includes('Leveres i uge&nbsp;51 <span class="nw">(14.–18.&nbsp;december&nbsp;2026)</span>'));
   assert.ok(!h.includes('class="nob">('));
+  // over to måneder: kun brud efter stregen
+  assert.equal(bindUger('uge 49 (30. november–4. december 2026)', { helParentes: true }), 'uge&nbsp;49 (30.&nbsp;november–4.&nbsp;december&nbsp;2026)');
+  assert.equal(bindUger('week 51 (14–18 December 2026)', { helParentes: true }), 'week&nbsp;51 <span class="nw">(14–18&nbsp;December&nbsp;2026)</span>');
+  assert.equal(bindUger('uge 51 (14.–18. december 2026)'), 'uge&nbsp;51 (14.–18.&nbsp;december&nbsp;2026)', 'H1 (uden helParentes) som før');
+});
+
+// Runde 2, R3: prisen skæres aldrig af på telefon — cellen må brydes under 680 px, og beløbet holdes samlet
+test('runde 2, R3: prislinjen i Gemte designs må brydes på telefon, beløbet aldrig', () => {
+  const css = readFileSync(new URL('../src/styles/konto.css', import.meta.url), 'utf8');
+  assert.match(css, /@media \(max-width:680px\)\{[\s\S]*?\.tb table\.des td:nth-child\(4\)\{[^}]*white-space:normal/);
+  assert.equal(bindBeloeb('DKK 21,487.50'), 'DKK&nbsp;21,487.50');
+});
+
+// Runde 2, R9: 14 px mellem fejlboksen og knappen — også når scriptet skriver fejlen (før blev klassen felt-fejl skrevet over)
+test('runde 2, R9: fejlboksen har 14 px ned til knappen, også efter scriptet har vist den', () => {
+  const css = readFileSync(new URL('../src/styles/konto.css', import.meta.url), 'utf8');
+  assert.match(css, /\.form \.felt-fejl\{margin:0 0 14px\}/);
+  const js = readFileSync(new URL('../src/scripts/login-side.js', import.meta.url), 'utf8');
+  assert.match(js, /el\.className = `form-msg \$\{slags\} felt-fejl`;/);
+  assert.ok(renderEmailForm('da').includes('class="form-msg err felt-fejl"') && renderKodeForm('da').includes('class="form-msg err felt-fejl"'));
+});
+
+// Runde 2, R5: udskriften deler ikke tabellen med en tom ramme og en gentaget overskrift over totalen
+test('runde 2, R5: print — overskriften gentages ikke, totalen holdes samlet, og leveringsrækken følger totalen', () => {
+  const css = readFileSync(new URL('../src/styles/konto.css', import.meta.url), 'utf8');
+  const print = /@media print\{([\s\S]*?)\n\}/.exec(css)[1];
+  assert.match(print, /\.tb table\.varer thead\{display:table-row-group\}/);
+  assert.match(print, /\.tb table\.varer tfoot\{display:table-row-group;break-inside:avoid\}/);
+  assert.match(print, /\.tb table\.varer tbody tr:last-child\{break-after:avoid\}/);
+});
+
+// Runde 2, R10: på telefon står "Mere" sidst — navn og opsummering i egen blok, "Mere" for sig i samme celle
+test('runde 2, R10: navnet og "Mere" er hver sin blok, så "Mere" kan stå nederst på telefon', () => {
+  const h = renderMinSide({ data: minSideData(), sprog: 'da', nu: NU, designerUrl: DESIGNER });
+  assert.match(h, /<td class="d-c"><div class="d-hoved"><b class="d-navn">[^<]*<\/b>[\s\S]*?<\/div><details class="mere" data-mere>/);
+  const css = readFileSync(new URL('../src/styles/konto.css', import.meta.url), 'utf8');
+  assert.match(css, /\.tb table\.des td\.d-c\{display:contents\}/);
+  assert.match(css, /\.tb table\.des td\.d-c>details\.mere\{grid-column:2;grid-row:5/);
 });
 
 test('port 3 nr. 28 og 29: faste kolonnebredder; "Log ud" uden løs prik på telefon', () => {

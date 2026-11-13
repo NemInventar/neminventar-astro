@@ -618,4 +618,13 @@ test('R3 tallene i regler.js og konto/sql/002_funktioner.sql passer sammen', () 
   assert.match(sql, /'Europe\/Copenhagen'/);
 });
 
+// Miniaturens loft (R4) står tre steder: Workeren, kolonnens check i 001 og designeren (core/konto.js MINIATURE.maksBytes = 150_000)
+test('R4 miniaturens loft og type i regler.js og konto/sql/001_skema.sql passer sammen', async () => {
+  const { MINIATURE_MAKS, MINIATURE_TYPE } = await import('../src/regler.js');
+  const sql = readFileSync(fileURLToPath(new URL('../../sql/001_skema.sql', import.meta.url)), 'utf8');
+  assert.match(sql, new RegExp(`octet_length\\(miniature\\) between 4 and ${MINIATURE_MAKS}\\)`));
+  assert.match(sql, new RegExp(`miniature_type = '${MINIATURE_TYPE.replace('/', '\\/')}'`));
+  assert.match(sql, /miniature\s+bytea/);
+});
+
 void KONTO;

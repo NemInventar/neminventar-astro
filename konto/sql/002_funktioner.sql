@@ -312,8 +312,11 @@ end $$;
 -- Designs gemt med login -----------------------------------------------------------------------------------------
 
 -- Fable c3: gem et nyt design. Højst 50 pr. konto pr. døgn (værn mod en løbsk klient). → {ok, id} · {fejl:'loft'}
+-- p_miniature = designerens miniature som base64 (Fable port 3 runde 2, R4; Workeren har tjekket, at det er en JPEG under
+-- 150 kB) og p_miniature_type = 'image/jpeg' — begge eller ingen; kolonnernes check i 001 afviser resten.
 create or replace function public.design_gem(
-  p_kunde_id uuid, p_produkt text, p_tilstand text, p_navn text, p_pris_oere bigint, p_titel text default null
+  p_kunde_id uuid, p_produkt text, p_tilstand text, p_navn text, p_pris_oere bigint, p_titel text default null,
+  p_miniature text default null, p_miniature_type text default null
 ) returns jsonb
 language plpgsql set search_path = public, pg_temp as $$
 declare
@@ -326,21 +329,33 @@ begin
   if v_n is null then
     return jsonb_build_object('fejl', 'loft');
   end if;
-  insert into designs (kunde_id, produkt, tilstand, navn, titel, pris_ved_gem)
-  values (p_kunde_id, p_produkt, p_tilstand, p_navn, nullif(left(p_titel, 160), ''), p_pris_oere)
+  insert into designs (kunde_id, produkt, tilstand, navn, titel, pris_ved_gem, miniature, miniature_type)
+  values (p_kunde_id, p_produkt, p_tilstand, p_navn, nullif(left(p_titel, 160), ''), p_pris_oere,
+          case when p_miniature is null then null else decode(p_miniature, 'base64') end, p_miniature_type)
   returning id into v_id;
   return jsonb_build_object('ok', true, 'id', v_id);
 end $$;
 
--- Kundens designs, nyeste først. Ejerskabet ligger i forespørgslen (ingen IDOR).
+-- Kundens designs, nyeste først. Ejerskabet ligger i forespørgslen (ingen IDOR). Billedet selv kommer ikke med — kun om der er
+-- et (har_miniature); Workeren laver adressen /api/design/miniature?id=… (kontrakter §6).
 create or replace function public.design_liste(p_kunde_id uuid) returns jsonb
 language sql stable set search_path = public, pg_temp as $$
   select coalesce(jsonb_agg(jsonb_build_object(
            'id', id, 'produkt', produkt, 'navn', navn, 'titel', titel, 't', tilstand, 'pris_oere', pris_ved_gem, 'gemt', oprettet,
-           'miniature', miniature)
+           'har_miniature', miniature is not null)
            order by oprettet desc, id), '[]'::jsonb)
     from designs
    where kunde_id = p_kunde_id;
+$$;
+
+-- Miniaturen til GET /api/design/miniature (R4): kun kundens eget design. → {type, b64} · {fejl:'ukendt'} (andet designs id,
+-- intet billede eller ukendt — samme svar)
+create or replace function public.design_miniature(p_kunde_id uuid, p_id uuid) returns jsonb
+language sql stable set search_path = public, pg_temp as $$
+  select coalesce(
+    (select jsonb_build_object('type', miniature_type, 'b64', encode(miniature, 'base64'))
+       from designs where id = p_id and kunde_id = p_kunde_id and miniature is not null),
+    jsonb_build_object('fejl', 'ukendt'));
 $$;
 
 create or replace function public.design_slet(p_kunde_id uuid, p_id uuid) returns jsonb

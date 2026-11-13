@@ -8,8 +8,8 @@ Kun Workeren `ni-konto-backend` (konto/worker/) bruger databasen, med servernøg
 
 | Fil | Hvad |
 |---|---|
-| `001_skema.sql` | Tabellerne `kunder`, `koder`, `lofter`, `sessioner`, `designs`, `haendelser`. RLS til uden politikker. Rettighederne tages fra `public`/`anon`/`authenticated` (også fremtidige objekter og USAGE på skemaet); kun `service_role` får adgang |
-| `002_funktioner.sql` | RPC'erne: `kode_opret`, `kode_aktiv`, `kode_tjek` (log ind + session i én transaktion), `session_forny`, `session_luk`, `session_luk_alle`, `konto_slet`, `design_gem/liste/navn/slet`, `loft_tael`, `haendelse`, `rydop`, `rydop_haendelser`. Kun `service_role` må køre dem |
+| `001_skema.sql` | Tabellerne `kunder`, `koder`, `lofter`, `sessioner`, `designs` (med designerens miniature som `bytea` + `miniature_type`, højst 150 kB — rettet 12-11, Fable port 3 runde 2 R4; ingen bucket), `haendelser`. RLS til uden politikker. Rettighederne tages fra `public`/`anon`/`authenticated` (også fremtidige objekter og USAGE på skemaet); kun `service_role` får adgang |
+| `002_funktioner.sql` | RPC'erne: `kode_opret`, `kode_aktiv`, `kode_tjek` (log ind + session i én transaktion), `session_forny`, `session_luk`, `session_luk_alle`, `konto_slet`, `design_gem/liste/navn/slet/miniature`, `loft_tael`, `haendelse`, `rydop`, `rydop_haendelser`. Kun `service_role` må køre dem |
 | `003_cron.sql` | pg_cron: `rydop()` hver time (koder og lofter 24 t efter udløb, lukkede/udløbne sessioner), `rydop_haendelser()` hver nat (12 mdr.) |
 | `proeve/paritet-pglite.mjs` | Kører 001+002 i PGlite (rigtig Postgres) og sammenligner hver RPC med Workerens fake-db. Viser rettighederne |
 | `proeve/lav-erp-proeve.mjs` | Bygger én DO-blok, der prøver 001+002 i et andet Postgres i skemaet `konto_proeve` og slutter med `RAISE EXCEPTION`, så alt rulles tilbage |
@@ -44,5 +44,5 @@ Og udefra: `GET <url>/rest/v1/kunder` med den offentlige nøgle (publishable/ano
 
 ## Prøverne (12-11-2026)
 
-- **PGlite (Postgres 18.3):** `PGLITE=C:/dev/ni-underskriv/node_modules/@electric-sql/pglite/dist/index.js node konto/sql/proeve/paritet-pglite.mjs` → 76 sammenligninger mellem SQL og fake-db, 0 afvigelser; anon/authenticated uden USAGE, tabeller og funktioner; RLS på alle tabeller, 0 politikker.
+- **PGlite (Postgres 18.3):** `PGLITE=C:/dev/ni-underskriv/node_modules/@electric-sql/pglite/dist/index.js node konto/sql/proeve/paritet-pglite.mjs` → 81 sammenligninger mellem SQL og fake-db, 0 afvigelser (12-11, med miniaturen: base64 ind og samme bytes ud); anon/authenticated uden USAGE, tabeller og funktioner; RLS på alle tabeller, 0 politikker.
 - **ERP-prøven** (`lav-erp-proeve.mjs` → én DO-blok, `RAISE EXCEPTION 'PROEVE_OK: …'`): samme blok giver `PROEVE_OK` i PGlite, og skemaet findes ikke bagefter. Kørslen i ERP-projektet blev afvist af tilladelsen i agent-sessionen og er **ikke kørt der**. Kør den med godkendelse via Supabase-forbindelsen (`execute_sql`, ERP-projektet) og tjek bagefter: `select count(*) from pg_namespace where nspname = 'konto_proeve'` → 0.

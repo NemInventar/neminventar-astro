@@ -83,8 +83,9 @@ for (const s of TILSTANDE) {
       assert.equal(/fortrydelsesret|reklamationsret|fortryde til og med/i.test(tekst.slice(tekst.indexOf(t('da', 'vilkaar.h2')))), !slut, 'vilkår');
       // Leveringslinjen: siden skriver selv "Levering: …" uden antal (Fable port 3, nr. 5)
       assert.ok(!tekst.includes('Levering, båret ind · 4 skabe'), 'ordrens egen leveringslinje står ikke');
-      if (s.form === 'levering') assert.match(h, /<tr data-felt="levering-linje"><td>Levering: samlet, båret ind<\/td><td class="n"><\/td><td class="n">1\.750,00 kr\.<\/td><\/tr>/);
-      else assert.match(h, /<tr data-felt="levering-linje"><td>Levering: flatpack, afhentning på Mågevej<\/td><td class="n"><\/td><td class="n">0,00 kr\.<\/td><\/tr>/);
+      // Runde 2, R7: rækkens første celle spænder over Vare og Antal (ingen tom Antal-celle, der presser teksten på telefon)
+      if (s.form === 'levering') assert.match(h, /<tr data-felt="levering-linje"><td colspan="2">Levering: samlet, båret ind<\/td><td class="n">1\.750,00&nbsp;kr\.<\/td><\/tr>/);
+      else assert.match(h, /<tr data-felt="levering-linje"><td colspan="2">Levering: flatpack, afhentning på Mågevej<\/td><td class="n">0,00&nbsp;kr\.<\/td><\/tr>/);
       // Udskriften: ordmærket øverst, kun i print (Fable port 3, nr. 25)
       assert.ok(h.includes('<p class="kun-print ordmaerke">NEM<b>·</b>INVENTAR</p>'));
       // Række 15: tilbud om at logge ind — kun udgivelse 2 uden login
@@ -113,6 +114,33 @@ test('port 3 nr. 1: uge og datoer bindes med hårde mellemrum — parentesen kan
   assert.equal(h1('11w53'), 'Klar til afhentning i uge&nbsp;53 (28.&nbsp;december&nbsp;2026–1.&nbsp;januar&nbsp;2027)');
   for (const v of UGE_VARIANTER) assert.equal(h1Af(html(v.id)), v.h1, v.id);
   assert.ok(!/class="nob">\(/.test(html('03w53')), 'parentesen er ikke længere nowrap');
+});
+
+// Runde 2, R6: forløbets underlinje binder ugen som H1'en; ligger ugen i én måned, brydes parentesen slet ikke
+test('runde 2, R6: forløbets underlinje — "uge 49" og datoerne bundet; én måned står i nowrap', () => {
+  const html = (id, nu = '2026-11-12T10:00:00.000Z') => renderOrdre({ ordre: ordreI(id), visning: 'uden_login', udgivelse: 1, nu, designerUrl: DESIGNER }).html;
+  const uge = (h) => /<li class="sket" data-trin="uge">.*?<small>(.*?)<\/small>/s.exec(h)[1];
+  assert.equal(uge(html('03w49')), 'Uge&nbsp;49 (30.&nbsp;november–4.&nbsp;december&nbsp;2026)', 'to måneder: kun brud efter stregen');
+  assert.equal(uge(html(3, TILSTANDE[2].nu)), 'Uge&nbsp;51 <span class="nw">(14.–18.&nbsp;december&nbsp;2026)</span>', 'én måned: hele parentesen');
+  assert.match(html(3, TILSTANDE[2].nu), /<span class="fl-tekst">9\.&nbsp;november&nbsp;2026<small>/, 'datoen holdes samlet');
+  // H1'en er uændret (parentesen kan brydes efter stregen, aldrig nowrap — port 3, nr. 1)
+  assert.equal(/<h1[^>]*>(.*?)<\/h1>/s.exec(html(3, TILSTANDE[2].nu))[1], 'Vi leverer i uge&nbsp;51 (14.–18.&nbsp;december&nbsp;2026)');
+});
+
+// Runde 2, R1: designeren skriver antallet i linjens tekst ("2 × Lockers 4 × 2, 8 rum"), og broen sender antal 1. Siden viser
+// "Lockers 4 × 2, 8 rum" · 2 · linjens beløb — testet med 1, 2 og 3 stk. Rækken "Vare" i "Mål og indretning" er uændret.
+test('runde 2, R1: to (og tre) af samme vare — antallet i Antal, ikke i navnet; én er som før', () => {
+  const vare = (tekst, beloeb_oere, beskrivelse = null) => {
+    const o = { ...ordreI(3), linjer: [{ tekst, antal: 1, beloeb_oere }, { tekst: 'Levering til kantsten · 2 elementer', antal: 1, beloeb_oere: 68750 }], levering: { form: 'kantsten', tekst: 'Samlet, til kantsten' }, beskrivelse };
+    const h = renderOrdre({ ordre: o, visning: 'uden_login', udgivelse: 1, nu: TILSTANDE[2].nu, designerUrl: DESIGNER }).html;
+    return /<tbody><tr><td>(.*?)<\/td><td class="n">(.*?)<\/td><td class="n">(.*?)<\/td><\/tr>/s.exec(h).slice(1).map((x) => x.replace(/&nbsp;/g, ' '));
+  };
+  assert.deepEqual(vare('Lockers 4 × 2, 8 rum', 2520000), ['Lockers 4 × 2, 8 rum', '1', '25.200,00 kr.']);
+  assert.deepEqual(vare('2 × Lockers 4 × 2, 8 rum', 5040000), ['Lockers 4 × 2, 8 rum', '2', '50.400,00 kr.']);
+  assert.deepEqual(vare('3 × Lockers 4 × 2, 8 rum', 7560000), ['Lockers 4 × 2, 8 rum', '3', '75.600,00 kr.']);
+  // "Mål og indretning" står som designeren frøs den — rækken "Vare" med "2 × …" er uændret
+  const o = { ...ordreI(3), linjer: [{ tekst: '2 × Lockers 4 × 2, 8 rum', antal: 1, beloeb_oere: 5040000 }], beskrivelse: [['Vare', '2 × Lockers 4 × 2'], ['Rum', '8']] };
+  assert.match(renderOrdre({ ordre: o, visning: 'uden_login', udgivelse: 1, nu: TILSTANDE[2].nu, designerUrl: DESIGNER }).html, /<dt>Vare<\/dt><dd>2 × Lockers 4 × 2<\/dd>/);
 });
 
 test('port 3 nr. 2: flyttet uge og dag — rækken har datoen for ændringen og siger "ændret fra"', () => {

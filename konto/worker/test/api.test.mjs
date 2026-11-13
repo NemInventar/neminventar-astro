@@ -10,6 +10,7 @@ import { b64url, fraB64url } from '../src/krypto.js';
 import { onRequest } from '../../functions/api/[[sti]].js';
 import { prisUdenLevering } from '../src/pris.js';
 import { miniatureUd } from '../src/app.js';
+import { rensMiniature, MINIATURE_MAKS } from '../src/regler.js';
 
 const MIN = 60_000;
 const fil = (sti) => readFileSync(fileURLToPath(new URL(sti, import.meta.url)), 'utf8');
@@ -277,6 +278,72 @@ test('Miniaturen: kun en sti på konto-værten (/api/…) går videre — alt an
   }
 });
 
+// Fable port 3 runde 2, R4 (kontrakter §6): designeren sender en lille JPEG med "gem"; Workeren gemmer den i ni-konto og
+// udleverer den kun til kontoens egen session på konto-værten (sidens CSP img-src 'self'), med privat cache i et døgn.
+const JPEG = Buffer.from([0xff, 0xd8, 0xff, 0xe0, ...Array.from({ length: 300 }, (_, i) => i % 251), 0xff, 0xd9]);
+test('Miniaturen: gemmes med designet og udleveres som image/jpeg kun til ejerens session', async () => {
+  const v = lavVerden();
+  const a = await v.logInd(EJER);
+  const b = await v.logInd('b@example.com');
+  const t = kodT({ bredde: 60, hoejde: 220 });
+  const id = (await v.kald('POST', '/api/gem', { origin: DESIGNER, cookie: a.token, body: { produkt: 'hoejskab', t, miniature: JPEG.toString('base64') } })).json.id;
+  const udenId = (await v.kald('POST', '/api/gem', { origin: DESIGNER, cookie: a.token, body: { produkt: 'hoejskab', t } })).json.id;
+  // /api/min-side: adressen på konto-værten, når der er et billede — ellers null (produktets ikon)
+  const side = await v.kald('GET', '/api/min-side', { cookie: a.token });
+  const m = Object.fromEntries(side.json.designs.map((d) => [d.id, d.miniature]));
+  assert.equal(m[id], `/api/design/miniature?id=${id}`);
+  assert.equal(m[udenId], null);
+  assert.equal(miniatureUd(m[id]), m[id]);
+  // billedet: præcis de bytes, designeren sendte
+  const r = await v.kald('GET', `/api/design/miniature?id=${id}`, { cookie: a.token });
+  assert.equal(r.status, 200);
+  assert.deepEqual(Buffer.from(r.bytes), JPEG);
+  assert.equal(r.headers.get('content-type'), 'image/jpeg');
+  assert.equal(r.headers.get('cache-control'), 'private, max-age=86400');
+  assert.equal(r.headers.get('x-content-type-options'), 'nosniff');
+  assert.equal(r.headers.get('cross-origin-resource-policy'), 'same-origin');
+  assert.equal(r.headers.get('access-control-allow-origin'), null);
+  // en anden konto, ingen session, et design uden billede, et ugyldigt id: intet billede
+  const anden = await v.kald('GET', `/api/design/miniature?id=${id}`, { cookie: b.token });
+  assert.deepEqual([anden.status, anden.json], [404, { fejl: 'ukendt' }]);
+  const ingen = await v.kald('GET', `/api/design/miniature?id=${id}`, {});
+  assert.deepEqual([ingen.status, ingen.json], [401, { fejl: 'login' }]);
+  assert.equal((await v.kald('GET', `/api/design/miniature?id=${udenId}`, { cookie: a.token })).status, 404);
+  for (const q of ['?id=x', '?id=', '', `?id=${id}x`]) assert.equal((await v.kald('GET', `/api/design/miniature${q}`, { cookie: a.token })).status, 404, q);
+  // designeren må ikke hente billedet (R9: kun "mig" og "gem"), og flaget fra lukker ruten
+  assert.equal((await v.kald('GET', `/api/design/miniature?id=${id}`, { cookie: a.token, origin: DESIGNER })).status, 403);
+  v.env.KONTO_AKTIV = 'false';
+  assert.deepEqual((await v.kald('GET', `/api/design/miniature?id=${id}`, { cookie: a.token })).json, { fejl: 'lukket' });
+  v.env.KONTO_AKTIV = 'true';
+  // slettes designet, er billedet væk
+  await v.kald('POST', '/api/design/slet', { cookie: a.token, body: { id } });
+  assert.equal((await v.kald('GET', `/api/design/miniature?id=${id}`, { cookie: a.token })).status, 404);
+});
+
+test('Miniaturen: kun en JPEG under 150 kB — ellers gemmes designet uden billede; kroppen må være op til 224 kB på "gem"', async () => {
+  const v = lavVerden();
+  const { token } = await v.logInd();
+  const t = kodT({ bredde: 60 });
+  const gem = async (miniature) => (await v.kald('POST', '/api/gem', { cookie: token, body: { produkt: 'hoejskab', t, miniature } })).json;
+  const stor = Buffer.concat([JPEG.subarray(0, 4), Buffer.alloc(150_001 - 6, 1), Buffer.from([0xff, 0xd9])]);
+  const lige = Buffer.concat([JPEG.subarray(0, 4), Buffer.alloc(150_000 - 6, 1), Buffer.from([0xff, 0xd9])]);
+  for (const [navn, x] of [['png', Buffer.from([0x89, 0x50, 0x4e, 0x47, 0, 0, 0xff, 0xd9]).toString('base64')], ['uden slutmærke', JPEG.subarray(0, 100).toString('base64')],
+    ['ikke base64', '<svg onload=1>'], ['tal', 42], ['over 150 kB', stor.toString('base64')], ['dataURL', `data:image/jpeg;base64,${JPEG.toString('base64')}`]]) {
+    const r = await gem(x);
+    assert.equal(r.ok, true, navn);
+    const d = (await v.kald('GET', '/api/min-side', { cookie: token })).json.designs.find((y) => y.id === r.id);
+    assert.equal(d.miniature, null, navn);
+  }
+  assert.ok(v.logs.some((l) => l.type === 'miniature_afvist'));
+  const ok = await gem(lige.toString('base64'));
+  assert.equal((await v.kald('GET', `/api/design/miniature?id=${ok.id}`, { cookie: token })).bytes.length, 150_000, 'lige på loftet');
+  // alle andre ruter har stadig 16 kB
+  const r = await v.kald('POST', '/api/design/navn', { cookie: token, raa: JSON.stringify({ id: ok.id, navn: 'x', fyld: 'x'.repeat(17_000) }) });
+  assert.deepEqual([r.status, r.json], [413, { fejl: 'stor' }]);
+  assert.deepEqual(rensMiniature(JPEG.toString('base64')).bytes.length, JPEG.length);
+  assert.equal(MINIATURE_MAKS, 150_000);
+});
+
 test('Designs: omdøb og slet kun egne (ejerskabet ligger i forespørgslen)', async () => {
   const v = lavVerden();
   const a = await v.logInd(EJER);
@@ -331,7 +398,10 @@ test('Router: ukendt sti 404, forkert metode 405, for stor body 413, ugyldig JSO
   assert.equal((await v.kald('GET', '/api/admin')).status, 404);
   assert.equal((await v.kald('GET', '/api/kode')).status, 405);
   assert.equal((await v.kald('POST', '/api/mig')).status, 405);
-  assert.equal((await v.kald('POST', '/api/gem', { raa: JSON.stringify({ t: 'x'.repeat(20_000) }) })).status, 413);
+  assert.equal((await v.kald('POST', '/api/kode', { raa: JSON.stringify({ t: 'x'.repeat(20_000) }) })).status, 413);
+  // "gem" bærer miniaturen og må være op til 224 kB (R4) — over det: 413
+  assert.equal((await v.kald('POST', '/api/gem', { raa: JSON.stringify({ t: 'x'.repeat(20_000) }) })).status, 401);
+  assert.equal((await v.kald('POST', '/api/gem', { raa: JSON.stringify({ t: 'x'.repeat(230_000) }) })).status, 413);
   assert.deepEqual((await v.kald('POST', '/api/kode', { raa: '{"email":' })).json, { fejl: 'json' });
   assert.deepEqual((await v.kald('POST', '/api/kode', { raa: '[1,2]' })).json, { fejl: 'json' });
 });
