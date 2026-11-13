@@ -239,10 +239,15 @@ const jsonLd = [
               <img src={cdn(im.src, 800)} alt={im.alt} loading="lazy" decoding="async" />
               {ex && <a class="ptag lp-byg" href={ex.href} data-geks={ex.id} data-produkt={ex.produkt} data-side={page.slug}>Åbn i designeren →</a>}
               {im.pris && im.href && <a class="ptag lp-byg" href={im.href} data-geks="annoncebillede" data-side={page.slug}>Byg en tilsvarende →</a>}
+              {/* Joachim 13-11-2026: billeder uden pris skal sige, at man beder om en pris */}
+              {!ex && !im.pris && im.kind === 'visualisering' && <a class="ptag lp-byg" href={`${base}kontakt?emne=${encodeURIComponent(`${page.nav_label}: ${im.caption ?? ''}`)}`}>Få pris på denne →</a>}
               <figcaption class="img-tag"><b>{imgLabel(im.kind)}</b><span>{im.caption}{im.pris && <em> · {im.pris}</em>}</span></figcaption>
             </figure>
           ); })}
         </div>
+      )}
+      {images.slice(1).some((im) => im.kind === 'visualisering') && (
+        <p class="lp-note">Billederne viser, hvad vi kan bygge. Prisen afhænger af mål, materiale og lås. Står der ingen pris ved et billede, så tryk på "Få pris på denne", eller <a href={kontaktHref}>send os jeres mål</a>.</p>
       )}
 
       {page.highlights?.length > 0 && (
@@ -401,6 +406,8 @@ const jsonLd = [
     .detail-body .detail-cta{margin-top:28px}
     .lp-billeder{margin-top:28px}
     .lp-billeder .gfig{cursor:default}
+    .lp-note{margin-top:16px;font-size:15px;color:var(--muted);max-width:80ch}
+    .lp-note a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--warm);text-underline-offset:3px}
     @media(max-width:680px){.lp-billeder .img-tag span{display:none}.lp-billeder .img-tag b{margin-right:0}.lp-byg{display:none}}
     .lp-byg{left:auto;right:12px;color:var(--ink);pointer-events:auto}
     .lp-facts.three{margin-top:28px}
