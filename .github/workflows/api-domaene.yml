@@ -20,6 +20,7 @@ permissions:
 jobs:
   domain:
     runs-on: ubuntu-latest
+    environment: production
     timeout-minutes: 5
     steps:
       - name: Tilføj domænet og vis status

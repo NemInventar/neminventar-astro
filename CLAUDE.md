@@ -14,10 +14,13 @@ Det **nye** marketingsite for Nem Inventar (neminventar.dk). Bygget for at løse
   SharePoint-kopien (`99. Hjemmesider/neminventar-astro`) er låst: git-hooks afviser commit og push. OneDrive synker
   `.git` fil for fil, og to skrivende maskiner i samme mappe ødelægger repoet.
 - **Før du går i gang:** `git pull --rebase`. Større arbejde (fx overhalingen på `forside-v2`) sker på en **branch**
-  og merges til `main` med en pull request; små tekst- og billedrettelser må gå direkte på `main`.
-- **Hver branch tjekkes og forhåndsvises automatisk** (`.github/workflows/preview.yml`): samme tekst-lint og build som
-  udgivelsen, og en forhåndsvisning på `https://<branch>.neminventar-preview.pages.dev` (noindex, adressen står i
-  kørslens Summary på GitHub). Rød kørsel = merges ikke.
+  og merges til `main` med en pull request. Siden 16-11-2026 kræver `main` en pull request, som ejerkontoen
+  (`NemInventar`: Joachim eller Milot) godkender (`.github/CODEOWNERS`) — det gælder også små tekst- og
+  billedrettelser fra alle andre konti. Kun ejerkontoen kan lægge småting direkte på `main`.
+- **Hver branch tjekkes automatisk** (`.github/workflows/preview.yml`): samme tekst-lint og build som udgivelsen.
+  Rød kørsel = merges ikke. Der er ingen forhåndsvisning på Cloudflare længere (16-11-2026) — se branchen lokalt
+  med `npm run dev`. Cloudflare-nøglen ligger i environment `production`, som kun `main` når; læg aldrig en secret
+  på repo-niveau (`scripts/test_workflow_secrets.py`).
 - **`main` er live** (GitHub Pages ved push + natligt build kl. 04) og **beskyttet**: ingen force-push, ingen sletning.
   Rul tilbage med `git revert <commit>` + push.
 - **Databasen er fælles og har ingen branches — og natbygget læser den.** Ændrer en branch en tabel eller et view, som
