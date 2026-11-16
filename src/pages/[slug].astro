@@ -36,7 +36,13 @@ const alternates = sprog.length ? [
   ...sprog.map((t) => ({ hreflang: t.lang, href: new URL(base + t.path, site).href })),
 ] : [];
 
-const paragraphs = (page.body ?? '').split('\n\n').filter(Boolean);
+// Mellemrubrik med teksten lige under (Marianne 16-11-2026): et afsnit, der starter med "## " og har et linjeskift,
+// deles i rubrikken (første linje) og et almindeligt afsnit (resten). Ellers bliver hele afsnittet til overskrift.
+const delRubrik = (p: string) => {
+  const nl = p.indexOf('\n');
+  return p.startsWith('## ') && nl > 0 ? [p.slice(0, nl), p.slice(nl + 1).trim()].filter(Boolean) : [p];
+};
+const paragraphs = (page.body ?? '').split('\n\n').filter(Boolean).flatMap(delRubrik);
 // Links i brødtekst og FAQ-svar: [tekst](https://…) eller [tekst](/sti). Alt andet vises som ren tekst.
 const LINK = /\[([^\]]+)\]\(((?:https?:\/\/|\/)[^)\s]+)\)/g;
 const segs = (s: string) => {
@@ -59,6 +65,7 @@ const tabel = (s: string) => {
   const rk = linjer.filter((l) => !/^\|[\s:|-]+\|$/.test(l)).map((l) => l.slice(1, -1).split('|').map((c) => c.trim()));
   return { hoved: rk[0], rk: rk.slice(1) };
 };
+// Et enkelt linjeskift i et afsnit bliver et <br> (Marianne 16-11-2026): linjer, der hører sammen uden at være hvert sit afsnit.
 // Mellemoverskrifter i brødtekst: et afsnit, der starter med "## ", bliver en h2 (Joachim 20-10-2026: lange sider skal kunne
 // deles op, så læseren og AI-motorerne kan finde afsnittet om fx materialer eller låger).
 const overskrift = (s: string) => (s.startsWith('## ') ? plain(s.slice(3).trim()) : null);
@@ -70,7 +77,7 @@ const forrest: Billede[] = (((FORREST as unknown as Record<string, Omit<Billede,
 const images: Billede[] = [...forrest, ...(page.images ?? []).filter((im) => im.kind !== 'video')];
 // Brødteksten deles ved mellemoverskrifterne: indledningen står åben, hvert afsnit foldes ud ved klik (teksten står stadig i HTML'en).
 const blokke: { h: string | null; afsnit: string[] }[] = [{ h: null, afsnit: [] }];
-for (const para of (page.body ?? '').split('\n\n').filter(Boolean)) {
+for (const para of paragraphs) {
   if (para.startsWith('## ')) blokke.push({ h: para.slice(3).trim().replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'), afsnit: [] });
   else blokke[blokke.length - 1].afsnit.push(para);
 }
@@ -175,7 +182,7 @@ const jsonLd = [
                 <thead><tr>{t.hoved.map((c) => <th>{c}</th>)}</tr></thead>
                 <tbody>{t.rk.map((r) => <tr>{r.map((c) => <td>{segs(c).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))}</td>)}</tr>)}</tbody>
               </table></div>
-            ) : <p>{segs(para).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))}</p>;
+            ) : <p>{para.split('\n').map((l, i) => [i > 0 && <br />, ...segs(l).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))])}</p>;
           })}
         </div>
         <aside class="guide-cta rv">
@@ -296,7 +303,7 @@ const jsonLd = [
                 <thead><tr>{t.hoved.map((c) => <th>{c}</th>)}</tr></thead>
                 <tbody>{t.rk.map((r) => <tr>{r.map((c) => <td>{segs(c).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))}</td>)}</tr>)}</tbody>
               </table></div>
-            ) : <p>{segs(para).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))}</p>;
+            ) : <p>{para.split('\n').map((l, i) => [i > 0 && <br />, ...segs(l).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))])}</p>;
           };
           return blokke.map((b) => b.h
             ? <details class="lp-sek"><summary><h2 class="lp-h2">{b.h}</h2></summary>{b.afsnit.map(afsnit)}</details>
