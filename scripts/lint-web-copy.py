@@ -92,6 +92,10 @@ FEJL = [
     # Joachim 08-11-2026 (korrektion fbec29f0): "Lad være med at kalde det en bank … Et eller andet som er dansk".
     # Sidst i listen, fordi QUOTE_RULE peger på FEJL[2].
     (r"(?i)\blocker-?bank\w*", "kald det lockerskab eller lockers, aldrig en bank (Joachim 08-11-2026)"),
+    # Marianne 10-11-2026 (Skriveregler.md, Ord og vendinger): træet hedder fyrre- i sammensætninger, og bindestregen
+    # viser, at begge er krydsfiner. Joachim 16-11-2026 "fint kør": som FEJL.
+    (r"(?i)\bfyr-\s*(?:og|eller)\s+birk|\bfyrkrydsfiner|\bfyrre\s+(?:og|eller)\s+birkekrydsfiner",
+     "skriv fyrrekrydsfiner og fyrre- og birkekrydsfiner med bindestreg (Marianne 10-11-2026)"),
 ]
 ADVAR = [
     (r"\d+(?:[,.]\d+)?\s*(?:×|x)\s*\d+|\b\d+(?:[,.]\d+)?\s*mm\b|Ø\s*\d+", "mål i mm — for specifikt til en kundevendt tekst"),
