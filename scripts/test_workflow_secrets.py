@@ -35,7 +35,7 @@ for f in filer:
     if re.search(r"toJSON\(\s*secrets\s*\)", tekst):
         fejl.append("%s: toJSON(secrets) er ikke tilladt" % os.path.basename(f))
     for navn, krop in jobs(tekst):
-        brugt = set(re.findall(r"secrets\.([A-Za-z0-9_]+)", krop)) - FRIE
+        brugt = set(re.findall(r"(?<![A-Za-z0-9_])secrets\.([A-Z][A-Z0-9_]*)", krop)) - FRIE
         if brugt and not re.search(r"^    environment: production\s*$", krop, re.M):
             fejl.append("%s -> job %s bruger %s uden environment: production" % (os.path.basename(f), navn, ", ".join(sorted(brugt))))
 
