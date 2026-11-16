@@ -31,7 +31,7 @@ Det **nye** marketingsite for Nem Inventar (neminventar.dk). Bygget for at løse
 
 Det gamle site (`../NeminventarHomepage`) er en **Vite + React SPA med HashRouter** (`#/`-routes). Problem: crawlere (Google/AI) ser **kun en tom skal** — alt indhold injiceres af JS. Derfor blev neminventar.dk ikke indekseret. Dette site er en **statisk genereret Astro-side** hvor hver rute er rigtig HTML med tekst, meta, canonical og sitemap → crawlbart.
 
-Designet kommer fra mockup **C2** (`../NeminventarHomepage/mockups/C2-fable-arketyper-projekter.html`) — den retning Joachim valgte. Positionering: selvsikker, "mennesker der bygger for mennesker", fokus på håndværk + det digitale + certificeringer + samarbejde. **Holdet er ingeniører** — undgå at overdrive "snedker"-ordet og gør dem aldrig til håndværkere ved høvlebænken.
+Designet kommer fra mockup **C2** (`../NeminventarHomepage/mockups/C2-fable-arketyper-projekter.html`) — den retning Joachim valgte. Positionering: selvsikker, "mennesker der bygger for mennesker", fokus på håndværk + det digitale + certificeringer + samarbejde. **Firmaet er et snedkerfirma, og det skal stå på sitet** (Milot 12-11-2026: footer, Om os, "Sådan arbejder vi", LocalBusiness-data og llms.txt — fjern det ikke). **Holdet er ingeniører** — undgå at overdrive "snedker"-ordet og gør dem aldrig til håndværkere ved høvlebænken: skriv "snedkerfirma" om firmaet, ikke "snedkere" om personerne.
 
 ---
 
