@@ -59,6 +59,7 @@ const tabel = (s: string) => {
   const rk = linjer.filter((l) => !/^\|[\s:|-]+\|$/.test(l)).map((l) => l.slice(1, -1).split('|').map((c) => c.trim()));
   return { hoved: rk[0], rk: rk.slice(1) };
 };
+// Et enkelt linjeskift i et afsnit bliver et <br> (Marianne 16-11-2026): linjer, der hører sammen uden at være hvert sit afsnit.
 // Mellemoverskrifter i brødtekst: et afsnit, der starter med "## ", bliver en h2 (Joachim 20-10-2026: lange sider skal kunne
 // deles op, så læseren og AI-motorerne kan finde afsnittet om fx materialer eller låger).
 const overskrift = (s: string) => (s.startsWith('## ') ? plain(s.slice(3).trim()) : null);
@@ -175,7 +176,7 @@ const jsonLd = [
                 <thead><tr>{t.hoved.map((c) => <th>{c}</th>)}</tr></thead>
                 <tbody>{t.rk.map((r) => <tr>{r.map((c) => <td>{segs(c).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))}</td>)}</tr>)}</tbody>
               </table></div>
-            ) : <p>{segs(para).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))}</p>;
+            ) : <p>{para.split('\n').map((l, i) => [i > 0 && <br />, ...segs(l).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))])}</p>;
           })}
         </div>
         <aside class="guide-cta rv">
@@ -296,7 +297,7 @@ const jsonLd = [
                 <thead><tr>{t.hoved.map((c) => <th>{c}</th>)}</tr></thead>
                 <tbody>{t.rk.map((r) => <tr>{r.map((c) => <td>{segs(c).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))}</td>)}</tr>)}</tbody>
               </table></div>
-            ) : <p>{segs(para).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))}</p>;
+            ) : <p>{para.split('\n').map((l, i) => [i > 0 && <br />, ...segs(l).map((g) => (g.href ? <a href={g.href}>{g.t}</a> : g.t))])}</p>;
           };
           return blokke.map((b) => b.h
             ? <details class="lp-sek"><summary><h2 class="lp-h2">{b.h}</h2></summary>{b.afsnit.map(afsnit)}</details>
