@@ -36,13 +36,7 @@ const alternates = sprog.length ? [
   ...sprog.map((t) => ({ hreflang: t.lang, href: new URL(base + t.path, site).href })),
 ] : [];
 
-// Mellemrubrik med teksten lige under (Marianne 16-11-2026): et afsnit, der starter med "## " og har et linjeskift,
-// deles i rubrikken (første linje) og et almindeligt afsnit (resten). Ellers bliver hele afsnittet til overskrift.
-const delRubrik = (p: string) => {
-  const nl = p.indexOf('\n');
-  return p.startsWith('## ') && nl > 0 ? [p.slice(0, nl), p.slice(nl + 1).trim()].filter(Boolean) : [p];
-};
-const paragraphs = (page.body ?? '').split('\n\n').filter(Boolean).flatMap(delRubrik);
+const paragraphs = (page.body ?? '').split('\n\n').filter(Boolean);
 // Links i brødtekst og FAQ-svar: [tekst](https://…) eller [tekst](/sti). Alt andet vises som ren tekst.
 const LINK = /\[([^\]]+)\]\(((?:https?:\/\/|\/)[^)\s]+)\)/g;
 const segs = (s: string) => {
@@ -77,7 +71,7 @@ const forrest: Billede[] = (((FORREST as unknown as Record<string, Omit<Billede,
 const images: Billede[] = [...forrest, ...(page.images ?? []).filter((im) => im.kind !== 'video')];
 // Brødteksten deles ved mellemoverskrifterne: indledningen står åben, hvert afsnit foldes ud ved klik (teksten står stadig i HTML'en).
 const blokke: { h: string | null; afsnit: string[] }[] = [{ h: null, afsnit: [] }];
-for (const para of paragraphs) {
+for (const para of (page.body ?? '').split('\n\n').filter(Boolean)) {
   if (para.startsWith('## ')) blokke.push({ h: para.slice(3).trim().replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'), afsnit: [] });
   else blokke[blokke.length - 1].afsnit.push(para);
 }
