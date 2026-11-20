@@ -1,0 +1,17 @@
+# Pages-projektet ni-konto (konto.neminventar.dk). Siderne bygges til ../dist-konto (astro.konto.config.mjs);
+# konto/functions/api/[[sti]].js sender /api/* videre til Workeren gennem service bindingen KONTO.
+#   produktion (main) → ni-konto-backend          (flagene false, kontrakter §8)
+#   preview (branches) → ni-konto-backend-staging  (flagene true, mails kun til hvidlisten)
+# Udgives fra konto/ (så functions/ og denne fil findes): npx wrangler@4 pages deploy --project-name ni-konto --branch <branch>
+
+name = "ni-konto"
+pages_build_output_dir = "../dist-konto"
+compatibility_date = "2026-10-01"
+
+[[env.production.services]]
+binding = "KONTO"
+service = "ni-konto-backend"
+
+[[env.preview.services]]
+binding = "KONTO"
+service = "ni-konto-backend-staging"

@@ -4,39 +4,47 @@
 // projekt-side ('/repo/').
 // Telefonen står synligt i headeren (også på mobil, hvor et tryk ringer op) — Joachim 01-10-2026.
 // På telefon og tablet (≤960 px) ligger menupunkterne bag en menu-knap (<details>, virker uden JS).
-import { PHONE, PHONE_TEL, LINKEDIN, FACEBOOK } from '../lib/contact';
+// Min side (12-11-2026, Fable runde 3 afsnit b): konto.neminventar.dk bruger samme header.
+//   origin     = 'https://neminventar.dk' gør alle interne links til fulde adresser til sitet (standard '': som før).
+//   visMinSide = "Min side" med person-ikon mellem telefonnummeret og "Få en pris" og som første række i menuen under
+//                "Få en pris". LinkedIn og Facebook går ud af headeren og står i mobilmenuen og footeren (Joachim 12-11: ja).
+//                Udseendet står i src/styles/min-side.css, som siden selv importerer. Tysk har ingen Min side.
+import { PHONE, PHONE_TEL, LINKEDIN, FACEBOOK, MIN_SIDE, MIN_SIDE_EN } from '../lib/contact';
 import { DESIGNER_URL } from '../lib/forside';
-const base = import.meta.env.BASE_URL; // slutter med '/'
 // Engelsk udgave (/en/, backlog e2c66652): egne links, "Dansk" i stedet for "EN", ellers samme menu.
 // Tysk light-udgave (/de/, backlog 3de10daf): én landingsside + Impressum og Datenschutz.
-const { lang = 'da' } = Astro.props as { lang?: 'da' | 'en' | 'de' };
+const { lang = 'da', origin = '', visMinSide = false } = Astro.props as { lang?: 'da' | 'en' | 'de'; origin?: string; visMinSide?: boolean };
+const base = origin ? `${origin.replace(/\/+$/, '')}/` : import.meta.env.BASE_URL; // slutter med '/'
+// En adresse på sitet. Med origin får en side afsluttende skråstreg her, for skraastreg.mjs retter kun links til sider i eget dist.
+const u = (p = '') => (origin && p && !/[#?.]/.test(p) && !p.endsWith('/') ? `${base}${p}/` : `${base}${p}`);
 const en = lang === 'en';
 const de = lang === 'de';
-const home = de ? `${base}de/` : en ? `${base}en/` : base;
-const cta = de ? { href: `${base}de/#kontakt`, t: 'Anfrage senden' } : en ? { href: `${base}en/contact/`, t: 'Get a price' } : { href: `${base}kontakt`, t: 'Få en pris' };
+const minSide = !visMinSide || de ? null : en ? { href: MIN_SIDE_EN, t: 'My account' } : { href: MIN_SIDE, t: 'Min side' };
+const home = de ? u('de/') : en ? u('en/') : u();
+const cta = de ? { href: u('de/#kontakt'), t: 'Anfrage senden' } : en ? { href: u('en/contact/'), t: 'Get a price' } : { href: u('kontakt'), t: 'Få en pris' };
 // "Designeren" fører til forsidens 3D (#design), indtil den offentlige designer findes (DESIGNER_URL). Med ?p=hoejskab
 // (22-10-2026): uden produkt åbnede designeren lockers — også for den, der kom fra en annonce for garderobeskabe.
 const links = de ? [
-  { href: `${base}de/`, t: 'Spind mit Sitzbank' },
-  { href: `${base}de/ratgeber/`, t: 'Ratgeber' },
-  { href: `${base}de/impressum/`, t: 'Impressum' },
-  { href: `${base}de/datenschutz/`, t: 'Datenschutz' },
+  { href: u('de/'), t: 'Spind mit Sitzbank' },
+  { href: u('de/ratgeber/'), t: 'Ratgeber' },
+  { href: u('de/impressum/'), t: 'Impressum' },
+  { href: u('de/datenschutz/'), t: 'Datenschutz' },
 ] : en ? [
-  { href: `${base}en/products/`, t: 'Products' },
-  { href: `${base}en/lockers-with-bench/`, t: 'Lockers with bench' },
-  { href: `${base}en/wardrobes/`, t: 'Wardrobes' },
-  { href: `${base}en/guides/`, t: 'Guides' },
-  { href: `${base}en/#how`, t: 'How we work' },
-  { href: `${base}en/contact/`, t: 'Contact' },
+  { href: u('en/products/'), t: 'Products' },
+  { href: u('en/lockers-with-bench/'), t: 'Lockers with bench' },
+  { href: u('en/wardrobes/'), t: 'Wardrobes' },
+  { href: u('en/guides/'), t: 'Guides' },
+  { href: u('en/#how'), t: 'How we work' },
+  { href: u('en/contact/'), t: 'Contact' },
 ] : [
-  { href: `${base}projekter`, t: 'Projekter' },
-  { href: `${base}inventar`, t: 'Inventar' },
-  { href: DESIGNER_URL ? `${DESIGNER_URL}?p=hoejskab` : `${base}#design`, t: 'Designeren', soon: !DESIGNER_URL },
+  { href: u('projekter'), t: 'Projekter' },
+  { href: u('inventar'), t: 'Inventar' },
+  { href: DESIGNER_URL ? `${DESIGNER_URL}?p=hoejskab` : u('#design'), t: 'Designeren', soon: !DESIGNER_URL },
   // eksemplerne fra designeren (Joachim 17-10-2026: "Hvor er den produktside også henne så man kan blive inspireret? Den havde jeg nok regnet med at se i menuen")
-  { href: `${base}design-det-selv/`, t: 'Inspiration' },
-  { href: `${base}#saadan`, t: 'Sådan arbejder vi' },
-  { href: `${base}om-os`, t: 'Om os' },
-  { href: `${base}kontakt`, t: 'Kontakt' },
+  { href: u('design-det-selv/'), t: 'Inspiration' },
+  { href: u('#saadan'), t: 'Sådan arbejder vi' },
+  { href: u('om-os'), t: 'Om os' },
+  { href: u('kontakt'), t: 'Kontakt' },
 ];
 ---
 <nav class="topnav"><div class="wrap nav-in">
@@ -44,33 +52,36 @@ const links = de ? [
   <div class="nav-links">
     {links.filter((l) => l.t !== 'Kontakt' && l.t !== 'Contact').map((l) => <a href={l.href}>{l.t}{l.soon && <span class="soon">snart</span>}</a>)}
     {de
-      ? <><a href={base} hreflang="da" lang="da" title="Dansk">Dansk</a><a href={`${base}en/`} hreflang="en" lang="en" title="English">English</a></>
+      ? <><a href={u()} hreflang="da" lang="da" title="Dansk">Dansk</a><a href={u('en/')} hreflang="en" lang="en" title="English">English</a></>
       : en
-      ? <a href={base} hreflang="da" lang="da" title="Dansk">Dansk</a>
-      : <a href={`${base}en/`} hreflang="en" lang="en" title="English">EN</a>}
-    <a href={LINKEDIN} class="nav-icon" target="_blank" rel="noopener" aria-label="Nem Inventar på LinkedIn" title="LinkedIn">
+      ? <a href={u()} hreflang="da" lang="da" title="Dansk">Dansk</a>
+      : <a href={u('en/')} hreflang="en" lang="en" title="English">EN</a>}
+    {!minSide && <a href={LINKEDIN} class="nav-icon" target="_blank" rel="noopener" aria-label="Nem Inventar på LinkedIn" title="LinkedIn">
       <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
-    </a>
-    <a href={FACEBOOK} class="nav-icon" target="_blank" rel="noopener" aria-label="Nem Inventar på Facebook" title="Facebook">
+    </a>}
+    {!minSide && <a href={FACEBOOK} class="nav-icon" target="_blank" rel="noopener" aria-label="Nem Inventar på Facebook" title="Facebook">
       <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.26h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg>
-    </a>
+    </a>}
     <a href={`tel:${PHONE_TEL}`} class="nav-tel" aria-label={`Ring til os på ${PHONE}`}>
       <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg>
       <span><span class="cc">+45 </span>{PHONE.replace('+45 ', '')}</span>
-    </a>
+    </a>{/* Min side hæftet på telefonens </a>: på egen linje gav det tomme udtryk et ekstra mellemrum i HTML'en */}{minSide && <a href={minSide.href} class="nav-min">
+      <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      {minSide.t}
+    </a>}
     <a href={cta.href} class="nav-cta">{cta.t}</a>
   </div>
   <details class="nav-menu" id="navMenu">
     <summary aria-label="Menu"><span class="bars"></span></summary>
     <div class="nav-panel">
-      <a href={cta.href} class="btn btn-primary np-cta">{cta.t} <span class="arr">→</span></a>
+      <a href={cta.href} class="btn btn-primary np-cta">{cta.t} <span class="arr">→</span></a>{minSide && <a href={minSide.href}>{minSide.t}<span class="arr">→</span></a>}
       {links.map((l) => <a href={l.href}>{l.t}{l.soon && <span class="soon">snart</span>}<span class="arr">→</span></a>)}
       <div class="np-foot">
         {de
-          ? <><a href={base} hreflang="da" lang="da">Dansk</a><a href={`${base}en/`} hreflang="en" lang="en">English</a></>
+          ? <><a href={u()} hreflang="da" lang="da">Dansk</a><a href={u('en/')} hreflang="en" lang="en">English</a></>
           : en
-          ? <a href={base} hreflang="da" lang="da">Dansk</a>
-          : <a href={`${base}en/`} hreflang="en" lang="en">In English</a>}
+          ? <a href={u()} hreflang="da" lang="da">Dansk</a>
+          : <a href={u('en/')} hreflang="en" lang="en">In English</a>}
         <a href={LINKEDIN} target="_blank" rel="noopener">LinkedIn</a>
         <a href={FACEBOOK} target="_blank" rel="noopener">Facebook</a>
         <a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a>

@@ -1,0 +1,5 @@
+{
+  "note": "Tekster, kundefladen skal vise, men som Fable ikke har skrevet. De står i katalogerne som TODO-TEKST:<nøgle> (kontrakter.md §0: opfindes ikke). konto/test/tekster.test.mjs melder dem som TODO; `npm run test:konto-udgiv` fejler, så længe én er tilbage. Fjern nøglen her, når teksten er skrevet ind. Tom siden Fable runde 4 (ni-apps docs/superpowers/specs/2026-11-12-min-side/fable-runde4.md).",
+  "mangler": {},
+  "kernen": {}
+}

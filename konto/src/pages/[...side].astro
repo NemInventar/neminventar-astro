@@ -1,0 +1,26 @@
+---
+// Udgivelse 2 (Fable b nr. 2 og 4): log ind på / og /en/, Min side på /min-side/ og /en/min-side/.
+// Fable b siger "konto.neminventar.dk/ — ikke logget ind: log ind; logget ind: Min side": log ind-siden sender en
+// indlogget videre til /min-side/ (login-side.js), så linket "Min side" i headeren altid lander rigtigt.
+// I udgivelse 1 bygges ingen af dem (astro.konto.config.mjs sender adresserne videre til neminventar.dk).
+import KontoLayout from '../layouts/KontoLayout.astro';
+import LogInd from '../components/LogInd.astro';
+import MinSide from '../components/MinSide.astro';
+import { t } from '../lib/tekst.mjs';
+
+export function getStaticPaths() {
+  if (process.env.KONTO_UDGIVELSE !== '2') return [];
+  return [
+    { params: { side: undefined }, props: { lang: 'da', slags: 'login' } },
+    { params: { side: 'en' }, props: { lang: 'en', slags: 'login' } },
+    { params: { side: 'min-side' }, props: { lang: 'da', slags: 'min-side' } },
+    { params: { side: 'en/min-side' }, props: { lang: 'en', slags: 'min-side' } },
+  ];
+}
+
+const { lang, slags } = Astro.props as { lang: 'da' | 'en'; slags: 'login' | 'min-side' };
+const titel = `${t(lang, slags === 'login' ? 'login.h1' : 'side.h1')} · Nem Inventar`;
+---
+<KontoLayout titel={titel} side={slags} lang={lang}>
+  {slags === 'login' ? <LogInd lang={lang} /> : <MinSide />}
+</KontoLayout>

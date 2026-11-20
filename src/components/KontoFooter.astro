@@ -1,0 +1,35 @@
+---
+// Kort footer til konto.neminventar.dk: ordresiden (udgivelse 1) og Min side (udgivelse 2). Fable runde 3 afsnit b —
+// teksten er facit, ikke mockuppen. Året sættes ved build.
+// Ingen kald til ERP ved build (Footer.astro henter over 40 landingssider; de hører ikke hjemme på en kontoside),
+// ingen inline style= og intet is:inline-script: konto-sitet kører med streng CSP. Stilen nedenfor er en almindelig
+// komponent-stil; konto-buildet bør sætte build.inlineStylesheets = 'never', så den lander i en .css-fil.
+//   visMinSide = "Min side ·" først i linkrækken (udgivelse 2). I udgivelse 1 peger intet på Min side.
+//   origin     = sitet, som de juridiske sider og "Til neminventar.dk" peger på (standard https://neminventar.dk).
+//   lang       = 'en' på /en/ og /en/min-side/ (Fable port 3, nr. 18): linkene på engelsk, de juridiske tekster findes kun
+//                på dansk og siger det. Adresselinjen er uændret.
+import { PHONE, PHONE_TEL, MIN_SIDE, MIN_SIDE_EN } from '../lib/contact';
+const { visMinSide = false, origin = 'https://neminventar.dk', lang = 'da' } = Astro.props as { visMinSide?: boolean; origin?: string; lang?: 'da' | 'en' };
+const rod = `${origin.replace(/\/+$/, '')}/`;
+const aar = new Date().getFullYear();
+const en = lang === 'en';
+const T = en
+  ? { min: 'My account', minHref: MIN_SIDE_EN, hb: 'Terms for private customers (in Danish)', pp: 'Privacy policy (in Danish)', cp: 'Cookie policy (in Danish)', til: 'To neminventar.dk' }
+  : { min: 'Min side', minHref: MIN_SIDE, hb: 'Handelsbetingelser for private', pp: 'Privatlivspolitik', cp: 'Cookiepolitik', til: 'Til neminventar.dk' };
+const dansk = en ? 'da' : undefined;   // de juridiske sider er danske: hreflang på linket
+---
+<footer class="kfoot"><div class="kfoot-in">
+  <span>© {aar} Nem Inventar ApS · CVR 45085473 · Mågevej 73, st. tv., 2400 København NV · <a href={`tel:${PHONE_TEL}`}>{PHONE}</a> · <a href="mailto:tilbud@neminventar.dk">tilbud@neminventar.dk</a></span>
+  <span>{visMinSide && <><a href={T.minHref}>{T.min}</a> · </>}<a href={`${rod}handelsbetingelser/`} hreflang={dansk}>{T.hb}</a> · <a href={`${rod}privatlivspolitik/`} hreflang={dansk}>{T.pp}</a> · <a href={`${rod}cookiepolitik/`} hreflang={dansk}>{T.cp}</a> · <a href={en ? `${rod}en/` : rod}>{T.til}</a></span>
+</div></footer>
+
+<style>
+  /* Farverne følger site.css; tallene efter kommaet gælder, hvis siden ikke har site.css */
+  .kfoot{padding:22px 0 28px;border-top:1px solid var(--line,#E5DFD2);font-size:13.5px;line-height:1.7;color:var(--muted,#6E6759)}
+  .kfoot-in{max-width:1280px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;gap:6px 24px;flex-wrap:wrap}
+  .kfoot a{color:inherit;text-decoration:none}
+  .kfoot a:hover{color:var(--ink,#17140E)}
+  @media(max-width:680px){.kfoot-in{padding:0 16px}}
+  /* "Udskriv" på ordresiden: uden footer (Fable runde 3 afsnit b, Udskrift) */
+  @media print{.kfoot{display:none}}
+</style>

@@ -3,8 +3,16 @@
 // Landingssiderne linkes fra hver side (intern linkstruktur) — grupperet efter type i stedet for én lang linje.
 import { getWebLandingPages } from '../lib/supabase';
 import { guidesFor, guidePath } from '../lib/guides-i18n';
-import { PHONE, PHONE_TEL, LINKEDIN, FACEBOOK } from '../lib/contact';
-const base = import.meta.env.BASE_URL; // slutter med '/'
+import { PHONE, PHONE_TEL, LINKEDIN, FACEBOOK, MIN_SIDE, MIN_SIDE_EN } from '../lib/contact';
+// Min side (12-11-2026, Fable runde 3 afsnit b) — samme props som Nav:
+//   origin     = 'https://neminventar.dk' gør alle interne links til fulde adresser til sitet (standard '': som før).
+//   visMinSide = "Min side" øverst i spalten "Nem Inventar" (engelsk: "My account"). Tysk har ingen Min side.
+// konto.neminventar.dk bruger KontoFooter.astro, ikke denne: footeren her henter landingssiderne fra ERP ved build.
+const { lang = 'da', origin = '', visMinSide = false } = Astro.props as { lang?: 'da' | 'en' | 'de'; origin?: string; visMinSide?: boolean };
+const base = origin ? `${origin.replace(/\/+$/, '')}/` : import.meta.env.BASE_URL; // slutter med '/'
+// En adresse på sitet. Med origin får en side afsluttende skråstreg her, for skraastreg.mjs retter kun links til sider i eget dist.
+const u = (p = '') => (origin && p && !/[#?.]/.test(p) && !p.endsWith('/') ? `${base}${p}/` : `${base}${p}`);
+const minSide = !visMinSide || lang === 'de' ? null : lang === 'en' ? { href: MIN_SIDE_EN, t: 'My account' } : { href: MIN_SIDE, t: 'Min side' };
 const landing = await getWebLandingPages();
 const emner = landing.filter((l) => l.kind === 'emne');
 const segmenter = landing.filter((l) => l.kind === 'segment');
@@ -14,7 +22,6 @@ const guidesEn = guidesFor('en', landing);
 const guidesDe = guidesFor('de', landing);
 // Engelsk udgave (/en/): kun de engelske sider + vej tilbage til den danske. Landingssiderne er på dansk og linkes ikke.
 // Tysk light-udgave (/de/): landingssiden, Impressum og Datenschutz (krævet af tysk ret).
-const { lang = 'da' } = Astro.props as { lang?: 'da' | 'en' | 'de' };
 ---
 {lang === 'de' ? (
 <footer><div class="wrap">
@@ -28,26 +35,26 @@ const { lang = 'da' } = Astro.props as { lang?: 'da' | 'en' | 'de' };
     <div>
       <h4>Auf Deutsch</h4>
       <ul>
-        <li><a href={`${base}de/`}>Spind mit Sitzbank</a></li>
-        <li><a href={`${base}de/#kontakt`}>Anfrage senden</a></li>
+        <li><a href={u('de/')}>Spind mit Sitzbank</a></li>
+        <li><a href={u('de/#kontakt')}>Anfrage senden</a></li>
       </ul>
       <h4 style="margin-top:26px">Ratgeber</h4>
       <ul>
-        {guidesDe.map((g) => <li><a href={base + guidePath('de', g.slug)}>{g.nav_label}</a></li>)}
+        {guidesDe.map((g) => <li><a href={u(guidePath('de', g.slug))}>{g.nav_label}</a></li>)}
       </ul>
     </div>
     <div>
       <h4>Rechtliches</h4>
       <ul>
-        <li><a href={`${base}de/impressum/`}>Impressum</a></li>
-        <li><a href={`${base}de/datenschutz/`}>Datenschutz</a></li>
+        <li><a href={u('de/impressum/')}>Impressum</a></li>
+        <li><a href={u('de/datenschutz/')}>Datenschutz</a></li>
       </ul>
     </div>
     <div>
       <h4>Andere Sprachen</h4>
       <ul>
-        <li><a href={base} hreflang="da" lang="da">Dansk</a></li>
-        <li><a href={`${base}en/`} hreflang="en" lang="en">English</a></li>
+        <li><a href={u()} hreflang="da" lang="da">Dansk</a></li>
+        <li><a href={u('en/')} hreflang="en" lang="en">English</a></li>
         <li><a href={LINKEDIN} target="_blank" rel="noopener">LinkedIn</a></li>
         <li><a href={FACEBOOK} target="_blank" rel="noopener">Facebook</a></li>
       </ul>
@@ -70,29 +77,29 @@ const { lang = 'da' } = Astro.props as { lang?: 'da' | 'en' | 'de' };
     <div>
       <h4>In English</h4>
       <ul>
-        <li><a href={`${base}en/`}>Nem Inventar</a></li>
-        <li><a href={`${base}en/products/`}>Products</a></li>
-        <li><a href={`${base}en/lockers/`}>Lockers made to measure</a></li>
-        <li><a href={`${base}en/lockers-with-bench/`}>Lockers with bench</a></li>
-        <li><a href={`${base}en/wardrobes/`}>Wardrobes made to measure</a></li>
-        <li><a href={`${base}en/contact/`}>Contact</a></li>
+        <li><a href={u('en/')}>Nem Inventar</a></li>
+        <li><a href={u('en/products/')}>Products</a></li>
+        <li><a href={u('en/lockers/')}>Lockers made to measure</a></li>
+        <li><a href={u('en/lockers-with-bench/')}>Lockers with bench</a></li>
+        <li><a href={u('en/wardrobes/')}>Wardrobes made to measure</a></li>
+        <li><a href={u('en/contact/')}>Contact</a></li>
       </ul>
       <h4 style="margin-top:26px">Guides</h4>
       <ul>
-        {guidesEn.map((g) => <li><a href={base + guidePath('en', g.slug)}>{g.nav_label}</a></li>)}
+        {guidesEn.map((g) => <li><a href={u(guidePath('en', g.slug))}>{g.nav_label}</a></li>)}
       </ul>
     </div>
     <div>
       <h4>På dansk</h4>
       <ul>
-        <li><a href={base} hreflang="da" lang="da">Forside</a></li>
-        <li><a href={`${base}projekter`} hreflang="da" lang="da">Projekter</a></li>
-        <li><a href={`${base}privatlivspolitik`} hreflang="da" lang="da">Privatlivspolitik</a></li>
+        <li><a href={u()} hreflang="da" lang="da">Forside</a></li>
+        <li><a href={u('projekter')} hreflang="da" lang="da">Projekter</a></li>
+        <li><a href={u('privatlivspolitik')} hreflang="da" lang="da">Privatlivspolitik</a></li>
       </ul>
     </div>
     <div>
       <h4>Nem Inventar</h4>
-      <ul>
+      <ul>{minSide && <li><a href={minSide.href}>{minSide.t}</a></li>}
         <li><a href={LINKEDIN} target="_blank" rel="noopener">LinkedIn</a></li>
         <li><a href={FACEBOOK} target="_blank" rel="noopener">Facebook</a></li>
       </ul>
@@ -115,38 +122,38 @@ const { lang = 'da' } = Astro.props as { lang?: 'da' | 'en' | 'de' };
     <div>
       <h4>Inventar og materialer</h4>
       <ul class={emner.length > 9 ? 'cols2' : undefined}>
-        {emner.map((l) => <li><a href={`${base}${l.slug}`}>{l.nav_label}</a></li>)}
+        {emner.map((l) => <li><a href={u(l.slug)}>{l.nav_label}</a></li>)}
       </ul>
     </div>
     <div>
       <h4>Til</h4>
       <ul>
-        {segmenter.map((l) => <li><a href={`${base}${l.slug}`}>{l.nav_label}</a></li>)}
+        {segmenter.map((l) => <li><a href={u(l.slug)}>{l.nav_label}</a></li>)}
       </ul>
       {guides.length > 0 && (
         <>
           <h4 style="margin-top:26px">Guides</h4>
-          <ul>{guides.map((l) => <li><a href={`${base}${l.slug}`}>{l.nav_label}</a></li>)}</ul>
+          <ul>{guides.map((l) => <li><a href={u(l.slug)}>{l.nav_label}</a></li>)}</ul>
         </>
       )}
     </div>
     <div>
       <h4>Nem Inventar</h4>
-      <ul>
-        <li><a href={`${base}projekter`}>Projekter</a></li>
-        <li><a href={`${base}inventar`}>Inventar</a></li>
-        <li><a href={`${base}om-os`}>Om os</a></li>
-        <li><a href={`${base}kontakt`}>Kontakt</a></li>
-        <li><a href={`${base}nem-inventar-brochure.pdf`}>Brochure (PDF)</a></li>
-        <li><a href={`${base}en/`} hreflang="en" lang="en">In English</a></li>
+      <ul>{minSide && <li><a href={minSide.href}>{minSide.t}</a></li>}
+        <li><a href={u('projekter')}>Projekter</a></li>
+        <li><a href={u('inventar')}>Inventar</a></li>
+        <li><a href={u('om-os')}>Om os</a></li>
+        <li><a href={u('kontakt')}>Kontakt</a></li>
+        <li><a href={u('nem-inventar-brochure.pdf')}>Brochure (PDF)</a></li>
+        <li><a href={u('en/')} hreflang="en" lang="en">In English</a></li>
         <li><a href={LINKEDIN} target="_blank" rel="noopener">LinkedIn</a></li>
         <li><a href={FACEBOOK} target="_blank" rel="noopener">Facebook</a></li>
       </ul>
       <h4 style="margin-top:26px">Det juridiske</h4>
       <ul>
-        <li><a href={`${base}handelsbetingelser`}>Handelsbetingelser for private</a></li>
-        <li><a href={`${base}privatlivspolitik`}>Privatlivspolitik</a></li>
-        <li><a href={`${base}cookiepolitik`}>Cookiepolitik</a></li>
+        <li><a href={u('handelsbetingelser')}>Handelsbetingelser for private</a></li>
+        <li><a href={u('privatlivspolitik')}>Privatlivspolitik</a></li>
+        <li><a href={u('cookiepolitik')}>Cookiepolitik</a></li>
       </ul>
     </div>
   </div>
