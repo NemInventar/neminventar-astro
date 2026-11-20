@@ -1,0 +1,3 @@
+# Alt i repoet skal godkendes af ejerkontoen, før det kan merges til main (branch protection: code owner review).
+# Kolleger med skriveadgang arbejder på egne branches og åbner en pull request; de kan ikke godkende hinanden ind.
+* @NemInventar

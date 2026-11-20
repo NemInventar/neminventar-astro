@@ -1,9 +1,11 @@
-# Branches (alt undtagen main): samme tekst-lint og build som udgivelsen + en forhåndsvisning på
-# Cloudflare Pages, så en branch kan ses på telefonen, før den merges:
-#   https://<branch>.neminventar-preview.pages.dev   (adressen står også i kørslens Summary)
-# Forhåndsvisningen er skjult for søgemaskiner (X-Robots-Tag: noindex) og har canonical = neminventar.dk.
+# Branches (alt undtagen main): samme tekst-lint og build som udgivelsen, så en rød branch ses før den merges.
+# INGEN forhåndsvisning på Cloudflare længere (16-11-2026): den krævede Cloudflare-nøglen på alle branches,
+# og så kan enhver med skriveadgang få den udleveret fra sin egen branch — den nøgle kan udgive til alle vores
+# Cloudflare-sider. Nøglen ligger nu i environment "production", som kun main når (api.yml, api-domaene.yml).
+# Her bruges kun SUPABASE_URL og SUPABASE_ANON_KEY, som i forvejen står i det udgivne site.
+# scripts/test_workflow_secrets.py holder reglen. Se en branch lokalt med `npm run dev`.
 # main udgives af deploy.yml til GitHub Pages; denne fil rører aldrig det levende site.
-name: Branch-tjek og forhåndsvisning
+name: Branch-tjek
 
 on:
   push:
@@ -61,18 +63,9 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
 
-      - name: Skjul forhåndsvisningen for søgemaskiner
-        run: |
-          printf '/*\n  X-Robots-Tag: noindex, nofollow\n' >> dist/_headers
+      # api.yml udgiver kun fra main; rutningen testes her, så en branch stadig bliver rød ved fejl
+      - name: Test API-proxyens rutning
+        run: node --test api/test/*.test.mjs
 
-      - name: Udgiv forhåndsvisning (Cloudflare Pages)
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then echo "Ingen Cloudflare-nøgle i repoet — springer forhåndsvisningen over."; exit 0; fi
-          npx --yes wrangler@4 pages project create neminventar-preview --production-branch main >/dev/null 2>&1 || true
-          npx --yes wrangler@4 pages deploy dist --project-name neminventar-preview --branch "$GITHUB_REF_NAME" --commit-dirty=true | tee deploy.log
-          ALIAS=$(grep -oE 'https://[a-z0-9-]+\.neminventar-preview\.pages\.dev' deploy.log | tail -1)
-          echo "### Forhåndsvisning af \`$GITHUB_REF_NAME\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "$ALIAS" >> "$GITHUB_STEP_SUMMARY"
+      - name: Secrets kun i environment production
+        run: python3 scripts/test_workflow_secrets.py

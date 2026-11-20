@@ -1,13 +1,15 @@
 # Proxyen bag api.neminventar.dk (api/public/_worker.js) → Cloudflare Pages-projektet neminventar-api.
 # Formularen og Plausible går via vores eget domæne, så firmafiltre ikke blokerer dem (supabase.co, plausible.io).
 #   main   → produktion: https://neminventar-api.pages.dev (og api.neminventar.dk, når CNAME'en er lagt i M365 DNS)
-#   branch → forhåndsvisning: https://<branch>.neminventar-api.pages.dev (adressen står i kørslens Summary)
+#   branches udgives ikke (16-11-2026): Cloudflare-nøglen ligger i environment "production", som kun main når.
+#   Rutningen testes på branches af preview.yml.
 # Kør manuelt: gh workflow run api.yml --repo NemInventar/neminventar-astro
 # Eget domæne: api-domaene.yml. Test lokalt: node --test api/test/*.test.mjs
 name: API-proxy
 
 on:
   push:
+    branches: [main]
     paths:
       - "api/**"
       - ".github/workflows/api.yml"
@@ -23,6 +25,7 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: production
     timeout-minutes: 10
     steps:
       - name: Checkout
