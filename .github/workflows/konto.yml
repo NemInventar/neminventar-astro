@@ -6,7 +6,7 @@
 #     prod  → Worker ni-konto-backend (flagene står på false i wrangler.toml) + Pages produktion
 # Workeren udgives før siderne, så service bindingen KONTO har noget at pege på.
 # Secrets til test-Workeren (sættes kun hvis de findes): KONTO_STAGING_BRO_HEMMELIGHED_1, KONTO_STAGING_KODE_PEBER_1,
-# KONTO_STAGING_TURNSTILE_SECRET, KONTO_STAGING_NI_KONTO_SERVICE_KEY.
+# KONTO_STAGING_TURNSTILE_SECRET, KONTO_STAGING_NI_KONTO_SERVICE_KEY, KONTO_STAGING_GRAPH_CERT_PEM, KONTO_STAGING_GRAPH_KEY_PEM.
 # Produktionens secrets sættes i hånden ved udgivelsen (plan-proces fase 0a), aldrig herfra.
 # Repo-variabler: KONTO_UDGIVELSE (prod, standard 1) · KONTO_TEST_UDGIVELSE (test, standard = prod) · KONTO_TURNSTILE_SITEKEY.
 name: Konto (konto.neminventar.dk)
@@ -100,8 +100,10 @@ jobs:
           KODE_PEBER_1: ${{ secrets.KONTO_STAGING_KODE_PEBER_1 }}
           TURNSTILE_SECRET: ${{ secrets.KONTO_STAGING_TURNSTILE_SECRET }}
           NI_KONTO_SERVICE_KEY: ${{ secrets.KONTO_STAGING_NI_KONTO_SERVICE_KEY }}
+          GRAPH_CERT_PEM: ${{ secrets.KONTO_STAGING_GRAPH_CERT_PEM }}
+          GRAPH_KEY_PEM: ${{ secrets.KONTO_STAGING_GRAPH_KEY_PEM }}
         run: |
-          jq -n 'env | with_entries(select(.key | IN("BRO_HEMMELIGHED_1","KODE_PEBER_1","TURNSTILE_SECRET","NI_KONTO_SERVICE_KEY")) | select(.value != ""))' > /tmp/secrets.json
+          jq -n 'env | with_entries(select(.key | IN("BRO_HEMMELIGHED_1","KODE_PEBER_1","TURNSTILE_SECRET","NI_KONTO_SERVICE_KEY","GRAPH_CERT_PEM","GRAPH_KEY_PEM")) | select(.value != ""))' > /tmp/secrets.json
           echo "Secrets med udgivelsen: $(jq -r 'keys | join(", ")' /tmp/secrets.json)"
           if [ "$(jq 'length' /tmp/secrets.json)" -gt 0 ]; then
             npx --yes wrangler@4 deploy --env staging --secrets-file /tmp/secrets.json
