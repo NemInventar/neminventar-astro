@@ -126,9 +126,9 @@ const ld = [organization, ...jsonLd];
   </script>
 </head>
 <body>
-  <Nav lang={lang} />
+  <Nav lang={lang} alternates={alternates} />
   <slot />
-  <Footer lang={lang} />
+  <Footer lang={lang} alternates={alternates} />
   <script>
     // ---------- ankre fra andre sider (fx "Inventar" → /#katalog) ----------
     // Browseren ruller til ankeret, før skrifter og billeder er færdige; når indholdet ovenfor derefter vokser, ender

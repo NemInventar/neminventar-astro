@@ -9,24 +9,26 @@ import type { WebProduct, WebColor } from '../lib/supabase';
 import { cdn } from '../lib/img';
 import { INSPIRATION, designerLink } from '../lib/forside';
 import { varianterAf, prisHref, variantTilbud } from '../lib/varianter';
-interface Props { products: WebProduct[]; colors: WebColor[] }
-const { products, colors } = Astro.props;
+// lang: den engelske forside (typer og kulører kommer på engelsk fra Forside.astro)
+interface Props { products: WebProduct[]; colors: WebColor[]; lang?: 'da' | 'en' }
+const { products, colors, lang = 'da' } = Astro.props;
 const base = import.meta.env.BASE_URL;
+const en = lang === 'en';
 const tiles = INSPIRATION.map((t) => {
   const p = products.find((x) => x.slug === t.slug);
   const v = p ? varianterAf(p, colors).find((x) => x.kuloer === t.kuloer) : undefined;
   if (!p || !v) return null;
   const d = designerLink(p.slug, v.kuloer);
   return { ...t, img: v.img, navn: v.navn, label: v.label, href: `${base}produkter/${p.slug}#${v.id}`,
-    cta: d ? { l: 'Åbn denne i designeren', href: d, variant: undefined }
-      : { l: 'Få pris på denne', href: prisHref(base, v), variant: JSON.stringify(variantTilbud(v)) } };
+    cta: d ? { l: en ? 'Open this in the designer' : 'Åbn denne i designeren', href: d, variant: undefined }
+      : { l: en ? 'Get a price for this' : 'Få pris på denne', href: prisHref(base, v, en ? 'en/contact/' : 'kontakt'), variant: JSON.stringify(variantTilbud(v, lang)) } };
 }).filter((x): x is NonNullable<typeof x> => !!x);
 ---
 <div class="mos">
   {tiles.map((t) => (
     <figure class={`mt w${t.w}`}>
-      <a class="mt-img" href={t.href} aria-label={`${t.navn}, ${t.label.toLowerCase()}`}><img src={cdn(t.img, t.w === 8 ? 1400 : 800)} alt={`${t.navn} i ${t.label.toLowerCase()}`} loading="lazy" decoding="async" /></a>
-      <span class="tagv">Visualisering</span>
+      <a class="mt-img" href={t.href} aria-label={`${t.navn}, ${t.label.toLowerCase()}`}><img src={cdn(t.img, t.w === 8 ? 1400 : 800)} alt={`${t.navn} ${en ? 'in' : 'i'} ${t.label.toLowerCase()}`} loading="lazy" decoding="async" /></a>
+      <span class="tagv">{en ? 'Visualisation' : 'Visualisering'}</span>
       <figcaption>
         <div><b>{t.navn}</b><span>{t.label}</span></div>
         <a class="mt-cta" href={t.cta.href} data-variant={t.cta.variant}>{t.cta.l} <span aria-hidden="true">→</span></a>
