@@ -78,8 +78,8 @@ $new = @{
     usage         = "Verify"
     key           = [Convert]::ToBase64String($cert.RawData)
     displayName   = "NI Konto test-Worker $(Get-Date -Format 'yyyy-MM-dd')"
-    startDateTime = $from.ToString("o")
-    endDateTime   = $to.ToString("o")
+    # Ingen start/slut her: Entra læser dem ud af certifikatet. En slutdato efter certifikatets egen afvises
+    # (certifikatet runder ned til hele sekunder).
 }
 $body = @{ keyCredentials = @($existing + $new) } | ConvertTo-Json -Depth 5
 Invoke-RestMethod -Method Patch -Headers $headers -ContentType "application/json" -Uri "$graph/applications/$($app.id)" -Body $body | Out-Null
