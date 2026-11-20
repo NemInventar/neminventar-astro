@@ -1,11 +1,14 @@
 # konto.neminventar.dk: kundefladen (Pages-projektet ni-konto) og Workeren ni-konto-backend (kontrakter.md §1, §8).
-#   branch → test:  Worker ni-konto-backend-staging (flag true, mails kun til hvidlisten) + Pages-preview
-#                   https://<branch>.ni-konto.pages.dev, bygget med KONTO_UDGIVELSE fra repo-variablen (standard 1)
-#   main   → prod:  Worker ni-konto-backend (flagene står på false i wrangler.toml) + Pages produktion
+#   Alle branches:  test (Workeren R1–R21, byg siderne, test siderne). Ingen udgivelse, ingen Cloudflare-nøgle.
+#   main:           udgiver BEGGE miljøer, i environment "production" (kun main må bruge det, 16-11-2026):
+#     test  → Worker ni-konto-backend-staging (flag true, mails kun til hvidlisten) + Pages-preview
+#             https://min-side.ni-konto.pages.dev (aliaset er fast; KONTO_ORIGIN i wrangler.toml følger det)
+#     prod  → Worker ni-konto-backend (flagene står på false i wrangler.toml) + Pages produktion
 # Workeren udgives før siderne, så service bindingen KONTO har noget at pege på.
-# Secrets til staging-Workeren (GitHub-secrets, sættes kun hvis de findes): KONTO_STAGING_BRO_HEMMELIGHED_1,
-# KONTO_STAGING_KODE_PEBER_1, KONTO_STAGING_TURNSTILE_SECRET, KONTO_STAGING_NI_KONTO_SERVICE_KEY.
+# Secrets til test-Workeren (sættes kun hvis de findes): KONTO_STAGING_BRO_HEMMELIGHED_1, KONTO_STAGING_KODE_PEBER_1,
+# KONTO_STAGING_TURNSTILE_SECRET, KONTO_STAGING_NI_KONTO_SERVICE_KEY.
 # Produktionens secrets sættes i hånden ved udgivelsen (plan-proces fase 0a), aldrig herfra.
+# Repo-variabler: KONTO_UDGIVELSE (prod, standard 1) · KONTO_TEST_UDGIVELSE (test, standard = prod) · KONTO_TURNSTILE_SITEKEY.
 name: Konto (konto.neminventar.dk)
 
 on:
@@ -28,17 +31,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  konto:
+  test:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    # pipefail: "wrangler … | tee" må ikke skjule en fejlet udgivelse (12-11: Workeren fejlede, men trinnet var grønt)
-    defaults:
-      run:
-        shell: bash -eo pipefail {0}
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      MILJOE: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -59,44 +54,103 @@ jobs:
         run: npm run build:konto
         env:
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          KONTO_UDGIVELSE: ${{ vars.KONTO_UDGIVELSE || '1' }}
+          KONTO_UDGIVELSE: ${{ vars.KONTO_TEST_UDGIVELSE || vars.KONTO_UDGIVELSE || '1' }}
           KONTO_TURNSTILE_SITEKEY: ${{ vars.KONTO_TURNSTILE_SITEKEY }}
-          # main = produktion: udgivelse 2 bygges ikke med Cloudflares testnøgle (KontoLayout → turnstileNoegle kaster)
-          KONTO_KRAEV_TURNSTILE: ${{ github.ref_name == 'main' && '1' || '' }}
 
       - name: Test siderne (ingen inline-script, headere, tilstande, tekster)
         run: npm run test:konto-site
 
+  udgiv:
+    needs: test
+    if: github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    # pipefail: "wrangler … | tee" må ikke skjule en fejlet udgivelse (12-11: Workeren fejlede, men trinnet var grønt)
+    defaults:
+      run:
+        shell: bash -eo pipefail {0}
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install
+        run: npm ci
+
+      - name: Cloudflare-nøglen findes
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then echo "Ingen Cloudflare-nøgle i environment production."; exit 1; fi
+          cd konto && npx --yes wrangler@4 pages project create ni-konto --production-branch main >/dev/null 2>&1 || true
+
+      # ---- Test (staging) ----
       # Secrets følger med selve udgivelsen (--secrets-file): tokenet må udgive Workers, men ikke kalde secrets-endpointet.
-      # Kun staging får dem herfra; produktionens sættes i hånden ved udgivelsen.
-      - name: Udgiv Workeren
-        if: env.CLOUDFLARE_API_TOKEN != ''
+      - name: Test — udgiv Workeren (ni-konto-backend-staging)
         working-directory: konto/worker
         env:
-          BRO_HEMMELIGHED_1: ${{ env.MILJOE == 'staging' && secrets.KONTO_STAGING_BRO_HEMMELIGHED_1 || '' }}
-          KODE_PEBER_1: ${{ env.MILJOE == 'staging' && secrets.KONTO_STAGING_KODE_PEBER_1 || '' }}
-          TURNSTILE_SECRET: ${{ env.MILJOE == 'staging' && secrets.KONTO_STAGING_TURNSTILE_SECRET || '' }}
-          NI_KONTO_SERVICE_KEY: ${{ env.MILJOE == 'staging' && secrets.KONTO_STAGING_NI_KONTO_SERVICE_KEY || '' }}
+          BRO_HEMMELIGHED_1: ${{ secrets.KONTO_STAGING_BRO_HEMMELIGHED_1 }}
+          KODE_PEBER_1: ${{ secrets.KONTO_STAGING_KODE_PEBER_1 }}
+          TURNSTILE_SECRET: ${{ secrets.KONTO_STAGING_TURNSTILE_SECRET }}
+          NI_KONTO_SERVICE_KEY: ${{ secrets.KONTO_STAGING_NI_KONTO_SERVICE_KEY }}
         run: |
           jq -n 'env | with_entries(select(.key | IN("BRO_HEMMELIGHED_1","KODE_PEBER_1","TURNSTILE_SECRET","NI_KONTO_SERVICE_KEY")) | select(.value != ""))' > /tmp/secrets.json
           echo "Secrets med udgivelsen: $(jq -r 'keys | join(", ")' /tmp/secrets.json)"
           if [ "$(jq 'length' /tmp/secrets.json)" -gt 0 ]; then
-            npx --yes wrangler@4 deploy --env "$MILJOE" --secrets-file /tmp/secrets.json | tee ../../worker.log
+            npx --yes wrangler@4 deploy --env staging --secrets-file /tmp/secrets.json
           else
-            npx --yes wrangler@4 deploy --env "$MILJOE" | tee ../../worker.log
+            npx --yes wrangler@4 deploy --env staging
           fi
           rm -f /tmp/secrets.json
 
-      - name: Udgiv siderne (Pages ni-konto)
-        if: env.CLOUDFLARE_API_TOKEN != ''
+      - name: Test — byg siderne
+        run: npm run build:konto
+        env:
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          KONTO_UDGIVELSE: ${{ vars.KONTO_TEST_UDGIVELSE || vars.KONTO_UDGIVELSE || '1' }}
+          KONTO_TURNSTILE_SITEKEY: ${{ vars.KONTO_TURNSTILE_SITEKEY }}
+
+      - name: Test — udgiv siderne (min-side.ni-konto.pages.dev)
         working-directory: konto
         run: |
-          npx --yes wrangler@4 pages project create ni-konto --production-branch main >/dev/null 2>&1 || true
-          npx --yes wrangler@4 pages deploy ../dist-konto --project-name ni-konto --branch "$GITHUB_REF_NAME" --commit-dirty=true | tee ../pages.log
-          ALIAS=$(grep -oE 'https://[a-z0-9-]+\.ni-konto\.pages\.dev' ../pages.log | tail -1)
+          npx --yes wrangler@4 pages deploy ../dist-konto --project-name ni-konto --branch min-side --commit-dirty=true | tee ../pages-test.log
           {
-            echo "### konto (\`$GITHUB_REF_NAME\` → $MILJOE)"
-            echo "- Siderne: $ALIAS"
+            echo "### konto — test"
+            echo "- Siderne: $(grep -oE 'https://[a-z0-9-]+\.ni-konto\.pages\.dev' ../pages-test.log | tail -1)"
+            echo "- Udgivelse: ${{ vars.KONTO_TEST_UDGIVELSE || vars.KONTO_UDGIVELSE || '1' }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # ---- Produktion (flagene står på false i wrangler.toml, til porten er bestået) ----
+      - name: Produktion — udgiv Workeren (ni-konto-backend)
+        working-directory: konto/worker
+        run: npx --yes wrangler@4 deploy --env production
+
+      - name: Produktion — byg siderne
+        run: npm run build:konto
+        env:
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          KONTO_UDGIVELSE: ${{ vars.KONTO_UDGIVELSE || '1' }}
+          KONTO_TURNSTILE_SITEKEY: ${{ vars.KONTO_TURNSTILE_SITEKEY }}
+          # udgivelse 2 bygges ikke med Cloudflares testnøgle (KontoLayout → turnstileNoegle kaster)
+          KONTO_KRAEV_TURNSTILE: "1"
+
+      - name: Produktion — test siderne
+        run: npm run test:konto-site
+
+      - name: Produktion — udgiv siderne (Pages ni-konto)
+        working-directory: konto
+        run: |
+          npx --yes wrangler@4 pages deploy ../dist-konto --project-name ni-konto --branch main --commit-dirty=true | tee ../pages.log
+          {
+            echo "### konto — produktion"
+            echo "- Siderne: $(grep -oE 'https://[a-z0-9-]+\.ni-konto\.pages\.dev' ../pages.log | tail -1)"
             echo "- Udgivelse: ${{ vars.KONTO_UDGIVELSE || '1' }}"
-            echo "- CNAME i M365 DNS (kun produktion): \`konto\` → \`ni-konto.pages.dev\`"
+            echo "- CNAME i M365 DNS: \`konto\` → \`ni-konto.pages.dev\`"
           } >> "$GITHUB_STEP_SUMMARY"
