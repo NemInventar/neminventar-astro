@@ -1,0 +1,13 @@
+---
+// Engelsk projektside (/en/projects/<engelsk slug>/). Samme side som den danske (components/sider/Sagsside.astro); teksten
+// fra src/data/engelsk/sager.json. En sag uden fuld oversættelse får ingen engelsk side.
+import Sagsside from '../../../components/sider/Sagsside.astro';
+import { getWebCases } from '../../../lib/supabase';
+import { SAG_EN, harSagEn } from '../../../lib/engelsk';
+
+export async function getStaticPaths() {
+  const cases = await getWebCases();
+  return cases.filter((c) => harSagEn(c.slug)).map((c) => ({ params: { slug: SAG_EN[c.slug].slug }, props: { project: c, cases } }));
+}
+---
+<Sagsside {...Astro.props} lang="en" />

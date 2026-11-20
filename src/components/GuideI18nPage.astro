@@ -9,6 +9,7 @@ import { imgLabel } from '../lib/catalog';
 import { GUIDE_DIR, guidePath, translationsOf, localHref, type GuideI18n, type GuideLang } from '../lib/guides-i18n';
 import type { WebLanding } from '../lib/supabase';
 import { PHONE, PHONE_TEL } from '../lib/contact';
+import { LANDING_EN, landingEnSti, HAANDSKREVET_NAVN, enHref } from '../lib/engelsk';
 
 interface Props { page: GuideI18n; guides: GuideI18n[]; daPages: WebLanding[] }
 const { page, guides, daPages } = Astro.props;
@@ -40,7 +41,7 @@ const segs = (s: string) => {
   let last = 0;
   for (const m of s.matchAll(LINK)) {
     if (m.index! > last) out.push({ t: s.slice(last, m.index) });
-    out.push({ t: m[1], href: m[2].startsWith('/') ? base + localHref(lang, m[2], daPages) : m[2] });
+    out.push({ t: m[1], href: m[2].startsWith('/') ? base + localHref(lang, m[2], daPages) : lang === 'en' ? enHref(m[2]) : m[2] });
     last = m.index! + m[0].length;
   }
   if (last < s.length) out.push({ t: s.slice(last) });
@@ -61,6 +62,9 @@ const hero = images[0];
 const related = page.related_slugs.flatMap((s) => {
   const g = guides.find((x) => x.da_slug === s);
   if (g) return [{ href: base + guidePath(lang, g.slug), t: g.nav_label, da: false }];
+  // engelsk landingsside (src/data/engelsk/landing.json), 20-11-2026
+  const navn = lang === 'en' && daPages.some((p) => p.slug === s) ? LANDING_EN.find((x) => x.da_slug === s)?.nav_label ?? HAANDSKREVET_NAVN[s] : undefined;
+  if (navn && landingEnSti(s)) return [{ href: base + landingEnSti(s), t: navn, da: false }];
   const d = daPages.find((p) => p.slug === s);
   return d ? [{ href: `${base}${d.slug}`, t: d.nav_label, da: true }] : [];
 });

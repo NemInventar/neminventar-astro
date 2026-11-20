@@ -1,0 +1,117 @@
+---
+// Engelsk oversættelse af handelsbetingelserne for private; den danske side (src/pages/handelsbetingelser.astro) er kilden og gælder ved forskelle.
+import Base from '../../layouts/Base.astro';
+import { PHONE, PHONE_TEL } from '../../lib/contact';
+const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
+---
+<Base
+  lang="en"
+  title="Terms of sale for private customers | Nem Inventar"
+  description="Terms of sale for private customers of Nem Inventar ApS: quotes, payment, delivery, installation, right of withdrawal and complaints."
+  alternates={[
+    { hreflang: 'da', href: new URL(base + 'handelsbetingelser/', site).href },
+    { hreflang: 'en', href: new URL(base + 'en/terms/', site).href },
+  ]}>
+  <article class="legal wrap">
+    <h1>Terms of sale for private customers</h1>
+    <p>This is an English translation. If the English and the Danish version differ, the <a href={`${base}handelsbetingelser/`} hreflang="da">Danish version</a> applies.</p>
+    <p class="upd">In force from 27 October 2026</p>
+
+    <p>These terms apply when you, as a private individual, buy fixed furniture from us. If you buy as a business, the terms set out in your quote apply.</p>
+    <p>You can buy in two ways: on the basis of a quote from us, or directly in our designer, where you draw the product, see the price and pay straight away. The two ways are dealt with separately where each has its own specific terms.</p>
+
+    <h2>1. Who you are dealing with</h2>
+    <p>
+      Nem Inventar ApS<br />
+      Mågevej 73, st.<br />
+      2400 Copenhagen NV, Denmark<br />
+      CVR no.: 45085473<br />
+      Phone: <a href={`tel:${PHONE_TEL}`}>{PHONE}</a><br />
+      Email: <a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a>
+    </p>
+
+    <h2>2. Quote and agreement</h2>
+    <p><strong>Buying on the basis of a quote.</strong> You receive a written quote by email. It describes the product, materials, dimensions, price, delivery and the extras you have chosen. The quote is valid for 30 days.</p>
+    <p>The agreement is concluded when you have accepted the quote in writing and we have sent you an order confirmation. Before we start production, we send you a drawing with the final dimensions for you to approve.</p>
+    <p><strong>Buying in the designer.</strong> The price you see in the designer is the price you pay. We do not send a separate quote. The agreement is concluded when you have paid for the product and we have sent you an order confirmation by email. We make the product according to the configuration you have ordered, and there is no drawing for approval. For the right of withdrawal, see section 8.</p>
+
+    <h2>3. Prices</h2>
+    <p>All prices for private customers include VAT. Delivery and extras such as measuring, drawings and installation are specified separately, each on its own line in the quote. In the designer, delivery is also shown on its own line before you pay.</p>
+    <p>No fees are added beyond those stated in the quote and/or in the designer before you pay.</p>
+    <p>Prices shown on our website as "from" prices apply to the product in the standard size and material stated with the price.</p>
+
+    <h2>4. Payment</h2>
+    <p><strong>Buying on the basis of a quote.</strong> You pay 50% of the purchase price when you have approved the drawing. The rest is due on delivery. You receive an invoice, which must be paid no later than 8 days after the invoice date. You can pay by bank transfer, card or MobilePay.</p>
+    <p><strong>Buying in the designer.</strong> You pay the full amount when you order. You can pay by card or MobilePay (Vipps). Payment is made via our secure payment provider Stripe, and we do not see your account or card number.</p>
+
+    <h2>5. Measurements</h2>
+    <p>If you take the measurements yourself, we make the product to the measurements you have given us, as shown on the drawing you have approved. This means that we are not responsible for any errors in the measurements. If you buy measuring from us, it is we who stand behind the measurements.</p>
+    <p>If you buy in the designer, we make the product to the measurements you have drawn. We do not check your room or your measurements, and you are yourself responsible for the product fitting. We do not adapt the product to uneven walls and ceilings unless you have chosen this in the designer.</p>
+
+    <h2>6. Delivery</h2>
+    <p>We deliver to your address in Denmark. We do not deliver to the Faroe Islands or Greenland.</p>
+    <p><strong>Buying on the basis of a quote.</strong> The delivery time is stated in the order confirmation and is normally 8–10 weeks from when you have approved the drawing.</p>
+    <p><strong>Buying in the designer.</strong> We tell you the delivery week within one working day of your order. We agree the delivery day with you.</p>
+    <p><strong>All purchases.</strong> You choose how far we bring the product: to the kerb, where you carry it in yourself, or carried into the room where it is to stand. By arrangement, you can also collect your order as flatpack from us at Mågevej 73. The choice and the price are clearly stated in the quote or in the designer.</p>
+    <p>There must be access so that the van or lorry delivering your product can stop close to your address, that is, within approx. 25 metres of the entrance. If the vehicle cannot do so, we will contact you before delivery and agree a solution. Extra carrying is charged at our hourly rate.</p>
+    <p><strong>Risk for the goods.</strong> For delivery to the kerb, the risk passes to you when the goods have been unloaded and placed on the kerb or in the driveway. From then on, you are responsible for the goods yourself, e.g. against rain, frost and theft. If you are not at home, we may only leave the goods if we have agreed this in writing in advance. For delivery with carrying in, we bear the risk until the goods have been carried in and placed in the agreed location. If you collect the goods yourself, the risk passes when they are handed over to you. Check the goods for visible transport damage when you receive them.</p>
+    <p>If delivery is delayed by circumstances beyond our control, e.g. delayed materials from a supplier, we will let you know immediately and agree a new date. Your rights in the event of delay under the Danish Sale of Goods Act (købeloven) apply regardless.</p>
+
+    <h2>7. Installation (only on the basis of a quote)</h2>
+    <p>Installation is an extra and is listed separately in the quote. Installation is carried out by us or by a fitter we have chosen. In the designer you can see the price of installation. Installation can only be bought on the basis of a quote.</p>
+    <p>Installation requires that the space is cleared and dry, that there is power and light, and that the wall can bear the furniture. Tell us if there are pipes or cables in the wall where we are to screw. We do not connect electricity, water or drains. That must be done by an authorised installer.</p>
+
+    <h2>8. Right of withdrawal</h2>
+    <p><strong>Products made to your own measurements.</strong> There is no right of withdrawal for products we make to your own measurements, or where the construction or material has been changed beyond the options we offer as standard. Such a product is made to the consumer's specifications (section 18(2)(3) of the Danish Consumer Contracts Act (forbrugeraftaleloven)).</p>
+    <p><strong>Products in standard design.</strong> If you choose only from our standard sizes, materials and colours, you have a 14-day right of withdrawal. The period runs from the day you receive the product.</p>
+    <p>Your quote and the order confirmation state whether you have a right of withdrawal. In the designer it is also stated by the button before you order.</p>
+    <p><strong>How to withdraw.</strong> Let us know before the deadline at <a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a>. You can use the form at the bottom of the page, but you do not have to. You must send or return the product to us no later than 14 days after you have notified us.</p>
+    <p><strong>Returns.</strong> You pay for returning the product yourself. A cabinet cannot be sent by post, so we collect it from you. The collection costs the same as the delivery in your quote or on your order.</p>
+    <p><strong>Refund.</strong> We refund what you have paid, including the standard delivery price, no later than 14 days after we have received your notice. We deduct the price of collecting the product from you, because the return is at your expense. You are liable for any reduction in value if you have used the product more than is necessary to inspect it.</p>
+    <p><strong>Installation during the withdrawal period.</strong> If you have bought installation and we are to install before the withdrawal period has expired, you must expressly ask us to do so. Once the installation is complete, you cannot withdraw from it. If you withdraw before the installation is complete, you pay a proportionate part of the installation price. You can still withdraw from the purchase of the product itself under the rules above.</p>
+
+    <h2>9. Complaints about defects</h2>
+    <p>You have a statutory right to complain about defects (legal guarantee) of at least 2 years under the Sale of Goods Act. It covers defects that were present at delivery. Let us know within a reasonable time after you have discovered the defect. Notice within 2 months is always in time.</p>
+    <p>Wood is a natural material. Colour and grain vary from board to board, and the wood changes colour with the light. This is not a defect. Oiled surfaces must be maintained. You receive maintenance instructions with the product.</p>
+    <p>If you need a spare part, e.g. a door, a hinge or a runner, we can supply it. Contact us.</p>
+    <figure class="eu-notice">
+      <img src={`${base}billeder/eu/eu-reklamationsret-da.svg`} alt="The EU notice on the statutory legal guarantee: You have the right to a legal guarantee of at least 2 years when you buy goods in the EU." loading="lazy" />
+      <figcaption>The EU's harmonised notice on the statutory legal guarantee.</figcaption>
+    </figure>
+
+    <h2>10. Complaints</h2>
+    <p>If you are dissatisfied, contact us first. Then we will find a solution.</p>
+    <p>If we cannot agree, you can complain to the Mediation Team for Consumer Complaints (Mæglingsteamet for Forbrugerklager), Nævnenes Hus, Toldboden 2, 8800 Viborg, via <a href="https://kpo.naevneneshus.dk" rel="noopener">kpo.naevneneshus.dk</a>. This requires that the product cost between DKK 1,220 and DKK 100,000 and that we have rejected your claim. The fee is DKK 100. If the case goes on to the Danish Consumer Complaints Board (Forbrugerklagenævnet), the fee is DKK 400, which you get back if your complaint is upheld. The rates are from 2026. The current rates are on <a href="https://naevneneshus.dk" rel="noopener">naevneneshus.dk</a>.</p>
+
+    <h2>11. Personal data</h2>
+    <p>We process your information in accordance with our <a href={`${base}en/privacy/`}>privacy policy</a>.</p>
+
+    <h2>12. Governing law</h2>
+    <p>The agreement is governed by Danish law.</p>
+
+    <h2>Withdrawal form</h2>
+    <p class="form-note">Only fill in and send the form if you wish to withdraw from a purchase of a product in standard sizes.</p>
+    <div class="fortryd">
+      <p><strong>Model withdrawal form</strong><br />(complete and return this form only if you wish to withdraw from the contract)</p>
+      <p>To: Nem Inventar ApS, Mågevej 73, st., 2400 Copenhagen NV, Denmark, kontakt@neminventar.dk</p>
+      <p>I/We (*) hereby give notice that I/We (*) withdraw from my/our (*) contract of sale of the following goods (*)/for the provision of the following service (*)</p>
+      <p>Ordered on (*)/received on (*)</p>
+      <p>Name of consumer(s)</p>
+      <p>Address of consumer(s)</p>
+      <p>Signature of consumer(s) (only if this form is notified on paper)</p>
+      <p>Date</p>
+      <p class="fn">(*) Delete as appropriate.</p>
+    </div>
+  </article>
+</Base>
+
+<style>
+  /* .legal (fælles) står i site.css — her kun det, der er særligt for handelsbetingelserne */
+  .fortryd{border:1px solid var(--line);border-radius:var(--radius);background:#fff;padding:22px 26px}
+  .fortryd p{margin-bottom:12px}
+  .fortryd .fn{color:var(--muted);font-size:13.5px;margin:6px 0 0}
+  .eu-notice{margin:24px 0 8px;max-width:520px}
+  .eu-notice img{width:100%;height:auto;border:1px solid var(--line);border-radius:var(--radius);background:#fff}
+  .eu-notice figcaption{color:var(--muted);font-size:13px;margin-top:8px}
+</style>

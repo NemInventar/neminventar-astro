@@ -21,7 +21,8 @@ import { morkhoj } from '../lib/catalog';
 import { KATALOG_TOP, PROJEKTER, emneGruppe, INDLEJR_URL } from '../lib/forside';
 import { TEAM } from '../lib/team';
 import { PHONE, PHONE_TEL } from '../lib/contact';
-import { produkterPaaEngelsk, kulorerPaaEngelsk, sagerPaaEngelsk, TEAM_EN } from '../lib/engelsk';
+import { produkterPaaEngelsk, kulorerPaaEngelsk, sagerPaaEngelsk, TEAM_EN, typeHref, landingEnSti, landingPaaEngelsk, landingHref, HAANDSKREVET_NAVN } from '../lib/engelsk';
+import { side } from '../lib/stier';
 import { guidesFor, guidePath } from '../lib/guides-i18n';
 
 interface Props { lang?: 'da' | 'en' }
@@ -42,6 +43,15 @@ const guidesEn = guidesFor('en', landing);
 const inventarMat = [...emner.filter((l) => emneGruppe(l.slug) === 'inventar'), ...emner.filter((l) => emneGruppe(l.slug) === 'materialer')];
 const arbejdsform = emner.filter((l) => emneGruppe(l.slug) === 'arbejdsform');
 const hasLanding = (slug: string) => !en && landing.some((l) => l.slug === slug);
+// Engelsk: de samme spalter med de sider, der findes på engelsk (oversat eller håndskrevet), i samme rækkefølge.
+const paaEngelsk = (ls: typeof landing) => ls.flatMap((l) => {
+  const sti = landingEnSti(l.slug);
+  const navn = landingPaaEngelsk(l)?.nav_label ?? HAANDSKREVET_NAVN[l.slug];
+  return sti && navn ? [{ href: base + sti, nav_label: navn }] : [];
+});
+const inventarMatEn = en ? [...paaEngelsk(inventarMat), { href: `${base}en/lockers-with-bench/`, nav_label: 'Lockers with bench' }] : [];
+const segmenterEn = en ? paaEngelsk(segmenter) : [];
+const arbejdsformEn = en ? paaEngelsk(arbejdsform) : [];
 const projekter = PROJEKTER.map((s) => cases.find((c) => c.slug === s)).filter((c): c is NonNullable<typeof c> => !!c);
 const typer = [...products].sort((a, b) => a.name.localeCompare(b.name, lang));
 
@@ -52,7 +62,7 @@ const T = en ? {
   insp: { label: 'Inspiration', h: ['Seen in 3D before it is', 'built.'], lede: 'Visualisations of types we build. Each version can be priced as it stands, or rebuilt to your measurements and colour.', op: 'To the catalogue at the top ↑' },
   saadan: { id: 'how', label: 'How we work', h: ['From 3D model to', 'finished room.'], lede: 'We are a joinery firm, and the team are engineers. Every cabinet, bench and niche is built as a 3D model first; the same model gives the drawing for your approval and the parts list for production.' },
   docs: 'Documentation and files:', chips: ['Nordic Swan Ecolabel buildings', 'DGNB', 'EPD', 'IFC models'], dalux: 'https://www.dalux.com/', ibinder: 'https://ibinder.com/en/',
-  proj: { label: 'Projects', h: ['Schools, housing and', 'sport.'], lede: 'A selection of the projects we have delivered or have in production.', alle: 'All projects, architects and contractors (in Danish) →' },
+  proj: { label: 'Projects', h: ['Schools, housing and', 'sport.'], lede: 'A selection of the projects we have delivered or have in production.', alle: 'All projects, architects and contractors →' },
   kul: { label: 'Finish', h: ['Eight colours, or', 'your', 'own.'], lede: 'We oil with Rubio Monocoat. Behind it is a colour card of about 40 colours, and we can have one mixed for you.' },
   surf: [['Oil, not lacquer', 'One coat of hardwax oil that penetrates the wood. There is no lacquer film to flake off.'],
     ['Wear can be spot-repaired', 'A scratch is sanded and oiled on site without replacing the door.'],
@@ -80,7 +90,7 @@ const ogImage = new URL(cdn(morkhoj('33_lockere-roede-ved-doer-til-klasserum.jpg
 const itemList = {
   '@context': 'https://schema.org', '@type': 'ItemList', name: T.itemList,
   itemListElement: KATALOG_TOP.map((k, i) => products.find((p) => p.slug === k.slug)).filter((p) => !!p)
-    .map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p!.name, url: new URL(`${base}produkter/${p!.slug}`, site).href })),
+    .map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p!.name, url: new URL(`${base}${typeHref(lang, p!.slug)}`, site).href })),
 };
 ---
 <Base lang={lang} title={T.title} description={T.description} image={ogImage} jsonLd={[itemList]} alternates={[
@@ -124,21 +134,16 @@ const itemList = {
         <h2 class="label yd-h" id="yd-h">What we make</h2>
         <div class="yd-idx">
           <div class="yd-grp yd-2">
-            <h3>Types (pages in Danish)</h3>
-            <ul>{typer.map((p) => <li><a href={`${base}produkter/${p.slug}`} hreflang="da">{p.name}</a></li>)}</ul>
+            <h3>Types</h3>
+            <ul>{typer.map((p) => <li><a href={`${base}${typeHref('en', p.slug)}`}>{p.name}</a></li>)}</ul>
             <a class="ulink yd-alle" href={`${base}en/products/`}>All types →</a>
           </div>
+          {inventarMatEn.length > 0 && <div class="yd-grp yd-2"><h3>Furniture and materials</h3><ul>{inventarMatEn.map((l) => <li><a href={l.href}>{l.nav_label}</a></li>)}</ul></div>}
           <div class="yd-grp">
-            <h3>In English</h3>
-            <ul>
-              <li><a href={`${base}en/lockers/`}>Plywood lockers with prices</a></li>
-              <li><a href={`${base}en/lockers-with-bench/`}>Lockers with bench</a></li>
-              <li><a href={`${base}en/wardrobes/`}>Wardrobes made to measure</a></li>
-              <li><a href={`${base}en/products/`}>Products</a></li>
-              <li><a href={`${base}en/contact/`}>Contact</a></li>
-            </ul>
+            {segmenterEn.length > 0 && <><h3>For</h3><ul>{segmenterEn.map((l) => <li><a href={l.href}>{l.nav_label}</a></li>)}</ul></>}
+            {arbejdsformEn.length > 0 && <><h3>How we work</h3><ul>{arbejdsformEn.map((l) => <li><a href={l.href}>{l.nav_label}</a></li>)}</ul></>}
           </div>
-          {guidesEn.length > 0 && <div class="yd-grp yd-2"><h3>Guides</h3><ul>{guidesEn.map((g) => <li><a href={base + guidePath('en', g.slug)}>{g.nav_label}</a></li>)}</ul></div>}
+          {guidesEn.length > 0 && <div class="yd-grp"><h3>Guides</h3><ul>{guidesEn.map((g) => <li><a href={base + guidePath('en', g.slug)}>{g.nav_label}</a></li>)}</ul></div>}
         </div>
       </nav>
     ) : (
@@ -170,6 +175,7 @@ const itemList = {
         <p class="lede">{T.saadan.lede}</p>
       </div>
       {hasLanding('vaerkstedstegninger-og-3d-model') && <a href={`${base}vaerkstedstegninger-og-3d-model`} class="ulink">Sådan ser tegningerne ud →</a>}
+      {en && landingEnSti('vaerkstedstegninger-og-3d-model') && <a href={`${base}${landingHref('en', 'vaerkstedstegninger-og-3d-model')}`} class="ulink">What the drawings look like →</a>}
     </div>
     <ProcessSteps lang={lang} />
     <div class="docs rv">
@@ -188,7 +194,7 @@ const itemList = {
         <h2>{T.proj.h[0]} <em>{T.proj.h[1]}</em></h2>
         <p class="lede">{T.proj.lede}</p>
       </div>
-      <a href={`${base}projekter`} class="ulink" hreflang={en ? 'da' : undefined}>{T.proj.alle}</a>
+      <a href={`${base}${side(lang, 'projekter')}`} class="ulink">{T.proj.alle}</a>
     </div>
     <div class="pgrid three rv">{projekter.map((c) => <ProjectCard c={c} compact lang={lang} />)}</div>
   </div></section>

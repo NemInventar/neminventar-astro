@@ -2,7 +2,10 @@
 import Base from '../layouts/Base.astro';
 const base = import.meta.env.BASE_URL;
 ---
-<Base title="Cookiepolitik — Nem Inventar" description="Cookiepolitik for Nem Inventar ApS. Vi bruger ikke cookies til analyse, markedsføring eller sporing.">
+<Base title="Cookiepolitik — Nem Inventar" description="Cookiepolitik for Nem Inventar ApS. Vi bruger ikke cookies til analyse, markedsføring eller sporing." alternates={[
+  { hreflang: 'da', href: new URL(import.meta.env.BASE_URL + 'cookiepolitik/', Astro.site).href },
+  { hreflang: 'en', href: new URL(import.meta.env.BASE_URL + 'en/cookies/', Astro.site).href },
+]}>
   <article class="legal wrap">
     <h1>Cookiepolitik</h1>
     <p class="upd">Sidst opdateret: oktober 2026</p>

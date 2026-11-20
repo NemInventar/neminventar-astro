@@ -3,6 +3,7 @@
 // Tallene parses fra case_web.delivery_label; sagerne vælges i src/lib/forside.ts (BEVIS_SAGER).
 import type { WebCase } from '../lib/supabase';
 import { BEVIS_SAGER, bevis } from '../lib/forside';
+import { sagHref } from '../lib/engelsk';
 // lang: den engelske forside (sagerne kommer på engelsk fra Forside.astro)
 interface Props { cases: WebCase[]; lang?: 'da' | 'en' }
 const { cases, lang = 'da' } = Astro.props;
@@ -13,7 +14,7 @@ const rows = BEVIS_SAGER.map((s) => cases.find((c) => c.slug === s)).filter((c):
 {rows.length > 0 && (
   <section class="proof" aria-label={lang === 'en' ? 'From our deliveries' : 'Fra leverancerne'}><div class="wrap">
     {rows.map(({ c, t }) => (
-      <a href={`${base}projekter/${c.slug}`}><b>{t!.b}</b><span>{t!.t} · {c.name}</span></a>
+      <a href={`${base}${sagHref(lang, c.slug)}`}><b>{t!.b}</b><span>{t!.t} · {c.name}</span></a>
     ))}
   </div></section>
 )}

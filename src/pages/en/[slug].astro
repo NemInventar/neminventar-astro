@@ -1,0 +1,19 @@
+---
+// Engelske landingssider (/en/<engelsk slug>/): emner og målgrupper, oversat i src/data/engelsk/landing.json. Samme side
+// som den danske (components/sider/Landingsside.astro). Guides har deres egen rute (/en/guides/), og en side med en
+// håndskrevet engelsk udgave (/en/lockers/) vinder over denne rute. Uden en dansk, publiceret side findes den engelske ikke.
+import Landingsside from '../../components/sider/Landingsside.astro';
+import { getWebLandingPages, getWebCases, getWebProducts, getWebColors } from '../../lib/supabase';
+import { LANDING_EN } from '../../lib/engelsk';
+
+export async function getStaticPaths() {
+  const [pages, cases, products, colors] = await Promise.all([getWebLandingPages(), getWebCases(), getWebProducts(), getWebColors()]);
+  return pages
+    .filter((p) => p.kind !== 'guide')
+    .flatMap((page) => {
+      const e = LANDING_EN.find((x) => x.da_slug === page.slug);
+      return e ? [{ params: { slug: e.slug }, props: { page, pages, cases, products, colors } }] : [];
+    });
+}
+---
+<Landingsside {...Astro.props} lang="en" />

@@ -1,0 +1,374 @@
+{
+ "et-skab": {
+  "titel": "One tall cabinet in oak veneer",
+  "tekst": "60 × 210 × 60 cm with four loose shelves and clear oil. The simplest cabinet, and the one most people start with."
+ },
+ "et-skab-boeg-blaa-laage": {
+  "titel": "One beech cabinet with a blue inset door",
+  "tekst": "60 × 210 × 60 cm in beech veneer with clear oil. The door is oiled blue and sits flush with the cabinet. It opens with a push, so there is no handle. Four loose shelves."
+ },
+ "et-skab-ask-fern-laage": {
+  "titel": "One ash cabinet with a green inset door",
+  "tekst": "60 × 210 × 60 cm in ash veneer with clear oil. The door is oiled in Fern and sits flush with the cabinet, with a finger pull routed into the edge. Hat shelf and hanging rail."
+ },
+ "et-skab-kryds-tyrolerblaa": {
+  "titel": "Plywood wardrobe with a Tyrolean blue door",
+  "tekst": "60 × 210 × 60 cm in pine plywood with clear oil. The door is Tyrolean blue laminate, sits flush with the cabinet and opens with a push. Hat shelf and hanging rail."
+ },
+ "et-skab-birk-grafit": {
+  "titel": "Birch wardrobe with a graphite grey door",
+  "tekst": "60 × 210 × 60 cm in birch plywood with clear oil. The door is graphite grey laminate, sits flush with the cabinet and has a finger pull routed into the edge. Hat shelf, hanging rail and two drawers."
+ },
+ "to-skabe-birk-skovgroen": {
+  "titel": "Two birch cabinets with forest green doors",
+  "tekst": "Two 50 cm cabinets in birch plywood with clear oil. The doors are forest green laminate, sit flush with the cabinets and open with a push. Hat shelf, hanging rail and two drawers in each."
+ },
+ "garderobeskab-eg-120": {
+  "titel": "Oak wardrobe, 120 cm",
+  "tekst": "Two 60 cm cabinets in oak veneer with clear oil and a finger pull routed into the door. Hat shelf and hanging rail in both. 120 cm wide and 210 cm high."
+ },
+ "garderobeskab-hvide-laager": {
+  "titel": "Wardrobe with white doors",
+  "tekst": "Two 50 cm cabinets in birch plywood with doors in alpine white laminate and no handles. Hat shelf, hanging rail and two drawers in each cabinet. 100 cm wide."
+ },
+ "skabsvaeg-sovevaerelse": {
+  "titel": "Wardrobe wall for the bedroom",
+  "tekst": "Four 60 cm cabinets in ash veneer oiled in Cotton White with slotted handles. Two with a hanging rail, one with four shelves and one with a hanging rail and drawers. 240 cm wide and 240 cm high."
+ },
+ "skabsvaeg-sovevaerelse-eg-indeliggende": {
+  "titel": "Oak wardrobe wall for the bedroom with inset doors",
+  "tekst": "Four 60 cm cabinets in oak veneer with clear oil. The doors sit flush with the cabinets and have a finger pull routed into the edge. Two with a hanging rail, one with four shelves and one with a hanging rail and drawers. 240 cm wide and 240 cm high."
+ },
+ "skabsvaeg-sovevaerelse-boeg-fern": {
+  "titel": "Beech wardrobe wall for the bedroom with green doors",
+  "tekst": "Four 60 cm cabinets in beech veneer with clear oil. The doors are oiled in Fern, sit flush with the cabinets and open with a push. Two with a hanging rail, one with four shelves and one with a hanging rail and drawers. 240 cm wide and 240 cm high."
+ },
+ "skabsvaeg-180-fjordgroen": {
+  "titel": "180 cm plywood wardrobe wall with fjord green doors",
+  "tekst": "Three 60 cm cabinets in pine plywood with clear oil. The doors are fjord green laminate, sit flush with the cabinets and open with a push. Two with a hanging rail and one with a hanging rail and drawers. 180 cm wide and 220 cm high."
+ },
+ "skabsvaeg-moerk-eg": {
+  "titel": "Dark oak wardrobe wall with bench",
+  "tekst": "Six 60 cm cabinets in oak veneer oiled in Dark Roast: two closed cabinets with inset doors, an open wardrobe with hat shelf, hanging rail and two drawers, and a bench three cabinets wide with one drawer per cabinet and a cushion. 360 cm wide and 200 cm high."
+ },
+ "skabsvaeg-overskabe": {
+  "titel": "Cabinet wall with overhead cabinets",
+  "tekst": "Four 60 cm cabinets in pine plywood with clear oil and a 40 cm overhead cabinet on top of each. The overhead cabinets take the things you rarely use. 240 cm wide and 250 cm high."
+ },
+ "entre-med-baenk": {
+  "titel": "Hallway with bench, open wardrobe and cabinet",
+  "tekst": "A 100 cm bench with two drawers and a cushion, an open wardrobe with hat shelf, hanging rail and drawers at the bottom, and a closed cabinet with a door without a handle. Oak veneer oiled in Cocoa."
+ },
+ "entre-baenk-mellem-garderober": {
+  "titel": "Hallway with a bench between two open wardrobes",
+  "tekst": "Five cabinets in oak veneer with clear oil. A closed cabinet at each end with an inset door without a handle, two open wardrobes with hat shelf, hanging rail and two drawers at the bottom, and in the middle a 100 cm bench with two drawers and a cushion, with free wall above for a mirror. 340 cm wide and 210 cm high."
+ },
+ "garderobe-med-baenk": {
+  "titel": "Wardrobe wall with bench",
+  "tekst": "Two 60 cm wardrobes and between them a 100 cm bench with two drawers, a cushion and an overhead cabinet. Above the bench there is room for the jackets."
+ },
+ "entre-smal": {
+  "titel": "Cabinets for a narrow hallway",
+  "tekst": "Three 50 cm cabinets that are only 40 cm deep. The two outer ones have doors, finger pulls and six shelves, the middle one is open. Oak veneer with clear oil."
+ },
+ "garderobe-boernevaerelse": {
+  "titel": "Wardrobe for the children's room",
+  "tekst": "Two 50 cm cabinets, 180 cm high, in birch plywood. The doors are oiled blue and have wooden handles in oak. Hat shelf, hanging rail and two drawers in each cabinet."
+ },
+ "skabsvaeg-groen": {
+  "titel": "Wardrobe wall in green oil",
+  "tekst": "Five 60 cm cabinets in pine plywood oiled in Fern, without handles. Four with hat shelf and hanging rail, one with four shelves. 300 cm wide."
+ },
+ "garderobevaeg-shinnoki": {
+  "titel": "Wardrobe wall in Shinnoki",
+  "tekst": "5 metres of wardrobe wall in Shinnoki Natural Oak: three cabinets of 100 cm and one of 50 cm with an overhead cabinet on top, and a 150 cm bench with three drawers, a cushion and overhead cabinets. A cover panel and a frame tie the overhead cabinets together. Based on a wardrobe we built for a home in Copenhagen."
+ },
+ "aaben-sektion": {
+  "titel": "Cabinet wall with an open section",
+  "tekst": "Four cabinets in pine plywood with fjord green laminate doors without handles. The third cabinet is 40 cm wide and open for books and baskets."
+ },
+ "garderobevaeg-aabne-midte": {
+  "titel": "Wardrobe wall with open cabinets in the middle",
+  "tekst": "Five 76 cm cabinets in beech veneer with clear oil, only 40 cm deep. The three in the middle are open with four shelves. The two outer ones have inset doors oiled in Fern that open with a push. 380 cm wide."
+ },
+ "indeliggende-eg": {
+  "titel": "Inset doors in oak veneer",
+  "tekst": "Two 50 cm wardrobes in oak veneer. The doors sit flush with the cabinet and have a finger pull routed into the edge. Hat shelf, hanging rail and two drawers in each."
+ },
+ "roedbrun-olie": {
+  "titel": "Plywood with red-brown oil",
+  "tekst": "Three cabinets in pine plywood, oiled in one of our eight stock colours. The grain shows through the colour, and the edge shows the layers."
+ },
+ "hoejskabe-cocoa": {
+  "titel": "Two oak tall cabinets with Cocoa oil",
+  "tekst": "Two 60 cm cabinets in oak veneer oiled in Cocoa with black bar handles and four loose shelves in each. 120 cm wide and 210 cm high."
+ },
+ "to-skabe-et-aabent": {
+  "titel": "Two plywood cabinets with doors and one open",
+  "tekst": "Three 50 cm cabinets in pine plywood with clear oil and four loose shelves in each. Two have doors and standard handles in brushed steel, the third is open, so the layers show in the shelf edges. 150 cm wide, 200 cm high and 55 cm deep."
+ },
+ "hoejskab-hylder-birk": {
+  "titel": "Birch tall cabinet with shelves",
+  "tekst": "One 60 cm cabinet in birch plywood, only 40 cm deep, with five loose shelves and wooden handles in oak. For books, crockery or ring binders."
+ },
+ "aaben-reol-birk": {
+  "titel": "Open shelving in birch plywood",
+  "tekst": "Four open 80 cm sections in birch plywood with clear oil and five loose shelves in each. Without doors the shelves come all the way forward, and the edge shows the layers."
+ },
+ "kompakt-skabe": {
+  "titel": "Compact laminate cabinets for changing rooms",
+  "tekst": "Three wardrobes in compact laminate in light concrete with hat shelf, hanging rail and handles in brushed steel. Compact laminate stands up to water and wear, so the cabinets can stand in changing rooms and washrooms."
+ },
+ "ask-sorte-greb": {
+  "titel": "Light ash with black handles and an overhead cabinet",
+  "tekst": "Two 50 cm wardrobes in ash veneer oiled in Cotton White with black bar handles. Wardrobe with two drawers at the bottom and a 40 cm overhead cabinet on top."
+ },
+ "birk-hvide-laager": {
+  "titel": "Birch with white laminate doors and wooden handles",
+  "tekst": "Three cabinets in birch plywood with doors in alpine white laminate and wooden handles in solid oak. The birch shows in the edges of the doors."
+ },
+ "baenkeraekke-skuffer-skohylde": {
+  "titel": "Bench row with drawers and shoe rack",
+  "tekst": "Three 80 cm benches in oak veneer under one continuous seat: two drawers at each end, a two-level shoe rack in the middle and one long cushion in grey upholstery fabric."
+ },
+ "baenkeraekke-smal-krydsfiner": {
+  "titel": "Narrow plywood bench row",
+  "tekst": "Two 80 cm benches, only 30 cm deep, so they fit a narrow hallway: a two-level shoe rack and two drawers under one seat with a cushion in grey upholstery fabric."
+ },
+ "opbevaringsbaenk-to-skuffer": {
+  "titel": "Storage bench with two drawers",
+  "tekst": "100 cm bench in birch plywood with two drawers side by side under the seat, slotted handles and a cushion in grey upholstery fabric."
+ },
+ "baenk": {
+  "titel": "Bench with three drawers",
+  "tekst": "120 cm wide bench in oak veneer with three drawers side by side under the seat and a cushion in grey upholstery fabric."
+ },
+ "skobaenk-hvid-ask": {
+  "titel": "Long shoe bench in white ash",
+  "tekst": "160 cm shoe bench in ash veneer oiled in Cotton White with a shoe shelf under the seat and a cushion on top."
+ },
+ "baenk-lang-moerk-eg": {
+  "titel": "Long dark oak bench with three drawers",
+  "tekst": "160 cm bench in oak veneer oiled in Dark Roast with three drawers without handles and a cushion in grey upholstery fabric."
+ },
+ "omklaedningsbaenk-kompakt": {
+  "titel": "Changing-room bench in compact laminate",
+  "tekst": "160 cm bench in light grey compact laminate, open under the seat and without a cushion, so it can be wiped down after every use."
+ },
+ "lockers": {
+  "titel": "Plywood lockers",
+  "tekst": "12 compartments in pine plywood with blue oil on the doors, on a plinth and with key locks."
+ },
+ "elevskabe": {
+  "titel": "Pupil lockers for schools",
+  "tekst": "24 compartments of 30 × 40 cm in pine plywood with green doors, institutional hinges and key locks. The wall is approx. 130 cm high, so the youngest pupils can reach."
+ },
+ "personaleskabe": {
+  "titel": "Staff lockers with code locks",
+  "tekst": "Eight lockers of 40 × 90 cm in birch plywood with code locks, stainless steel handles and a hook for a jacket in each."
+ },
+ "lockers-cocoa-laager": {
+  "titel": "Birch office lockers with brown doors",
+  "tekst": "Ten compartments of 35 × 45 cm in birch plywood with doors oiled in Cocoa, institutional hinges and key locks."
+ },
+ "lockers-kompakt": {
+  "titel": "Compact laminate lockers for changing rooms",
+  "tekst": "15 compartments in light grey compact laminate, five columns and three tiers, with institutional hinges and hasps for the user's own padlock."
+ },
+ "omklaedningsskabe-fitness": {
+  "titel": "Changing-room lockers for gyms",
+  "tekst": "12 lockers of 30 × 90 cm in compact laminate in light concrete with code locks and institutional hinges. Compact laminate stands up to water and wear."
+ },
+ "lockers-sort-kompakt": {
+  "titel": "Lockers in black compact laminate",
+  "tekst": "18 compartments of 30 × 50 cm in black compact laminate, six columns and three tiers, with key locks."
+ },
+ "mobil-lockers": {
+  "titel": "Phone lockers",
+  "tekst": "30 small compartments in pine plywood, three columns and ten tiers, without a plinth and with padlocks. They hang on the wall, for example by the classroom entrance."
+ },
+ "lockers-kontor": {
+  "titel": "Office lockers with electronic locks",
+  "tekst": "Eight tall compartments in birch plywood with doors oiled in Charcoal, designer handles in bronze, a coat hook in each compartment and electronic locks that open with a tag or a card."
+ },
+ "skolegang-siddepladser": {
+  "titel": "School corridor with seating",
+  "tekst": "48 compartments in pine plywood in two units, each with a 35 mm plywood frame around it, and a 150 cm bench with backrest and cushion after each unit. Code locks and institutional hinges."
+ },
+ "omklaedning-baenk-efter": {
+  "titel": "Changing room with a bench after each unit",
+  "tekst": "32 compartments in birch plywood in two units, each with a 120 cm bench with backrest beside it. Institutional hinges and hasps for the user's own padlock."
+ },
+ "aabne-garderoberum-boernehave": {
+  "titel": "Open cloakroom compartments for a kindergarten",
+  "tekst": "12 open compartments without doors in blue plywood with a shelf and a coat hook in each compartment. In front stands a bench with two shoe compartments under the seat per column."
+ },
+ "lockers-ramme-roedbrune-laager": {
+  "titel": "Lockers with frame and red-brown doors",
+  "tekst": "24 compartments in pine plywood in two units with a 35 mm plywood frame around each, doors oiled red-brown and code locks."
+ },
+ "sportshal-huller-baenk": {
+  "titel": "Sports hall with ventilated doors and bench",
+  "tekst": "32 compartments in pine plywood with holes over the whole door, so the compartments are ventilated. Between the two units stands a 200 cm bench with backrest and cushion."
+ },
+ "elevskabe-baenke-groenne-laager": {
+  "titel": "Pupil lockers with benches and green doors",
+  "tekst": "18 compartments of 30 × 40 cm in pine plywood in three units. The doors are oiled in Fern, and after each unit stands a 100 cm bench with backrest and cushion. Institutional hinges and key locks."
+ },
+ "kontor-hvid-indeliggende": {
+  "titel": "White office lockers with inset doors",
+  "tekst": "18 compartments in pine plywood oiled in Cotton White. The doors sit inside the frame, without handles, with code locks and hinges that open fully to the side and close softly."
+ },
+ "moerk-vaeg-lyse-laager": {
+  "titel": "Dark wall with light doors",
+  "tekst": "24 compartments in pine plywood, with the cabinet oiled in Charcoal and the doors in clear oil. No handles, with code locks. Hangs on the wall without a plinth."
+ },
+ "spa-hoeje-terra": {
+  "titel": "Tall dark stone lockers for spa and wellness",
+  "tekst": "Six full-height lockers in compact laminate in Terra, a dark stone colour. Electronic lock, hook and a shelf in each. Compact laminate stands up to water and steam."
+ },
+ "ramme-dark-roast-elektronisk": {
+  "titel": "Lockers with frame and doors in Dark Roast",
+  "tekst": "20 compartments in pine plywood with doors oiled in Dark Roast, a plywood frame around each unit, designer handles, hinges that close softly and electronic locks."
+ },
+ "omklaedning-ventileret-skorum": {
+  "titel": "Changing room with ventilated doors and shoe compartments",
+  "tekst": "12 compartments in pine plywood with holes at the top of the door, two shelves inside and shoe compartments below. End panels at both ends, institutional hinges and code locks."
+ },
+ "elevskabe-roedbrun-hvide-laager": {
+  "titel": "Red-brown pupil lockers with white doors",
+  "tekst": "24 compartments of 30 × 40 cm in pine plywood. The cabinet is oiled red-brown and the doors in Cotton White, hung alternately left and right, so the doors open in pairs. Key locks."
+ },
+ "mobilskab-fern-32": {
+  "titel": "Phone cabinet in Fern with 32 compartments",
+  "tekst": "32 small compartments in pine plywood oiled in Fern, four columns and eight tiers, with padlocks. Hangs on the wall by the classroom door."
+ },
+ "personale-hvid-kompakt": {
+  "titel": "Staff lockers in white compact laminate",
+  "tekst": "Ten lockers of 40 × 90 cm in alpine white compact laminate with code locks, a hook and a shelf in each. For staff rooms in hospitals and care homes, where cleaning is thorough. Compact laminate stands up to water and wear."
+ },
+ "golfskabe": {
+  "titel": "Golf lockers for the bag",
+  "tekst": "Five tall compartments of 50 × 130 cm and 60 cm deep, so a golf bag stands upright. Birch plywood with doors in Dark Roast, designer handles, hinges that close softly and code locks."
+ },
+ "lav-raekke-cocoa": {
+  "titel": "Low row of lockers at window height",
+  "tekst": "Ten compartments of 40 × 45 cm in one row in birch plywood with doors oiled in Cocoa, without handles and with code locks. The top can be used as a shelf under the window."
+ },
+ "roede-huller-skorum": {
+  "titel": "Red-brown doors with holes above shoe compartments",
+  "tekst": "16 compartments in pine plywood with doors oiled red-brown and holes over the whole door, without handles and with code locks. Shoe compartments sit below. Institutional hinges."
+ },
+ "blaa-skolegang-baenk-imellem": {
+  "titel": "Blue school corridor with benches in between",
+  "tekst": "48 compartments of 30 × 40 cm in pine plywood with blue doors, divided into units with a frame around each and a 150 cm bench with cushion in between. Key locks and institutional hinges."
+ },
+ "aabne-spillerpladser": {
+  "titel": "Open player spaces for the clubhouse",
+  "tekst": "Six open compartments of 50 × 150 cm without doors, with a shelf and a hook in each and a bench with shoe compartments in front. As in a professional changing room, where the kit hangs up to dry."
+ },
+ "hvid-kompakt-skorum": {
+  "titel": "White compact laminate with shoe compartments for a swimming pool",
+  "tekst": "12 compartments in alpine white compact laminate on shoe compartments, with code locks and hooks. Compact laminate stands up to water and wear, so the lockers can stand close to the showers."
+ },
+ "dark-roast-lyse-laager": {
+  "titel": "Staff lockers in Dark Roast with light doors",
+  "tekst": "12 lockers of 40 × 90 cm. The cabinet is oiled in Dark Roast and the doors in clear oil, with designer handles, hinges that close softly, code locks and a hook in each."
+ },
+ "udstyrsskabe-ventileret": {
+  "titel": "Ventilated kit lockers for sailing and scout clubs",
+  "tekst": "Four tall compartments of 50 × 160 cm and 60 cm deep in pine plywood with holes over the whole door, so wet clothes and kit can dry. A shelf and a hook in each, end panels and hasps for padlocks."
+ },
+ "charcoal-birk-elektronisk": {
+  "titel": "Birch office lockers with Charcoal doors and electronic locks",
+  "tekst": "24 compartments of 35 × 40 cm in birch plywood with doors oiled in Charcoal, without handles, hung alternately left and right, and with electronic locks that open with a tag or a card."
+ },
+ "boernehave-fern-aabne": {
+  "titel": "Kindergarten cloakroom in Fern on a bench",
+  "tekst": "Eight open cloakroom compartments of 30 × 100 cm in pine plywood oiled in Fern, with shelf and hook, on a bench with shoe compartments under the seat."
+ },
+ "gymnasium-ramme-hvide-laager": {
+  "titel": "Tall framed lockers with white doors for upper secondary school",
+  "tekst": "24 compartments of 30 × 90 cm in pine plywood in two units with a frame around each and doors oiled in Cotton White. No handles, with code locks and institutional hinges."
+ },
+ "mobilskab-hvid-laererrum": {
+  "titel": "Phone cabinet in Cotton White for the teachers' room",
+  "tekst": "20 small compartments in pine plywood oiled in Cotton White, four columns and five tiers, with key locks. Hangs on the wall."
+ },
+ "elevskabe-paa-baenk-blaa": {
+  "titel": "Pupil lockers on a bench with blue doors",
+  "tekst": "16 compartments of 30 × 40 cm in pine plywood with blue doors, standing on a bench with shoe compartments under the seat. Pupils can sit and change shoes in front of their own locker. Key locks and institutional hinges."
+ },
+ "cocoa-elevskabe-baenk-efter": {
+  "titel": "Pupil lockers in Cocoa with a bench after each unit",
+  "tekst": "36 compartments of 30 × 40 cm in pine plywood with doors oiled in Cocoa, divided into units with a 120 cm bench with cushion after each. No handles, with code locks and institutional hinges."
+ },
+ "charcoal-indeliggende-klare": {
+  "titel": "Charcoal cabinet with light inset doors",
+  "tekst": "15 compartments in pine plywood, with the cabinet oiled in Charcoal and the clear-oiled doors sitting inside the frame. No handles, with code locks and hinges that close softly."
+ },
+ "fern-huller-top-klub": {
+  "titel": "Green club lockers with holes at the top",
+  "tekst": "12 compartments in pine plywood oiled in Fern, with holes at the top of the door to let air in, a hook in each and hasps for padlocks. Institutional hinges."
+ },
+ "mobilskab-charcoal-40": {
+  "titel": "Phone cabinet in Charcoal with 40 compartments",
+  "tekst": "40 small compartments in pine plywood oiled in Charcoal, five columns and eight tiers, with padlocks. For a year group that hands in their phones in the morning."
+ },
+ "vaerksted-udstyrsskabe": {
+  "titel": "Tall equipment lockers for workshop and storeroom",
+  "tekst": "Four compartments of 50 × 180 cm and 60 cm deep in pine plywood with two shelves and a hook in each, end panels and hasps for padlocks. For work clothes, safety equipment and tools."
+ },
+ "birk-cotton-white-personale": {
+  "titel": "Birch staff lockers with white doors",
+  "tekst": "12 lockers of 35 × 90 cm in birch plywood with doors oiled in Cotton White, stainless steel handles, key locks and a hook in each. The doors are hung alternately left and right."
+ },
+ "lav-terra-spa": {
+  "titel": "Low dark stone lockers for spa and wellness",
+  "tekst": "Eight compartments of 40 × 45 cm in one row in compact laminate in Terra, a dark stone colour, with code locks. The top can be used as a shelf for towels. Compact laminate stands up to water and steam."
+ },
+ "roedbrun-lockervaeg": {
+  "titel": "Red-brown locker wall without handles",
+  "tekst": "18 compartments of 35 × 45 cm in pine plywood, with the whole cabinet oiled red-brown. No handles, with code locks and institutional hinges."
+ },
+ "smalle-hoeje-birk-charcoal": {
+  "titel": "Narrow tall birch lockers with Charcoal doors",
+  "tekst": "Eight lockers of 30 × 180 cm in birch plywood with doors oiled in Charcoal, designer handles, hinges that close softly, electronic locks and a hook in each."
+ },
+ "akustikvaeg": {
+  "titel": "Acoustic wall in birch plywood",
+  "tekst": "302 × 240 cm of perforated panels. The holes reduce reverberation in, for example, a classroom or a meeting room."
+ },
+ "akustik-groen": {
+  "titel": "Acoustic wall in green oil",
+  "tekst": "Five panels of 60 × 240 cm in pine plywood oiled in Fern with evenly spaced holes. 302 cm wide."
+ },
+ "akustik-over-sofa": {
+  "titel": "Acoustic panels above the sofa",
+  "tekst": "Three panels of 60 × 120 cm in birch plywood with clear oil, 90 cm above the floor. The panel area is 181 cm wide."
+ },
+ "akustik-moedelokale": {
+  "titel": "Dark-oiled acoustic panels for the meeting room",
+  "tekst": "Four panels of 60 × 120 cm in plywood oiled in Charcoal with a dense hole pattern, fitted edge to edge above the meeting table."
+ },
+ "akustik-klasselokale": {
+  "titel": "Fire-retardant acoustic wall for the classroom",
+  "tekst": "Ten panels of 60 × 120 cm in fire-retardant pine plywood, fitted edge to edge 110 cm above the floor. 600 cm wide."
+ },
+ "akustik-boelger": {
+  "titel": "Acoustic wall with a wave pattern",
+  "tekst": "Six panels of 60 × 240 cm in birch plywood with clear oil, where the holes form waves. For example for a daycare centre, where the wall should also be nice to look at."
+ },
+ "akustik-trekanter": {
+  "titel": "Acoustic wall with a triangle pattern",
+  "tekst": "Five panels of 60 × 240 cm in birch plywood, where the holes form triangles. 302 cm wide."
+ },
+ "akustik-striber-cocoa": {
+  "titel": "Acoustic wall with stripes in Cocoa",
+  "tekst": "Four panels of 60 × 240 cm in pine plywood oiled in Cocoa, where the holes form stripes. 240 cm wide."
+ },
+ "akustik-fint": {
+  "titel": "Acoustic wall with fine holes",
+  "tekst": "Five panels of 60 × 240 cm in birch plywood with many small holes close together. 302 cm wide."
+ }
+}

@@ -1,0 +1,284 @@
+---
+// Om os på begge sprog: /om-os og /en/about/ (v3, 04-10-2026 — plan: Opus, scratchpad/omos-plan). Milot: ingen videoer i
+// toppen; egenproduktionen i centrum — hvad den betyder for kunden fase for fase, og hvilke muligheder den åbner.
+// Tekst-først top, ét stillfoto, tidslinje, ProcessSteps i det mørke afsnit, holdet, referencer. Intet må afsløre, hvor
+// produktionen ligger (se skill seo). Holdet på engelsk: src/data/engelsk/holdet.json.
+import Base from '../../layouts/Base.astro';
+import Ticker from '../Ticker.astro';
+import ProcessSteps from '../ProcessSteps.astro';
+import ProjectCard from '../ProjectCard.astro';
+import ContactCta from '../ContactCta.astro';
+import { getWebCases } from '../../lib/supabase';
+import { cdn } from '../../lib/img';
+import { morkhoj, PHOTO_PROJECT_SLUG } from '../../lib/catalog';
+import { TEAM } from '../../lib/team';
+import { side } from '../../lib/stier';
+import { sagerPaaEngelsk, sagHref, HOLD_EN } from '../../lib/engelsk';
+
+interface Props { lang?: 'da' | 'en' }
+const { lang = 'da' } = Astro.props;
+const en = lang === 'en';
+const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
+const daCases = await getWebCases();
+const cases = en ? sagerPaaEngelsk(daCases) : daCases;
+const reference = cases.find((c) => c.slug === PHOTO_PROJECT_SLUG) ?? cases[0];
+const team = en ? TEAM.map((m) => ({ ...m, ...(HOLD_EN[m.email] ?? {}) })) : TEAM;
+
+// Kæden: det, der sker hos os selv — fra model til pakket emne. Overfladen før samlingen (Milot 27-10-2026: "det er
+// overfladebehandling før samling")
+const CHAIN = en
+  ? ['3D model', 'Workshop drawing', 'Cutting', 'Finishing', 'Assembly', 'Packing']
+  : ['3D-model', 'Værkstedstegning', 'Opskæring', 'Overfladebehandling', 'Samling', 'Pakning'];
+
+// Tidslinjen: fem faser i samarbejdet, hver med "Det kan I" (Milot 04-10: ikke "sene ændringer" — et låst design er en styrke;
+// til gengæld Apple Vision Pro ude hos kunden, så designet er set i rummet, før det låses).
+const FASER = en ? [
+  { n: '01', fase: 'Before the quote', h: 'The price is worked out by the people who will build it.', p: 'The quote is based on our own hours and the materials we buy ourselves, and the delivery time on our own production plan: typically 8–12 weeks from order.',
+    kan: [{ b: 'Decide every measurement.', p: 'Width, height and depth are drawn to fit your room.' }, { b: 'Require certified wood.', p: 'We buy the boards ourselves and supply FSC or PEFC when the tender requires it.' }] },
+  { n: '02', fase: 'During drawing', h: 'The design is locked when you are sure.', p: 'You approve the 3D model and the renders. We then take the workshop drawings and parts lists from the same model, so what you said yes to is what gets cut.',
+    kan: [{ b: 'See it in the room.', p: 'We bring an Apple Vision Pro on site and show the furniture at full size in the room where it will stand.' }, { b: 'Choose the colour.', p: 'We use hardwax oil from Rubio Monocoat and can have a colour mixed for your building.' }] },
+  { n: '03', fase: 'During production', h: 'Built exactly as you approved it.', p: 'Our own people cut, oil and assemble to the drawings, so we are the ones who answer for quality and schedule.',
+    kan: [{ b: 'Approve a sample piece.', p: 'On larger deliveries we build one unit first, and when you have approved it by hand, the series is built to match.' }] },
+  { n: '04', fase: 'On delivery', h: 'Delivered in the order the building needs it.', p: 'We pack it ourselves. Because we also buy the materials, data sheets, indoor climate documentation and the EPDs that exist come with the handover.',
+    kan: [{ b: 'Have it in stages.', p: 'Room by room or floor by floor, as the building progresses.' }, { b: 'Have it installed.', p: 'We also install if you want, so one firm answers for the furniture until the last cabinet is fixed.' }] },
+  { n: '05', fase: 'After handover', h: 'We can build the same again.', p: 'We keep the 3D model. Wear on the oil is repaired in spots, without sanding the whole surface.',
+    kan: [{ b: 'Order spare parts.', p: 'A new door or shelf is made from the saved model, in the same colour.' }, { b: 'Build more.', p: 'More units in the same size and colour when you need them.' }] },
+] : [
+  { n: '01', fase: 'Før tilbud', h: 'Prisen regnes af dem, der skal bygge.', p: 'Tilbuddet bygger på vores egne timer og de materialer, vi selv køber ind, og leveringstiden på vores egen produktionsplan: typisk 8–12 uger fra ordre.',
+    kan: [{ b: 'Bestemme alle mål.', p: 'Bredde, højde og dybde tegnes efter jeres rum.' }, { b: 'Kræve certificeret træ.', p: 'Vi køber selv pladerne og leverer FSC eller PEFC, når udbuddet kræver det.' }] },
+  { n: '02', fase: 'Under tegning', h: 'Designet låses, når I er sikre.', p: 'I godkender 3D-modellen og renderne. Derefter trækker vi værkstedstegninger og styklister ud af samme model, så det, I har sagt ja til, er det, der bliver skåret.',
+    kan: [{ b: 'Se det i rummet.', p: 'Vi tager Apple Vision Pro med ud og viser inventaret i fuld størrelse i det rum, hvor det skal stå.' }, { b: 'Vælge farven.', p: 'Vi bruger hårdvoksolie fra Rubio Monocoat og kan få en farve blandet til jeres byggeri.' }] },
+  { n: '03', fase: 'Under produktion', h: 'Bygget præcis, som I godkendte det.', p: 'Vores egne folk skærer, olierer og samler efter tegningerne, så det er os, der står inde for kvalitet og tidsplan.',
+    kan: [{ b: 'Godkende et prøveemne.', p: 'Ved større leverancer bygger vi ét eksemplar først, og når I har godkendt det i hånden, bygges serien magen til.' }] },
+  { n: '04', fase: 'Ved levering', h: 'Leveret i den rækkefølge, byggeriet skal bruge det.', p: 'Vi pakker selv. Fordi vi også køber materialerne, følger datablade, indeklimadokumentation og de EPD’er, der findes, med i afleveringen.',
+    kan: [{ b: 'Få det i etaper.', p: 'Rum for rum eller etage for etage, i takt med byggeriet.' }, { b: 'Få det monteret.', p: 'Vi monterer også, hvis I ønsker det, så én svarer for inventaret, til det sidste skab sidder fast.' }] },
+  { n: '05', fase: 'Efter aflevering', h: 'Vi kan bygge det samme igen.', p: 'Vi gemmer 3D-modellen. Slid på olien udbedres pletvis, uden at hele fladen skal slibes.',
+    kan: [{ b: 'Bestille reservedele.', p: 'En ny låge eller hylde laves fra den gemte model, i samme farve.' }, { b: 'Bygge videre.', p: 'Flere enheder i samme mål og farve, når der bliver brug for dem.' }] },
+];
+
+const refNavn = reference?.name ?? (en ? 'Mørkhøj School' : 'Mørkhøj Skole');
+const T = en ? {
+  title: 'About us | Nem Inventar',
+  description: 'We build fixed furniture in our own production from our own 3D drawings, to your measurements. Visualisations, sample pieces and spare parts come from the same model.',
+  label: 'About us', h1: ['We draw it.', 'We build it', 'ourselves.'],
+  lede: 'Nem Inventar is a joinery firm that makes fixed furniture for schools, institutions, sports halls and businesses. From 3D model to finished furniture, everything happens with us, with no middlemen.',
+  send: 'Send measurements or a tender', samarbejde: 'How we work together', kaedeAria: 'What happens in our own production', kaede: 'In our own production',
+  seProj: (navn: string) => `See the project ${navn}`, fotoAlt: 'Red-brown lockers with a bench and shoe racks by the door to a classroom',
+  fotoTekst: 'Lockers with a bench and shoe racks outside a classroom. Drawn by us, built in our own production.',
+  tlLabel: 'From quote to handover', tlH: ['We have our own', 'production.'],
+  tlLede: 'We cut, oil, assemble and pack the furniture ourselves. We do not order it from others, so we answer for the drawing, the quality and the schedule. This is how you notice it, from the quote to the years after handover.',
+  kanI: 'What you can do', ssLabel: 'What it looks like', ssH: ['From screen to', 'building site.'], ssLede: 'Four steps we handle ourselves, from the model you approve to the furniture on site.',
+  holdLabel: 'The team', holdH: ['One contact all the', 'way.'], holdLede: 'One of us is your contact from the first drawing to installation, also while the furniture is in production.',
+  uddannelse: 'Education and background', uger: 'weeks', ugerC: 'typically from order to delivery',
+  refLabel: 'References', refH: ['A whole building or a single', 'bench.'],
+  refLede: (navn: string) => `${navn}, with Ason A/S as main contractor and Rønnow Arkitekter as architect, and all the other projects with the architects and contractors we have built with.`,
+  alleProj: 'All projects, architects and contractors →',
+  ref1: 'A whole building is one way in: tender, bill of quantities, material approvals and part deliveries that follow the site schedule. The other way is smaller: we also make the single bench or shelf unit.',
+  ref2: 'Both are drawn in 3D and built in our own production, with the same colours, the same documentation and the same contact all the way.',
+} : {
+  title: 'Om os — Nem Inventar',
+  description: 'Vi bygger fast inventar i vores egenproduktion efter egne 3D-tegninger på jeres mål. Fra samme model kommer visualiseringer, prøveemner og reservedele.',
+  label: 'Om os', h1: ['Vi tegner det.', 'Vi bygger det', 'selv.'],
+  lede: 'Nem Inventar er et snedkerfirma, der laver fast inventar til skoler, institutioner, idrætshaller og erhverv. Fra 3D-model til færdigt møbel sker det hele hos os — uden mellemled.',
+  send: 'Send mål eller udbud', samarbejde: 'Sådan arbejder vi sammen', kaedeAria: 'Det, der sker hos os selv', kaede: 'Hos os selv',
+  seProj: (navn: string) => `Se projektet ${navn}`, fotoAlt: 'Rødbrune lockers med bænk og skohylder ved døren til et klasserum',
+  fotoTekst: 'Lockers med bænk og skohylder ved et klasserum. Tegnet af os, bygget i vores egen produktion.',
+  tlLabel: 'Fra tilbud til aflevering', tlH: ['Vi har vores egen', 'produktion.'],
+  tlLede: 'Vi skærer, olierer, samler og pakker inventaret selv. Vi bestiller det ikke hos andre, og derfor svarer vi for tegningen, kvaliteten og tidsplanen. Sådan mærker I det, fra tilbuddet til årene efter afleveringen.',
+  kanI: 'Det kan I', ssLabel: 'Sådan ser det ud', ssH: ['Fra skærm til', 'byggeplads.'], ssLede: 'Fire trin, vi selv står for — fra modellen, I godkender, til møblet på pladsen.',
+  holdLabel: 'Holdet', holdH: ['Én kontakt hele', 'vejen.'], holdLede: 'Én af os er jeres kontakt fra første tegning til montage — også mens møblerne er i produktion.',
+  uddannelse: 'Uddannelse og baggrund', uger: 'uger', ugerC: 'typisk fra ordre til levering',
+  refLabel: 'Referencer', refH: ['Et helt byggeri eller en enkelt', 'bænk.'],
+  refLede: (navn: string) => `${navn}, med Ason A/S som hovedentreprenør og Rønnow Arkitekter som arkitekt — og alle de andre sager med de arkitekter og entreprenører, vi har bygget sammen med.`,
+  alleProj: 'Alle projekter, arkitekter og entreprenører →',
+  ref1: 'Et helt byggeri er den ene vej ind: udbud, tilbudsliste, materialegodkendelser og delleverancer, der følger byggepladsens tidsplan. Den anden vej er mindre: vi laver også den enkelte bænk eller reol.',
+  ref2: 'Begge dele tegnes i 3D og bygges i vores egen produktion — med samme farver, samme dokumentation og samme kontakt hele vejen.',
+};
+const alternates = [
+  { hreflang: 'da', href: new URL(base + 'om-os/', site).href },
+  { hreflang: 'en', href: new URL(base + 'en/about/', site).href },
+];
+---
+<Base lang={lang} title={T.title} description={T.description} alternates={alternates}>
+
+  <!-- ============ TOPPEN (tekst-først, intet der bevæger sig) ============ -->
+  <header class="about-top" id="top"><div class="wrap">
+    <div class="about-head">
+      <span class="label">{T.label}</span>
+      <h1>{T.h1[0]}<br />{T.h1[1]} <em>{T.h1[2]}</em></h1>
+      <p class="lede">{T.lede}</p>
+      <div class="about-btns">
+        <a href={`${base}${side(lang, 'kontakt')}`} class="btn btn-primary">{T.send} <span class="arr">→</span></a>
+        <a href="#samarbejdet" class="btn btn-ghost">{T.samarbejde} <span class="arr">↓</span></a>
+      </div>
+    </div>
+    <aside class="chain" aria-label={T.kaedeAria}>
+      <span class="label">{T.kaede}</span>
+      <ol>
+        {CHAIN.map((s, i) => (<>{i > 0 && <li class="sep" aria-hidden="true">→</li>}<li>{s}</li></>))}
+      </ol>
+    </aside>
+  </div></header>
+
+  <!-- ============ FOTOBÅND ============ -->
+  <section class="photo-band"><div class="wrap">
+    <figure class="rv">
+      <a class="img" href={`${base}${sagHref(lang, reference?.slug ?? PHOTO_PROJECT_SLUG)}`} aria-label={T.seProj(refNavn)}>
+        <img src={cdn(morkhoj('33_lockere-roede-ved-doer-til-klasserum.jpg'))} alt={T.fotoAlt} fetchpriority="high" decoding="async" />
+      </a>
+      <figcaption>{T.fotoTekst}</figcaption>
+    </figure>
+  </div></section>
+
+  <!-- ============ TIDSLINJEN: EGENPRODUKTIONEN FASE FOR FASE ============ -->
+  <section class="tl-sec" id="samarbejdet"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">{T.tlLabel}</span>
+        <h2 class="tl-h2">{T.tlH[0]} <em>{T.tlH[1]}</em></h2>
+        <p class="lede">{T.tlLede}</p>
+      </div>
+    </div>
+    <ol class="tl rv">
+      {FASER.map((f) => (
+        <li class="tl-row">
+          <div class="tl-phase"><b>{f.n}</b><span>{f.fase}</span></div>
+          <div class="tl-body">
+            <h3>{f.h}</h3>
+            <p>{f.p}</p>
+          </div>
+          <div class="tl-cards">
+            {f.kan.map((k) => (<div class="tl-card"><small>{T.kanI}</small><b>{k.b}</b><p>{k.p}</p></div>))}
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div></section>
+
+  <!-- ============ SÅDAN SER DET UD (mørk, med ProcessSteps) ============ -->
+  <section class="sec sec-dark" id="saadan-ser-det-ud"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">{T.ssLabel}</span>
+        <h2>{T.ssH[0]} <em>{T.ssH[1]}</em></h2>
+        <p class="lede">{T.ssLede}</p>
+      </div>
+    </div>
+    <ProcessSteps lang={lang} />
+  </div></section>
+
+  <!-- ============ HOLDET ============ -->
+  <section class="sec" id="holdet"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">{T.holdLabel}</span>
+        <h2>{T.holdH[0]} <em>{T.holdH[1]}</em></h2>
+        <p class="lede">{T.holdLede}</p>
+      </div>
+    </div>
+    <div class="team2 rv">
+      {team.map((m) => (
+        <article class="member2">
+          <div class="m-photo"><img src={`${base}team/${m.img}`} alt={m.name} loading="lazy" /></div>
+          <div class="body">
+            <h3>{m.name}</h3>
+            <p class="m-role">{m.role}</p>
+            <p class="m-desc">{m.desc}</p>
+            <p class="m-edu">{m.edu}</p>
+            <details class="m-more">
+              <summary>{T.uddannelse}</summary>
+              <p>{m.bio}</p>
+            </details>
+            <p class="m-contact">
+              <a href={`mailto:${m.email}`}>{m.email}</a><br />
+              <a href={`tel:${m.phone.replace(/\s/g, '')}`}>{m.phone}</a>
+            </p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div></section>
+
+  <!-- ============ REFERENCER ============ -->
+  <Ticker cases={cases} extra={[{ b: '8–12', t: T.uger, c: T.ugerC }]} lang={lang} />
+  <section class="sec" id="referencer"><div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <span class="label">{T.refLabel}</span>
+        <h2>{T.refH[0]} <em>{T.refH[1]}</em></h2>
+        <p class="lede">{T.refLede(refNavn)}</p>
+      </div>
+      <a href={`${base}${side(lang, 'projekter')}`} class="ulink">{T.alleProj}</a>
+    </div>
+    <div class="ref-grid rv">
+      <div class="ref-text">
+        <p>{T.ref1}</p>
+        <p>{T.ref2}</p>
+      </div>
+      {reference && <ProjectCard c={reference} lang={lang} />}
+    </div>
+  </div></section>
+
+  <ContactCta lang={lang} />
+
+  <style>
+    /* ---- toppen: tekst først, kæden til højre ---- */
+    .about-top{padding:64px 0 36px}
+    .about-top .wrap{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:48px;align-items:end}
+    .about-head h1{font-size:clamp(38px,5.2vw,72px);line-height:1.02;letter-spacing:-.02em;margin-top:22px}
+    .about-head .lede{font-size:clamp(17px,1.5vw,21px);line-height:1.55;color:var(--ink);margin-top:22px;max-width:34em}
+    .about-btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+    .chain{border:1px solid var(--line);border-radius:var(--radius);background:#fff;padding:22px 24px}
+    .chain .label{margin-bottom:14px}
+    .chain ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px 6px;align-items:center}
+    .chain li{font-size:14px;font-weight:600;padding:8px 12px;border-radius:999px;background:var(--soft);color:var(--ink)}
+    .chain li.sep{background:none;padding:0 2px;color:var(--warm);font-weight:700}
+    /* ---- fotobånd ---- */
+    .photo-band{padding:36px 0 0}
+    .photo-band figure{margin:0}
+    /* lavt bånd (Milot 04-10: fotoet var for stort — man kunne ikke se, hvad der gemte sig længere nede) */
+    .photo-band .img{display:block;aspect-ratio:21/8;max-height:380px;border-radius:var(--radius);overflow:hidden;background:var(--soft)}
+    .photo-band img{width:100%;height:100%;object-fit:cover;object-position:50% 62%;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+    .photo-band .img:hover img{transform:scale(1.03)}
+    .photo-band figcaption{margin-top:10px;font-size:14px;color:var(--muted)}
+    /* ---- tidslinjen ---- */
+    .tl-sec{background:var(--soft);padding:88px 0;margin-top:72px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .tl-h2{font-size:clamp(34px,4.4vw,56px);line-height:1.02;letter-spacing:-.02em}
+    .tl-sec .lede{max-width:40em;font-size:17px}
+    .tl{list-style:none;margin:40px 0 0;padding:0}
+    .tl-row{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,6fr) minmax(0,4fr);gap:32px;padding:34px 0;border-top:1px solid var(--line)}
+    .tl-row:last-child{border-bottom:1px solid var(--line)}
+    .tl-phase{display:flex;gap:12px;align-items:baseline;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--warm);font-weight:700}
+    .tl-phase b{font-family:'Archivo',sans-serif;font-size:30px;letter-spacing:-.02em;color:var(--ink);line-height:1}
+    .tl-body h3{font-size:22px;margin:0 0 10px;letter-spacing:-.01em;line-height:1.2}
+    .tl-body p{font-size:16px;line-height:1.7;color:var(--muted);max-width:52ch;margin:0}
+    .tl-cards{display:grid;gap:12px;align-content:start}
+    .tl-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px;transition:transform .35s cubic-bezier(.2,.7,.2,1),border-color .2s}
+    .tl-card:hover{transform:translateY(-2px);border-color:#D8D0BF}
+    .tl-card small{display:block;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--warm);font-weight:700;margin-bottom:6px}
+    .tl-card b{display:block;font-size:16px;margin-bottom:4px}
+    .tl-card p{font-size:14.5px;color:var(--muted);line-height:1.6;margin:0}
+    /* ---- referencer ---- */
+    .ref-grid{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:40px;align-items:start;margin-top:28px}
+    .ref-text p{font-size:16.5px;color:var(--muted);line-height:1.7;max-width:48ch;margin:0 0 14px}
+    @media(max-width:880px){
+      .about-top{padding:40px 0 24px}
+      .about-top .wrap{grid-template-columns:1fr;gap:26px}
+      .about-head h1{font-size:40px}
+      .about-btns .btn{width:100%;justify-content:center}
+      .chain ol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+      .chain li{text-align:center;font-size:13px;padding:10px 8px;border-radius:10px;min-width:0;overflow-wrap:anywhere}
+      .chain li.sep{display:none}
+      .photo-band{padding-top:24px}
+      .photo-band .img{aspect-ratio:4/3}
+      .photo-band img{object-position:50% 55%}
+      .tl-sec{padding:56px 0;margin-top:48px}
+      .tl{margin-top:28px}
+      .tl-row{grid-template-columns:1fr;gap:14px;padding:26px 0 26px 24px;position:relative}
+      .tl-row::before{content:"";position:absolute;left:6px;top:0;bottom:0;width:2px;background:var(--line)}
+      .tl-row::after{content:"";position:absolute;left:1px;top:34px;width:12px;height:12px;border-radius:50%;background:var(--warm)}
+      .ref-grid{grid-template-columns:1fr;gap:22px}
+    }
+  </style>
+</Base>

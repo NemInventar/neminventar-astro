@@ -1,0 +1,20 @@
+{
+ "js@neminventar.dk": {
+  "role": "Managing Director",
+  "desc": "Contact and coordination with contractors, architects and others.",
+  "edu": "MSc in Engineering · MSc in Construction Management · MSc in Data Science",
+  "bio": "Joachim holds an MSc in Engineering, specialising in load-bearing structures, from Aarhus University School of Engineering. He has an MSc in Construction Management from Aarhus University and an MSc in Data Science from the University of Southern Denmark. He has worked in the construction industry since 2017 with lean, location-based planning and construction management, including at Enemærke & Petersen on large renovation projects. At Nem Inventar he is responsible for contact with contractors and architects, the quotes and the digital tools that link drawing, production and delivery."
+ },
+ "kontakt@neminventar.dk": {
+  "role": "Co-owner · sales and suppliers",
+  "desc": "Sales, supplier coordination and process.",
+  "edu": "Process and Innovation, DTU · Management & Technology, TUM",
+  "bio": "Milot graduated in Process and Innovation from the Technical University of Denmark (DTU) and has studied Management & Technology at the TUM School of Management (Technical University of Munich). Before Nem Inventar he was a project manager and later a partner in automation and robotics at Novo Nordisk, where he put new production lines and equipment into operation. He also teaches as a guest lecturer at DTU. At Nem Inventar he is responsible for sales, suppliers and coordinating production."
+ },
+ "cf@neminventar.dk": {
+  "role": "Product Manager",
+  "desc": "Product design, innovation and quality.",
+  "edu": "Bachelor of Engineering in Process and Innovation, DTU",
+  "bio": "Christian graduated as a Bachelor of Engineering in Process and Innovation from the Technical University of Denmark (DTU) in 2022. He has worked as a technical designer and product development consultant in industry and as a business analyst in the financial sector. At Nem Inventar he draws the products in 3D, makes the production drawings and checks that the customer's requirements, the quality and the price fit together."
+ }
+}
