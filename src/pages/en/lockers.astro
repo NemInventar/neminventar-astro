@@ -1,6 +1,6 @@
 ---
 // Engelsk lockerside (AI-test 08-11-2026: engelske spørgsmål stillet fra Finland nævnte os i 12 af 22 svar i ChatGPT,
-// 4 i Perplexity og 0 i Gemini). Modstykke til /lockers/ (hreflang begge veje, EN_UDGAVE i src/pages/[slug].astro).
+// 4 i Perplexity og 0 i Gemini). Modstykke til /lockers/ (hreflang begge veje, HAANDSKREVET_EN i src/lib/engelsk.ts).
 // Første afsnit svarer direkte på "Who manufactures custom plywood lockers for schools in the Nordic countries?" og
 // "Which Danish company makes wooden lockers for schools and sports halls?".
 // Priser: regnet i designeren 08-11-2026, ekskl. moms, pr. rum, uden levering og montage. Hvert tal linker til netop
@@ -16,6 +16,7 @@ import { DESIGNER_URL, eksempelLink } from '../../lib/forside';
 import { getWebLandingPages } from '../../lib/supabase';
 import { guidesFor, guidePath } from '../../lib/guides-i18n';
 import EKS from '../../data/designer-eksempler.json';
+import { landingEnSti, LANDING_EN, GUIDE_NAVN } from '../../lib/engelsk';
 
 const base = import.meta.env.BASE_URL;
 const site = Astro.site!;
@@ -334,8 +335,11 @@ const jsonLd = [
       <a class="pill" href={`${base}en/products/`}>All types</a>
       {gCompact && <a class="pill" href={gCompact.href}>{gCompact.t}</a>}
       {gQuote && <a class="pill" href={gQuote.href}>{gQuote.t}</a>}
-      <a class="pill" href={`${base}lockers/`} hreflang="da">Lockers (in Danish)</a>
-      <a class="pill" href={`${base}hvad-koster-lockers/`} hreflang="da">Locker prices (in Danish)</a>
+      {/* De danske sider om lockers findes på engelsk fra 20-11-2026 (lib/engelsk.ts) */}
+      {['hvad-koster-lockers', 'lockers-til-arkitekter', 'omklaedningsskabe', 'lockers-til-kontor', 'lockers-til-hotel-spa-og-fitness', 'mobilskab']
+        .map((s) => ({ sti: landingEnSti(s), navn: LANDING_EN.find((x) => x.da_slug === s)?.nav_label ?? GUIDE_NAVN[s] }))
+        .filter((x) => x.sti && x.navn)
+        .map((x) => <a class="pill" href={`${base}${x.sti}`}>{x.navn}</a>)}
     </div>
   </div></section>
 

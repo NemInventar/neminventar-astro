@@ -28,8 +28,9 @@ const TEKST = {
     tak: 'Thank you, we will call you.', takTekst: 'You will hear from us within one working day. If it is urgent, call +45 42 42 26 84.',
     titel: 'Book a call', lead: 'Enter your number, and we will call you to talk about the project.',
     navn: 'Name *', telefon: 'Phone *', firma: 'Company', hvad: 'What is it about?', ph: 'E.g. wardrobes for a school, tender in November',
-    sender: 'Sending…', send: 'Call me', note: 'We only use your number to call you. See our', politik: 'privacy policy (in Danish)' },
+    sender: 'Sending…', send: 'Call me', note: 'We only use your number to call you. See our', politik: 'privacy policy' },
 };
+const POLITIK = { da: 'privatlivspolitik', en: 'en/privacy/' };
 
 export default function CallbackForm({ defaultOpen = false, label, lang = 'da' }: Props) {
   const t = TEKST[lang];
@@ -123,7 +124,7 @@ export default function CallbackForm({ defaultOpen = false, label, lang = 'da' }
         {sending ? t.sender : t.send} <span className="arr">→</span>
       </button>
       {status === 'error' && <p className="form-msg err">{errMsg}</p>}
-      <p className="callback-note">{t.note} <a href={`${import.meta.env.BASE_URL}privatlivspolitik`}>{t.politik}</a>.</p>
+      <p className="callback-note">{t.note} <a href={`${import.meta.env.BASE_URL}${POLITIK[lang]}`}>{t.politik}</a>.</p>
     </form>
   );
 }

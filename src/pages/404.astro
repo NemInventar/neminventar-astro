@@ -17,6 +17,14 @@ const base = import.meta.env.BASE_URL;
       <a class="pill" href={`${base}om-os`}>Om os</a>
       <a class="pill" href={`${base}kontakt`}>Kontakt</a>
     </div>
+    {/* Samme 404 for alle adresser, også /en/ (GitHub Pages har kun én): en kort vej ind på engelsk */}
+    <p class="lead" lang="en" style="margin-top:36px">Page not found. The address has moved or was mistyped.</p>
+    <div class="yd-row" lang="en">
+      <a class="pill" href={`${base}en/`}>English home page</a>
+      <a class="pill" href={`${base}en/products/`}>Products</a>
+      <a class="pill" href={`${base}en/projects/`}>Projects</a>
+      <a class="pill" href={`${base}en/contact/`}>Contact</a>
+    </div>
   </div></section>
   <ContactCta />
   <script is:inline>

@@ -1,0 +1,142 @@
+---
+// Engelsk oversættelse af privatlivspolitikken; den danske side (src/pages/privatlivspolitik.astro) er kilden og gælder ved forskelle.
+import Base from '../../layouts/Base.astro';
+const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
+---
+<Base
+  lang="en"
+  title="Privacy policy | Nem Inventar"
+  description="Privacy policy for Nem Inventar ApS: how we process personal data."
+  alternates={[
+    { hreflang: 'da', href: new URL(base + 'privatlivspolitik/', site).href },
+    { hreflang: 'en', href: new URL(base + 'en/privacy/', site).href },
+  ]}>
+  <article class="legal wrap">
+    <h1>Privacy policy</h1>
+    <p>This is an English translation. If the English and the Danish version differ, the <a href={`${base}privatlivspolitik/`} hreflang="da">Danish version</a> applies.</p>
+    <p class="upd">Last updated: October 2026</p>
+
+    <section class="kort">
+      <h2>In short</h2>
+      <ul>
+        <li>We store what you write to us yourself, and where you found us, e.g. which page or advert you came from.</li>
+        <li>We use the information only to reply to you, give you a quote and deliver what you have bought.</li>
+        <li>We do not send your information back to Google or Meta, and we have no Meta pixel on the site.</li>
+        <li>We do not use cookies for analytics, marketing or tracking.</li>
+        <li>We do not use your email address for newsletters or marketing.</li>
+        <li>You can always find out what we have stored about you and have it corrected or deleted.</li>
+        <li>We delete what you draw in the designer after 12 months. If you have bought from us, we keep the order and the invoice for 5 years, as required by the Danish Bookkeeping Act (bogføringsloven).</li>
+      </ul>
+    </section>
+
+    <h2>1. Data controller</h2>
+    <p>Nem Inventar ApS is the data controller for the processing of your personal data.</p>
+    <p>
+      <strong>Contact details:</strong><br />
+      Nem Inventar ApS<br />
+      Mågevej 73, st.<br />
+      DK-2400 Copenhagen NV, Denmark<br />
+      CVR no.: 45085473<br />
+      Email: kontakt@neminventar.dk<br />
+      Phone: +45 42 42 26 84
+    </p>
+
+    <h2>2. What personal data do we collect?</h2>
+    <p>We only collect the information you give us yourself – mainly through the contact form, in the designer, or when we work together on a quote:</p>
+    <ul>
+      <li>Contact details (name, email address, phone number)</li>
+      <li>Company details (company name)</li>
+      <li>Project information you provide in connection with quotes and deliveries</li>
+    </ul>
+
+    <h3>Knowing where you found us helps us find more good customers</h3>
+    <p>If you write to us through the contact form, we store what you write, together with any files you attach (e.g. drawings, tender documents or photos), with our data processor, so that we can read them and reply to you. We also store where you found us: your answer to "How did you find us?", the page of ours you wrote from, and which website, if any, sent you to it (only the name, e.g. google.com).</p>
+    <p>If you came via an advert on Google or Meta (Facebook and Instagram), we also store the advert's campaign name and the click ID that the advert added to the link, so that we can see which adverts lead to enquiries.</p>
+    <p>We do not send them back to Google or Meta. None of it is stored on your device. The enquiry is placed in our customer system, and we use the information solely to handle your enquiry and any resulting agreement.</p>
+    <p>If you book a call on the site, we store your name and your phone number and, if you write them, your company and what it concerns. We also note which of our pages you booked from, and which website, if any, sent you to us, e.g. a search engine, so that we know where the enquiry came from. The information is placed in our customer system, and we only use it to call you and follow up on your request.</p>
+
+    <h3>We save your design for you</h3>
+    <p>If you ask for an image of what you have drawn in our designer ("Render"), you do not have to give your name or email address.</p>
+    <p>We store what you have drawn, together with the image, with our data processor, so that we can see what is being made and improve the designer. We also store which country the connection came from and which browser was used.</p>
+    <p>The image is made by an AI service from an image of your 3D model. If you then ask for a quote, the image is included with your request and is handled as an enquiry through the contact form.</p>
+    <p>To limit misuse, we also store a one-way encrypted code of your IP address. The code changes every day, so it only shows whether many images have been made from the same connection on the same day. We do not store the IP address itself.</p>
+    <p>We delete what you have drawn, and the image, after 12 months, unless you have asked for a quote on it or bought it.</p>
+
+    <h3>No forced newsletters just because you send us an email</h3>
+    <p>If you press "Send by email" in the designer, you have to give your email address. We send you a link to what you have drawn, and to the image if you have made one.</p>
+    <p>Your email address, what you have drawn and when the email was sent are stored with our data processor, and your email address is placed in our customer system so that we can ask whether you would like a quote. We do not use it for newsletters or marketing. The same one-way encrypted code of your IP address is used here to limit misuse.</p>
+    <p>We delete your email address and what you have drawn after 12 months, unless you have asked for a quote or bought from us. If you ask us to, we delete it immediately.</p>
+
+    <h3>When you buy in the designer</h3>
+    <p>If you buy in the designer, we store your name, your email address, your phone number and your delivery address together with your order and what you have ordered, so that we can send you an order confirmation and deliver the goods. The order is also placed in our customer system.</p>
+    <p>The payment itself is handled by our payment provider Stripe (Stripe Payments Europe Ltd., Ireland), which processes your payment details. We do not see your account or card number, only that the payment has been completed. We keep the order and the invoice for 5 years, as required by the Bookkeeping Act.</p>
+
+    <h3>No Meta pixel or tracking – only practical information between you and us</h3>
+    <p>If you fill in the form in one of our adverts on Facebook or Instagram, we receive the answers you give: which room, roughly how wide the wall is, when the cabinet needs to be finished, your postcode, name, phone number and email address.</p>
+    <p>The form is displayed and stored by Meta Platforms Ireland Ltd., which processes the information under its own privacy policy.</p>
+    <p>We fetch the answers from our advertising account with Meta, place them in our customer system and use them only to call you or send you a quote.</p>
+    <p>We have no Meta pixel or other tracking from Meta on neminventar.dk.</p>
+
+    <h3>We love lots of visits – and don't care for cookies</h3>
+    <p>We do not use cookies for analytics, marketing or tracking – see our <a href={`${base}en/cookies/`}>cookie policy</a>. When the site is displayed, our web host may process your IP address for purely technical reasons in order to deliver the site; apart from the code used for the designer's images and emails, we do not store this information ourselves.</p>
+    <p>We count visits with Plausible Analytics, which is hosted in the EU and does not use cookies. We see aggregate figures, e.g. how many people have visited a page, which page they came from, and how many have clicked on our email address or phone number. Your IP address is not stored, and the figures cannot be traced back to you.</p>
+
+    <h2>3. Purposes of the processing</h2>
+    <p>We process your personal data for the following purposes:</p>
+    <ul>
+      <li>Delivery of fixed furniture to construction projects and to private customers</li>
+      <li>Communication about projects and quotes</li>
+      <li>Orders and payment when you buy in the designer</li>
+      <li>Customer service and support</li>
+      <li>Compliance with legal obligations</li>
+      <li>Improvement of our website and services</li>
+    </ul>
+
+    <h2>4. Legal basis</h2>
+    <p>We process your personal data on the following legal bases in the General Data Protection Regulation (GDPR), Regulation (EU) 2016/679:</p>
+    <ul>
+      <li>Entering into and performing a contract, including replying to your request and giving quotes (Article 6(1)(b))</li>
+      <li>Our legitimate interest in replying to enquiries and running the business (Article 6(1)(f))</li>
+      <li>Compliance with legal obligations, e.g. the Bookkeeping Act (Article 6(1)(c))</li>
+    </ul>
+
+    <h2>5. Data retention</h2>
+    <p>We keep your personal data only for as long as is necessary to fulfil the purposes for which it was collected, or as required by law.</p>
+    <ul>
+      <li>We delete what you have drawn in the designer, images made there and emails from "Send by email" after 12 months, unless you have asked for a quote or bought from us.</li>
+      <li>We keep enquiries and quotes for as long as is necessary to follow up on them.</li>
+      <li>We keep orders, invoices and other accounting records for 5 years from the end of the financial year, as required by the Bookkeeping Act.</li>
+    </ul>
+
+    <h2>6. Your rights</h2>
+    <p>You have the following rights in relation to your personal data:</p>
+    <ul>
+      <li>Right of access to your personal data</li>
+      <li>Right to rectification of inaccurate data</li>
+      <li>Right to erasure of your personal data</li>
+      <li>Right to restriction of processing</li>
+      <li>Right to data portability</li>
+      <li>Right to object to the processing</li>
+      <li>Right to withdraw consent</li>
+    </ul>
+
+    <h2>7. Contact</h2>
+    <p>If you have questions about this privacy policy or wish to exercise your rights, you are welcome to contact us at <a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a> or +45 42 42 26 84.</p>
+    <p>You also have the right to complain to the Danish Data Protection Agency (Datatilsynet) if you believe that we are processing your personal data in breach of the GDPR.</p>
+  </article>
+</Base>
+
+<style>
+  .legal{max-width:760px;margin:0 auto;padding:64px 28px 96px}
+  .legal h1{font-size:clamp(32px,4vw,46px);margin-bottom:10px}
+  .legal .upd{color:var(--muted);font-size:14px;margin-bottom:36px}
+  .legal h2{font-size:22px;margin:38px 0 12px}
+  .legal h3{font-size:17px;margin:28px 0 8px}
+  .legal p{color:var(--ink);line-height:1.75;margin-bottom:14px}
+  .legal ul{margin:0 0 16px 22px;color:var(--ink);line-height:1.75}
+  .legal li{margin-bottom:6px}
+  .legal a{color:var(--warm);text-decoration:underline}
+  .kort{border:1px solid var(--line);border-radius:var(--radius);background:#fff;padding:20px 26px 8px;margin-bottom:8px}
+  .kort h2{margin-top:0}
+</style>

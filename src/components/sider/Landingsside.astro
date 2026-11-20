@@ -1,0 +1,477 @@
+---
+// Landingssider pr. emne (materiale/produkt), målgruppe og guide på begge sprog — /kompaktlaminat, /inventar-til-skoler,
+// /krydsfiner-mdf-eller-spaanplade … og /en/<engelsk slug>/ (20-11-2026, så de to ikke kan glide fra hinanden).
+// Indhold: v_web_landing_pages (landing_web_2026_09_24); den engelske tekst: src/data/engelsk/landing.json (lib/engelsk.ts).
+// Guides læses som artikler (ét spor, stort billede, kort fortalt, tekst); emner og målgrupper har galleri + tekst side om
+// side. De engelske guides har deres egen side (GuideI18nPage, /en/guides/).
+import Base from '../../layouts/Base.astro';
+import CallbackForm from '../CallbackForm.tsx';
+import ProductCard from '../ProductCard.astro';
+import ProjectCard from '../ProjectCard.astro';
+import ProcessSteps from '../ProcessSteps.astro';
+import ContactCta from '../ContactCta.astro';
+import DesignerEksempler from '../DesignerEksempler.astro';
+import Lockerberegner from '../Lockerberegner.astro';
+import EKS from '../../data/designer-eksempler.json';
+import { DESIGNER_URL, eksempelLink } from '../../lib/forside';
+import FORREST from '../../data/landing-forrest.json';
+import type { WebLanding, WebCase, WebProduct, WebColor, WebImage } from '../../lib/supabase';
+import { cdn } from '../../lib/img';
+import { famOf, famNavn, typeBillede, fotoTag, imgLabel } from '../../lib/catalog';
+import { translationsOf } from '../../lib/guides-i18n';
+import { side, kontaktMedEmne, designerSprog } from '../../lib/stier';
+import {
+  landingPaaEngelsk, sagerPaaEngelsk, produkterPaaEngelsk, landingHref, landingEnSti, typeHref, harTypeEn, harSagEn,
+  enHref, enHrefErDansk, EKSEMPEL_EN, type LandingPaaEngelsk,
+} from '../../lib/engelsk';
+
+interface Props { page: WebLanding; pages: WebLanding[]; cases: WebCase[]; products: WebProduct[]; colors: WebColor[]; lang?: 'da' | 'en' }
+const { lang = 'da', colors } = Astro.props;
+const en = lang === 'en';
+const daPage = Astro.props.page;
+const page = en ? landingPaaEngelsk(daPage)! : daPage;
+// Relaterede sider: på engelsk de oversatte (med engelsk navn), resten til den danske side med hreflang="da".
+const pages = en ? Astro.props.pages.map((p) => landingPaaEngelsk(p) ?? p) : Astro.props.pages;
+const cases = en ? sagerPaaEngelsk(Astro.props.cases).filter((c) => harSagEn(c.slug)) : Astro.props.cases;
+const products = en ? produkterPaaEngelsk(Astro.props.products).filter((p) => harTypeEn(p.slug)) : Astro.props.products;
+const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
+// hreflang: den engelske udgave (oversat, håndskrevet eller guide) og guidernes tyske udgave.
+const enSti = landingEnSti(daPage.slug);
+const sprog = [
+  ...(enSti ? [{ lang: 'en', path: enSti }] : []),
+  ...translationsOf(daPage.slug, Astro.props.pages).filter((t) => t.lang !== 'en'),
+];
+const alternates = sprog.length ? [
+  { hreflang: 'da', href: new URL(`${base}${daPage.slug}/`, site).href },
+  ...sprog.map((t) => ({ hreflang: t.lang, href: new URL(base + t.path, site).href })),
+] : [];
+
+const T = en ? {
+  alt: '← Everything we make', konkret: 'Working on a specific room?', konkretP: 'Send drawings or measurements, and we will choose the material with you and come back with a price.',
+  send: 'Send drawings or measurements', bygTilsvarende: 'Build a similar one in the designer →', bygVidere: 'Build on this one in the designer', bygSelv: 'Build it yourself in the designer',
+  aabn: 'Open in the designer →', tilsvarende: 'Build a similar one →', faaPris: 'Get a price for this →',
+  note: (href: string) => `The pictures show what we can build. The price depends on size, material and lock. Where a picture has no price, press "Get a price for this", or <a href="${href}">send us your measurements</a>.`,
+  dds: 'Design it yourself', ddsH: ['Build it yourself in the', 'designer.'], ddsLede: 'Start from an example and change the size, material and layout. Send it to us, and you get a quote and a drawing to your measurements.',
+  alleEks: 'All examples →', projLabel: 'From our projects', projH: ['What we have', 'built.'], projLede: 'Projects where the furniture was drawn for the room, built in our own production and delivered to the site schedule.',
+  alleProj: 'All projects →', invLabel: 'Products', invH: ['Types from the', 'catalogue.'], invLede: 'The construction is worked out. The measurements are yours: you choose size, material and colour, and we draw it in 3D before we build.',
+  hele: 'The whole catalogue →', saadan: 'How we work', saadanH: ['From 3D model to', 'finished room.'],
+  saadanLede: 'We are a joinery firm, and the team are engineers. Every cabinet, bench and niche is built as a 3D model first; the same model gives the drawing for your approval and the parts list for production.',
+  tegninger: 'What the drawings look like →', faq: 'Questions and answers', faqH: ['What people often', 'ask us.'], seOgsaa: 'See also:', dansk: '(in Danish)', land: 'Denmark',
+} : {
+  alt: '← Alt vi laver', konkret: 'Står I med et konkret rum?', konkretP: 'Send tegninger eller mål, så vælger vi materialet sammen med jer og vender tilbage med pris.',
+  send: 'Send tegninger eller mål', bygTilsvarende: 'Byg en tilsvarende i designeren →', bygVidere: 'Byg videre på denne i designeren', bygSelv: 'Byg den selv i designeren',
+  aabn: 'Åbn i designeren →', tilsvarende: 'Byg en tilsvarende →', faaPris: 'Få pris på denne →',
+  note: null as null | ((href: string) => string),
+  dds: 'Design det selv', ddsH: ['Byg den selv i', 'designeren.'], ddsLede: 'Start fra et eksempel, og ret mål, materiale og indretning. Send det til os, så får du tilbud og tegning på dine mål.',
+  alleEks: 'Alle eksempler →', projLabel: 'Fra vores projekter', projH: ['Det har vi', 'bygget.'], projLede: 'Sager, hvor inventaret er tegnet til rummet, bygget i vores egenproduktion og leveret efter byggepladsens tidsplan.',
+  alleProj: 'Alle projekter →', invLabel: 'Inventar', invH: ['Typer fra', 'kataloget.'], invLede: 'Konstruktionen er løst. Målene er jeres: I vælger mål, materiale og farve, og vi tegner det i 3D, før vi bygger.',
+  hele: 'Hele kataloget →', saadan: 'Sådan arbejder vi', saadanH: ['Fra 3D-model til', 'færdigt rum.'],
+  saadanLede: 'Vi er et snedkerfirma, og holdet er ingeniører. Hvert skab, hver bænk og hver niche bygges først som 3D-model; samme model giver tegningen til jeres godkendelse og styklisten til produktionen.',
+  tegninger: 'Sådan ser tegningerne ud →', faq: 'Spørgsmål og svar', faqH: ['Det bliver vi ofte', 'spurgt om.'], seOgsaa: 'Se også:', dansk: '', land: 'Danmark',
+};
+const label = (kind: string) => imgLabel(kind, lang);
+
+const paragraphs = (page.body ?? '').split('\n\n').filter(Boolean);
+// Links i brødtekst og FAQ-svar: [tekst](https://…) eller [tekst](/sti). Alt andet vises som ren tekst.
+// På engelsk går et dansk link til den engelske side, hvis den findes (lib/engelsk.ts enHref).
+const LINK = /\[([^\]]+)\]\(((?:https?:\/\/|\/)[^)\s]+)\)/g;
+const segs = (s: string) => {
+  const out: { t: string; href?: string; da?: boolean }[] = [];
+  let last = 0;
+  for (const m of s.matchAll(LINK)) {
+    if (m.index! > last) out.push({ t: s.slice(last, m.index) });
+    const intern = m[2].startsWith('/');
+    out.push({ t: m[1], href: intern ? base + (en ? enHref(m[2]) : m[2].slice(1)) : en ? enHref(m[2]) : m[2], ...(en && intern && enHrefErDansk(m[2]) ? { da: true } : {}) });
+    last = m.index! + m[0].length;
+  }
+  if (last < s.length) out.push({ t: s.slice(last) });
+  return out;
+};
+const plain = (s: string) => s.replace(LINK, '$1');
+// Tabeller i brødtekst: et afsnit, hvor hver linje starter og slutter med |, bliver en tabel. Første linje er overskriften,
+// og en linje med kun - og | springes over (markdown-formen). Til prisguiden (Joachim 19-10-2026): AI-motorerne citerer tal i tabeller.
+const tabel = (s: string) => {
+  const linjer = s.split('\n').map((l) => l.trim());
+  if (linjer.length < 2 || !linjer.every((l) => l.length > 1 && l.startsWith('|') && l.endsWith('|'))) return null;
+  const rk = linjer.filter((l) => !/^\|[\s:|-]+\|$/.test(l)).map((l) => l.slice(1, -1).split('|').map((c) => c.trim()));
+  return { hoved: rk[0], rk: rk.slice(1) };
+};
+// Mellemoverskrifter i brødtekst: et afsnit, der starter med "## ", bliver en h2 (Joachim 20-10-2026: lange sider skal kunne
+// deles op, så læseren og AI-motorerne kan finde afsnittet om fx materialer eller låger).
+const overskrift = (s: string) => (s.startsWith('## ') ? plain(s.slice(3).trim()) : null);
+// Billeder, der står forrest (src/data/landing-forrest.json): de samme, som annoncen viser, så klikket lander på det, man trykkede på.
+// pris + href = prisen på det, billedet viser, og linket til præcis det design (Annoncer/lav_forrest.py).
+// Ikke på engelsk: annoncebillederne har den danske mærkning "AI-illustration · kan afvige fra det leverede" brændt ind i
+// billedet, og annoncerne er danske (set 20-11-2026). Den engelske side åbner på sit første almindelige billede.
+type Billede = WebImage & { pris?: string; href?: string };
+const forrest: Billede[] = en ? [] : (((FORREST as unknown as Record<string, Omit<Billede, 'kind'>[]>)[daPage.slug]) ?? [])
+  .map((f) => ({ ...f, kind: 'visualisering' }) as Billede);
+const images: Billede[] = [...forrest, ...(page.images ?? []).filter((im) => im.kind !== 'video')];
+// Brødteksten deles ved mellemoverskrifterne: indledningen står åben, hvert afsnit foldes ud ved klik (teksten står stadig i HTML'en).
+const blokke: { h: string | null; afsnit: string[] }[] = [{ h: null, afsnit: [] }];
+for (const para of (page.body ?? '').split('\n\n').filter(Boolean)) {
+  if (para.startsWith('## ')) blokke.push({ h: para.slice(3).trim().replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'), afsnit: [] });
+  else blokke[blokke.length - 1].afsnit.push(para);
+}
+const videos = (page.images ?? []).filter((im) => im.kind === 'video');
+const hero = images[0];
+const isGuide = page.kind === 'guide';
+const isSegment = page.kind === 'segment';
+// Bevar rækkefølgen fra tabellen — den er redaktionel.
+const pick = <X extends { slug: string }>(all: X[], slugs: string[]) =>
+  slugs.map((s) => all.find((x) => x.slug === s)).filter((x): x is X => Boolean(x));
+const relCases = pick(cases, page.case_slugs ?? []);
+const relProducts = pick(products, page.product_slugs ?? []);
+const related = pick(pages, page.related_slugs ?? []);
+const kontaktHref = `${base}${kontaktMedEmne(lang, page.nav_label)}`;
+// Eksempler fra designeren (landing_web.designer_eksempler): det første er hovedknappen øverst, alle vises som kort under teksten.
+// På engelsk kun eksempler med engelsk tekst.
+const eks = DESIGNER_URL ? (page.designer_eksempler ?? []).filter((id) => EKS.some((e) => e.id === id) && (!en || EKSEMPEL_EN[id])) : [];
+const eks0 = EKS.find((e) => e.id === eks[0]);
+const eLink = (e: Parameters<typeof eksempelLink>[0]) => designerSprog(eksempelLink(e), lang);
+// Et billede fra designeren kan åbnes i designeren ("Byg videre på denne"): images[].eks, ellers et eksempelbillede
+// fra /billeder/designer-eksempler/<id>.jpg. Knappen under hovedbilledet følger med, når man skifter billede.
+const eksAf = (im?: { src: string; eks?: string | null }) => {
+  const id = im ? im.eks ?? im.src.match(/\/billeder\/designer-eksempler\/([a-z0-9-]+)\.jpg$/)?.[1] : undefined;
+  const e = DESIGNER_URL && id ? EKS.find((x) => x.id === id) : undefined;
+  return e ? { id: e.id, produkt: e.produkt, href: eLink(e) } : null;
+};
+const heroEks = eksAf(hero);
+const galleriEks = images.some((im) => eksAf(im));
+// 3 kort pr. række, undtagen ved præcis 4 (så 2 × 2, ellers står ét kort alene nederst)
+const caseCols = relCases.length === 4 ? 2 : relCases.length >= 3 ? 3 : 2;
+
+const forsideUrl = new URL(base + side(lang, 'forside'), site).href;
+const url = en ? new URL(base + (enSti ?? ''), site).href : new URL(base + page.slug, site).href;
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Nem Inventar', item: forsideUrl },
+      { '@type': 'ListItem', position: 2, name: page.nav_label, item: url },
+    ],
+  },
+  // Guides er forklarende artikler; de øvrige sider beskriver en ydelse.
+  isGuide
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: page.h1,
+        description: page.seo_description,
+        author: { '@id': new URL(base, site).href + '#virksomhed' },
+        publisher: { '@id': new URL(base, site).href + '#virksomhed' },
+        dateModified: page.updated_at,
+        inLanguage: lang,
+        ...(hero ? { image: cdn(hero.src, 1200) } : {}),
+        mainEntityOfPage: url,
+      }
+    : {
+        '@context': 'https://schema.org',
+        '@type': 'Service',
+        name: page.h1,
+        serviceType: page.nav_label,
+        description: page.seo_description,
+        provider: { '@id': new URL(base, site).href + '#virksomhed' },
+        areaServed: { '@type': 'Country', name: T.land },
+        url,
+      },
+  ...(page.faq?.length
+    ? [{
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        ...(en ? { inLanguage: 'en' } : {}),
+        mainEntity: page.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: plain(f.a) } })),
+      }]
+    : []),
+];
+const foraeldet = en && (page as LandingPaaEngelsk).foraeldet ? `landing/${daPage.slug}` : undefined;
+const sideNavn = en ? (page as LandingPaaEngelsk).en_slug : page.slug;
+---
+<Base lang={lang} title={page.seo_title} description={page.seo_description} image={hero ? cdn(hero.src, 1200) : undefined} jsonLd={jsonLd} alternates={alternates} foraeldet={foraeldet}>
+  {isGuide ? (
+    <!-- ============ GUIDE: artikel ============ -->
+    <section class="guide"><div class="wrap">
+      <div class="crumbrow"><a href={`${base}${side(lang, 'forside')}#ydelser`} class="crumb">{T.alt}</a></div>
+      <div class="guide-head">
+        {page.kicker && <span class="label">{page.kicker}</span>}
+        <h1>{page.h1}</h1>
+        {page.lead && <p class="lead">{page.lead}</p>}
+      </div>
+      {hero && (
+        <figure class="guide-hero">
+          <img class={hero.kind === 'tegning' ? 'contain' : undefined} src={cdn(hero.src, 1600)} alt={hero.alt} fetchpriority="high" />
+          <figcaption class="img-tag"><b>{label(hero.kind)}</b>{hero.caption}</figcaption>
+        </figure>
+      )}
+      {page.highlights?.length > 0 && (
+        <dl class="lp-facts three rv">
+          {page.highlights.map((h) => (<div><dt>{h.k}</dt><dd>{h.v}</dd></div>))}
+        </dl>
+      )}
+      <div class="guide-aside">
+        <div class="prose lp-prose rv">
+          {paragraphs.map((para) => {
+            const h = overskrift(para);
+            if (h) return <h2 class="lp-h2">{h}</h2>;
+            const t = tabel(para);
+            return t ? (
+              <div class="lp-tabel"><table>
+                <thead><tr>{t.hoved.map((c) => <th>{c}</th>)}</tr></thead>
+                <tbody>{t.rk.map((r) => <tr>{r.map((c) => <td>{segs(c).map((g) => (g.href ? <a href={g.href} hreflang={g.da ? 'da' : undefined}>{g.t}</a> : g.t))}</td>)}</tr>)}</tbody>
+              </table></div>
+            ) : <p>{segs(para).map((g) => (g.href ? <a href={g.href} hreflang={g.da ? 'da' : undefined}>{g.t}</a> : g.t))}</p>;
+          })}
+        </div>
+        <aside class="guide-cta rv">
+          <h3>{T.konkret}</h3>
+          <p>{T.konkretP}</p>
+          <div class="detail-cta" style="flex-direction:column;align-items:stretch">
+            <a href={kontaktHref} class="btn btn-primary" style="justify-content:center">{T.send} <span class="arr">→</span></a>
+            <a href="tel:+4542422684" class="btn btn-ghost" style="justify-content:center">+45 42 42 26 84</a>
+            {en ? <CallbackForm client:load lang="en" /> : <CallbackForm client:load />}
+          </div>
+        </aside>
+      </div>
+      {images.length > 1 && (
+        <div class="cd-gallery rv" style="margin-top:48px">
+          {images.slice(1).map((im) => (
+            <figure class={`gfig${im.kind === 'tegning' ? ' contain' : ''}`} style="cursor:default">
+              <img src={cdn(im.src, 800)} alt={im.alt} loading="lazy" decoding="async" />
+              <figcaption class="img-tag"><b>{label(im.kind)}</b>{im.caption}</figcaption>
+            </figure>
+          ))}
+        </div>
+      )}
+    </div></section>
+  ) : (
+    <!-- ============ EMNE / MÅLGRUPPE: galleri + tekst ============ -->
+    <section class="detail pd"><div class="wrap">
+      <div class="crumbrow"><a href={`${base}${side(lang, 'forside')}#ydelser`} class="crumb">{T.alt}</a></div>
+      <div class="pd-grid">
+        <div class="gallery">
+          {hero && (
+            <figure class="pd-main lp-fig">
+              <img id="main-img" class={hero.kind === 'tegning' ? 'contain' : undefined} src={cdn(hero.src, 1200)} alt={hero.alt} fetchpriority="high" />
+              <span class="ptag" id="main-tag">{label(hero.kind)}</span>
+              <figcaption id="main-cap" class="img-tag">{hero.caption}</figcaption>
+            </figure>
+          )}
+          {hero?.pris && hero.href && (
+            <p class="lp-pris"><span>{hero.pris}</span><a href={hero.href} data-geks="annoncebillede" data-side={sideNavn}>{T.bygTilsvarende}</a></p>
+          )}
+          {heroEks && (
+            <a class="btn btn-ghost lp-eks" href={heroEks.href} data-geks={heroEks.id} data-produkt={heroEks.produkt} data-side={sideNavn}>{T.bygVidere} <span class="arr">→</span></a>
+          )}
+        </div>
+        <div class="detail-body">
+          {page.kicker && <span class="kicker">{page.kicker}</span>}
+          <h1>{page.h1}</h1>
+          {page.lead && <p class="lead">{page.lead}</p>}
+          <div class="detail-cta">
+            {eks0 && <a href={eLink(eks0)} class="btn btn-primary" data-eks={eks0.id} data-produkt={eks0.produkt} data-side={sideNavn}>{T.bygSelv} <span class="arr">→</span></a>}
+            <a href={kontaktHref} class={`btn ${eks0 ? 'btn-ghost' : 'btn-primary'}`}>{T.send} <span class="arr">→</span></a>
+            <a href="tel:+4542422684" class="btn btn-ghost">+45 42 42 26 84</a>
+            {en ? <CallbackForm client:load lang="en" /> : <CallbackForm client:load />}
+          </div>
+        </div>
+      </div>
+
+      {images.length > 1 && (
+        <div class="cd-gallery lp-billeder rv">
+          {images.slice(1).map((im) => { const ex = eksAf(im); return (
+            <figure class={`gfig${im.kind === 'tegning' ? ' contain' : ''}`}>
+              <img src={cdn(im.src, 800)} alt={im.alt} loading="lazy" decoding="async" />
+              {ex && <a class="ptag lp-byg" href={ex.href} data-geks={ex.id} data-produkt={ex.produkt} data-side={sideNavn}>{T.aabn}</a>}
+              {im.pris && im.href && <a class="ptag lp-byg" href={im.href} data-geks="annoncebillede" data-side={sideNavn}>{T.tilsvarende}</a>}
+              {/* Joachim 13-11-2026: billeder uden pris skal sige, at man beder om en pris */}
+              {!ex && !im.pris && im.kind === 'visualisering' && <a class="ptag lp-byg" href={`${base}${kontaktMedEmne(lang, `${page.nav_label}: ${im.caption ?? ''}`)}`}>{T.faaPris}</a>}
+              <figcaption class="img-tag"><b>{label(im.kind)}</b><span>{im.caption}{im.pris && <em> · {im.pris}</em>}</span></figcaption>
+            </figure>
+          ); })}
+        </div>
+      )}
+      {images.slice(1).some((im) => im.kind === 'visualisering') && (en
+        ? <p class="lp-note" set:html={T.note!(kontaktHref)} />
+        : <p class="lp-note">Billederne viser, hvad vi kan bygge. Prisen afhænger af mål, materiale og lås. Står der ingen pris ved et billede, så tryk på "Få pris på denne", eller <a href={kontaktHref}>send os jeres mål</a>.</p>
+      )}
+
+      {page.highlights?.length > 0 && (
+        <dl class="lp-facts three rv">
+          {page.highlights.map((h) => (<div><dt>{h.k}</dt><dd>{h.v}</dd></div>))}
+        </dl>
+      )}
+
+      {videos.length > 0 && (
+        <div class="lp-videos rv">
+          {videos.map((v) => (
+            <figure class="lp-video">
+              <video data-src={cdn(v.src)} poster={v.poster ? cdn(v.poster) : undefined} muted loop playsinline preload="none" aria-label={v.alt}></video>
+              {v.caption && <figcaption><b>Video</b>{v.caption}</figcaption>}
+            </figure>
+          ))}
+        </div>
+      )}
+    </div></section>
+  )}
+
+  {!en && (page.slug === 'lockers' || page.slug === 'hvad-koster-lockers') && <Lockerberegner />}
+
+  {eks.length > 0 && (
+    <section class="sec" id="designer"><div class="wrap">
+      <div class="sec-head rv">
+        <div>
+          <span class="label">{T.dds}</span>
+          <h2>{T.ddsH[0]} <em>{T.ddsH[1]}</em></h2>
+          <p class="lede">{T.ddsLede}</p>
+        </div>
+        <a href={`${base}${side(lang, 'designDetSelv').replace(/\/$/, en ? '/' : '')}`} class="ulink">{T.alleEks}</a>
+      </div>
+      <DesignerEksempler ids={eks} side={sideNavn} overskrift="h3" lang={lang} />
+    </div></section>
+  )}
+
+  {!isGuide && paragraphs.length > 0 && (
+    <section class="sec lp-tekst"><div class="wrap">
+      <div class="prose lp-prose">
+        {(() => {
+          const afsnit = (para: string) => {
+            const t = tabel(para);
+            return t ? (
+              <div class="lp-tabel"><table>
+                <thead><tr>{t.hoved.map((c) => <th>{c}</th>)}</tr></thead>
+                <tbody>{t.rk.map((r) => <tr>{r.map((c) => <td>{segs(c).map((g) => (g.href ? <a href={g.href} hreflang={g.da ? 'da' : undefined}>{g.t}</a> : g.t))}</td>)}</tr>)}</tbody>
+              </table></div>
+            ) : <p>{segs(para).map((g) => (g.href ? <a href={g.href} hreflang={g.da ? 'da' : undefined}>{g.t}</a> : g.t))}</p>;
+          };
+          return blokke.map((b) => b.h
+            ? <details class="lp-sek"><summary><h2 class="lp-h2">{b.h}</h2></summary>{b.afsnit.map(afsnit)}</details>
+            : b.afsnit.map(afsnit));
+        })()}
+      </div>
+    </div></section>
+  )}
+
+  {relCases.length > 0 && (
+    <section class="sec" id="projekter"><div class="wrap">
+      <div class="sec-head rv">
+        <div>
+          <span class="label">{T.projLabel}</span>
+          <h2>{T.projH[0]} <em>{T.projH[1]}</em></h2>
+          <p class="lede">{T.projLede}</p>
+        </div>
+        <a href={`${base}${side(lang, 'projekter')}`} class="ulink">{T.alleProj}</a>
+      </div>
+      <div class={`pgrid rv${caseCols === 3 ? ' three' : ''}`}>
+        {relCases.map((c) => <ProjectCard c={c} compact={caseCols === 3} lang={lang} />)}
+      </div>
+    </div></section>
+  )}
+
+  {relProducts.length > 0 && (
+    <section class="sec inv" id="katalog"><div class="wrap">
+      <div class="sec-head rv">
+        <div>
+          <span class="label">{T.invLabel}</span>
+          <h2>{T.invH[0]} <em>{T.invH[1]}</em></h2>
+          <p class="lede">{T.invLede}</p>
+        </div>
+        <a href={`${base}${side(lang, 'inventar')}`} class="ulink">{T.hele}</a>
+      </div>
+      <div class="types all rv">
+        {relProducts.map((p) => { const im = typeBillede(p, colors); return (
+          <ProductCard name={p.name} href={`${base}${typeHref(lang, p.slug)}`} img={im.img} pos={im.pos} tag={fotoTag(im.foto, lang)} fam={famNavn(famOf(p), lang)} desc={p.intro ?? p.short_description ?? ''} lang={lang} />
+        ); })}
+      </div>
+    </div></section>
+  )}
+
+  {isSegment && (
+    <section class="sec" id="saadan"><div class="wrap">
+      <div class="sec-head rv">
+        <div>
+          <span class="label">{T.saadan}</span>
+          <h2>{T.saadanH[0]} <em>{T.saadanH[1]}</em></h2>
+          <p class="lede">{T.saadanLede}</p>
+        </div>
+        {Astro.props.pages.some((p) => p.slug === 'vaerkstedstegninger-og-3d-model') && <a href={`${base}${landingHref(lang, 'vaerkstedstegninger-og-3d-model')}`} class="ulink">{T.tegninger}</a>}
+      </div>
+      <ProcessSteps lang={lang} />
+    </div></section>
+  )}
+
+  {page.faq?.length > 0 && (
+    <section class="sec lp-faq" style={isSegment || relProducts.length ? 'padding-top:0' : undefined}><div class="wrap">
+      <span class="label">{T.faq}</span>
+      <h2>{T.faqH[0]} <em>{T.faqH[1]}</em></h2>
+      <div class="faq-list rv">
+        {page.faq.map((f) => (
+          <details>
+            <summary>{f.q}</summary>
+            <p>{segs(f.a).map((g) => (g.href ? <a href={g.href} hreflang={g.da ? 'da' : undefined}>{g.t}</a> : g.t))}</p>
+          </details>
+        ))}
+      </div>
+    </div></section>
+  )}
+
+  {related.length > 0 && (
+    <section class="lp-related"><div class="wrap">
+      <div class="yd-row rv"><span class="lbl">{T.seOgsaa}</span>{related.map((r) => {
+        const dansk = en && !landingEnSti(r.slug);
+        return dansk
+          ? <a class="pill" href={`${base}${r.slug}`} hreflang="da" lang="da">{r.nav_label} {T.dansk}</a>
+          : <a class="pill" href={`${base}${landingHref(lang, r.slug)}`}>{r.nav_label}</a>;
+      })}</div>
+    </div></section>
+  )}
+
+  <ContactCta subject={page.nav_label} lang={lang} />
+
+  <script>
+    // Billeder fra designeren ("Byg videre på denne", "Åbn i designeren") tælles som "Eksempel valgt" (kilde galleri), ligesom kortene længere nede.
+    document.querySelectorAll<HTMLAnchorElement>('a[data-geks]').forEach((a) => a.addEventListener('click', () => {
+      (window as unknown as { plausible?: (n: string, o: object) => void }).plausible?.('Eksempel valgt', { props: { eksempel: a.dataset.geks ?? '', produkt: a.dataset.produkt ?? '', side: a.dataset.side ?? '', kilde: 'galleri' } });
+    }));
+
+    // Videoerne hentes først, når de kommer i syne, og afspilles uden lyd i løkke.
+    const vids = document.querySelectorAll<HTMLVideoElement>('video[data-src]');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        const v = e.target as HTMLVideoElement;
+        if (e.isIntersecting) {
+          if (!v.src && v.dataset.src) v.src = v.dataset.src;
+          v.play().catch(() => {});
+        } else if (v.src) v.pause();
+      });
+    }, { rootMargin: '200px' });
+    vids.forEach((v) => io.observe(v));
+  </script>
+  <style>
+    .lp-eks{margin-top:12px}
+    .lp-pris{margin-top:12px;display:flex;gap:8px 18px;flex-wrap:wrap;justify-content:space-between;font-size:15px;color:var(--muted)}
+    .lp-pris span{color:var(--ink);font-weight:600}
+    .lp-pris a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--warm);text-underline-offset:3px}
+    .lp-billeder .img-tag em{font-style:normal;color:var(--ink);font-weight:600}
+    .pd-main{aspect-ratio:16/10}
+    .detail-body .detail-cta{margin-top:28px}
+    .lp-billeder{margin-top:28px}
+    .lp-billeder .gfig{cursor:default}
+    .lp-note{margin-top:16px;font-size:15px;color:var(--muted);max-width:80ch}
+    .lp-note a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--warm);text-underline-offset:3px}
+    @media(max-width:680px){.lp-billeder .img-tag span{display:none}.lp-billeder .img-tag b{margin-right:0}.lp-byg{display:none}}
+    .lp-byg{left:auto;right:12px;color:var(--ink);pointer-events:auto}
+    .lp-facts.three{margin-top:28px}
+    .lp-tekst{padding-top:0}
+    .lp-tekst .lp-prose{margin-top:0;max-width:860px}
+    .lp-sek{border-top:1px solid var(--line);padding:18px 0}
+    .lp-sek:last-child{border-bottom:1px solid var(--line)}
+    .lp-sek summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:20px}
+    .lp-sek summary::-webkit-details-marker{display:none}
+    .lp-sek summary::after{content:"+";color:var(--warm);font-size:24px;line-height:1;flex:none}
+    .lp-sek[open] summary::after{content:"–"}
+    .lp-sek summary .lp-h2{margin:0;font-size:clamp(19px,1.8vw,23px)}
+    .lp-sek[open] summary{margin-bottom:14px}
+  </style>
+</Base>

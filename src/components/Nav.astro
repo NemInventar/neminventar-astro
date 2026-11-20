@@ -34,11 +34,13 @@ const links = de ? [
   { href: u('de/impressum/'), t: 'Impressum' },
   { href: u('de/datenschutz/'), t: 'Datenschutz' },
 ] : en ? [
+  // Samme menu som den danske (Joachim 20-11-2026: "lige så fin som vores danske"); designeren åbner på engelsk.
+  { href: u('en/projects/'), t: 'Projects' },
   { href: u('en/products/'), t: 'Products' },
-  { href: u('en/lockers-with-bench/'), t: 'Lockers with bench' },
-  { href: u('en/wardrobes/'), t: 'Wardrobes' },
-  { href: u('en/guides/'), t: 'Guides' },
+  { href: DESIGNER_URL ? `${DESIGNER_URL}?p=hoejskab&lang=en` : u('en/#design'), t: 'Designer', soon: !DESIGNER_URL },
+  { href: u('en/design-it-yourself/'), t: 'Inspiration' },
   { href: u('en/#how'), t: 'How we work' },
+  { href: u('en/about/'), t: 'About us' },
   { href: u('en/contact/'), t: 'Contact' },
 ] : [
   { href: u('projekter'), t: 'Projekter' },

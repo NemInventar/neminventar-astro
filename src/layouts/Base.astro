@@ -24,9 +24,12 @@ interface Props {
   lang?: 'da' | 'en' | 'de';
   // Sprogversioner af samme side (hreflang). Sættes kun på sider, der findes på begge sprog.
   alternates?: { hreflang: string; href: string }[];
+  // En engelsk side, hvis danske kilde er rettet efter oversættelsen (lib/engelsk.ts): "<slags>/<dansk slug>".
+  // Bliver til <meta name="ni-engelsk">, som tekst-tjekket melder som ADVAR.
+  foraeldet?: string;
 }
 
-const { title, description, image, jsonLd = [], lang = 'da', alternates = [] } = Astro.props;
+const { title, description, image, jsonLd = [], lang = 'da', alternates = [], foraeldet } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = image ?? new URL(import.meta.env.BASE_URL + 'og-default.png', Astro.site).href;
 const base = import.meta.env.BASE_URL;
@@ -41,8 +44,9 @@ const organization = {
   url: home,
   logo: new URL(base + 'favicon.svg', Astro.site).href,
   image: new URL(base + 'og-default.png', Astro.site).href,
-  description:
-    'Snedkerfirma med egen produktion. Fast inventar til byggeri — skoler, daginstitutioner, idrætshaller og erhverv. Krydsfiner, kompaktlaminat, linoleum og massivt træ som eg og valnød, bygget til mål.',
+  description: lang === 'en'
+    ? 'Joinery firm with its own production. Fixed furniture for construction: schools, daycare centres, sports halls and businesses. Plywood, compact laminate, linoleum and solid wood such as oak and walnut, built to measure.'
+    : 'Snedkerfirma med egen produktion. Fast inventar til byggeri — skoler, daginstitutioner, idrætshaller og erhverv. Krydsfiner, kompaktlaminat, linoleum og massivt træ som eg og valnød, bygget til mål.',
   telephone: '+45 42 42 26 84',
   email: 'kontakt@neminventar.dk',
   vatID: 'DK45085473',
@@ -53,7 +57,7 @@ const organization = {
     addressLocality: 'København NV',
     addressCountry: 'DK',
   },
-  areaServed: { '@type': 'Country', name: 'Danmark' },
+  areaServed: { '@type': 'Country', name: lang === 'en' ? 'Denmark' : 'Danmark' },
   // Samme virksomhed andre steder — binder profilerne sammen til én enhed for Google og AI-søgning.
   // Tilføj Krak, Proff og Bing Places her, når de har en fast profil-URL.
   sameAs: ['https://g.page/r/CZTJypcXhpHcEBM', LINKEDIN, FACEBOOK, 'https://datacvr.virk.dk/enhed/virksomhed/45085473'],
@@ -79,6 +83,7 @@ const ld = [organization, ...jsonLd];
   <meta name="description" content={description} />
   <link rel="canonical" href={canonical} />
   {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
+  {foraeldet && <meta name="ni-engelsk" content={`foraeldet ${foraeldet}`} />}
   <meta name="generator" content={Astro.generator} />
 
   <!-- Open Graph -->

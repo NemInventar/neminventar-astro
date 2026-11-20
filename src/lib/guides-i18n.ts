@@ -6,6 +6,7 @@
 import EN from '../data/guides-i18n.en.json';
 import DE from '../data/guides-i18n.de.json';
 import type { WebImage, WebLanding } from './supabase';
+import { enHref } from './engelsk';
 
 export type GuideLang = 'en' | 'de';
 
@@ -70,6 +71,8 @@ export function translationsOf(daSlug: string, daPages: WebLanding[]): { lang: G
 // linket dertil; kontaktlinks går til sprogets kontaktvej; resten bliver på den danske side.
 export function localHref(lang: GuideLang, href: string, daPages: WebLanding[]): string {
   if (!href.startsWith('/')) return href;
+  // Engelsk (20-11-2026): alle sider, der findes på engelsk (typer, sager, landingssider, guides), via lib/engelsk.ts.
+  if (lang === 'en') return enHref(href);
   const [sti, query = ''] = href.slice(1).split('?');
   const slug = sti.replace(/\/$/, '');
   if (slug === 'kontakt') return lang === 'en' ? `en/contact/${query ? '?' + query : ''}` : 'de/#kontakt';

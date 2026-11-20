@@ -11,7 +11,10 @@ import Base from '../layouts/Base.astro';
 import { PHONE, PHONE_TEL } from '../lib/contact';
 const base = import.meta.env.BASE_URL;
 ---
-<Base title="Handelsbetingelser for private — Nem Inventar" description="Handelsbetingelser for private kunder hos Nem Inventar ApS: tilbud, betaling, levering, montage, fortrydelsesret og reklamation.">
+<Base title="Handelsbetingelser for private — Nem Inventar" description="Handelsbetingelser for private kunder hos Nem Inventar ApS: tilbud, betaling, levering, montage, fortrydelsesret og reklamation." alternates={[
+  { hreflang: 'da', href: new URL(import.meta.env.BASE_URL + 'handelsbetingelser/', Astro.site).href },
+  { hreflang: 'en', href: new URL(import.meta.env.BASE_URL + 'en/terms/', Astro.site).href },
+]}>
   <article class="legal wrap">
     <h1>Handelsbetingelser for private</h1>
     <p class="upd">Gældende fra 27. oktober 2026</p>

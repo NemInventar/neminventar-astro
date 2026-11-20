@@ -1,0 +1,104 @@
+---
+// Kataloget på begge sprog: /inventar (D4, spec §7) og /en/products/ — alle typer med filtre pr. familie (fra v2's
+// katalog). Varianterne vælges på hver typeside. Reglen (Fable 06-10-2026): et kort med billede er altid en type og fører
+// altid til typesiden; noget at læse (landingssider) er piller og tekstlinks, aldrig et kort her. Typer uden arketype
+// findes via "Det laver vi". Kortet viser det billede, typesiden åbner på (typeBillede), så kort og side ligner hinanden.
+// Uden JS vises alle kort, og filtrene er skjulte. På engelsk vises kun typer med engelsk tekst (lib/engelsk.ts).
+import Base from '../../layouts/Base.astro';
+import ProductCard from '../ProductCard.astro';
+import ContactCta from '../ContactCta.astro';
+import { getWebProducts, getWebColors } from '../../lib/supabase';
+import { cdn } from '../../lib/img';
+import { FAM_ORDER, famOf, famNavn, typeBillede, fotoTag } from '../../lib/catalog';
+import { side } from '../../lib/stier';
+import { produkterPaaEngelsk, typeHref } from '../../lib/engelsk';
+
+interface Props { lang?: 'da' | 'en' }
+const { lang = 'da' } = Astro.props;
+const en = lang === 'en';
+const [daProducts, colors] = await Promise.all([getWebProducts(), getWebColors()]);
+const products = en ? produkterPaaEngelsk(daProducts) : daProducts;
+const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
+
+type Card = { name: string; href: string; img: string; pos: string; foto: boolean; fam: string; desc: string };
+const cards: Card[] = products.map((p) => {
+  const im = typeBillede(p, colors);
+  return { name: p.name, href: `${base}${typeHref(lang, p.slug)}`, img: im.img, pos: im.pos, foto: im.foto, fam: famOf(p), desc: p.intro ?? p.short_description ?? '' };
+});
+// Grupperet pr. familie. Inden for en familie: katalogets rækkefølge (web_display_order).
+const all = cards.sort((a, b) => FAM_ORDER.indexOf(a.fam) - FAM_ORDER.indexOf(b.fam));
+const famCount = (f: string) => all.filter((c) => c.fam === f).length;
+
+const T = en ? {
+  title: 'Fixed furniture made to measure: all types | Nem Inventar',
+  description: 'Wardrobes, lockers, tall cabinets, benches, kitchenettes, changing-room furniture and walls, built to measure for schools, institutions, sports halls and homes. See the types and their colours.',
+  itemList: 'Fixed furniture from Nem Inventar', crumb: 'Products', label: 'Products', h: ['Fixed furniture made to measure.', 'All types.'],
+  lede: 'Each type is worked out from assembly to finish and built to measure for your room. If you need a type we do not show, we draw it.',
+  saerligt: 'Need something special? →', filtrer: 'Filter types', alle: 'All',
+} : {
+  title: 'Fast inventar på mål: alle typer | Nem Inventar',
+  description: 'Garderober, lockers, højskabe, bænke, tekøkkener, omklædning og vægge, bygget på mål til skoler, institutioner, idrætshaller og boliger. Se typerne og deres kulører.',
+  itemList: 'Fast inventar fra Nem Inventar', crumb: 'Inventar', label: 'Inventar', h: ['Fast inventar på mål.', 'Alle typer.'],
+  lede: 'Typerne er gennemarbejdet fra samling til overflade og bygges på mål til jeres rum. Mangler I en type, tegner vi den.',
+  saerligt: 'Mangler I noget særligt? →', filtrer: 'Filtrér typer', alle: 'Alle',
+};
+const jsonLd = [
+  {
+    '@context': 'https://schema.org', '@type': 'ItemList', name: T.itemList,
+    itemListElement: all.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, url: new URL(c.href, site).href })),
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Nem Inventar', item: new URL(base + side(lang, 'forside'), site).href },
+      { '@type': 'ListItem', position: 2, name: T.crumb, item: new URL(base + side(lang, 'inventar'), site).href },
+    ],
+  },
+];
+const ogImage = all[0]?.img ? new URL(cdn(all[0].img, 1200), site).href : undefined;
+---
+<Base lang={lang} title={T.title} description={T.description} image={ogImage} jsonLd={jsonLd} alternates={[
+  { hreflang: 'da', href: new URL(base + 'inventar/', site).href },
+  { hreflang: 'en', href: new URL(base + 'en/products/', site).href },
+]}>
+  <section class="sec inv" id="katalog"><div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="label">{T.label}</span>
+        <h1 class="inv-h1">{T.h[0]} <em>{T.h[1]}</em></h1>
+        <p class="lede">{T.lede}</p>
+      </div>
+      <a href={`${base}${side(lang, 'kontakt')}`} class="ulink">{T.saerligt}</a>
+    </div>
+    <div class="filters" id="filters" role="group" aria-label={T.filtrer} hidden>
+      <button type="button" class="fchip on" data-f="alle" aria-pressed="true">{T.alle}<small>{all.length}</small></button>
+      {FAM_ORDER.filter((f) => famCount(f) > 0).map((f) => <button type="button" class="fchip" data-f={f} aria-pressed="false">{famNavn(f, lang)}<small>{famCount(f)}</small></button>)}
+    </div>
+    <div class="types expanded" id="types">
+      {all.map((c) => <ProductCard name={c.name} href={c.href} img={c.img} pos={c.pos} tag={fotoTag(c.foto, lang)} fam={famNavn(c.fam, lang)} desc={c.desc} dataFam={c.fam} lang={lang} />)}
+    </div>
+  </div></section>
+
+  <ContactCta lang={lang} />
+
+  <style>
+    .inv-h1{font-size:clamp(36px,4.6vw,64px);margin-top:22px;max-width:20ch}
+    .filters[hidden]{display:none}
+  </style>
+  <script>
+    // Filtre pr. familie (fra v2's katalog). Uden JS er filtrene skjulte, og alle kort vises.
+    const types = document.getElementById('types');
+    const bar = document.getElementById('filters');
+    if (types && bar) {
+      bar.hidden = false;
+      const cards = Array.from(types.querySelectorAll<HTMLElement>('.tcard'));
+      const chips = Array.from(bar.querySelectorAll<HTMLButtonElement>('.fchip'));
+      const vis = (f: string) => {
+        cards.forEach((t) => { t.hidden = !(f === 'alle' || t.dataset.fam === f); });
+        chips.forEach((c) => { const on = c.dataset.f === f; c.classList.toggle('on', on); c.setAttribute('aria-pressed', String(on)); });
+      };
+      chips.forEach((c) => c.addEventListener('click', () => vis(c.dataset.f || 'alle')));
+    }
+  </script>
+</Base>

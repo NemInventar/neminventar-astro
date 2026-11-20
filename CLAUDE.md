@@ -194,6 +194,29 @@ api/public/_worker.js          # proxyen bag api.neminventar.dk (Cloudflare Page
 
 ---
 
+## Den engelske udgave (/en/)
+
+Hele sitet findes på engelsk (Joachim 20-11-2026: "sørg for at vores engelske hjemmeside er ligeså fin som vores danske").
+Hver side er **én komponent med `lang`** i `src/components/sider/` (Typeside, Katalog, Sagsside, Projekter, OmOs,
+DesignDetSelv, Kontaktside, Landingsside) og `src/components/Forside.astro`; ruterne under `src/pages/` og `src/pages/en/`
+er kun indgange. Ret en side ét sted, så følger begge sprog. Den danske HTML må ikke ændre sig ved en ren omlægning: byg
+før og efter og sammenlign.
+
+- **Teksten** bor i `src/data/engelsk/` (`landing.json`, `produkter.json`, `sager.json`, `eksempler.json`, `holdet.json`)
+  og guiderne i `src/data/guides-i18n.en.json`. Billeder, priser og rækkefølge kommer fra den danske række. Uden
+  oversættelse findes siden ikke på engelsk, og der linkes til den danske. `/en/lockers/` og `/en/lockers-with-bench/`
+  er håndskrevne; de juridiske sider (`en/privacy`, `en/terms`, `en/cookies`) er oversættelser, hvor den danske gælder.
+- **Adresser:** `src/lib/stier.ts` og `lib/engelsk.ts` (`typeHref`, `sagHref`, `landingHref`, `enHref` til links i
+  brødtekst). Byg aldrig en adresse selv: et `produkter/…` på en engelsk side er en fejl.
+- **Når den danske tekst rettes** (fx i /tekster), bliver den engelske forældet. Hver oversættelse bærer et fingeraftryk af
+  den danske; passer det ikke, får siden `<meta name="ni-engelsk">`, og `lint-web-copy.py --dist` melder ADVAR. Det
+  samme gør en dansk side uden engelsk udgave. Arbejdsgangen: `python scripts/engelsk_status.py` (liste) →
+  `--kilde landing/<slug>` (den danske tekst) → oversæt det rettede i JSON-filen → `--opdater landing/<slug>` → byg.
+- Annoncebillederne (`landing-forrest.json`) vises kun på dansk: de har dansk tekst brændt ind.
+- Designeren åbner på engelsk fra engelske sider (`designerSprog`, `?lang=en`).
+
+---
+
 ## SEO — hvordan sitet bliver fundet
 
 **Brug skill `seo` (`plugins/seo/`).** Den ejer arbejdsgangen: status og plan, ny landingsside, billeder/tegninger/video, brochure, IndexNow, snapshot og søgeord. Den er skrevet, så indholdsejeren (Marianne, DRI for processen *Hjemmeside-drift & indhold*) kan køre alt selv.

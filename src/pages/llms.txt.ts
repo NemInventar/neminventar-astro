@@ -3,6 +3,7 @@
 import type { APIRoute } from 'astro';
 import { getWebLandingPages, getWebCases, getWebProducts } from '../lib/supabase';
 import { guidesFor, guidePath } from '../lib/guides-i18n';
+import { landingPaaEngelsk, landingEnSti, sagerPaaEngelsk, harSagEn, sagHref, produkterPaaEngelsk, harTypeEn, typeHref } from '../lib/engelsk';
 
 // Designerens egen llms.txt (ni-apps scripts/designer/llms.mjs, Joachim 27-10-2026): hvordan en AI-assistent skriver et
 // læsbart link til kundens eget skab (?p=hoejskab&antal=3&bredde=80&materiale=eg). Teksten bygges af designerens kontrakt
@@ -67,9 +68,24 @@ export const GET: APIRoute = async ({ site }) => {
     `- [Alt inventar](${abs('inventar')}): Alle typer i kataloget, grupperet i familier. Hver type kan ses i de kulører, vi har visualiseret.`,
     ...products.map((p) => `- [${p.name}](${abs('produkter/' + p.slug)}): ${p.intro ?? p.short_description ?? ''}`),
     '',
+    // Hele sitet findes på engelsk (20-11-2026): samme sider som de danske, oversat i src/data/engelsk/.
     '## English',
-    `- [English overview](${abs('en/')}): Built-in joinery for schools, daycare centres and sports facilities in Denmark — what we make, how we work, documentation and contact.`,
+    `- [English overview](${abs('en/')}): Nem Inventar ApS is a Danish joinery firm. Fixed furniture made to measure for schools, daycare centres, sports halls, housing and private customers, drawn in 3D and built in our own production. The 3D designer opens in English.`,
     `- [Custom plywood lockers](${abs('en/lockers/')}): Lockers made to measure in pine plywood, birch plywood and compact laminate (HPL) for schools, sports halls, swimming halls, staff rooms and offices, by Nem Inventar ApS, a Danish company. Locks: hasp for a padlock, key, code or electronic. Prices per compartment excl. VAT from the designer, with an approximate euro amount.`,
+    ...emner.flatMap((p) => { const e = landingPaaEngelsk(p); return e ? [`- [${e.nav_label}](${abs(landingEnSti(p.slug)!)}): ${e.lead ?? e.seo_description}`] : []; }),
+    `- [Design it yourself](${abs('en/design-it-yourself/')}): Examples from the 3D designer with prices. Open one, change size and material, and send it to us.`,
+    '',
+    '## English: who we build for',
+    ...segmenter.flatMap((p) => { const e = landingPaaEngelsk(p); return e ? [`- [${e.nav_label}](${abs(landingEnSti(p.slug)!)}): ${e.lead ?? e.seo_description}`] : []; }),
+    '',
+    '## English: projects',
+    `- [All projects](${abs('en/projects/')}): The projects and the architects and contractors we built them with.`,
+    ...sagerPaaEngelsk(cases).filter((c) => harSagEn(c.slug)).map((c) => `- [${c.name}](${abs(sagHref('en', c.slug))}): ${c.web_summary ?? ''}`),
+    '',
+    '## English: product types',
+    `- [All types](${abs('en/products/')}): Every type in the catalogue, grouped in families, with the colours we have visualised.`,
+    ...produkterPaaEngelsk(products).filter((p) => harTypeEn(p.slug)).map((p) => `- [${p.name}](${abs(typeHref('en', p.slug))}): ${p.intro ?? ''}`),
+    `- [About us](${abs('en/about/')}) · [Contact](${abs('en/contact/')}): send drawings, a specification or a bill of quantities to tilbud@neminventar.dk. We reply in English.`,
     '',
     '## Guides in English',
     ...guidesFor('en', pages).map((g) => `- [${g.h1}](${abs(guidePath('en', g.slug))}): ${g.lead ?? g.seo_description}`),
