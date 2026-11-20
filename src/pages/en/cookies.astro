@@ -1,0 +1,48 @@
+---
+// Engelsk oversættelse af cookiepolitikken; den danske side (src/pages/cookiepolitik.astro) er kilden og gælder ved forskelle.
+import Base from '../../layouts/Base.astro';
+const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
+---
+<Base
+  lang="en"
+  title="Cookie policy | Nem Inventar"
+  description="Cookie policy for Nem Inventar ApS. We do not use cookies for analytics, marketing or tracking."
+  alternates={[
+    { hreflang: 'da', href: new URL(base + 'cookiepolitik/', site).href },
+    { hreflang: 'en', href: new URL(base + 'en/cookies/', site).href },
+  ]}>
+  <article class="legal wrap">
+    <h1>Cookie policy</h1>
+    <p>This is an English translation. If the English and the Danish version differ, the <a href={`${base}cookiepolitik/`} hreflang="da">Danish version</a> applies.</p>
+    <p class="upd">Last updated: October 2026</p>
+
+    <h2>In short</h2>
+    <p>neminventar.dk is a simple, static website. We do <strong>not</strong> use cookies for analytics, marketing or tracking, and we do not share your data with advertising networks. That is also why there is no cookie consent banner.</p>
+
+    <h2>What are cookies?</h2>
+    <p>Cookies are small text files that can be stored on your device when you visit a website — typically to remember settings or measure traffic.</p>
+
+    <h2>Cookies on this site</h2>
+    <p>We do not set any cookies for analytics or marketing. If your browser stores technical data, it is solely so that the site can be displayed correctly.</p>
+    <h2>External services</h2>
+    <ul>
+      <li><strong>Fonts</strong> are hosted on our own domain — no data is sent to third-party font services.</li>
+      <li><strong>The contact form</strong> sends the information you fill in yourself to us (via our data processor), so that we can reply. The processing is described in our <a href={`${base}en/privacy/`}>privacy policy</a>.</li>
+      <li><strong>Videos from YouTube</strong> (e.g. Rubio Monocoat's film on applying oil) are only loaded when you click play yourself. Until then, nothing is sent to YouTube. If you click, the video is fetched from youtube-nocookie.com, and YouTube/Google may process technical data about the playback under their own terms.</li>
+    </ul>
+
+    <h2>How to control cookies</h2>
+    <p>You can always delete or block cookies in your browser settings (Chrome, Firefox, Safari, Edge).</p>
+
+    <h2>Contact</h2>
+    <p>
+      <strong>Nem Inventar ApS</strong><br />
+      Email: <a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a><br />
+      Phone: +45 42 42 26 84<br />
+      Address: Mågevej 73, st., DK-2400 Copenhagen NV, Denmark
+    </p>
+  </article>
+</Base>
+
+<!-- Styles: .legal i site.css (fælles for de juridiske sider) -->

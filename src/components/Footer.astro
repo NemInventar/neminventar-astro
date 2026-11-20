@@ -5,6 +5,7 @@ import { getWebLandingPages } from '../lib/supabase';
 import { guidesFor, guidePath } from '../lib/guides-i18n';
 import { PHONE, PHONE_TEL, LINKEDIN, FACEBOOK, MIN_SIDE, MIN_SIDE_EN } from '../lib/contact';
 import { sprogLink, type Alternate } from '../lib/sprog';
+import { landingEnSti, landingPaaEngelsk, HAANDSKREVET_NAVN } from '../lib/engelsk';
 // Min side (12-11-2026, Fable runde 3 afsnit b) — samme props som Nav:
 //   origin     = 'https://neminventar.dk' gør alle interne links til fulde adresser til sitet (standard '': som før).
 //   visMinSide = "Min side" øverst i spalten "Nem Inventar" (engelsk: "My account"). Tysk har ingen Min side.
@@ -24,7 +25,14 @@ const guides = landing.filter((l) => l.kind === 'guide');
 const year = new Date().getFullYear();
 const guidesEn = guidesFor('en', landing);
 const guidesDe = guidesFor('de', landing);
-// Engelsk udgave (/en/): kun de engelske sider + vej tilbage til den danske. Landingssiderne er på dansk og linkes ikke.
+// Engelsk udgave (/en/): samme spalter som den danske (20-11-2026), med de sider, der findes på engelsk (lib/engelsk.ts).
+const paaEngelsk = (ls: typeof landing) => ls.flatMap((l) => {
+  const sti = landingEnSti(l.slug);
+  const navn = landingPaaEngelsk(l)?.nav_label ?? HAANDSKREVET_NAVN[l.slug];
+  return sti && navn ? [{ sti, nav_label: navn }] : [];
+});
+const emnerEn = lang === 'en' ? [...paaEngelsk(emner), { sti: 'en/lockers-with-bench/', nav_label: 'Lockers with bench' }] : [];
+const segmenterEn = lang === 'en' ? paaEngelsk(segmenter) : [];
 // Tysk light-udgave (/de/): landingssiden, Impressum og Datenschutz (krævet af tysk ret).
 ---
 {lang === 'de' ? (
@@ -74,38 +82,45 @@ const guidesDe = guidesFor('de', landing);
   <div class="foot2">
     <div class="foot-brand">
       <div class="brand">NEM<b style="color:var(--warm)">·</b>INVENTAR</div>
-      <p>Built-in joinery and fixed furniture for construction, modelled in 3D and built in our own production. Single pieces and whole projects.</p>
+      <p>Nem Inventar is a joinery firm. We draw fixed furniture for construction in 3D and build it in our own production. Single pieces from the catalogue and whole projects. We also deliver to private customers.</p>
       <p class="foot-tel"><a href={`tel:${PHONE_TEL}`}>{PHONE}</a></p>
-      <p><a href="mailto:tilbud@neminventar.dk">tilbud@neminventar.dk</a></p>
+      <p><a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a> · <a href="mailto:tilbud@neminventar.dk">tilbud@neminventar.dk</a></p>
     </div>
     <div>
-      <h4>In English</h4>
-      <ul>
-        <li><a href={u('en/')}>Nem Inventar</a></li>
-        <li><a href={u('en/products/')}>Products</a></li>
-        <li><a href={u('en/lockers/')}>Lockers made to measure</a></li>
-        <li><a href={u('en/lockers-with-bench/')}>Lockers with bench</a></li>
-        <li><a href={u('en/wardrobes/')}>Wardrobes made to measure</a></li>
-        <li><a href={u('en/contact/')}>Contact</a></li>
-      </ul>
-      <h4 style="margin-top:26px">Guides</h4>
-      <ul>
-        {guidesEn.map((g) => <li><a href={u(guidePath('en', g.slug))}>{g.nav_label}</a></li>)}
+      <h4>Furniture and materials</h4>
+      <ul class={emnerEn.length > 9 ? 'cols2' : undefined}>
+        {emnerEn.map((l) => <li><a href={u(l.sti)}>{l.nav_label}</a></li>)}
       </ul>
     </div>
     <div>
-      <h4>På dansk</h4>
+      <h4>For</h4>
       <ul>
-        <li><a href={u()} hreflang="da" lang="da">Forside</a></li>
-        <li><a href={u('projekter')} hreflang="da" lang="da">Projekter</a></li>
-        <li><a href={u('privatlivspolitik')} hreflang="da" lang="da">Privatlivspolitik</a></li>
+        {segmenterEn.map((l) => <li><a href={u(l.sti)}>{l.nav_label}</a></li>)}
       </ul>
+      {guidesEn.length > 0 && (
+        <>
+          <h4 style="margin-top:26px">Guides</h4>
+          <ul>{guidesEn.map((g) => <li><a href={u(guidePath('en', g.slug))}>{g.nav_label}</a></li>)}</ul>
+        </>
+      )}
     </div>
     <div>
       <h4>Nem Inventar</h4>
       <ul>{minSide && <li><a href={minSide.href}>{minSide.t}</a></li>}
+        <li><a href={u('en/projects/')}>Projects</a></li>
+        <li><a href={u('en/products/')}>Products</a></li>
+        <li><a href={u('en/about/')}>About us</a></li>
+        <li><a href={u('en/contact/')}>Contact</a></li>
+        <li><a href={u('nem-inventar-brochure.pdf')} hreflang="da">Brochure (PDF, in Danish)</a></li>
+        <li><a href={tilDa} hreflang="da" lang="da">På dansk</a></li>
         <li><a href={LINKEDIN} target="_blank" rel="noopener">LinkedIn</a></li>
         <li><a href={FACEBOOK} target="_blank" rel="noopener">Facebook</a></li>
+      </ul>
+      <h4 style="margin-top:26px">Legal</h4>
+      <ul>
+        <li><a href={u('en/terms/')}>Terms of sale for private customers</a></li>
+        <li><a href={u('en/privacy/')}>Privacy policy</a></li>
+        <li><a href={u('en/cookies/')}>Cookie policy</a></li>
       </ul>
     </div>
   </div>

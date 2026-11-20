@@ -12,6 +12,15 @@ export const FAM: Record<string, string> = {
   omklaedning: 'Omklædning og vådrum',
   vaegge: 'Vægge, døre og akustik',
 };
+export const FAM_EN: Record<string, string> = {
+  garderober: 'Wardrobes and lockers',
+  skabe: 'Tall cabinets and storage',
+  nicher: 'Niches and benches',
+  koekken: 'Kitchenettes',
+  omklaedning: 'Changing rooms and wet rooms',
+  vaegge: 'Walls, doors and acoustics',
+};
+export const famNavn = (f: string, lang: 'da' | 'en' = 'da') => (lang === 'en' ? FAM_EN[f] : FAM[f]);
 export const FAM_ORDER = Object.keys(FAM);
 export const famOf = (p: WebProduct): string =>
   /^(garderobe|skohylde)/.test(p.slug) ? 'garderober'
@@ -49,17 +58,21 @@ export const typeBillede = (p: WebProduct, colors: WebColor[]) => {
   return v ? { img: v.img, pos: '50% 60%', foto: isPhoto(v.img) } : productImage(p);   // en variant kan være et foto (mobil-lockers)
 };
 // Uden sagsnavn (Joachim 05-10-2026: vis produktet, ikke sagen — navnet står på projektkortet).
-export const fotoTag = (foto: boolean) => (foto ? 'Foto fra leverancen' : '3D-visualisering');
+export const fotoTag = (foto: boolean, lang: 'da' | 'en' = 'da') =>
+  lang === 'en' ? (foto ? 'Photo from the delivery' : '3D visualisation') : foto ? 'Foto fra leverancen' : '3D-visualisering';
 
 // ---------- Tal fra leverancen ----------
 // "342 lockers" → 342 + lockers; "ca. 300 m² akustik" → "ca. 300 m²" + akustik. Ingen match → null.
 export const splitTal = (s: string) => {
-  const m = s.trim().match(/^((?:ca\.\s*)?[\d.,]+(?:\s*m²|\s*m\b)?)\s+(.+)$/);
+  const m = s.trim().match(/^((?:ca\.\s*|approx\.\s*)?[\d.,]+(?:\s*m²|\s*m\b)?)\s+(.+)$/);
   return m ? { b: m[1], t: m[2] } : null;
 };
 export const leverance = (c?: WebCase | null) => (c?.delivery_label ?? '').split(' · ').map((s) => s.trim()).filter(Boolean);
 // korte mærkater til talgitre (leverancens fulde ord står i teksten)
-const SHORT: Record<string, string> = { 'bejdsede sideafskærmninger': 'sideafskærmninger', 'polstrede nicher og siddemøbler': 'nicher og siddemøbler' };
+const SHORT: Record<string, string> = {
+  'bejdsede sideafskærmninger': 'sideafskærmninger', 'polstrede nicher og siddemøbler': 'nicher og siddemøbler',
+  'stained side screens': 'side screens', 'upholstered niches and seats': 'niches and seats',
+};
 export const tal = (c?: WebCase | null) =>
   leverance(c).map(splitTal).filter((x): x is { b: string; t: string } => !!x).map((x) => ({ b: x.b, t: SHORT[x.t] ?? x.t }));
 
@@ -73,8 +86,10 @@ export const caseMeta = (c: WebCase, lang: 'da' | 'en' = 'da') => [
   { k: 'Status', v: c.status_label },
 ].filter((m): m is { k: string; v: string } => !!m.v);
 
-export const imgLabel = (kind: string) =>
-  kind === 'foto' ? 'Foto fra leverancen' : kind === 'tegning' ? 'Tegning' : kind === 'video' ? 'Video' : 'Visualisering';
+export const imgLabel = (kind: string, lang: 'da' | 'en' = 'da') =>
+  lang === 'en'
+    ? kind === 'foto' ? 'Photo from the delivery' : kind === 'tegning' ? 'Drawing' : kind === 'video' ? 'Video' : 'Visualisation'
+    : kind === 'foto' ? 'Foto fra leverancen' : kind === 'tegning' ? 'Tegning' : kind === 'video' ? 'Video' : 'Visualisering';
 
 // ---------- Partnere på tværs af sager: arkitekter og entreprenører ----------
 // Navn og link kommer kun med, når sagen tillader det (show_customer_name / show_architect_name i case_web);

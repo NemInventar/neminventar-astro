@@ -1,0 +1,135 @@
+---
+// Kontakt på begge sprog: /kontakt og /en/contact/. Formular (erhverv/privat), telefon, "bestil et opkald" og hvem man
+// taler med. ?emne=<produkt eller side> forudfylder beskeden (ContactForm). Et engelsk lead lander i CRM som alle andre
+// web-henvendelser; at det kom på engelsk, ses på "Sendt fra: neminventar.dk/en/contact/".
+import Base from '../../layouts/Base.astro';
+import ContactForm from '../ContactForm.tsx';
+import CallbackForm from '../CallbackForm.tsx';
+import { PHONE, PHONE_TEL, LINKEDIN, FACEBOOK } from '../../lib/contact';
+import { TEAM } from '../../lib/team';
+import { side } from '../../lib/stier';
+import { HOLD_EN } from '../../lib/engelsk';
+
+interface Props { lang?: 'da' | 'en' }
+const { lang = 'da' } = Astro.props;
+const en = lang === 'en';
+const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
+const team = en ? TEAM.map((m) => ({ ...m, ...(HOLD_EN[m.email] ?? {}) })) : TEAM;
+const alternates = [
+  { hreflang: 'da', href: new URL(base + 'kontakt/', site).href },
+  { hreflang: 'en', href: new URL(base + 'en/contact/', site).href },
+];
+---
+{en ? (
+<Base lang="en" title="Contact | Nem Inventar"
+  description="Send us drawings, tender documents or the measurements of the room. We deliver to construction projects and private customers, and we reply in English."
+  alternates={alternates}>
+  <section class="contact"><div class="wrap contact-grid">
+    <div class="contact-info">
+      <span class="label">Contact</span>
+      <h1>Let's talk about <em>your project.</em></h1>
+      <p class="lead">Write a measurement, a type from the catalogue or the whole tender. Drawings and tender documents can be attached directly in the form. We come back with the next step, and a first meeting to clarify the project is free and without obligation. We reply in English, and documents in Danish or English are both fine. We also deliver to private customers.</p>
+      <a href={`tel:${PHONE_TEL}`} class="contact-tel">{PHONE}</a>
+      <div class="ksteps">
+        <div class="step"><span class="sn">1</span><div><b>We read the material</b><p>Measurements, drawings, specifications or the bill of quantities, attached here or as an invitation to the tender in <a href="https://www.dalux.com/" target="_blank" rel="noopener">Dalux</a> or <a href="https://ibinder.com/en/" target="_blank" rel="noopener">iBinder</a>, which we work in from start to handover. We ask the questions that need answering before the price.</p></div></div>
+        <div class="step"><span class="sn">2</span><div><b>Drawing and price</b><p>You get your solution in 3D and a price you can compare with the tender or the budget.</p></div></div>
+        <div class="step"><span class="sn">3</span><div><b>We build and deliver</b><p>In our own production, delivered to the site schedule, typically 8–12 weeks from order. Projects outside Denmark: send us the drawings and we will tell you what we can deliver.</p></div></div>
+      </div>
+      <div class="lines">
+        <span class="k">Sales and quotes</span>
+        <a href="mailto:tilbud@neminventar.dk">tilbud@neminventar.dk</a>
+        <span class="k">General</span>
+        <a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a>
+        <span class="k">LinkedIn</span>
+        <a href={LINKEDIN} target="_blank" rel="noopener">Nem Inventar ApS on LinkedIn</a>
+        <span class="k">Facebook</span>
+        <a href={FACEBOOK} target="_blank" rel="noopener">Nem Inventar on Facebook</a>
+        <span class="k">Address</span>
+        <span>Nem Inventar ApS · Mågevej 73, st. · 2400 Copenhagen NV · Denmark · VAT DK45085473</span>
+      </div>
+      <CallbackForm client:load lang="en" label="Rather talk? Book a call" />
+    </div>
+    <ContactForm client:load lang="en" />
+  </div></section>
+
+  <section class="sec" id="who" style="padding-top:0"><div class="wrap">
+    <div class="sec-head rv" style="margin-bottom:28px">
+      <div>
+        <span class="label">Who you talk to</span>
+        <h2>From the first email to the last <em>installation.</em></h2>
+        <p class="lede">You talk to us all the way: we draw, price and follow your project, and the furniture is built in our own production. Write or call the person it concerns directly.</p>
+      </div>
+      <a href={`${base}${side('en', 'omOs')}`} class="ulink">More about the team →</a>
+    </div>
+    <div class="who2 rv">
+      {team.map((m) => (
+        <div class="w">
+          <img src={`${base}team/${m.img}`} alt={m.name} loading="lazy" />
+          <div>
+            <b>{m.name}</b>
+            <small>{m.role}</small>
+            <div class="wc"><a href={`mailto:${m.email}`}>{m.email}</a><br /><a href={`tel:${m.phone.replace(/\s/g, '')}`}>{m.phone}</a></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div></section>
+</Base>
+) : (
+<Base
+  title="Kontakt — Nem Inventar"
+  description="Send os jeres mål eller hele udbuddet. Vi leverer til byggeri og til private og vender hurtigt tilbage med næste skridt."
+  alternates={alternates}>
+  <section class="contact"><div class="wrap contact-grid">
+    <div class="contact-info">
+      <span class="label">Kontakt</span>
+      <h1>Lad os tale om <em>jeres projekt.</em></h1>
+      <p class="lead">Skriv et mål, en type fra kataloget eller hele udbuddet — tegninger og udbudsmateriale kan vedhæftes direkte i formularen. Vi vender tilbage med næste skridt; et indledende afklaringsmøde er gratis og uforpligtende. Vi leverer også til private.</p>
+      <a href={`tel:${PHONE_TEL}`} class="contact-tel">{PHONE}</a>
+      <div class="ksteps">
+        <div class="step"><span class="sn">1</span><div><b>Vi læser materialet</b><p>Mål, tegninger, beskrivelse eller tilbudsliste — vedhæftet her, eller som invitation til udbuddet i <a href="https://www.dalux.com/da/" target="_blank" rel="noopener">Dalux</a> eller <a href="https://ibinder.com/da/" target="_blank" rel="noopener">iBinder</a>, hvor vi arbejder med fra start til aflevering. Vi stiller de spørgsmål, der skal afklares før prisen.</p></div></div>
+        <div class="step"><span class="sn">2</span><div><b>Tegning og pris</b><p>I får jeres løsning i 3D og en pris, I kan holde op mod udbuddet eller budgettet.</p></div></div>
+        <div class="step"><span class="sn">3</span><div><b>Vi bygger og leverer</b><p>I vores egenproduktion, leveret efter byggepladsens tidsplan — typisk 8–12 uger fra ordre.</p></div></div>
+      </div>
+      <div class="lines">
+        <span class="k">Salg & tilbud</span>
+        <a href="mailto:tilbud@neminventar.dk">tilbud@neminventar.dk</a>
+        <span class="k">Generelt</span>
+        <a href="mailto:kontakt@neminventar.dk">kontakt@neminventar.dk</a>
+        <span class="k">LinkedIn</span>
+        <a href={LINKEDIN} target="_blank" rel="noopener">Nem Inventar ApS på LinkedIn</a>
+        <span class="k">Facebook</span>
+        <a href={FACEBOOK} target="_blank" rel="noopener">Nem Inventar på Facebook</a>
+        <span class="k">Adresse</span>
+        <span>Nem Inventar ApS · Mågevej 73, st. · 2400 København NV · CVR 45085473</span>
+      </div>
+      <CallbackForm client:load label="Hellere tale sammen? Bestil et opkald" />
+    </div>
+    <ContactForm client:load />
+  </div></section>
+
+  <section class="sec" id="hvem" style="padding-top:0"><div class="wrap">
+    <div class="sec-head rv" style="margin-bottom:28px">
+      <div>
+        <span class="label">Hvem du taler med</span>
+        <h2>Fra første mail til sidste <em>montage.</em></h2>
+        <p class="lede">Det er os, I taler med hele vejen: vi tegner, regner og følger jeres sag, og møblerne bygges i vores egenproduktion. Skriv eller ring direkte til den, det handler om.</p>
+      </div>
+      <a href={`${base}om-os`} class="ulink">Mere om holdet →</a>
+    </div>
+    <div class="who2 rv">
+      {team.map((m) => (
+        <div class="w">
+          <img src={`${base}team/${m.img}`} alt={m.name} loading="lazy" />
+          <div>
+            <b>{m.name}</b>
+            <small>{m.role}</small>
+            <div class="wc"><a href={`mailto:${m.email}`}>{m.email}</a><br /><a href={`tel:${m.phone.replace(/\s/g, '')}`}>{m.phone}</a></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div></section>
+</Base>
+)}

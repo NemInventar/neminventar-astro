@@ -1,0 +1,13 @@
+---
+// Engelsk typeside (/en/products/<engelsk slug>/). Samme side som den danske (components/sider/Typeside.astro); teksten
+// fra src/data/engelsk/produkter.json. En type uden fuld oversættelse får ingen engelsk side.
+import Typeside from '../../../components/sider/Typeside.astro';
+import { getWebProducts, getWebColors, getWebCases, getWebLandingPages } from '../../../lib/supabase';
+import { TYPE_EN, harTypeEn } from '../../../lib/engelsk';
+
+export async function getStaticPaths() {
+  const [products, cases, landing, colors] = await Promise.all([getWebProducts(), getWebCases(), getWebLandingPages(), getWebColors()]);
+  return products.filter((p) => harTypeEn(p.slug)).map((p) => ({ params: { slug: TYPE_EN[p.slug].slug }, props: { product: p, products, cases, landing, colors } }));
+}
+---
+<Typeside {...Astro.props} lang="en" />

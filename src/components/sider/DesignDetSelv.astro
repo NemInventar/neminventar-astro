@@ -1,0 +1,69 @@
+---
+// Design det selv på begge sprog: /design-det-selv og /en/design-it-yourself/. Eksempler fra designeren (Joachim
+// 16-10-2026: "måske skal vi også have en side hvor alle mulighederne kan ses. Eller i hvert fald eksempler med hvad man
+// kan lave med designeren og så arbejde videre derfra"). Kortene (komponenten DesignerEksempler) åbner designeren med
+// præcis den konfiguration og tælles i Plausible som "Eksempel valgt". Eksemplerne står i src/data/designer-eksempler.json
+// (engelsk: src/data/engelsk/eksempler.json); landingssider viser et udvalg af dem (landing_web.designer_eksempler).
+// Fra 20-10-2026 (Joachim): pris på hvert eksempel (designer-eksempler-priser.json) og filter pr. produkt.
+import Base from '../../layouts/Base.astro';
+import ContactCta from '../ContactCta.astro';
+import DesignerEksempler from '../DesignerEksempler.astro';
+import EKS from '../../data/designer-eksempler.json';
+import { DESIGNER_URL } from '../../lib/forside';
+import { designerSprog } from '../../lib/stier';
+import { EKSEMPEL_EN } from '../../lib/engelsk';
+
+interface Props { lang?: 'da' | 'en' }
+const { lang = 'da' } = Astro.props;
+const en = lang === 'en';
+const base = import.meta.env.BASE_URL;
+const site = Astro.site!;
+const antal = en ? EKS.filter((e) => EKSEMPEL_EN[e.id]).length : EKS.length;
+const T = en ? {
+  title: 'Design it yourself: examples from the designer | Nem Inventar',
+  description: `${antal} examples of cabinets, benches, lockers and acoustic panels from our designer. Open an example, change the size and material, and send it to us.`,
+  label: 'Design it yourself', h1: ['Start from an example.', 'Change the rest yourself.'],
+  lede: 'Everything below is built in our designer. Open an example, change the size, material and layout, and send it to us. You get a quote and a drawing to your measurements.',
+  prisnote: 'The price under an example is the designer\'s price for exactly that version, incl. VAT, for delivery in Denmark. You choose delivery and installation in the designer\'s basket.',
+  forfra: 'Would you rather start from scratch?',
+  navn: { hoejskab: 'Tall cabinet', baenk: 'Bench', locker: 'Lockers', akustik: 'Acoustics' } as Record<string, string>,
+} : {
+  title: 'Design det selv: eksempler fra designeren — Nem Inventar',
+  description: `${antal} eksempler på skabe, bænke, lockers og akustikpaneler fra vores designer. Åbn et eksempel, ret mål og materiale, og send det til os.`,
+  label: 'Design det selv', h1: ['Start fra et eksempel.', 'Ret resten selv.'],
+  lede: 'Alt herunder er bygget i vores designer. Åbn et eksempel, ret mål, materiale og indretning, og send det til os. Du får tilbud og tegning på dine mål.',
+  prisnote: 'Prisen under et eksempel er designerens pris for netop den udgave, inkl. moms. Levering og montage vælger du i designerens kurv.',
+  forfra: 'Vil du hellere starte forfra?',
+  navn: { hoejskab: 'Højskab', baenk: 'Bænk', locker: 'Lockers', akustik: 'Akustik' } as Record<string, string>,
+};
+const ogImage = new URL(`${base}billeder/designer-eksempler/garderobe-med-baenk.jpg`, site).href;
+const alternates = [
+  { hreflang: 'da', href: new URL(base + 'design-det-selv/', site).href },
+  { hreflang: 'en', href: new URL(base + 'en/design-it-yourself/', site).href },
+];
+---
+<Base lang={lang} title={T.title} description={T.description} image={ogImage} alternates={alternates}>
+  <section class="sec dds"><div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="label">{T.label}</span>
+        <h1 class="dds-h1">{T.h1[0]} <em>{T.h1[1]}</em></h1>
+        <p class="lede">{T.lede}</p>
+        <p class="dds-prisnote">{T.prisnote}</p>
+      </div>
+    </div>
+    {DESIGNER_URL && <DesignerEksempler side="design-det-selv" filter lang={lang} />}
+    {DESIGNER_URL && (
+      <p class="dds-forfra">{T.forfra} {Object.entries(T.navn).map(([p, n], i) => <>{i ? ' · ' : ''}<a href={designerSprog(`${DESIGNER_URL}?p=${p}`, lang)}>{n}</a></>)}</p>
+    )}
+  </div></section>
+
+  <ContactCta lang={lang} />
+
+  <style>
+    .dds-h1{font-size:clamp(34px,4.4vw,60px);margin-top:22px;max-width:20ch}
+    .dds-prisnote{margin-top:14px;color:var(--muted);font-size:15px;max-width:62ch}
+    .dds-forfra{margin-top:40px;color:var(--muted)}
+    .dds-forfra a{color:var(--ink);font-weight:600;text-decoration-color:var(--warm-soft);text-underline-offset:3px}
+  </style>
+</Base>

@@ -5,7 +5,10 @@
 import Base from '../layouts/Base.astro';
 const base = import.meta.env.BASE_URL;
 ---
-<Base title="Privatlivspolitik — Nem Inventar" description="Privatlivspolitik for Nem Inventar ApS — hvordan vi behandler personoplysninger.">
+<Base title="Privatlivspolitik — Nem Inventar" description="Privatlivspolitik for Nem Inventar ApS — hvordan vi behandler personoplysninger." alternates={[
+  { hreflang: 'da', href: new URL(import.meta.env.BASE_URL + 'privatlivspolitik/', Astro.site).href },
+  { hreflang: 'en', href: new URL(import.meta.env.BASE_URL + 'en/privacy/', Astro.site).href },
+]}>
   <article class="legal wrap">
     <h1>Privatlivspolitik</h1>
     <p class="upd">Sidst opdateret: oktober 2026</p>

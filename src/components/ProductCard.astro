@@ -1,8 +1,9 @@
 ---
-// Kort for en type i kataloget — samme kort på forsiden, landingssiderne og produktsiderne ("Andre typer").
+// Kort for en type i kataloget — samme kort på forsiden, landingssiderne og produktsiderne ("Andre typer"), på begge sprog.
 import { cdn } from '../lib/img';
-interface Props { name: string; href: string; img: string; pos?: string; tag: string; fam: string; desc: string; dataFam?: string }
-const { name, href, img, pos = '50% 60%', tag, fam, desc, dataFam } = Astro.props;
+interface Props { name: string; href: string; img: string; pos?: string; tag: string; fam: string; desc: string; dataFam?: string; lang?: 'da' | 'en' }
+const { name, href, img, pos = '50% 60%', tag, fam, desc, dataFam, lang = 'da' } = Astro.props;
+const en = lang === 'en';
 ---
 <article class="tcard" data-fam={dataFam}>
   <a class="ph" href={href} aria-label={name}>
@@ -14,8 +15,8 @@ const { name, href, img, pos = '50% 60%', tag, fam, desc, dataFam } = Astro.prop
     <h3><a href={href}>{name}</a></h3>
     <p class="desc">{desc}</p>
     <div class="tfoot">
-      <span class="made"><b>Til mål</b> · pris efter opmåling</span>
-      <a href={href} class="order">Se mere <span class="arr">→</span></a>
+      {en ? <span class="made"><b>Made to measure</b> · priced from the drawings</span> : <span class="made"><b>Til mål</b> · pris efter opmåling</span>}
+      <a href={href} class="order">{en ? 'See more' : 'Se mere'} <span class="arr">→</span></a>
     </div>
   </div>
 </article>

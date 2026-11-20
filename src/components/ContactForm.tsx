@@ -366,7 +366,7 @@ export default function ContactForm({ spor = 'besked', besked = '', konfiguratio
       </p>
       ) : en ? (
       <p className="callback-note">
-        Your details and files are stored with our data processor and used only to reply to you. Our <a href={`${import.meta.env.BASE_URL}privatlivspolitik`} hreflang="da">privacy policy</a> is in Danish.
+        Your details and files are stored with our data processor and used only to reply to you. See our <a href={`${import.meta.env.BASE_URL}en/privacy/`}>privacy policy</a>.
       </p>
       ) : (
       <p className="callback-note">

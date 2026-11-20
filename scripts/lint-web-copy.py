@@ -38,6 +38,8 @@ def sagsnavne_i_dist(dist, cases):
         ord_ = [w for w in re.findall(r"\w+", c["name"]) if w.lower() not in GENERISK]
         if ord_: noegler[c["slug"]] = ord_[0]
     n = 0
+    # De engelske projektsider er sagens egen side på engelsk (src/data/engelsk/sager.json: dansk slug → engelsk slug)
+    en_sag = {k: v.get("slug") for k, v in json.loads((Path(__file__).resolve().parent.parent / "src/data/engelsk/sager.json").read_text(encoding="utf-8")).items()}
     for f in sorted(Path(dist).rglob("index.html")):
         rel = "/" + f.parent.relative_to(dist).as_posix().strip(".") + "/"
         rel = rel.replace("//", "/")
@@ -47,8 +49,8 @@ def sagsnavne_i_dist(dist, cases):
         kort = re.findall(r'<article class="pcard.*?</article>', html, flags=re.S)
         tekst = re.sub(r"<[^>]+>", " ", re.sub(r'<article class="pcard.*?</article>', " ", html, flags=re.S))
         for slug, ord_ in noegler.items():
-            if rel in ("/projekter/", f"/projekter/{slug}/"): continue
-            k = len(re.findall(rf"\b{re.escape(ord_)}\b", tekst)) + sum(f"projekter/{slug}" in a for a in kort)
+            if rel in ("/projekter/", f"/projekter/{slug}/", "/en/projects/", f"/en/projects/{en_sag.get(slug)}/"): continue
+            k = len(re.findall(rf"\b{re.escape(ord_)}\b", tekst)) + sum(f"projekter/{slug}" in a or f"en/projects/{en_sag.get(slug)}/" in a for a in kort)
             if k > MAX_SAGSNAVN:
                 print(f"ADVAR html{rel} · «{ord_}» står {k} gange (højst {MAX_SAGSNAVN} uden for sagens egen side) — "
                       "vis produktet, ikke sagen")
@@ -72,11 +74,41 @@ def kraevede_links_i_dist(dist):
                 n += 1
     return n
 
+# Den engelske udgave (Joachim 20-11-2026: "lige så fin som vores danske"). Teksten bor i src/data/engelsk/ og
+# guides-i18n.en.json. ADVAR, når en dansk side ikke findes på engelsk, og når en engelsk side er oversat fra en ældre dansk
+# tekst (Base.astro skriver <meta name="ni-engelsk">, lib/engelsk.ts fingeraftryk). Status og nyt fingeraftryk efter en ny
+# oversættelse: python scripts/engelsk_status.py
+DATA = Path(__file__).resolve().parent.parent / "src" / "data"
+HAANDSKREVET_EN = {"lockers"}  # landingssider med en håndskrevet engelsk side (lib/engelsk.ts HAANDSKREVET_EN)
+
+def _hent(view, cols):
+    return json.loads(urllib.request.urlopen(urllib.request.Request(
+        f"{URL}/rest/v1/{view}?select={cols}", headers={"apikey": KEY, "Authorization": "Bearer " + KEY}), timeout=60).read())
+
+def engelsk_i_dist(dist):
+    n = 0
+    for f in sorted(Path(dist).rglob("*.html")):
+        m = re.search(r'<meta name="ni-engelsk" content="foraeldet ([^"]+)"', f.read_text(encoding="utf-8", errors="ignore"))
+        if m:
+            print(f"ADVAR html/{f.relative_to(dist).as_posix()} · den engelske tekst er oversat fra en ældre dansk udgave "
+                  f"({m.group(1)}) — oversæt det rettede, og kør scripts/engelsk_status.py --opdater {m.group(1)}")
+            n += 1
+    land = {x["da_slug"] for x in json.loads((DATA / "engelsk" / "landing.json").read_text(encoding="utf-8"))} | HAANDSKREVET_EN
+    guides = {x["da_slug"] for x in json.loads((DATA / "guides-i18n.en.json").read_text(encoding="utf-8"))}
+    typer = json.loads((DATA / "engelsk" / "produkter.json").read_text(encoding="utf-8"))
+    sager = json.loads((DATA / "engelsk" / "sager.json").read_text(encoding="utf-8"))
+    mangler = [f"/{l['slug']}/" for l in _hent("v_web_landing_pages", "slug,kind") if l["slug"] not in (guides if l["kind"] == "guide" else land)]
+    mangler += [f"/produkter/{p['slug']}/" for p in _hent("v_web_products", "slug") if not (typer.get(p["slug"]) or {}).get("story")]
+    mangler += [f"/projekter/{c['slug']}/" for c in _hent("v_web_cases", "slug") if not (sager.get(c["slug"]) or {}).get("web_story")]
+    for m in mangler:
+        print(f"ADVAR {m} · findes ikke på engelsk — oversæt den (src/data/engelsk/, se scripts/engelsk_status.py)")
+    return n + len(mangler)
+
 if DIST:
     n_fejl = kraevede_links_i_dist(DIST)
-    n = sagsnavne_i_dist(DIST, json.loads(urllib.request.urlopen(urllib.request.Request(
-        f"{URL}/rest/v1/v_web_cases?select=slug,name", headers={"apikey": KEY, "Authorization": "Bearer " + KEY}), timeout=60).read()))
-    print(f"\n{n_fejl} fejl · {n} advarsler (krævede links og sagsnavne i {DIST})")
+    n = sagsnavne_i_dist(DIST, _hent("v_web_cases", "slug,name"))
+    n += engelsk_i_dist(DIST)
+    print(f"\n{n_fejl} fejl · {n} advarsler (krævede links, sagsnavne og den engelske udgave i {DIST})")
     sys.exit(1 if n_fejl else 0)
 
 FEJL = [
@@ -122,7 +154,8 @@ RUBIO_OK = {"bejdset-olieret-eller-lakeret"}
 
 def mm_allowed(row, field, item):
     # Guides må forklare pladetykkelser, og et FAQ-svar på et spørgsmål OM tykkelse må give tallet.
-    return row.get("kind") == "guide" or (field == "faq" and isinstance(item, dict) and "tyk" in item.get("q", "").lower())
+    q = item.get("q", "").lower() if isinstance(item, dict) else ""
+    return row.get("kind") == "guide" or (field == "faq" and ("tyk" in q or "thick" in q))
 
 def synlig(s):
     """Kun den synlige tekst: [tekst](/adresse) → tekst. Adressen ses ikke på siden, og en slug som
@@ -183,5 +216,29 @@ for f in sorted((Path(__file__).resolve().parent.parent / "src" / "data").glob("
                         print(f"{level} {lang}/{row['slug']} · {field}: «{m.group(0)}» — {why}\n        …{ctx}…")
                         if level == "FEJL ": n_err += 1
                         else: n_warn += 1
+# Den engelske udgave af resten af sitet (src/data/engelsk/*.json, 20-11-2026): samme regler som de oversatte guides.
+def _engelske_raekker():
+    for r in json.loads((DATA / "engelsk" / "landing.json").read_text(encoding="utf-8")):
+        yield "en", r["slug"], dict(r, kind="emne", images=list(r.get("image_alts", {}).values())), I18N_FIELDS
+    for slug, r in json.loads((DATA / "engelsk" / "produkter.json").read_text(encoding="utf-8")).items():
+        yield "en/produkt", slug, dict(r, slug=slug), ["name", "intro", "hero_tagline", "story", "seo_title", "seo_description"]
+    for slug, r in json.loads((DATA / "engelsk" / "sager.json").read_text(encoding="utf-8")).items():
+        yield "en/sag", slug, dict(r, slug=slug, gallery=list((r.get("image_alts") or {}).values())), \
+            ["name", "hero_tagline", "web_summary", "web_story", "delivery_label", "status_label", "seo_title", "seo_description", "gallery"]
+    for slug, r in json.loads((DATA / "engelsk" / "eksempler.json").read_text(encoding="utf-8")).items():
+        yield "en/eksempel", slug, dict(r, slug=slug), ["titel", "tekst"]
+for label, slug, row, fields in _engelske_raekker():
+    for field, s, mm_ok in texts(row, fields):
+        for rules, level in ((FEJL, "FEJL "), (ADVAR, "ADVAR")):
+            for pat, why in rules:
+                if pat == MM_RULE and mm_ok: continue
+                if pat == RUBIO_RULE and slug in RUBIO_OK: continue
+                if pat == QUOTE_RULE:
+                    pat = r"\bT\d{2}\b|\btilbudslinje|\bBOM\b|\brumkode"
+                for m in re.finditer(pat, s):
+                    ctx = s[max(0, m.start() - 35):m.end() + 35].replace("\n", " ")
+                    print(f"{level} {label}/{slug} · {field}: «{m.group(0)}» — {why}\n        …{ctx}…")
+                    if level == "FEJL ": n_err += 1
+                    else: n_warn += 1
 print(f"\n{n_err} fejl · {n_warn} advarsler")
 sys.exit(1 if n_err else 0)
