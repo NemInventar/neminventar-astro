@@ -84,7 +84,9 @@ export const INSPIRATION: { slug: string; kuloer: string; w: 8 | 4 }[] = [
 
 // "Det laver vi": én slags link pr. række (Fable 06-10-2026: rækken blandede materialer, produkter, arbejdsform og
 // certificering). Emnesiderne (kind 'emne') deles her. Et nyt emne lander under Inventar, til det står i en af listerne.
-export const EMNE_MATERIALER = ['krydsfiner-inventar', 'akustikvaegge-perforeret-krydsfiner', 'kompaktlaminat', 'rustfri-staal-bordplader'];
+// massiv-eg-og-valnoed (Milot 20-11-2026, PR seo-massiv-eg): siden om massiv eg og valnød står her, før rækken er i
+// landing_web, så den lander under materialerne den dag, den udgives.
+export const EMNE_MATERIALER = ['krydsfiner-inventar', 'akustikvaegge-perforeret-krydsfiner', 'kompaktlaminat', 'rustfri-staal-bordplader', 'massiv-eg-og-valnoed'];
 export const EMNE_ARBEJDSFORM = ['vaerkstedstegninger-og-3d-model', 'inventar-til-svanemaerket-byggeri'];
 export function emneGruppe(slug: string): 'inventar' | 'materialer' | 'arbejdsform' {
   return EMNE_MATERIALER.includes(slug) ? 'materialer' : EMNE_ARBEJDSFORM.includes(slug) ? 'arbejdsform' : 'inventar';
