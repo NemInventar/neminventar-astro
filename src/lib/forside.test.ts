@@ -38,6 +38,7 @@ test('designerLink: kuløren som farvede låger, IFC-download og intet link for 
 
 test('emneGruppe: materialer og arbejdsform for sig, alt andet (også nye emner) er inventar', () => {
   assert.equal(emneGruppe('kompaktlaminat'), 'materialer');
+  assert.equal(emneGruppe('massiv-eg-og-valnoed'), 'materialer');
   assert.equal(emneGruppe('vaerkstedstegninger-og-3d-model'), 'arbejdsform');
   assert.equal(emneGruppe('lockers'), 'inventar');
   assert.equal(emneGruppe('et-helt-nyt-emne'), 'inventar');

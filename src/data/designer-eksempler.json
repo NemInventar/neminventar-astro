@@ -215,6 +215,44 @@
     }
   },
   {
+    "id": "skabsvaeg-massiv-eg",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Garderobeskabe i massiv eg med fingertappede skuffer",
+    "tekst": "Tre skabe på 60 cm i massiv eg med klar olie og indeliggende låger, og det midterste står åbent. Hattehylde, bøjlestang og to skuffer forneden i hvert skab. Skufferne er fingertappede, så samlingerne ses på frontens kanter. 180 cm bred og 210 cm høj.",
+    "st": {
+      "n": 3,
+      "b": 60,
+      "h": 210,
+      "d": 60,
+      "mat": "egmassiv",
+      "inde": "garderobe_skuffer",
+      "indl": 1,
+      "m": [
+        {
+          "i": 1,
+          "t": "aaben"
+        }
+      ]
+    }
+  },
+  {
+    "id": "garderobeskab-massiv-valnoed",
+    "produkt": "hoejskab",
+    "gruppe": "Højskabe",
+    "titel": "Garderobeskab i massiv valnød",
+    "tekst": "To skabe på 50 cm i massiv valnød med klar olie og uden greb, så lågen åbner, når du trykker. Hattehylde og bøjlestang i begge.",
+    "st": {
+      "n": 2,
+      "b": 50,
+      "h": 210,
+      "d": 60,
+      "mat": "valnoed",
+      "inde": "garderobe",
+      "greb": "push"
+    }
+  },
+  {
     "id": "skabsvaeg-sovevaerelse-boeg-fern",
     "produkt": "hoejskab",
     "gruppe": "Højskabe",
@@ -878,6 +916,34 @@
         "eg": "dark-roast"
       },
       "greb": "push"
+    }
+  },
+  {
+    "id": "baenk-massiv-eg",
+    "produkt": "baenk",
+    "gruppe": "Bænke",
+    "titel": "Bænk i massiv eg med fingertappede skuffer",
+    "tekst": "120 cm bænk i massiv eg med klar olie. De to skuffer er fingertappede, så samlingerne ses på frontens kanter, og har en slids fræset i fronten. Hynde i gråt møbelstof.",
+    "st": {
+      "b": 120,
+      "d": 40,
+      "bsk": 2,
+      "hynde": 1,
+      "mat": "egmassiv"
+    }
+  },
+  {
+    "id": "baenk-massiv-valnoed",
+    "produkt": "baenk",
+    "gruppe": "Bænke",
+    "titel": "Bænk i massiv valnød",
+    "tekst": "100 cm bænk i massiv valnød med klar olie og to fingertappede skuffer. Uden hynde, så sædet også er valnød.",
+    "st": {
+      "b": 100,
+      "d": 40,
+      "bsk": 2,
+      "hynde": 0,
+      "mat": "valnoed"
     }
   },
   {

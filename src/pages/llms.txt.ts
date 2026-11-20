@@ -26,11 +26,15 @@ export const GET: APIRoute = async ({ site }) => {
   const emner = pages.filter((p) => p.kind === 'emne');
   const segmenter = pages.filter((p) => p.kind === 'segment');
   const guides = pages.filter((p) => p.kind === 'guide');
+  // Massivt træ (Milot 20-11-2026: "højere op på Google ift. massiv eg, egetræ og valnødstræ"): bænken og skabene kan bygges i
+  // massiv eg og massiv valnød (ni-apps #382). Siderne om det linkes her, når de er udgivet i landing_web — før da kun designeren.
+  const massivSider = ['massiv-eg-og-valnoed', 'baenk-i-egetrae'].map((s) => pages.find((p) => p.slug === s)).filter((p): p is NonNullable<typeof p> => Boolean(p));
+  const DESIGNER = 'https://designer.neminventar.dk/designer';
 
   const lines = [
     '# Nem Inventar ApS',
     '',
-    '> Dansk snedkerfirma, der leverer fast inventar til byggeri: skoler, daginstitutioner, idrætshaller og erhverv. Vi bygger til mål i krydsfiner, kompaktlaminat (HPL), møbellinoleum og massivt træ i egen produktion, og leverer som fagentreprise til hovedentreprenører og bygherrer i hele Danmark. Leverer også garderobeskabe og skabsvægge efter mål til private, med prisen direkte i vores 3D-designer. Kontor: Mågevej 73, st., 2400 København NV. CVR 45085473. Telefon +45 42 42 26 84, tilbud@neminventar.dk.',
+    '> Dansk snedkerfirma, der leverer fast inventar til byggeri: skoler, daginstitutioner, idrætshaller og erhverv. Vi bygger til mål i krydsfiner, kompaktlaminat (HPL), møbellinoleum og massivt træ i egen produktion, og leverer som fagentreprise til hovedentreprenører og bygherrer i hele Danmark. Leverer også garderobeskabe, skabsvægge og bænke efter mål til private, med prisen direkte i vores 3D-designer. Bænke og skabe kan også bygges i massiv eg og massiv valnød. Kontor: Mågevej 73, st., 2400 København NV. CVR 45085473. Telefon +45 42 42 26 84, tilbud@neminventar.dk.',
     '',
     '## Det laver vi',
     ...emner.map((p) => `- [${p.nav_label}](${abs(p.slug)}): ${p.lead ?? p.seo_description}`),
@@ -38,7 +42,9 @@ export const GET: APIRoute = async ({ site }) => {
     '## Til private',
     // Designeren er JavaScript på eget domæne og kan ikke læses af AI-crawlere, så det, den kan, står her i ren tekst (backlog 2c7a8099).
     `- [Design dit garderobeskab](https://designer.neminventar.dk/designer?p=hoejskab): 3D-designer til garderobeskabe og skabsvægge efter mål. Man vælger bredde, højde, dybde, materiale, låger og indretning, og prisen inkl. moms står i designeren, mens man bygger. Levering, montage og opmåling vælges til. Fra designeren sender man skabet til os og får et tilbud.`,
-    `- [Garderobeskab på mål](${abs('garderobeskab')}): Ét skab eller en hel skabsvæg efter mål til entré, soveværelse eller personalegarderobe, i finér, krydsfiner eller kompaktlaminat. Leveret i hele Danmark.`,
+    `- [Garderobeskab på mål](${abs('garderobeskab')}): Ét skab eller en hel skabsvæg efter mål til entré, soveværelse eller personalegarderobe, i finér, krydsfiner, massiv eg, massiv valnød eller kompaktlaminat. Leveret i hele Danmark.`,
+    `- [Massiv eg og massiv valnød](${DESIGNER}?p=baenk&bredde=120&materiale=egmassiv&skuffer=2&hynde=1): Bænke, garderobeskabe og skabsvægge kan bygges i massiv eg eller massiv valnød, træ hele vejen igennem, i vores egenproduktion. Skufferne er fingertappede i massivt træ, så samlingerne ses på frontens kanter. Massiv eg olieres klart eller i en af syv farver, valnød med klar olie. Eksempler: [bænk i massiv eg](${DESIGNER}?p=baenk&bredde=120&materiale=egmassiv&skuffer=2&hynde=1), [bænk i massiv valnød](${DESIGNER}?p=baenk&bredde=100&materiale=valnoed&skuffer=2&hynde=0), [tre garderobeskabe i massiv eg med skuffer](${DESIGNER}?p=hoejskab&antal=3&bredde=60&hoejde=210&materiale=egmassiv&indretning=garderobe_skuffer), [garderobeskab i massiv valnød](${DESIGNER}?p=hoejskab&antal=2&bredde=50&materiale=valnoed&indretning=garderobe).`,
+    ...massivSider.map((p) => `- [${p.nav_label}](${abs(p.slug)}): ${p.lead ?? p.seo_description}`),
     `- [Link til kundens eget skab](${DESIGNER_LLMS}): Et link kan bære et helt design, fx https://designer.neminventar.dk/designer?p=hoejskab&antal=3&bredde=80&hoejde=240&materiale=eg. Så åbner designeren med netop det skab tegnet og prisen regnet. Navnene og værdierne står i designerens llms.txt.`,
     '',
     ...designer,
