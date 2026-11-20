@@ -32,8 +32,11 @@ test('turnstile: KontoLayout bruger turnstileNoegle, og konto.yml kræver nøgle
   assert.match(layout, /const ts = turnstileNoegle\(process\.env\);/);
   assert.doesNotMatch(layout, /1x00000000000000000000BB/, 'testnøglen står kun ét sted (turnstile.mjs)');
   const yml = readFileSync(ROD('.github/workflows/konto.yml'), 'utf8');
-  const byg = yml.slice(yml.indexOf('- name: Byg siderne'), yml.indexOf('- name: Test siderne'));
-  assert.match(byg, /KONTO_KRAEV_TURNSTILE: \$\{\{ github\.ref_name == 'main' && '1' \|\| '' \}\}/, 'kravet sættes i byggetrinnet, kun på main');
+  // Produktionen bygges kun i jobbet udgiv, som kun kører på main (20-11-2026: udgivelse kun fra main)
+  const udgiv = yml.slice(yml.indexOf('\n  udgiv:'));
+  assert.match(udgiv, /^    if: github\.ref_name == 'main'$/m, 'jobbet udgiv kører kun på main');
+  const byg = udgiv.slice(udgiv.indexOf('- name: Produktion — byg siderne'), udgiv.indexOf('- name: Produktion — test siderne'));
+  assert.match(byg, /KONTO_KRAEV_TURNSTILE: "1"/, 'kravet sættes i produktionens byggetrin');
   assert.match(byg, /KONTO_TURNSTILE_SITEKEY: \$\{\{ vars\.KONTO_TURNSTILE_SITEKEY \}\}/);
   assert.equal((yml.match(/KONTO_KRAEV_TURNSTILE/g) ?? []).length, 1, 'kravet står kun i byggetrinnet (testene styrer det selv)');
 });
