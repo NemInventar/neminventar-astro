@@ -28,13 +28,21 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 //     ni-designer.pages.dev må stadig sende (reserve). Ellers uændret.
 //   v9 (07-10-2026): honeypot-træf gemmes i web_henvendelser som kind 'honeypot' (intet lead, ingen mail), så et
 //     menneske kan se dem, og mistanke-grænsen for links er 6 i stedet for 3. Formularerne sender feltet som hp.
+//   v10 (23-11-2026, Joachim: "nærmest værdiløst"): mailen til os selv forklarer henvendelsen (mail.ts): én sætning
+//     øverst (hvem, hvad, hvorfra), historik på samme mail/telefon, varianten med navn, kulør, pris og links fra sitets
+//     varianter.json, designerens specifikation som tabel med prisen, billeder inline og teksten fra docx/odt/txt/csv
+//     (vedhaeft.ts). Best effort: fejler noget af det nye, sendes v9-mailen. Lead, rate-limit, honeypot, dry_run og filer
+//     er uændrede.
 // Beskyttelse: fast modtager + honeypot + input-validering + origin-låst CORS + dedup/rate-limit
 // på opkald og leads + tidsfælde/linktæller før lead + filtype/størrelse/antal på upload.
 // verify_jwt=false (offentligt endpoint, ingen nøgle i klienten).
-// Deployes via Supabase MCP (deploy_edge_function, verify_jwt=false, filer: index.ts + lead.ts). Denne fil er kilden.
+// Deployes via Supabase MCP (deploy_edge_function, verify_jwt=false, filer: index.ts + lead.ts + mail.ts + vedhaeft.ts).
+// Denne fil er kilden.
 import { byggLead, erMistaenkelig, kanalFraHost, mapKanal } from "./lead.ts";
+import { bygMail, historikAf, normPhone, variantInfo, type HistLead, type HistWeb, type Tidligere, type Udtraek } from "./mail.ts";
+import { MAX_FIL_BYTES, TEKST_EXT, tekstAf } from "./vedhaeft.ts";
 
-const VERSION = 9;
+const VERSION = 10;
 const SPOR = new Set(["besked", "skitse", "udbud", "designer", "variant"]);
 
 const TENANT_ID = Deno.env.get("MS_GRAPH_TENANT_ID") || "";
@@ -130,13 +138,7 @@ async function sendMail(to: string[], subject: string, html: string, replyTo?: s
   if (!resp.ok) throw new Error(`Graph sendMail: ${resp.status} ${await resp.text()}`);
 }
 
-// Danske numre sammenlignes uden landekode: "+45 40 14 05 08", "004540140508" og "40140508" er samme nummer.
-function normPhone(p: string): string {
-  const d = String(p ?? "").replace(/\D/g, "");
-  if (d.length === 12 && d.startsWith("0045")) return d.slice(4);
-  if (d.length === 10 && d.startsWith("45")) return d.slice(2);
-  return d;
-}
+// normPhone (danske numre uden landekode) bor i mail.ts, så historikken og opkaldenes dedup sammenligner ens.
 
 function todayCopenhagen(): string {
   return new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Copenhagen" }).format(new Date());
@@ -210,6 +212,73 @@ async function gemHoneypot(body: any): Promise<void> {
   } catch (e) {
     console.error("contact-form: honeypot-log fejlede", e);
   }
+}
+
+// ---------- v10: data til mailen (mail.ts bygger den). Alt er best effort med frist. ----------
+// Et løfte med en frist: når fristen er gået, giver det en fejl, og mailen sendes uden det.
+async function medFrist<T>(p: Promise<T>, ms: number): Promise<T> {
+  let t: number | undefined;
+  try {
+    return await Promise.race([p, new Promise<T>((_, rej) => { t = setTimeout(() => rej(new Error(`frist ${ms} ms`)), ms); })]);
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+// Sitets egen liste over typer og varianter (src/pages/varianter.json.ts, genereres ved build). Gemmes en time.
+const VARIANTER_URL = "https://neminventar.dk/varianter.json";
+let varianterCache: { t: number; data: unknown } | null = null;
+async function hentVarianter(): Promise<unknown> {
+  if (varianterCache && Date.now() - varianterCache.t < 3600_000) return varianterCache.data;
+  const r = await fetch(VARIANTER_URL, { headers: { Accept: "application/json" } });
+  if (!r.ok) throw new Error(`varianter.json: ${r.status}`);
+  const data = await r.json();
+  varianterCache = { t: Date.now(), data };
+  return data;
+}
+
+// Teksten fra højst 3 docx/odt/txt/csv-filer (de første 1.500 tegn hver), nøgle = fil-stien
+async function hentUdtraek(files: { name: string; size: number; path: string }[]): Promise<Record<string, Udtraek>> {
+  const ud: Record<string, Udtraek> = {};
+  const valgte = files.filter((f) => TEKST_EXT.has(extOf(f.name)) && f.size > 0 && f.size <= MAX_FIL_BYTES).slice(0, 3);
+  if (!valgte.length) return ud;
+  const sb = admin();
+  await Promise.all(valgte.map(async (f) => {
+    try {
+      const { data, error } = await sb.storage.from(BUCKET).download(f.path);
+      if (error || !data) throw error ?? new Error("ingen data");
+      const t = await tekstAf(f.name, new Uint8Array(await data.arrayBuffer()));
+      if (t) ud[f.path] = t;
+    } catch (e) {
+      console.error("contact-form: tekst fra fil fejlede", f.path, e);
+    }
+  }));
+  return ud;
+}
+
+// Tidligere henvendelser og leads med samme mail eller telefon. Telefonen søges som cifrene i rækkefølge med hvad som
+// helst imellem (%6%0%1%4%…), så "+45 60 14 36 84" og "60143684" begge findes; historikAf sammenligner præcist bagefter.
+async function hentHistorik(email: string, phone: string): Promise<{ leads: HistLead[]; henvendelser: HistWeb[] }> {
+  const sb = admin();
+  const e = email.trim().toLowerCase().replace(/[%_\\]/g, (c) => `\\${c}`);
+  const cifre = normPhone(phone);
+  const tlf = cifre.length >= 8 ? `%${cifre.slice(-8).split("").join("%")}%` : "";
+  const W = "id, created_at, kind, message, spor, email, phone, crm_deal_id";
+  const L = "id, created_at, title, pipeline_stage, contact_info, primary_contact_phone";
+  const CRM = "crm_deals_2026_04_12";
+  const res = await Promise.all([
+    sb.from(TABLE).select(W).eq("kind", "besked").ilike("email", e).order("created_at", { ascending: false }).limit(20),
+    sb.from(CRM).select(L).ilike("contact_info", `%${e}%`).order("created_at", { ascending: false }).limit(20),
+    ...(tlf ? [
+      sb.from(TABLE).select(W).eq("kind", "besked").ilike("phone", tlf).order("created_at", { ascending: false }).limit(20),
+      sb.from(CRM).select(L).ilike("primary_contact_phone", tlf).order("created_at", { ascending: false }).limit(20),
+    ] : []),
+  ]);
+  for (const r of res) if (r.error) throw r.error;
+  return {
+    henvendelser: [...(res[0].data ?? []), ...(res[2]?.data ?? [])] as HistWeb[],
+    leads: [...(res[1].data ?? []), ...(res[3]?.data ?? [])] as HistLead[],
+  };
 }
 
 async function handleCallback(body: any, json: Record<string, string>): Promise<Response> {
@@ -473,7 +542,8 @@ Deno.serve(async (req: Request) => {
       `<p style="margin:8px 0 0;color:#9a917f;font-size:13px">Links virker i ${LINK_DAYS} dage. Filerne ligger i Supabase Storage: ${BUCKET}/${esc(folder)}</p>`
     : (rawFiles.length ? `<p style="margin:16px 0 0;color:#9B2C2C;font-size:13px">Afsenderen valgte ${rawFiles.length} fil(er), men de nåede ikke frem til Storage. Spørg efter dem på mail.</p>` : "");
 
-  const html = `<div style="font-family:Inter,Arial,sans-serif;font-size:15px;color:#17140E">` +
+  // v9-mailen: reserven, hvis v10 fejler (uændret)
+  const htmlV9 = `<div style="font-family:Inter,Arial,sans-serif;font-size:15px;color:#17140E">` +
     `<h2 style="margin:0 0 16px">Ny henvendelse fra neminventar.dk</h2>` +
     `<table style="border-collapse:collapse">` +
     `<tr><td style="padding:4px 12px 4px 0;color:#6b6253">Navn</td><td><strong>${esc(name)}</strong></td></tr>` +
@@ -493,9 +563,46 @@ Deno.serve(async (req: Request) => {
     `<p style="margin-top:20px;color:#9a917f;font-size:13px">Svar (Reply) går direkte til ${esc(email)}.${rowId ? ` · Henvendelse ${esc(String(rowId).slice(0, 8))}` : ""}</p>` +
     `</div>`;
 
-  const subject = `Web-henvendelse: ${name}${company ? " · " + company : ""}${files.length ? ` · ${files.length} ${files.length === 1 ? "fil" : "filer"}` : ""}${leadId ? ` [CRM ${String(leadId).slice(0, 8)}]` : ""}`;
+  const subjectV9 = `Web-henvendelse: ${name}${company ? " · " + company : ""}${files.length ? ` · ${files.length} ${files.length === 1 ? "fil" : "filer"}` : ""}${leadId ? ` [CRM ${String(leadId).slice(0, 8)}]` : ""}`;
+
+  // v10: mailen, der forklarer henvendelsen (mail.ts). Data hentes samtidig med en frist hver; det, der fejler, udelades.
+  // Fejler selve opbygningen, sendes v9-mailen. Leadet og rækken i web_henvendelser er gemt før dette.
+  let subject = subjectV9, html = htmlV9;
   try {
-    await sendMail(TO, subject, html, email);
+    const erVariant = spor === "variant" && konfiguration?.type === "variant";
+    const [vj, ud, hist] = await Promise.allSettled([
+      erVariant ? medFrist(hentVarianter(), 4000) : Promise.resolve(null),
+      files.length ? medFrist(hentUdtraek(files), 6000) : Promise.resolve({} as Record<string, Udtraek>),
+      medFrist(hentHistorik(email, phone), 4000),
+    ]);
+    for (const r of [vj, ud, hist]) if (r.status === "rejected") console.error("contact-form v10: data til mailen fejlede", r.reason);
+    let historik: Tidligere[] | null = null;
+    if (hist.status === "fulfilled") {
+      historik = historikAf({ ...hist.value, email, phone, rowId, leadId, nytLead: !!leadId && leadNote !== "føjet til eksisterende lead" });
+    }
+    const m = bygMail({
+      name, company, email, phone, message, side, spor, kanal, kildeSvar, referrerHost, landingsside,
+      konfiguration, permalink, files, valgteFiler: rawFiles.length, folder, bucket: BUCKET, linkDays: LINK_DAYS,
+      leadId, leadNote, rowId,
+      variant: vj.status === "fulfilled" && vj.value ? variantInfo(vj.value, konfiguration) : null,
+      udtraek: ud.status === "fulfilled" ? ud.value : {},
+      historik,
+    });
+    subject = m.subject;
+    html = m.html;
+  } catch (e) {
+    console.error("contact-form v10: mailen kunne ikke bygges, sender v9-mailen", e);
+  }
+
+  try {
+    try {
+      await sendMail(TO, subject, html, email);
+    } catch (e) {
+      // Afviser Graph v10-mailen, prøves v9-mailen én gang
+      if (html === htmlV9) throw e;
+      console.error("contact-form v10: mailen blev afvist, sender v9-mailen", e);
+      await sendMail(TO, subjectV9, htmlV9, email);
+    }
     if (rowId) await admin().from(TABLE).update({ mail_sent: true }).eq("id", rowId);
     return new Response(JSON.stringify({ success: true, files: files.length }), { headers: json });
   } catch (e) {

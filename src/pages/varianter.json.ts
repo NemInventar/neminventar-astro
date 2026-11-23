@@ -1,11 +1,16 @@
 // /varianter.json — alle typer og deres varianter, som sitet viser dem (samme regler som typesiderne: lib/varianter).
 // Læses af oversigten i ni-apps (/web-varianter), så den aldrig har sin egen kopi af paletterne. Genereres ved build.
+// Læses også af contact-form (v10), så mailen til os ved en "Få pris på denne" viser typens navn, kulørens navn, links og
+// prisen, som typesiden viser den (pris = standardudgaven i designeren fra produkt-priser.json, null = til mål).
 import type { APIRoute } from 'astro';
 import { getWebProducts, getWebColors } from '../lib/supabase';
 import { varianterAf, MATERIALEFARVER, SPOR, sporAf } from '../lib/varianter';
 import { designerLink } from '../lib/forside';
 import { FAM, famOf } from '../lib/catalog';
 import { cdn } from '../lib/img';
+import produktPriser from '../data/produkt-priser.json';
+
+const PRISER = produktPriser.priser as Record<string, { inkl: number; ex: number; link: string }>;
 
 export const GET: APIRoute = async ({ site }) => {
   const base = import.meta.env.BASE_URL;
@@ -20,6 +25,7 @@ export const GET: APIRoute = async ({ site }) => {
       slug: p.slug, navn: p.name, familie: FAM[famOf(p)], url: abs(`produkter/${p.slug}`),
       spor: v[0] ? sporAf(v[0].kuloer) : null,
       designer: designerLink(p.slug), billeder_uden_kuloer: (p.images_meta ?? []).filter((m) => !m.color).length,
+      pris: PRISER[p.slug] ? { inkl: PRISER[p.slug].inkl, ex: PRISER[p.slug].ex, link: PRISER[p.slug].link } : null,
       // img = samme 480-version som vælgeren på typesiden; buildet skriver den om til neminventar.dk/_b/… (lokale-billeder)
       varianter: v.map((x) => ({ kuloer: x.kuloer, label: x.label, img: cdn(x.img, 480), url: abs(`produkter/${p.slug}#${x.id}`), ifc: designerLink(p.slug, x.kuloer, 'ifc') })),
     };
