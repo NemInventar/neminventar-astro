@@ -12,8 +12,8 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 //   kind="opkald": "Bestil et opkald". Milot (kontakt@) ringer tilbage. Opretter:
 //     1) lead i crm_deals_2026_04_12 (source_channel 'Hjemmeside: bestil opkald', assigned_to 'milot')
 //     2) huskeliste-række til kontakt@ med frist i dag — kun en pointer til leadet
-//     3) mail til kontakt@ via Graph  4) Slack-DM til Milot (slack-id fra standup_participants)
-//   Leadet er artefaktet. Mail/Slack er best-effort: fejler de, er leadet stadig gemt.
+//     3) mail til kontakt@ via Graph  4) Teams-besked 1:1 til Joachim og Milot via botten Claude (v12, se nedenfor)
+//   Leadet er artefaktet. Mail/Teams er best-effort: fejler de, er leadet stadig gemt.
 //   v6 (05-10-2026, D1 konverteringslag): en besked bærer også kilden — spor, kilde_svar ("Hvor fandt I os?"),
 //     referrer_host + landingsside + utm for den side, formularen står på (intet gemmes på besøgerens enhed),
 //     og opretter best effort et lead i
@@ -33,6 +33,15 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 //     varianter.json, designerens specifikation som tabel med prisen, billeder inline og teksten fra docx/odt/txt/csv
 //     (vedhaeft.ts). Best effort: fejler noget af det nye, sendes v9-mailen. Lead, rate-limit, honeypot, dry_run og filer
 //     er uændrede.
+//   v11 (10-11-2026, Joachim: "Vi skal lige have designeren til at sende en kopi af deres mail, til dem selv"): en besked,
+//     der bliver et lead, giver afsenderen en kopi med "vi svarer inden for én arbejdsdag" og linket til designet.
+//   v12 (24-11-2026, Joachim: "Når vi får en henvendelse skal vi have en besked i teams, mig og milot … et link til at
+//     udfylde alt den data der ikke er med i deres henvendelse. Hvis der er nogen der har taget sagen skal man kunne se
+//     det."): hver henvendelse, der bliver et lead eller føjes til et, giver Joachim og Milot en Teams-besked 1:1 fra
+//     botten (post-teams) med linket til ni-apps /henvendelser/?id=<lead>. Beskederne gemmes i
+//     henvendelse_teams_2026_11_24, så fn_henvendelse_tag kan rette dem til "✋ Milot har taget sagen", når nogen tager
+//     den på siden. Erstatter Slack-DM'en til Milot. v11-kopien og Teams-vejen (v10 07-11, version 23) er lagt tilbage:
+//     de forsvandt, da v10-mailen blev deployet 23-11 fra en gren uden dem (version 31).
 // Beskyttelse: fast modtager + honeypot + input-validering + origin-låst CORS + dedup/rate-limit
 // på opkald og leads + tidsfælde/linktæller før lead + filtype/størrelse/antal på upload.
 // verify_jwt=false (offentligt endpoint, ingen nøgle i klienten).
@@ -42,8 +51,15 @@ import { byggLead, erMistaenkelig, kanalFraHost, mapKanal } from "./lead.ts";
 import { bygMail, historikAf, normPhone, variantInfo, type HistLead, type HistWeb, type Tidligere, type Udtraek } from "./mail.ts";
 import { MAX_FIL_BYTES, TEKST_EXT, tekstAf } from "./vedhaeft.ts";
 
-const VERSION = 10;
+const VERSION = 12;
 const SPOR = new Set(["besked", "skitse", "udbud", "designer", "variant"]);
+
+// v12: Teams til os begge (UPN = team_memory.audience) og siden, hvor det manglende udfyldes og sagen tages.
+const NOTIFY = ["js@neminventar.dk", "kontakt@neminventar.dk"];
+const HENVENDELSE_URL = "https://ni-apps.pages.dev/henvendelser/";
+const TEAMS_TABLE = "henvendelse_teams_2026_11_24";
+const SPOR_NAVN: Record<string, string> = { besked: "Formularen", skitse: "Skitse", udbud: "Udbud", designer: "Designeren", variant: "Variant" };
+const NAVN: Record<string, string> = { "js@neminventar.dk": "Joachim", "kontakt@neminventar.dk": "Milot" };
 
 const TENANT_ID = Deno.env.get("MS_GRAPH_TENANT_ID") || "";
 const CLIENT_ID = Deno.env.get("MS_GRAPH_CLIENT_ID") || "";
@@ -214,6 +230,45 @@ async function gemHoneypot(body: any): Promise<void> {
   }
 }
 
+// ---------- v12: Teams til Joachim og Milot ----------
+// Kundens tekst må ikke blive til links eller fed skrift i Teams (post-teams oversætter <url|tekst> og *fed*).
+const teamsTekst = (s: string, n: number) => {
+  const t = String(s ?? "").replace(/[<>*_`]/g, "").replace(/\s+/g, " ").trim();
+  return t.length > n ? t.slice(0, n - 1).trimEnd() + "…" : t;
+};
+
+// Én besked 1:1 til hver i NOTIFY med linket til siden. Hver besked gemmes, så fn_henvendelse_tag kan rette den,
+// når nogen tager sagen. Best effort: returnerer dem, det ikke lykkedes for (fejlene logges).
+async function teamsTilOs(dealId: string, title: string, lines: string[]): Promise<string[]> {
+  const sb = admin();
+  const { data: s } = await sb.from("api_secrets").select("api_key").eq("service_name", "teams_post_key").eq("environment", "PROD").limit(1).single();
+  if (!s?.api_key) {
+    console.error("contact-form: teams_post_key mangler");
+    return [...NOTIFY];
+  }
+  const alle = [...lines, `<${HENVENDELSE_URL}?id=${dealId}|Udfyld det, der mangler, og tag sagen>`];
+  const fejl: string[] = [];
+  await Promise.all(NOTIFY.map(async (to) => {
+    try {
+      const r = await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/post-teams`, {
+        method: "POST",
+        headers: { "x-ni-key": s.api_key, "Content-Type": "application/json" },
+        body: JSON.stringify({ to_email: to, title: title.slice(0, 200), lines: alle }),
+      });
+      const j = await r.json();
+      if (!j?.ok || !j.conversation_id || !j.message_id) throw new Error(j?.error ?? `post-teams ${r.status}`);
+      const { error } = await sb.from(TEAMS_TABLE).insert({
+        deal_id: dealId, to_email: to, conversation_id: j.conversation_id, message_id: j.message_id, title: title.slice(0, 200), lines: alle,
+      });
+      if (error) console.error("contact-form: teams-besked sendt, men ikke gemt", to, error);
+    } catch (e) {
+      console.error("contact-form: teams til", to, "fejlede", e);
+      fejl.push(to);
+    }
+  }));
+  return fejl;
+}
+
 // ---------- v10: data til mailen (mail.ts bygger den). Alt er best effort med frist. ----------
 // Et løfte med en frist: når fristen er gået, giver det en fejl, og mailen sendes uden det.
 async function medFrist<T>(p: Promise<T>, ms: number): Promise<T> {
@@ -364,24 +419,15 @@ async function handleCallback(body: any, json: Record<string, string>): Promise<
     notes.push("mail");
   }
 
+  // v12: Teams 1:1 til Joachim og Milot med linket til siden (afløste Slack-DM'en til Milot).
   try {
-    const { data: p } = await sb.from("standup_participants").select("slack_user_id").eq("email", CALLBACK_OWNER).limit(1).single();
-    const { data: s } = await sb.from("api_secrets").select("api_key").eq("service_name", "slack_bot").eq("environment", "PROD").limit(1).single();
-    if (p?.slack_user_id && s?.api_key) {
-      const text = `Ring tilbage: ${who} på ${phone}, bestilt fra neminventar.dk${side || "/"} (lead ${id8}).`;
-      const r = await fetch("https://slack.com/api/chat.postMessage", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${s.api_key}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ channel: p.slack_user_id, text }),
-      });
-      const j = await r.json();
-      if (!j?.ok) throw new Error(j?.error ?? "slack error");
-    } else {
-      throw new Error("slack-id eller token mangler");
-    }
+    const fejl = await teamsTilOs(String(deal.id), `Ring tilbage: ${teamsTekst(who, 120)} · ${teamsTekst(phone, 40)}`, [
+      `Bestil et opkald på neminventar.dk${teamsTekst(side, 80) || "/"}${topic ? ` · emne: ${teamsTekst(topic, 160)}` : ""}`,
+    ]);
+    if (fejl.length) notes.push("teams");
   } catch (e) {
-    console.error("contact-form opkald: slack fejlede", e);
-    notes.push("slack");
+    console.error("contact-form opkald: teams fejlede", e);
+    notes.push("teams");
   }
 
   return new Response(JSON.stringify({ success: true, lead: id8, ...(notes.length ? { notify_failed: notes } : {}) }), { headers: json });
@@ -474,13 +520,14 @@ Deno.serve(async (req: Request) => {
   }
   let leadId: string | null = null;
   let leadNote = "";
+  let tagetAf: string | null = null; // v12: hvem har allerede den henvendelse, beskeden føjes til
   if (mistanke) {
     leadNote = "mistænkelig: intet lead";
   } else {
     try {
       const sb = admin();
       const since30d = new Date(Date.now() - 30 * 86400_000).toISOString();
-      const { data: prev } = await sb.from("crm_deals_2026_04_12").select("id, description")
+      const { data: prev } = await sb.from("crm_deals_2026_04_12").select("id, description, claimed_by")
         .eq("source_channel", "Hjemmeside: formular").eq("pipeline_stage", "lead")
         .ilike("contact_info", `%${email.replace(/[%_\\]/g, "")}%`).gte("created_at", since30d)
         .order("created_at", { ascending: false }).limit(1);
@@ -490,6 +537,7 @@ Deno.serve(async (req: Request) => {
         const { error: uerr } = await sb.from("crm_deals_2026_04_12").update({ description: desc }).eq("id", leadId);
         if (uerr) throw uerr;
         leadNote = "føjet til eksisterende lead";
+        tagetAf = prev[0].claimed_by ?? null;
       } else {
         const since1h = new Date(Date.now() - 3600_000).toISOString();
         const { count } = await sb.from("crm_deals_2026_04_12").select("id", { count: "exact", head: true })
@@ -514,6 +562,27 @@ Deno.serve(async (req: Request) => {
     } catch (e) {
       console.error("contact-form: lead fejlede", e);
       leadNote = "Lead: fejlede";
+    }
+  }
+
+  // v12: Teams til Joachim og Milot, når henvendelsen er et lead (ny eller føjet til en kendt). Mistænkelige og dem over
+  // loftet giver intet lead og derfor ingen besked — mailen er stadig deres spor.
+  if (leadId) {
+    try {
+      const who = company && company !== "Privatkunde" ? `${name} · ${company}` : name;
+      const kendt = leadNote === "føjet til eksisterende lead";
+      const hvorfra = [
+        `${SPOR_NAVN[spor] ?? "Formularen"} på neminventar.dk${teamsTekst(side, 80) || "/"}`,
+        kanal !== "Ukendt" ? `kilde ${kanal}` : "",
+        files.length ? `${files.length} ${files.length === 1 ? "fil" : "filer"}` : "",
+      ].filter(Boolean).join(" · ");
+      await teamsTilOs(String(leadId), `${kendt ? "Ny besked fra" : "Ny henvendelse:"} ${teamsTekst(who, 140)}`, [
+        hvorfra,
+        `"${teamsTekst(message, 220)}"`,
+        ...(tagetAf ? [`✋ ${NAVN[tagetAf] ?? tagetAf.split("@")[0]} har sagen`] : []),
+      ]);
+    } catch (e) {
+      console.error("contact-form: teams fejlede", e);
     }
   }
 
@@ -604,6 +673,26 @@ Deno.serve(async (req: Request) => {
       await sendMail(TO, subjectV9, htmlV9, email);
     }
     if (rowId) await admin().from(TABLE).update({ mail_sent: true }).eq("id", rowId);
+    // v11: kopi til afsenderen — kun når henvendelsen er blevet et lead (ikke mistænkelig, under loftet på 20 i timen), så
+    // formularen ikke kan bruges til at sende mail til fremmede. Best effort: fejler kopien, er vores mail og leadet sendt.
+    if (leadId) {
+      try {
+        const kopi = `<div style="font-family:Inter,Arial,sans-serif;font-size:15px;color:#17140E;max-width:620px">` +
+          `<p>Hej ${esc(name.split(" ")[0])},</p>` +
+          `<p>Tak for din henvendelse. Vi har fået den og svarer inden for én arbejdsdag.</p>` +
+          (permalink ? `<p><a href="${esc(permalink)}">Se dit design i designeren</a></p>` : "") +
+          `<p style="margin:16px 0 6px;color:#6b6253">Det skrev du</p>` +
+          `<div style="white-space:pre-wrap;border-left:3px solid #C8A86B;padding:8px 14px;background:#faf8f4">${esc(message)}</div>` +
+          (files.length ? `<p style="color:#6b6253">Vi har modtaget ${files.length} ${files.length === 1 ? "fil" : "filer"}.</p>` : "") +
+          `<p>Har du noget at tilføje, så svar bare på denne mail. Kan du ikke vente på et svar, er du altid velkommen til at ringe på <a href="tel:+4542422684">+45 42 42 26 84</a>.</p>` +
+          `<p>Mvh<br>Nem Inventar</p>` +
+          `<p style="margin-top:20px;color:#9a917f;font-size:13px">Nem Inventar ApS · Mågevej 73, st., 2400 København NV · tilbud@neminventar.dk</p>` +
+          `</div>`;
+        await sendMail([email], "Vi har fået din henvendelse", kopi, FROM);
+      } catch (e) {
+        console.error("contact-form: kopi til afsender fejlede", e);
+      }
+    }
     return new Response(JSON.stringify({ success: true, files: files.length }), { headers: json });
   } catch (e) {
     console.error("contact-form error:", e);
