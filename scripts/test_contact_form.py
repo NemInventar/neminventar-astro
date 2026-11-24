@@ -1,4 +1,4 @@
-"""Test af contact-form v9 uden at skrive eller sende noget (dry_run=true).
+"""Test af contact-form v10 uden at skrive eller sende noget (dry_run=true).
 
   python scripts/test_contact_form.py [URL]
 
@@ -6,7 +6,7 @@ URL er valgfri: standard er funktionen direkte på supabase.co. Proxyen testes m
   python scripts/test_contact_form.py https://neminventar-api.pages.dev/contact-form
 
 Kalder den deployede funktion med origin https://neminventar.dk og tjekker:
-  - GET svarer version 9
+  - GET svarer version 10 (v10 ændrer kun mailen til os, som dry_run ikke sender; mail.test.ts tester den)
   - de seks svar på "Hvor fandt I os?" + tomt svar med referrer → lead_kanal efter CHECK-reglen
   - for hurtig udfyldning → mistanke, intet lead
   - honeypot (website og hp) → success uden noget
@@ -38,7 +38,7 @@ def tjek(navn, cond, info=""):
 
 with urllib.request.urlopen(urllib.request.Request(URL, headers={"Origin": "https://neminventar.dk", **UA}), timeout=30) as r:
     g = json.loads(r.read().decode())
-tjek("GET version 9", g.get("version") == 9, g)
+tjek("GET version 10", g.get("version") == 10, g)
 
 CASES = [
     ({"kilde_svar": "Google", "referrer_host": "chatgpt.com"}, "Google"),
