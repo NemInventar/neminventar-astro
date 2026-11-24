@@ -12,7 +12,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 //   kind="opkald": "Bestil et opkald". Milot (kontakt@) ringer tilbage. Opretter:
 //     1) lead i crm_deals_2026_04_12 (source_channel 'Hjemmeside: bestil opkald', assigned_to 'milot')
 //     2) huskeliste-række til kontakt@ med frist i dag — kun en pointer til leadet
-//     3) mail til kontakt@ via Graph  4) Teams-besked 1:1 til Joachim og Milot via botten Claude (v12, se nedenfor)
+//     3) mail til kontakt@ via Graph  4) Teams-besked i gruppechatten med Joachim og Milot via botten Claude (v13)
 //   Leadet er artefaktet. Mail/Teams er best-effort: fejler de, er leadet stadig gemt.
 //   v6 (05-10-2026, D1 konverteringslag): en besked bærer også kilden — spor, kilde_svar ("Hvor fandt I os?"),
 //     referrer_host + landingsside + utm for den side, formularen står på (intet gemmes på besøgerens enhed),
@@ -42,6 +42,10 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 //     henvendelse_teams_2026_11_24, så fn_henvendelse_tag kan rette dem til "✋ Milot har taget sagen", når nogen tager
 //     den på siden. Erstatter Slack-DM'en til Milot. v11-kopien og Teams-vejen (v10 07-11, version 23) er lagt tilbage:
 //     de forsvandt, da v10-mailen blev deployet 23-11 fra en gren uden dem (version 31).
+//   v13 (24-11-2026, Joachim: "det skal sendes i en dm til mig og milot hvor vi begge er med. Det er for at vi nemmere
+//     kan kommunikere om opgaven"): Teams-beskeden går som ÉN besked i gruppechatten "Henvendelser" (Joachim, Milot og
+//     botten Claude; post-teams {chat:"henvendelser"}). Botten kan ikke skrive i en 1:1 mellem to personer. Fejler
+//     chatten, sendes v12's 1:1 til hver som reserve. Ellers uændret.
 // Beskyttelse: fast modtager + honeypot + input-validering + origin-låst CORS + dedup/rate-limit
 // på opkald og leads + tidsfælde/linktæller før lead + filtype/størrelse/antal på upload.
 // verify_jwt=false (offentligt endpoint, ingen nøgle i klienten).
@@ -51,10 +55,12 @@ import { byggLead, erMistaenkelig, kanalFraHost, mapKanal } from "./lead.ts";
 import { bygMail, historikAf, normPhone, variantInfo, type HistLead, type HistWeb, type Tidligere, type Udtraek } from "./mail.ts";
 import { MAX_FIL_BYTES, TEKST_EXT, tekstAf } from "./vedhaeft.ts";
 
-const VERSION = 12;
+const VERSION = 13;
 const SPOR = new Set(["besked", "skitse", "udbud", "designer", "variant"]);
 
 // v12: Teams til os begge (UPN = team_memory.audience) og siden, hvor det manglende udfyldes og sagen tages.
+// v13: i gruppechatten med begge (kanal_noegle i teams_conversations); NOTIFY er kun reserven, hvis chatten fejler.
+const TEAMS_CHAT = "henvendelser";
 const NOTIFY = ["js@neminventar.dk", "kontakt@neminventar.dk"];
 const HENVENDELSE_URL = "https://ni-apps.pages.dev/henvendelser/";
 const TEAMS_TABLE = "henvendelse_teams_2026_11_24";
@@ -237,8 +243,9 @@ const teamsTekst = (s: string, n: number) => {
   return t.length > n ? t.slice(0, n - 1).trimEnd() + "…" : t;
 };
 
-// Én besked 1:1 til hver i NOTIFY med linket til siden. Hver besked gemmes, så fn_henvendelse_tag kan rette den,
-// når nogen tager sagen. Best effort: returnerer dem, det ikke lykkedes for (fejlene logges).
+// v13: ÉN besked i gruppechatten Henvendelser (Joachim, Milot, Claude), så de kan tale om sagen samme sted. Kan chatten
+// ikke nås, går beskeden 1:1 til hver i NOTIFY i stedet, så ingen henvendelse forsvinder. Hver besked gemmes, så
+// fn_henvendelse_tag kan rette den, når nogen tager sagen. Best effort: returnerer dem, det ikke lykkedes for.
 async function teamsTilOs(dealId: string, title: string, lines: string[]): Promise<string[]> {
   const sb = admin();
   const { data: s } = await sb.from("api_secrets").select("api_key").eq("service_name", "teams_post_key").eq("environment", "PROD").limit(1).single();
@@ -247,21 +254,32 @@ async function teamsTilOs(dealId: string, title: string, lines: string[]): Promi
     return [...NOTIFY];
   }
   const alle = [...lines, `<${HENVENDELSE_URL}?id=${dealId}|Udfyld det, der mangler, og tag sagen>`];
+  const titel = title.slice(0, 200);
+  const send = async (modtager: { chat: string } | { to_email: string }) => {
+    const r = await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/post-teams`, {
+      method: "POST",
+      headers: { "x-ni-key": s.api_key, "Content-Type": "application/json" },
+      body: JSON.stringify({ ...modtager, title: titel, lines: alle }),
+    });
+    const j = await r.json();
+    if (!j?.ok || !j.conversation_id || !j.message_id) throw new Error(j?.error ?? `post-teams ${r.status}`);
+    const chat = "chat" in modtager ? modtager.chat : null;
+    const { error } = await sb.from(TEAMS_TABLE).insert({
+      deal_id: dealId, to_email: chat ? `chat:${chat}` : (modtager as { to_email: string }).to_email, chat,
+      conversation_id: j.conversation_id, message_id: j.message_id, title: titel, lines: alle,
+    });
+    if (error) console.error("contact-form: teams-besked sendt, men ikke gemt", modtager, error);
+  };
+
+  try {
+    await send({ chat: TEAMS_CHAT });
+    return [];
+  } catch (e) {
+    console.error("contact-form: gruppechatten fejlede, sender 1:1 i stedet", e);
+  }
   const fejl: string[] = [];
   await Promise.all(NOTIFY.map(async (to) => {
-    try {
-      const r = await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/post-teams`, {
-        method: "POST",
-        headers: { "x-ni-key": s.api_key, "Content-Type": "application/json" },
-        body: JSON.stringify({ to_email: to, title: title.slice(0, 200), lines: alle }),
-      });
-      const j = await r.json();
-      if (!j?.ok || !j.conversation_id || !j.message_id) throw new Error(j?.error ?? `post-teams ${r.status}`);
-      const { error } = await sb.from(TEAMS_TABLE).insert({
-        deal_id: dealId, to_email: to, conversation_id: j.conversation_id, message_id: j.message_id, title: title.slice(0, 200), lines: alle,
-      });
-      if (error) console.error("contact-form: teams-besked sendt, men ikke gemt", to, error);
-    } catch (e) {
+    try { await send({ to_email: to }); } catch (e) {
       console.error("contact-form: teams til", to, "fejlede", e);
       fejl.push(to);
     }
@@ -419,7 +437,7 @@ async function handleCallback(body: any, json: Record<string, string>): Promise<
     notes.push("mail");
   }
 
-  // v12: Teams 1:1 til Joachim og Milot med linket til siden (afløste Slack-DM'en til Milot).
+  // v13: Teams i gruppechatten med Joachim og Milot med linket til siden (afløste Slack-DM'en til Milot).
   try {
     const fejl = await teamsTilOs(String(deal.id), `Ring tilbage: ${teamsTekst(who, 120)} · ${teamsTekst(phone, 40)}`, [
       `Bestil et opkald på neminventar.dk${teamsTekst(side, 80) || "/"}${topic ? ` · emne: ${teamsTekst(topic, 160)}` : ""}`,
