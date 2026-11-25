@@ -3507,7 +3507,24 @@
     "v": "You see the cabinet in 3D and approve the drawing"
    }
   ],
-  "image_alts": {},
+  "image_alts": {
+   "https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1795598727675.jpg": {
+    "alt": "Wall-hung vanity unit in birch plywood with four drawer fronts in green oil and the light plywood edges showing",
+    "caption": "Birch vanity unit with green drawers"
+   },
+   "https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1795598718340.jpg": {
+    "alt": "Wall-hung vanity unit in pine plywood with white oil and two drawers under a white basin",
+    "caption": "Pine vanity unit with white oil"
+   },
+   "https://guhbrpektblabndqttgp.supabase.co/storage/v1/object/public/quote-renders/42adeb65-7bc0-46eb-96f3-29d8bdbaef3f/9bbf66ed-64d6-475c-836b-27881626198f_1795598736381.jpg": {
+    "alt": "Wall-hung tall cabinet and vanity unit in birch plywood with a door and drawers in light grey laminate and open shelves beside them",
+    "caption": "Tall cabinet and vanity unit in grey laminate"
+   },
+   "/billeder/badevaerelse/overskab-og-hylde-i-fyrrekrydsfiner-over-toilet.jpg": {
+    "alt": "Overhead cabinet in pine plywood with an open shelf for towels above a wall-hung toilet",
+    "caption": "Overhead cabinet and shelf above the toilet"
+   }
+  },
   "seo_title": "Plywood bathroom furniture, made to measure | Nem Inventar",
   "seo_description": "Vanity units, tall cabinets and shelves in pine or birch plywood, built to your measurements. Vanity unit with two drawers from DKK 5,750 incl. VAT.",
   "keywords": [
@@ -3522,6 +3539,6 @@
    "plywood in a bathroom",
    "vanity unit price"
   ],
-  "kilde": "7a0da207727e"
+  "kilde": "51d0202f94f0"
  }
 ]
